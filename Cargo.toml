@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "./libraries/async-task-utils",
     "./libraries/messages-lib",
     "./libraries/modbus-core",
     "./modbus-test",
@@ -9,6 +10,12 @@ resolver = "2"
 
 
 [workspace.dependencies]
+tokio-modbus = { version = "*", default-features = false, features = ["tcp"] }
+tokio = { version = "1", features = ["full"] }
+tokio-util = { version = "0.7" }
+tracing = { version = "0.1" }
+
+async-task-utils = { path = "./libraries/async-task-utils" }
 messages-lib = { path = "./libraries/messages-lib" }
 messages = { path = "./utils/messages" }
 modbus-core = { path = "./libraries/modbus-core" }
