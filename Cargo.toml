@@ -1,0 +1,14 @@
+[workspace]
+members = [
+    "./libraries/messages-lib",
+    "./libraries/modbus-core",
+    "./modbus-test",
+    "./utils/messages",
+]
+resolver = "2"
+
+
+[workspace.dependencies]
+messages-lib = { path = "./libraries/messages-lib" }
+messages = { path = "./utils/messages" }
+modbus-core = { path = "./libraries/modbus-core" }

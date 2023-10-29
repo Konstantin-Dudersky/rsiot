@@ -1,0 +1,11 @@
+[package]
+name = "modbus-test"
+version = "0.0.1"
+edition = "2021"
+
+[dependencies]
+tokio-modbus = { version = "*", default-features = false, features = ["tcp"] }
+tokio = { version = "1", features = ["full"] }
+
+messages = { workspace = true }
+modbus-core = { workspace = true }
