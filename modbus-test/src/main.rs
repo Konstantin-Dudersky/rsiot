@@ -6,7 +6,7 @@ use modbus_core::{ReadRequest, RequestParams, ResponseType};
 
 #[main]
 async fn main() {
-    let cfg = vec![ReadRequest {
+    let modbus_read_config = vec![ReadRequest {
         request_params: RequestParams::ReadHoldingRegisters(0, 1),
         response_func: |data| {
             let data = match data {
@@ -22,7 +22,7 @@ async fn main() {
 
     let mut ctx = tcp::connect(socket_addr).await.unwrap();
 
-    let data = request(&mut ctx, &cfg[0]).await;
+    let data = request(&mut ctx, &modbus_read_config[0]).await;
 
     println!("{:?}", data);
 }
