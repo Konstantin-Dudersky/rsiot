@@ -2,7 +2,7 @@
 members = [
     "./libraries/async-task-utils",
     "./libraries/messages-lib",
-    "./libraries/modbus-core",
+    "./libraries/modbus-config",
     "./modbus-test",
     "./utils/messages",
 ]
@@ -18,4 +18,4 @@ tracing = { version = "0.1" }
 async-task-utils = { path = "./libraries/async-task-utils" }
 messages = { path = "./utils/messages" }
 messages-lib = { path = "./libraries/messages-lib" }
-modbus-core = { path = "./libraries/modbus-core" }
+modbus-config = { path = "./libraries/modbus-config" }

@@ -2,7 +2,7 @@ use tokio::main;
 use tokio_modbus::{client::Context, prelude::*};
 
 use messages::{IMessage, Messages};
-use modbus_core::{ReadRequest, RequestParams, ResponseType};
+use modbus_config::{ReadRequest, RequestParams, ResponseType};
 
 #[main]
 async fn main() {

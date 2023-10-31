@@ -194,8 +194,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "modbus-core"
-version = "0.1.0"
+name = "modbus-config"
+version = "0.0.1"
 dependencies = [
  "messages-lib",
 ]
@@ -205,7 +205,7 @@ name = "modbus-test"
 version = "0.0.1"
 dependencies = [
  "messages",
- "modbus-core",
+ "modbus-config",
  "tokio",
  "tokio-modbus",
 ]

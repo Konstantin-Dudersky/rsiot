@@ -1,6 +1,6 @@
 [package]
-name = "modbus-core"
-version = "0.1.0"
+name = "modbus-config"
+version = "0.0.1"
 edition = "2021"
 
 
