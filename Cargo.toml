@@ -2,7 +2,7 @@
 members = [
     "./libraries/async-task-utils",
     "./libraries/messages-lib",
-    "./libraries/modbus-config",
+    "./drivers/modbus-client-config",
     "./modbus-test",
     "./utils/messages",
 ]
@@ -14,8 +14,9 @@ tokio-modbus = { version = "0.9", default-features = false, features = ["tcp"] }
 tokio = { version = "1", features = ["full"] }
 tokio-util = { version = "0.7" }
 tracing = { version = "0.1" }
+url = { version = "2.4" }
 
 async-task-utils = { path = "./libraries/async-task-utils" }
 messages = { path = "./utils/messages" }
 messages-lib = { path = "./libraries/messages-lib" }
-modbus-config = { path = "./libraries/modbus-config" }
+modbus-client-config = { path = "./drivers/modbus-client-config" }

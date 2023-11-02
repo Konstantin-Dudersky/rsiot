@@ -1,8 +1,9 @@
 [package]
-name = "modbus-config"
+name = "modbus-client-config"
 version = "0.0.1"
 edition = "2021"
 
 
 [dependencies]
 messages-lib = { workspace = true }
+url = { workspace = true }

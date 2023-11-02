@@ -19,3 +19,13 @@ where
     pub request_params: RequestParams,
     pub response_func: TResponseFunc,
 }
+
+pub trait Test: Fn(&ResponseType) -> Vec<Box<dyn IMessage>> {}
+
+pub struct ReadRequest1<T>
+where
+    T: Test,
+{
+    pub request_params: RequestParams,
+    pub response_func: T,
+}
