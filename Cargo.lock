@@ -217,6 +217,7 @@ name = "modbus-client"
 version = "0.0.1"
 dependencies = [
  "messages-lib",
+ "modbus-client-config",
  "tokio",
  "tokio-modbus",
 ]
@@ -234,9 +235,9 @@ name = "modbus-test"
 version = "0.0.1"
 dependencies = [
  "messages",
+ "modbus-client",
  "modbus-client-config",
  "tokio",
- "tokio-modbus",
  "url",
 ]
 

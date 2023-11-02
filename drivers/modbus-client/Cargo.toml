@@ -9,3 +9,4 @@ tokio = { workspace = true }
 tokio-modbus = { workspace = true }
 
 messages-lib = { workspace = true }
+modbus-client-config = { workspace = true }

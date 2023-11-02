@@ -1,8 +1,8 @@
-use tokio::main;
-use tokio_modbus::{client::Context, prelude::*};
+use tokio::{main, spawn, sync::mpsc::channel};
 use url::Url;
 
-use messages::{IMessage, Messages};
+use messages::Messages;
+use modbus_client::client;
 use modbus_client_config::{
     client_config::{ClientConfig, TcpClientConfig},
     read::{ReadRequest, RequestParams, ResponseType},
@@ -11,7 +11,6 @@ use modbus_client_config::{
 #[main]
 async fn main() {
     let url = Url::parse("tcp://127.0.0.1:502").unwrap();
-    let sa = url.socket_addrs(|| None).unwrap();
 
     let read_config = vec![ReadRequest {
         params: RequestParams::ReadHoldingRegisters(0, 1),
@@ -30,26 +29,15 @@ async fn main() {
         read_config: read_config,
     });
 
-    let socket_addr = "127.0.0.1:502".parse().unwrap();
+    let (from_modbus_tx, mut from_modbus_rx) = channel(128);
 
-    let mut ctx = tcp::connect(socket_addr).await.unwrap();
+    let task = spawn(client(from_modbus_tx, modbus_client_config));
 
-    // let data = request(&mut ctx, &modbus_read_config[0]).await;
-
-    // println!("{:?}", data);
-}
-
-async fn read_request(
-    ctx: &mut Context,
-    req: &ReadRequest,
-) -> Vec<Box<dyn IMessage>> {
-    match req.params {
-        RequestParams::ReadHoldingRegisters(address, count) => {
-            let data =
-                ctx.read_holding_registers(address, count).await.unwrap();
-            let data = ResponseType::U16(data);
-            (req.callback)(&data)
+    let _ = spawn(async move {
+        while let Some(r) = from_modbus_rx.recv().await {
+            println!("{r:?}");
         }
-        RequestParams::ReadCoils(_, _) => todo!(),
-    }
+    });
+
+    task.await.unwrap();
 }
