@@ -9,5 +9,6 @@ license = "MIT"
 [dependencies]
 tokio = { workspace = true }
 tokio-modbus = { workspace = true }
+url = { workspace = true }
 
 rsiot-modbus-client-config = { workspace = true }

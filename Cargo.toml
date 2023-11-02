@@ -4,8 +4,6 @@ members = [
     "./rsiot-modbus-client-config",
     "./libraries/async-task-utils",
     "./libraries/messages-lib",
-    "./modbus-test",
-    "./utils/messages",
 ]
 resolver = "2"
 
@@ -18,10 +16,9 @@ tracing = { version = "0.1" }
 url = { version = "2.4" }
 
 async-task-utils = { path = "./libraries/async-task-utils" }
-messages = { path = "./utils/messages" }
 messages-lib = { path = "./libraries/messages-lib" }
-# rsiot-modbus-client = { path = "./rsiot-modbus-client" }
-# rsiot-modbus-client-config = { path = "./rsiot-modbus-client-config" }
+rsiot-modbus-client = { path = "./rsiot-modbus-client" }
+rsiot-modbus-client-config = { path = "./rsiot-modbus-client-config" }
 
-rsiot-modbus-client = { version = "0.0" }
-rsiot-modbus-client-config = { version = "0.0" }
+# rsiot-modbus-client = { version = "0.0" }
+# rsiot-modbus-client-config = { version = "0.0" }

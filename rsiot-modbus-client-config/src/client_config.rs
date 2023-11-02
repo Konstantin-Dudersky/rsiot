@@ -2,13 +2,13 @@ use url::Url;
 
 use super::{read, write};
 
-pub enum ClientConfig<T> {
-    Tcp(TcpClientConfig<T>),
+pub enum ClientConfig<TMsg> {
+    Tcp(TcpClientConfig<TMsg>),
     Rtu,
 }
 
-pub struct TcpClientConfig<T> {
+pub struct TcpClientConfig<TMsg> {
     pub url: Url,
-    pub read_config: Vec<read::Request<T>>,
-    pub write_config: write::Request<T>,
+    pub read_config: Vec<read::Request<TMsg>>,
+    pub write_config: write::Request<TMsg>,
 }

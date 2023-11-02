@@ -6,10 +6,10 @@ use tokio_modbus::{client::Context, prelude::*};
 
 use rsiot_modbus_client_config::{client_config::ClientConfig, read, write};
 
-pub async fn start_modbus_client<T>(
-    mut channel_write_to_modbus: Receiver<T>,
-    channel_read_from_modbus: Sender<T>,
-    client_config: ClientConfig<T>,
+pub async fn start_modbus_client<TMsg>(
+    mut channel_write_to_modbus: Receiver<TMsg>,
+    channel_read_from_modbus: Sender<TMsg>,
+    client_config: ClientConfig<TMsg>,
 ) {
     let (mut ctx, read_config, write_config) = match client_config {
         ClientConfig::Tcp(config) => {

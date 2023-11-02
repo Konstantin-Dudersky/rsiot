@@ -1,4 +1,4 @@
-pub type Callback<T> = fn(&ResponseType) -> Vec<T>;
+pub type Callback<TMsg> = fn(&ResponseType) -> Vec<TMsg>;
 
 pub enum RequestParams {
     /// (start address, count)
@@ -12,7 +12,7 @@ pub enum ResponseType {
     Bool(Vec<bool>),
 }
 
-pub struct Request<T> {
+pub struct Request<TMsg> {
     pub params: RequestParams,
-    pub callback: Callback<T>,
+    pub callback: Callback<TMsg>,
 }
