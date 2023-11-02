@@ -3,7 +3,7 @@ name = "rsiot-modbus-client-config"
 version = "0.0.1"
 edition = "2021"
 license = "MIT"
-description = ""
+description = "Конфигурация для Modbus клиента"
 
 
 [dependencies]
