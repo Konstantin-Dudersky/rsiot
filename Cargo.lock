@@ -218,7 +218,7 @@ version = "0.0.1"
 dependencies = [
  "messages",
  "messages-lib",
- "rsiot-modbus-client",
+ "rsiot-modbus-client 0.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "rsiot-modbus-client-config 0.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "tokio",
  "url",
@@ -320,6 +320,17 @@ dependencies = [
 [[package]]
 name = "rsiot-modbus-client"
 version = "0.0.1"
+dependencies = [
+ "rsiot-modbus-client-config 0.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tokio",
+ "tokio-modbus",
+]
+
+[[package]]
+name = "rsiot-modbus-client"
+version = "0.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ff2aea859d02375b75ca1763070c3eb44d46f2b779061953f11187662d643a1d"
 dependencies = [
  "rsiot-modbus-client-config 0.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "tokio",
