@@ -2,6 +2,7 @@ use tokio::{main, spawn, sync::mpsc::channel};
 use url::Url;
 
 use messages::Messages;
+use messages_lib::IMessage;
 use modbus_client::client;
 use modbus_client_config::{
     client_config::{ClientConfig, TcpClientConfig},
@@ -10,8 +11,6 @@ use modbus_client_config::{
 
 #[main]
 async fn main() {
-    let url = Url::parse("tcp://127.0.0.1:502").unwrap();
-
     let read_config = vec![ReadRequest {
         params: RequestParams::ReadHoldingRegisters(0, 1),
         callback: |data| {
@@ -25,16 +24,23 @@ async fn main() {
     }];
 
     let modbus_client_config = ClientConfig::Tcp(TcpClientConfig {
-        url: url,
+        url: Url::parse("tcp://192.168.122.55:502").unwrap(),
         read_config: read_config,
     });
 
-    let (from_modbus_tx, mut from_modbus_rx) = channel(128);
+    let (modbus_write_tx, mut modbus_write_rx) =
+        channel::<Box<dyn IMessage>>(128);
+    let (modbus_read_tx, mut modbus_read_rx) =
+        channel::<Box<dyn IMessage>>(128);
 
-    let task = spawn(client(from_modbus_tx, modbus_client_config));
+    let task = spawn(client(
+        modbus_write_rx,
+        modbus_read_tx,
+        modbus_client_config,
+    ));
 
     let _ = spawn(async move {
-        while let Some(r) = from_modbus_rx.recv().await {
+        while let Some(r) = modbus_read_rx.recv().await {
             println!("{r:?}");
         }
     });

@@ -235,6 +235,7 @@ name = "modbus-test"
 version = "0.0.1"
 dependencies = [
  "messages",
+ "messages-lib",
  "modbus-client",
  "modbus-client-config",
  "tokio",

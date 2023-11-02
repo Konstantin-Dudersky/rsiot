@@ -8,7 +8,7 @@ use messages_lib::IMessage;
 use modbus_client_config::{client_config::ClientConfig, read};
 
 pub async fn client(
-    // channel_write_to_modbus: Receiver<impl IMessage>,
+    channel_write_to_modbus: Receiver<Box<dyn IMessage>>,
     channel_read_from_modbus: Sender<Box<dyn IMessage>>,
     client_config: ClientConfig,
 ) {
