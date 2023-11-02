@@ -9,5 +9,5 @@ url = { workspace = true }
 
 messages = { workspace = true }
 messages-lib = { workspace = true }
-modbus-client = { workspace = true }
-modbus-client-config = { workspace = true }
+rsiot-modbus-client = { workspace = true }
+rsiot-modbus-client-config = { workspace = true }

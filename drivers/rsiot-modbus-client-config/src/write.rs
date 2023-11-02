@@ -1,5 +1,5 @@
 // pub type RequestCallback = fn(&Box<dyn IMessage>) -> RequestParams;
-pub type RequestCallback<T> = fn(&T) -> RequestParams;
+pub type Callback<T> = fn(&T) -> RequestParams;
 
 pub enum RequestParams {
     NoRequest,
@@ -7,5 +7,5 @@ pub enum RequestParams {
 }
 
 pub struct Request<T> {
-    pub params: RequestCallback<T>,
+    pub params: Callback<T>,
 }

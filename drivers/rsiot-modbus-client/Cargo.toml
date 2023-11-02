@@ -1,5 +1,5 @@
 [package]
-name = "modbus-client"
+name = "rsiot-modbus-client"
 version = "0.0.1"
 edition = "2021"
 
@@ -8,5 +8,4 @@ edition = "2021"
 tokio = { workspace = true }
 tokio-modbus = { workspace = true }
 
-messages-lib = { workspace = true }
-modbus-client-config = { workspace = true }
+rsiot-modbus-client-config = { workspace = true }

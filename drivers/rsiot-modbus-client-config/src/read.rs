@@ -12,7 +12,7 @@ pub enum ResponseType {
     Bool(Vec<bool>),
 }
 
-pub struct ReadRequest<T> {
+pub struct Request<T> {
     pub params: RequestParams,
     pub callback: Callback<T>,
 }

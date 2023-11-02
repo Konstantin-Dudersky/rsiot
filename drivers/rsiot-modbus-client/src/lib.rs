@@ -4,15 +4,14 @@ use tokio::{
 };
 use tokio_modbus::{client::Context, prelude::*};
 
-use messages_lib::IMessage;
-use modbus_client_config::{client_config::ClientConfig, read};
+use rsiot_modbus_client_config::{client_config::ClientConfig, read, write};
 
-pub async fn client<T>(
-    channel_write_to_modbus: Receiver<T>,
+pub async fn start_modbus_client<T>(
+    mut channel_write_to_modbus: Receiver<T>,
     channel_read_from_modbus: Sender<T>,
     client_config: ClientConfig<T>,
 ) {
-    let (mut ctx, read_config) = match client_config {
+    let (mut ctx, read_config, write_config) = match client_config {
         ClientConfig::Tcp(config) => {
             let socket_addr = format!(
                 "{}:{}",
@@ -22,12 +21,22 @@ pub async fn client<T>(
             .parse()
             .unwrap();
 
-            (tcp::connect(socket_addr).await.unwrap(), config.read_config)
+            (
+                tcp::connect(socket_addr).await.unwrap(),
+                config.read_config,
+                config.write_config,
+            )
         }
         ClientConfig::Rtu => todo!(),
     };
 
     loop {
+        let msg = channel_write_to_modbus.try_recv();
+        match msg {
+            Ok(msg) => write_request(&mut ctx, &write_config, &msg).await,
+            Err(_) => (),
+        };
+
         for req in &read_config {
             let data = read_request(&mut ctx, req).await;
             for d in data {
@@ -38,10 +47,7 @@ pub async fn client<T>(
     }
 }
 
-async fn read_request<T>(
-    ctx: &mut Context,
-    req: &read::ReadRequest<T>,
-) -> Vec<T> {
+async fn read_request<T>(ctx: &mut Context, req: &read::Request<T>) -> Vec<T> {
     match req.params {
         read::RequestParams::ReadHoldingRegisters(address, count) => {
             let data =
@@ -50,5 +56,21 @@ async fn read_request<T>(
             (req.callback)(&data)
         }
         read::RequestParams::ReadCoils(_, _) => todo!(),
+    }
+}
+
+async fn write_request<T>(
+    ctx: &mut Context,
+    req: &write::Request<T>,
+    msg: &T,
+) -> () {
+    let param = (req.params)(msg);
+    match param {
+        write::RequestParams::NoRequest => (),
+        write::RequestParams::WriteSingleRegister(start_address, value) => {
+            ctx.write_single_register(start_address, value)
+                .await
+                .unwrap();
+        }
     }
 }
