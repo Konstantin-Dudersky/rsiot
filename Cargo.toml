@@ -21,4 +21,5 @@ async-task-utils = { path = "./libraries/async-task-utils" }
 messages = { path = "./utils/messages" }
 messages-lib = { path = "./libraries/messages-lib" }
 rsiot-modbus-client = { path = "./drivers/rsiot-modbus-client" }
-rsiot-modbus-client-config = { path = "./drivers/rsiot-modbus-client-config" }
+# rsiot-modbus-client-config = { path = "./drivers/rsiot-modbus-client-config" }
+rsiot-modbus-client-config = { version = "*" }
