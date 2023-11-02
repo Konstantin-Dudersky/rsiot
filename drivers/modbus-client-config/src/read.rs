@@ -1,4 +1,4 @@
-use messages_lib::IMessage;
+pub type Callback<T> = fn(&ResponseType) -> Vec<T>;
 
 pub enum RequestParams {
     /// (start address, count)
@@ -12,9 +12,7 @@ pub enum ResponseType {
     Bool(Vec<bool>),
 }
 
-pub struct ReadRequest {
+pub struct ReadRequest<T> {
     pub params: RequestParams,
-    pub callback: Callback,
+    pub callback: Callback<T>,
 }
-
-pub type Callback = fn(&ResponseType) -> Vec<Box<dyn IMessage>>;

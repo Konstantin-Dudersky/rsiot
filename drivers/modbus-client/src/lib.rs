@@ -7,10 +7,10 @@ use tokio_modbus::{client::Context, prelude::*};
 use messages_lib::IMessage;
 use modbus_client_config::{client_config::ClientConfig, read};
 
-pub async fn client(
-    channel_write_to_modbus: Receiver<Box<dyn IMessage>>,
-    channel_read_from_modbus: Sender<Box<dyn IMessage>>,
-    client_config: ClientConfig,
+pub async fn client<T>(
+    channel_write_to_modbus: Receiver<T>,
+    channel_read_from_modbus: Sender<T>,
+    client_config: ClientConfig<T>,
 ) {
     let (mut ctx, read_config) = match client_config {
         ClientConfig::Tcp(config) => {
@@ -38,10 +38,10 @@ pub async fn client(
     }
 }
 
-async fn read_request(
+async fn read_request<T>(
     ctx: &mut Context,
-    req: &read::ReadRequest,
-) -> Vec<Box<dyn IMessage>> {
+    req: &read::ReadRequest<T>,
+) -> Vec<T> {
     match req.params {
         read::RequestParams::ReadHoldingRegisters(address, count) => {
             let data =
