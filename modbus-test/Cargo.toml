@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 tokio = { workspace = true }
 tokio-modbus = { workspace = true }
+url = { workspace = true }
 
 messages = { workspace = true }
 modbus-client-config = { workspace = true }

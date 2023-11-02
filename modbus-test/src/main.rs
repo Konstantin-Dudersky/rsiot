@@ -1,16 +1,21 @@
 use tokio::main;
 use tokio_modbus::{client::Context, prelude::*};
+use url::Url;
 
 use messages::{IMessage, Messages};
-use modbus_client_config::read::{
-    ReadRequest, RequestParams, ResponseType, Test,
+use modbus_client_config::{
+    client_config::{ClientConfig, TcpClientConfig},
+    read::{ReadRequest, RequestParams, ResponseType},
 };
 
 #[main]
 async fn main() {
-    let modbus_read_config = vec![ReadRequest {
-        request_params: RequestParams::ReadHoldingRegisters(0, 1),
-        response_func: |data| {
+    let url = Url::parse("tcp://127.0.0.1:502").unwrap();
+    let sa = url.socket_addrs(|| None).unwrap();
+
+    let read_config = vec![ReadRequest {
+        params: RequestParams::ReadHoldingRegisters(0, 1),
+        callback: |data| {
             let data = match data {
                 ResponseType::U16(data) => data,
                 ResponseType::Bool(_) => todo!(),
@@ -20,28 +25,30 @@ async fn main() {
         },
     }];
 
-    let socket_addr = "192.168.101.34:502".parse().unwrap();
+    let modbus_client_config = ClientConfig::Tcp(TcpClientConfig {
+        url: url,
+        read_config: read_config,
+    });
+
+    let socket_addr = "127.0.0.1:502".parse().unwrap();
 
     let mut ctx = tcp::connect(socket_addr).await.unwrap();
 
-    let data = request(&mut ctx, &modbus_read_config[0]).await;
+    // let data = request(&mut ctx, &modbus_read_config[0]).await;
 
-    println!("{:?}", data);
+    // println!("{:?}", data);
 }
 
-async fn request<T>(
+async fn read_request(
     ctx: &mut Context,
-    req: &ReadRequest<T>,
-) -> Vec<Box<dyn IMessage>>
-where
-    T: Fn(&ResponseType) -> Vec<Box<dyn IMessage>>,
-{
-    match req.request_params {
+    req: &ReadRequest,
+) -> Vec<Box<dyn IMessage>> {
+    match req.params {
         RequestParams::ReadHoldingRegisters(address, count) => {
             let data =
                 ctx.read_holding_registers(address, count).await.unwrap();
             let data = ResponseType::U16(data);
-            (req.response_func)(&data)
+            (req.callback)(&data)
         }
         RequestParams::ReadCoils(_, _) => todo!(),
     }

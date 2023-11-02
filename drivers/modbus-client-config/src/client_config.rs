@@ -1,23 +1,15 @@
 use url::Url;
 
-use messages_lib::IMessage;
-
 use super::read;
 
-pub enum ClientConfig<TRead>
-where
-    TRead: Fn(&read::ResponseType) -> Vec<Box<dyn IMessage>>,
-{
-    Tcp(TcpClientConfig<TRead>),
+pub enum ClientConfig {
+    Tcp(TcpClientConfig),
     Rtu,
 }
 
-pub struct TcpClientConfig<TRead>
-where
-    TRead: Fn(&read::ResponseType) -> Vec<Box<dyn IMessage>>,
-{
+pub struct TcpClientConfig {
     pub url: Url,
-    pub read_config: read::ReadRequest<TRead>,
+    pub read_config: Vec<read::ReadRequest>,
 }
 
 type test = fn() -> ();

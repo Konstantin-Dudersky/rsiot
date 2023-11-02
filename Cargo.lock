@@ -213,6 +213,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "modbus-client"
+version = "0.0.1"
+dependencies = [
+ "messages-lib",
+ "tokio",
+ "tokio-modbus",
+]
+
+[[package]]
 name = "modbus-client-config"
 version = "0.0.1"
 dependencies = [
@@ -228,6 +237,7 @@ dependencies = [
  "modbus-client-config",
  "tokio",
  "tokio-modbus",
+ "url",
 ]
 
 [[package]]

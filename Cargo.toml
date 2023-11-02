@@ -1,8 +1,9 @@
 [workspace]
 members = [
+    "./drivers/modbus-client",
+    "./drivers/modbus-client-config",
     "./libraries/async-task-utils",
     "./libraries/messages-lib",
-    "./drivers/modbus-client-config",
     "./modbus-test",
     "./utils/messages",
 ]
@@ -19,4 +20,5 @@ url = { version = "2.4" }
 async-task-utils = { path = "./libraries/async-task-utils" }
 messages = { path = "./utils/messages" }
 messages-lib = { path = "./libraries/messages-lib" }
+modbus-client = { path = "./drivers/modbus-client" }
 modbus-client-config = { path = "./drivers/modbus-client-config" }

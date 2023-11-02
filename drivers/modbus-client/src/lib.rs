@@ -1,14 +1,9 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+use tokio::sync::mpsc::{Receiver, Sender};
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+use messages_lib::IMessage;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+async fn client(
+    channel_to_modbus: Receiver<impl IMessage>,
+    channel_from_modbus: Sender<impl IMessage>,
+) {
 }

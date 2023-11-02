@@ -12,20 +12,9 @@ pub enum ResponseType {
     Bool(Vec<bool>),
 }
 
-pub struct ReadRequest<TResponseFunc>
-where
-    TResponseFunc: Fn(&ResponseType) -> Vec<Box<dyn IMessage>>,
-{
-    pub request_params: RequestParams,
-    pub response_func: TResponseFunc,
+pub struct ReadRequest {
+    pub params: RequestParams,
+    pub callback: Callback,
 }
 
-pub trait Test: Fn(&ResponseType) -> Vec<Box<dyn IMessage>> {}
-
-pub struct ReadRequest1<T>
-where
-    T: Test,
-{
-    pub request_params: RequestParams,
-    pub response_func: T,
-}
+pub type Callback = fn(&ResponseType) -> Vec<Box<dyn IMessage>>;
