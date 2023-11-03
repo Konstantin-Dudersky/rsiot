@@ -182,10 +182,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f665ee40bc4a3c5590afb1e9677db74a508659dfd71e126420da8274909a0167"
 
 [[package]]
-name = "messages-lib"
-version = "0.0.1"
-
-[[package]]
 name = "miniz_oxide"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -299,9 +295,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "rsiot-messages-core"
+version = "0.0.1"
+
+[[package]]
 name = "rsiot-modbus-client"
 version = "0.0.1"
 dependencies = [
+ "rsiot-messages-core",
  "rsiot-modbus-client-config",
  "tokio",
  "tokio-modbus",

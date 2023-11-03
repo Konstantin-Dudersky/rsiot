@@ -2,8 +2,8 @@
 members = [
     "./rsiot-modbus-client",
     "./rsiot-modbus-client-config",
+    "./rsiot-messages-core",
     "./libraries/async-task-utils",
-    "./libraries/messages-lib",
 ]
 resolver = "2"
 
@@ -16,7 +16,7 @@ tracing = { version = "0.1" }
 url = { version = "2.4" }
 
 async-task-utils = { path = "./libraries/async-task-utils" }
-messages-lib = { path = "./libraries/messages-lib" }
+rsiot-messages-core = { path = "./rsiot-messages-core" }
 rsiot-modbus-client = { path = "./rsiot-modbus-client" }
 rsiot-modbus-client-config = { path = "./rsiot-modbus-client-config" }
 
