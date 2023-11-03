@@ -1,6 +1,9 @@
 use futures_util::StreamExt as _;
-use tokio::sync::mpsc::Sender;
-use tracing::trace;
+use tokio::{
+    sync::mpsc::Sender,
+    time::{sleep, Duration},
+};
+use tracing::{error, info, trace};
 use url::Url;
 
 use rsiot_messages_core::IMessage;
@@ -11,6 +14,34 @@ pub async fn start_redis_subscriber<TMessage>(
     url: Url,
     redis_channel: String,
     tx: Sender<TMessage>,
+) -> ()
+where
+    TMessage: IMessage,
+{
+    loop {
+        info!(
+            "Start redis subscriber. Url: {}, channel: {}",
+            url, redis_channel
+        );
+        let result = start_redis_subscriber_loop::<TMessage>(
+            url.clone(),
+            redis_channel.clone(),
+            &tx,
+        )
+        .await;
+        match result {
+            Ok(_) => (),
+            Err(err) => error!("{:?}", err),
+        }
+        sleep(Duration::from_secs(2)).await;
+        info!("Restarting...")
+    }
+}
+
+pub async fn start_redis_subscriber_loop<TMessage>(
+    url: Url,
+    redis_channel: String,
+    tx: &Sender<TMessage>,
 ) -> Result<(), Error>
 where
     TMessage: IMessage,
@@ -28,10 +59,7 @@ where
         };
         trace!("New message from Redis: {:?}", msg);
         let payload: String = msg.get_payload()?;
-
-        let payload: TMessage = TMessage::deser(&payload)?;
-        if let Err(err) = tx.send(payload).await {
-            return Err(Error::SendThreadChannleError(err.to_string()));
-        }
+        let payload: TMessage = TMessage::from_str(&payload)?;
+        tx.send(payload).await?
     }
 }

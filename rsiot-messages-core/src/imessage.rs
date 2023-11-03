@@ -20,7 +20,7 @@ where
         full_str
     }
 
-    fn deser(message: &str) -> Result<Self, Errors> {
+    fn from_str(message: &str) -> Result<Self, Errors> {
         match deserialize::<Self>(message) {
             Ok(value) => Ok(value),
             Err(error) => {
@@ -30,7 +30,7 @@ where
         }
     }
 
-    fn serialize(&self) -> Result<String, Errors> {
+    fn to_str(&self) -> Result<String, Errors> {
         match serialize(&self) {
             Ok(value) => Ok(value),
             Err(error) => {
