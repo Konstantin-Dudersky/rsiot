@@ -1,17 +1,5 @@
-use std::fmt::Debug;
+mod errors;
+mod imessage;
 
-pub trait IMessage
-where
-    Self: Clone + Debug + Send,
-{
-    /// Ключ для сохранения в базе данных
-    fn key(&self) -> String {
-        let full_str = format!("{:?}", self);
-        let parenth_index = full_str.find('(');
-        let full_str: String = match parenth_index {
-            Some(value) => full_str.chars().take(value).collect(),
-            None => full_str,
-        };
-        full_str
-    }
-}
+pub use errors::Errors;
+pub use imessage::IMessage;

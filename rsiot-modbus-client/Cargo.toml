@@ -7,6 +7,7 @@ license = "MIT"
 
 
 [dependencies]
+serde = { workspace = true }
 tokio = { workspace = true }
 tokio-modbus = { workspace = true }
 tracing = { workspace = true }

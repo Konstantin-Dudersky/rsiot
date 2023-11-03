@@ -1,5 +1,6 @@
 use std::net::{IpAddr, Ipv4Addr};
 
+use serde::{Deserialize, Serialize};
 use tokio::{
     main, spawn,
     sync::mpsc::channel,
@@ -16,7 +17,7 @@ use rsiot_modbus_client_config::{
 
 use tracing_subscriber::fmt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum Messages {
     Value0(f64),
 }
