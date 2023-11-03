@@ -38,7 +38,7 @@ where
     }
 }
 
-pub async fn start_redis_subscriber_loop<TMessage>(
+async fn start_redis_subscriber_loop<TMessage>(
     url: Url,
     redis_channel: String,
     tx: &Sender<TMessage>,

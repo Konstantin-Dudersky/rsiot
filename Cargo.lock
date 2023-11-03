@@ -401,7 +401,16 @@ dependencies = [
 
 [[package]]
 name = "rsiot-redis-publisher"
-version = "0.1.0"
+version = "0.0.1"
+dependencies = [
+ "redis",
+ "rsiot-messages-core",
+ "serde",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+ "url",
+]
 
 [[package]]
 name = "rsiot-redis-subscriber"
