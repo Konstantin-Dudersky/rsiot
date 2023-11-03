@@ -14,15 +14,20 @@ use rsiot_modbus_client_config::{
     write,
 };
 
-#[derive(Debug)]
+use tracing_subscriber::fmt;
+
+#[derive(Clone, Debug)]
 pub enum Messages {
-    Reg0(f64),
+    Value0(f64),
 }
 
 impl IMessage for Messages {}
 
 #[main]
 async fn main() {
+    // логгирование
+    fmt().init();
+
     // конфигурация modbus клиента
     let modbus_client_config = ClientConfig::Tcp(TcpClientConfig {
         host: IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)),
@@ -34,13 +39,13 @@ async fn main() {
                     ResponseType::U16(data) => data,
                     ResponseType::Bool(_) => todo!(),
                 };
-                let msg = Messages::Reg0(data[0] as f64);
+                let msg = Messages::Value0(data[0] as f64);
                 vec![msg]
             },
         }],
         write_config: write::Request {
             params: |msg| match msg {
-                Messages::Reg0(value) => {
+                Messages::Value0(value) => {
                     write::RequestParams::WriteSingleRegister(0, *value as u16)
                 }
             },
@@ -56,7 +61,7 @@ async fn main() {
     let _write_task = spawn(async move {
         loop {
             modbus_write_tx
-                .send(Messages::Reg0(counter as f64))
+                .send(Messages::Value0(counter as f64))
                 .await
                 .unwrap();
             counter += 1;

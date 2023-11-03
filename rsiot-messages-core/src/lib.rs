@@ -1,5 +1,7 @@
+use std::fmt::Debug;
+
 pub trait IMessage
 where
-    Self: std::fmt::Debug + Send,
+    Self: Clone + Debug + Send,
 {
 }
