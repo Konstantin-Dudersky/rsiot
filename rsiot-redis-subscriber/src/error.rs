@@ -1,7 +1,7 @@
 use redis::RedisError;
 use tokio::sync::mpsc::error::SendError;
 
-use rsiot_messages_core::Errors as MessagesError;
+use rsiot_messages_core::Error as MessagesError;
 
 #[derive(Debug)]
 pub enum Error {

@@ -1,5 +1,5 @@
-mod errors;
+mod error;
 mod imessage;
 
-pub use errors::Errors;
+pub use error::Error;
 pub use imessage::IMessage;

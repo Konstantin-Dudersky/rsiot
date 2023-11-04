@@ -59,7 +59,7 @@ where
         };
         trace!("New message from Redis: {:?}", msg);
         let payload: String = msg.get_payload()?;
-        let payload: TMessage = TMessage::from_str(&payload)?;
+        let payload: TMessage = TMessage::from_json(&payload)?;
         tx.send(payload).await?
     }
 }

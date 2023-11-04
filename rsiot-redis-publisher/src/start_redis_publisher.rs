@@ -49,7 +49,7 @@ where
     let client = redis::Client::open(url.to_string())?;
     let mut connection = client.get_async_connection().await?;
     while let Some(msg) = channel_to_redis_rx.recv().await {
-        let json = msg.to_str()?;
+        let json = msg.to_json()?;
         connection.hset(&redis_channel, msg.key(), &json).await?;
         connection.publish(&redis_channel, &json).await?;
     }

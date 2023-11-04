@@ -1,9 +1,9 @@
 use std::fmt::Debug;
 
 use serde::{de::DeserializeOwned, Serialize};
-use serde_json::{from_str as deserialize, to_string as serialize};
+use serde_json::{from_str as from_json, to_string as to_json};
 
-use crate::Errors;
+use crate::Error;
 
 pub trait IMessage
 where
@@ -20,22 +20,24 @@ where
         full_str
     }
 
-    fn from_str(message: &str) -> Result<Self, Errors> {
-        match deserialize::<Self>(message) {
+    /// Десериализация из строки json
+    fn from_json(message: &str) -> Result<Self, Error> {
+        match from_json::<Self>(message) {
             Ok(value) => Ok(value),
             Err(error) => {
                 let error = error.to_string();
-                Err(Errors::Deserialization(error))
+                Err(Error::Deserialization(error))
             }
         }
     }
 
-    fn to_str(&self) -> Result<String, Errors> {
-        match serialize(&self) {
+    /// Сериализация в строку json
+    fn to_json(&self) -> Result<String, Error> {
+        match to_json::<Self>(&self) {
             Ok(value) => Ok(value),
             Err(error) => {
                 let error = error.to_string();
-                Err(Errors::Serialization(error))
+                Err(Error::Serialization(error))
             }
         }
     }
