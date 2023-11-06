@@ -1055,7 +1055,10 @@ name = "rsiot-timescaledb-storing"
 version = "0.0.1"
 dependencies = [
  "chrono",
+ "rsiot-messages-core",
  "sqlx",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
