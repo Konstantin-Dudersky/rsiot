@@ -10,8 +10,8 @@
 docker compose -f rsiot-timescaledb-storing/docker-compose.yml up -d
 ```
 
-Задать переменную окружения:
+Задать переменную окружения в файле .env:
 
-```nu
-$env.DATABASE_URL = 'postgres://postgres:postgres@localhost:5432/db_data_test'
+```env
+DATABASE_URL = 'postgres://postgres:postgres@localhost:5432/db_data_test'
 ```

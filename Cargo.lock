@@ -1056,9 +1056,12 @@ version = "0.0.1"
 dependencies = [
  "chrono",
  "rsiot-messages-core",
+ "serde",
  "sqlx",
  "tokio",
  "tracing",
+ "tracing-subscriber",
+ "url",
 ]
 
 [[package]]
