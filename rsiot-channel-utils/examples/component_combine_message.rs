@@ -42,8 +42,30 @@ async fn main() {
     let main_task = spawn(component_combine_message(
         in_channel_rcv,
         out_channel_send,
-        vec!["Message0", "Message1"],
-        config_func,
+        |msg| match msg {
+            Message::Message0(_) | Message::Message1(_) => Some(msg),
+            _ => None,
+        },
+        |msgs| {
+            let mut value1 = None;
+            let mut value2 = None;
+            for msg in msgs {
+                match msg {
+                    Message::Message0(value) => value1 = Some(value),
+                    Message::Message1(value) => value2 = Some(value),
+                    _ => (),
+                }
+            }
+            let value1 = match value1 {
+                Some(val) => val,
+                None => return None,
+            };
+            let value2 = match value2 {
+                Some(val) => val,
+                None => return None,
+            };
+            Some(Message::CombineMessage(value1, value2))
+        },
     ));
 
     let _task_out = spawn(async move {
@@ -53,19 +75,4 @@ async fn main() {
     });
 
     main_task.await.unwrap();
-}
-
-fn config_func(input: Vec<Message>) -> Message {
-    let mut value1 = None;
-    let mut value2 = None;
-    for msg in input {
-        match msg {
-            Message::Message0(value) => value1 = Some(value),
-            Message::Message1(value) => value2 = Some(value),
-            _ => (),
-        }
-    }
-    let value1 = value1.expect("");
-    let value2 = value2.expect("");
-    Message::CombineMessage(value1, value2)
 }
