@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "./rsiot-channel-utils",
     "./rsiot-messages-core",
     "./rsiot-modbus-client",
     "./rsiot-modbus-client-config",
@@ -31,6 +32,7 @@ tracing-subscriber = { version = "0.3" }
 url = { version = "2.4" }
 
 async-task-utils = { path = "./libraries/async-task-utils" }
+rsiot-channel-utils = { path = "./rsiot-channel-utils" }
 rsiot-messages-core = { path = "./rsiot-messages-core" }
 rsiot-modbus-client = { path = "./rsiot-modbus-client" }
 rsiot-modbus-client-config = { path = "./rsiot-modbus-client-config" }

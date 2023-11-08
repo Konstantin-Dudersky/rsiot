@@ -995,6 +995,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "rsiot-channel-utils"
+version = "0.0.1"
+dependencies = [
+ "rsiot-messages-core",
+ "serde",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "rsiot-messages-core"
 version = "0.0.1"
 dependencies = [
