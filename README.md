@@ -2,32 +2,42 @@
 
 Опрос и управления устройствами:
 
-- Modbus slave (TCP, RTU)
+- [x] Modbus client (TCP, RTU)
 
-- OPC UA server
+  - [rsiot-modbus-client](./rsiot-modbus-client/README.md)
 
-- S7 (контроллеры Сименс)
+- [] OPC UA server
+
+- [] S7 (контроллеры Сименс)
 
 Отдача данных:
 
-- HTTP API
+- [] HTTP API
 
-- Websocket
+- [] Websocket
 
-- MQTT
+- [] MQTT
 
-- Modbus TCP master
+- [] Modbus TCP master
+
+- [] Telegram bot - отправка сообщений
 
 Передача сообщений через брокеры:
 
-- Redis
+- [x] Redis
+
+  - [rsiot-redis-publisher](./rsiot-redis-publisher/README.md) - публикация сообщений
+
+  - [rsiot-redis-subscriber](./rsiot-redis-subscriber/README.md) - подписка на сообщения
 
 Сохранение данных в БД:
 
-- TimescaleDB
+- [] TimescaleDB
+
+  - [rsiot-timescaledb-storing](./rsiot-timescaledb-storing/README.md)
 
 Построение интерфейса:
 
-- leptos
+- [] leptos
 
 Отдельные компоненты выполнены в виде асинхронных задач `tokio`. Взаимодействие через очереди сообщений `tokio::sync::mpsc`.
