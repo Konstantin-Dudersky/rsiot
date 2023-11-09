@@ -12,9 +12,9 @@ use tokio::{
 use tracing::{error, info};
 
 /// Компонент для фильтрации сообщений
-/// - `input` - поток сообщений `tokio::sync::mpsc::Receiver`
-/// - `output` - поток отфильтрованных сообщений `tokio::sync::mpsc::Sender`
-/// - `filter_fn` - функция типа `fn(TMessage) -> Option<TMessage>`
+/// - `input` - исходный поток сообщений
+/// - `output` - поток отфильтрованных сообщений
+/// - `filter_fn` - указатель на функцию `fn(TMessage) -> Option<TMessage>`
 pub async fn component_filter_message<TMessage>(
     mut input: Receiver<TMessage>,
     output: Sender<TMessage>,

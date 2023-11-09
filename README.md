@@ -6,7 +6,7 @@
 
   - [rsiot-modbus-client](./rsiot-modbus-client/README.md)
 
-- [] OPC UA server
+- [] OPC UA client
 
 - [] S7 (контроллеры Сименс)
 
@@ -32,7 +32,7 @@
 
 Сохранение данных в БД:
 
-- [] TimescaleDB
+- [x] TimescaleDB
 
   - [rsiot-timescaledb-storing](./rsiot-timescaledb-storing/README.md)
 

@@ -22,8 +22,8 @@ impl IMessage for Message {}
 async fn main() {
     tracing_subscriber::fmt().init();
 
-    let (original_send, original_rcv) = mpsc::channel::<Message>(128);
-    let (filtered_send, mut filtered_rcv) = mpsc::channel::<Message>(128);
+    let (origin, filter_input) = mpsc::channel::<Message>(128);
+    let (filter_output, mut end) = mpsc::channel::<Message>(128);
 
     let mut counter = 0.0;
     let _sim_task = spawn(async move {
@@ -31,19 +31,19 @@ async fn main() {
             let msg = Message::Message0(counter);
             counter += 1.0;
             info!("send msg: {:?}", msg);
-            original_send.send(msg).await.unwrap();
+            origin.send(msg).await.unwrap();
 
             let msg = Message::Message1(counter);
             info!("send msg: {:?}", msg);
-            original_send.send(msg).await.unwrap();
+            origin.send(msg).await.unwrap();
 
             sleep(Duration::from_secs(2)).await;
         }
     });
 
-    let main_task = spawn(component_filter_message(
-        original_rcv,
-        filtered_send,
+    let filter_task = spawn(component_filter_message(
+        filter_input,
+        filter_output,
         |msg| match msg {
             Message::Message0(_) => Some(msg),
             _ => None,
@@ -51,10 +51,10 @@ async fn main() {
     ));
 
     let _end_task = spawn(async move {
-        while let Some(msg) = filtered_rcv.recv().await {
+        while let Some(msg) = end.recv().await {
             info!("rcv msg: {:?}", msg);
         }
     });
 
-    main_task.await.unwrap();
+    filter_task.await.unwrap();
 }

@@ -10,3 +10,5 @@ enum Message {
 }
 
 impl IMessage for Message {}
+
+fn main() {}
