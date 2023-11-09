@@ -44,5 +44,5 @@ async fn main() {
         8020,
     ));
 
-    ws_task.await.unwrap().unwrap();
+    ws_task.await.unwrap();
 }

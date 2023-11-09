@@ -14,7 +14,7 @@
 
 - [ ] HTTP API
 
-- [ ] Websocket
+- [x] Websocket
 
   - [rsiot-websocket-server](./rsiot-websocket-server/README.md)
 
