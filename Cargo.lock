@@ -1111,10 +1111,12 @@ dependencies = [
  "futures-util",
  "rsiot-channel-utils",
  "rsiot-messages-core",
+ "serde",
  "tokio",
  "tokio-tungstenite",
  "tokio-util",
  "tracing",
+ "tracing-subscriber",
  "url",
 ]
 

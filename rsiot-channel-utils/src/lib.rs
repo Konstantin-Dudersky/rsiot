@@ -4,7 +4,7 @@ mod component_filter_message;
 mod component_mpsc_to_broadcast;
 mod component_mpsc_to_many_mpsc;
 
-pub use component_cache::{component_cache, create_cache};
+pub use component_cache::{component_cache, create_cache, CacheType};
 pub use component_combine_message::component_combine_message;
 pub use component_filter_message::component_filter_message;
 pub use component_mpsc_to_broadcast::component_mpsc_to_broadcast;

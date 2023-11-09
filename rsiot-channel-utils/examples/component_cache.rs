@@ -46,7 +46,7 @@ async fn main() {
     let _end_task = spawn(async move {
         loop {
             {
-                let lock = cache.lock().unwrap();
+                let lock = cache.lock().await;
                 info!("cache: {:?}", lock);
             }
             sleep(Duration::from_secs(5)).await;

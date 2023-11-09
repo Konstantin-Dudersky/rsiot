@@ -6,37 +6,61 @@ use tokio::{
 use tokio_util::sync::CancellationToken;
 use tracing::info;
 
-use rsiot_channel_utils::component_mpsc_to_broadcast;
+use rsiot_channel_utils::{
+    component_cache, component_mpsc_to_broadcast, create_cache,
+};
 use rsiot_messages_core::IMessage;
 
-use crate::{cancellable_task, Errors};
+use crate::Errors;
+
+use super::{
+    async_task_utils::cancellable_task,
+    handle_ws_connection::handle_ws_connection,
+};
 
 /// Компонент для подключения через websocket server.
 pub async fn component_websocket_server<TMessage>(
     cancel: CancellationToken,
-    input: mpsc::Receiver<TMessage>,
-    output: mpsc::Sender<TMessage>,
+    msgs_input: mpsc::Receiver<TMessage>,
+    _msgs_output: mpsc::Sender<TMessage>,
     ws_port: u16,
 ) -> Result<(), Errors>
 where
-    TMessage: IMessage,
+    TMessage: IMessage + 'static,
 {
     let addr = format!("0.0.0.0:{}", ws_port);
 
     let listener = create_tcp_listener(addr).await?;
 
-    let (tx_broadcast, mut _rx_broadcast) = broadcast::channel(128);
+    let (msgs_cache_output, msgs_broadcast_input) =
+        mpsc::channel::<TMessage>(1000);
+    let (msgs_broadcast_output, mut _rx_broadcast) =
+        broadcast::channel::<TMessage>(1000);
 
-    // получаем данные из redis и рассылаем потокам websocket
-    let future = component_mpsc_to_broadcast(input, tx_broadcast.clone());
+    let cache = create_cache();
+
+    // кэшируем данные
+    let future = component_cache(msgs_input, msgs_cache_output, cache.clone());
+    spawn(cancellable_task(future, cancel.clone()));
+
+    // распространяем данные через broadcast
+    let future = component_mpsc_to_broadcast(
+        msgs_broadcast_input,
+        msgs_broadcast_output.clone(),
+    );
     spawn(cancellable_task(future, cancel.clone()));
 
     // слушаем порт, при получении запроса создаем новое подключение WS
     while let Ok((stream, addr)) = listener.accept().await {
-        let future =
-            super::handle_ws_connection(stream, addr, tx_broadcast.subscribe());
+        let future = handle_ws_connection(
+            stream,
+            addr,
+            msgs_broadcast_output.subscribe(),
+            cache.clone(),
+        );
         spawn(cancellable_task(future, cancel.clone()));
     }
+
     Ok(())
 }
 

@@ -6,23 +6,23 @@
 
   - [rsiot-modbus-client](./rsiot-modbus-client/README.md)
 
-- [] OPC UA client
+- [ ] OPC UA client
 
-- [] S7 (контроллеры Сименс)
+- [ ] S7 (контроллеры Сименс)
 
 Отдача данных:
 
-- [] HTTP API
+- [ ] HTTP API
 
-- [] Websocket
+- [ ] Websocket
 
   - [rsiot-websocket-server](./rsiot-websocket-server/README.md)
 
-- [] MQTT
+- [ ] MQTT
 
-- [] Modbus TCP master
+- [ ] Modbus TCP master
 
-- [] Telegram bot - отправка сообщений
+- [ ] Telegram bot - отправка сообщений
 
 Передача сообщений через брокеры:
 
@@ -40,6 +40,6 @@
 
 Построение интерфейса:
 
-- [] leptos
+- [ ] leptos
 
 Отдельные компоненты выполнены в виде асинхронных задач `tokio`. Взаимодействие через очереди сообщений `tokio::sync::mpsc`.
