@@ -41,7 +41,8 @@ where
     let cache = create_cache::<TMessage>();
 
     // кэшируем данные
-    let future = component_cache(msgs_input, msgs_cache_output, cache.clone());
+    let future =
+        component_cache(msgs_input, Some(msgs_cache_output), cache.clone());
     spawn(cancellable_task(future, cancel.clone()));
 
     // распространяем данные через broadcast

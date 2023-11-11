@@ -4,55 +4,63 @@
 
 ### Опрос и управление устройствами
 
-#### [x] [rsiot-modbus-client](./rsiot-modbus-client/README.md) - Modbus client (TCP, RTU)
+#### [rsiot-modbus-client](./rsiot-modbus-client/README.md) - Modbus client (TCP, RTU)
 
 ![](./doc/component-modbus-client.svg)
 
-[README](./rsiot-modbus-client/README.md)
+#### OPC UA
 
-#### [ ] OPC UA
-
-#### [ ] S7 (контроллеры Сименс)
+#### S7 (контроллеры Сименс)
 
 ### Отдача данных
 
-#### [x] rsiot-websocket-server - Websocket Server
+#### [rsiot-websocket-server](./rsiot-websocket-server/README.md) - Websocket Server
 
 ![](./doc/component-websocket-server.svg)
 
-[README](./rsiot-websocket-server/README.md)
+#### HTTP API
 
-#### [ ] HTTP API
+#### MQTT
 
-#### [ ] MQTT
+#### Modbus TCP master
 
-#### [ ] Modbus TCP master
-
-#### [ ] Telegram bot - отправка сообщений
+#### Telegram bot - отправка сообщений
 
 ### Брокеры сообщений
 
-#### [x] rsiot-redis-publisher - публикация сообщений в Redis
+#### [rsiot-redis-publisher](./rsiot-redis-publisher/README.md) - публикация сообщений в Redis
 
 ![](./doc/component-redis-publisher.svg)
 
-[README](./rsiot-redis-publisher/README.md)
-
-#### [x] rsiot-redis-subscriber - получение данных из Redis
+#### [rsiot-redis-subscriber](./rsiot-redis-subscriber/README.md) - получение данных из Redis
 
 ![](./doc/component-redis-subscriber.svg)
 
-[README](./rsiot-redis-subscriber/README.md)
-
 ### Сохранение данных в базе
 
-#### [x] rsiot-timescaledb-storing - TimescaleDB
+#### [rsiot-timescaledb-storing](./rsiot-timescaledb-storing/README.md) - TimescaleDB
 
-[README](./rsiot-timescaledb-storing/README.md)
+![](./doc/component-timescaledb-storing.svg)
 
 ### Построение интерфейса
 
-#### [ ] leptos
+#### leptos
+
+### Служебные компоненты
+
+#### component-cache
+
+Сохраняет все поступающие сообщения в коллекции, и передает исходное сообещение на выход
+
+![](./doc/component-cache.svg)
+
+#### component_combine
+
+#### component_filter
+
+#### component_mpsc_to_broadcast
+
+#### component_mpsc_to_many_mpsc
 
 ## Описание
 

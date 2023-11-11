@@ -5,7 +5,7 @@ use tokio::{
     time::{sleep, Duration},
 };
 
-use rsiot_channel_utils::{component_cache, create_cache};
+use rsiot_channel_utils::component_delay;
 use rsiot_messages_core::IMessage;
 use tracing::info;
 
@@ -22,32 +22,30 @@ impl IMessage for Message {}
 async fn main() {
     tracing_subscriber::fmt().init();
 
-    let cache = create_cache::<Message>();
-
-    let (msgs_origin, msgs_cache_input) = mpsc::channel::<Message>(1000);
+    let (stream_origin, stream_delay_input) = mpsc::channel::<Message>(100);
+    let (stream_delay_output, mut stream_end) = mpsc::channel::<Message>(100);
 
     let mut counter = 0.0;
     let _task_origin = spawn(async move {
         loop {
             let msg = Message::Message0(counter);
+            stream_origin.send(msg).await.unwrap();
             counter += 1.0;
-            msgs_origin.send(msg).await.unwrap();
-            sleep(Duration::from_secs(2)).await;
+            sleep(Duration::from_millis(10)).await;
         }
     });
 
-    let cache_task =
-        spawn(component_cache(msgs_cache_input, None, cache.clone()));
+    let main_task = spawn(component_delay(
+        stream_delay_input,
+        stream_delay_output,
+        Duration::from_secs(5),
+    ));
 
     let _end_task = spawn(async move {
-        loop {
-            {
-                let lock = cache.lock().await;
-                info!("cache: {:?}", lock);
-            }
-            sleep(Duration::from_secs(5)).await;
+        while let Some(msg) = stream_end.recv().await {
+            info!("Dalayed message: {:?}", msg);
         }
     });
 
-    cache_task.await.unwrap();
+    main_task.await.unwrap();
 }

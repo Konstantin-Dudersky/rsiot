@@ -17,7 +17,7 @@ pub type CacheType<TMessage> = Arc<Mutex<HashMap<String, TMessage>>>;
 /// `Arc<Mutex<HashMap<String, TMessage>>>`
 pub async fn component_cache<TMessage>(
     mut input: mpsc::Receiver<TMessage>,
-    output: mpsc::Sender<TMessage>,
+    output: Option<mpsc::Sender<TMessage>>,
     cache: CacheType<TMessage>,
 ) where
     TMessage: IMessage,
@@ -27,7 +27,9 @@ pub async fn component_cache<TMessage>(
             let mut lock = cache.lock().await;
             lock.insert(msg.key().clone(), msg.clone());
         }
-        output.send(msg).await.unwrap();
+        if let Some(output) = &output {
+            output.send(msg).await.unwrap()
+        }
     }
 }
 
