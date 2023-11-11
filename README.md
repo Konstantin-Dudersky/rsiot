@@ -1,49 +1,59 @@
 Компоненты для построения системы сбора данных
 
-Опрос и управления устройствами:
+## Компоненты
 
-- [x] Modbus client (TCP, RTU)
+### Опрос и управление устройствами
 
-  - [rsiot-modbus-client](./rsiot-modbus-client/README.md)
+#### [x] [rsiot-modbus-client](./rsiot-modbus-client/README.md) - Modbus client (TCP, RTU)
 
-- [ ] OPC UA client
+![](./doc/component-modbus-client.svg)
 
-- [ ] S7 (контроллеры Сименс)
+[README](./rsiot-modbus-client/README.md)
 
-Отдача данных:
+#### [ ] OPC UA
 
-- [ ] HTTP API
+#### [ ] S7 (контроллеры Сименс)
 
-- [x] Websocket
+### Отдача данных
 
-  - [rsiot-websocket-server](./rsiot-websocket-server/README.md)
+#### [x] rsiot-websocket-server - Websocket Server
 
-- [ ] MQTT
+![](./doc/component-websocket-server.svg)
 
-- [ ] Modbus TCP master
+[README](./rsiot-websocket-server/README.md)
 
-- [ ] Telegram bot - отправка сообщений
+#### [ ] HTTP API
 
-Передача сообщений через брокеры:
+#### [ ] MQTT
 
-- [x] Redis
+#### [ ] Modbus TCP master
 
-  - [rsiot-redis-publisher](./rsiot-redis-publisher/README.md) - публикация сообщений
+#### [ ] Telegram bot - отправка сообщений
 
-  - [rsiot-redis-subscriber](./rsiot-redis-subscriber/README.md) - подписка на сообщения
+### Брокеры сообщений
 
-Сохранение данных в БД:
+#### [x] rsiot-redis-publisher - публикация сообщений в Redis
 
-- [x] TimescaleDB
+![](./doc/component-redis-publisher.svg)
 
-  - [rsiot-timescaledb-storing](./rsiot-timescaledb-storing/README.md)
+[README](./rsiot-redis-publisher/README.md)
 
-Построение интерфейса:
+#### [x] rsiot-redis-subscriber - получение данных из Redis
 
-- [ ] leptos
+![](./doc/component-redis-subscriber.svg)
 
-## Диаграммы
+[README](./rsiot-redis-subscriber/README.md)
 
-![](./doc/diagrams.svg)
+### Сохранение данных в базе
+
+#### [x] rsiot-timescaledb-storing - TimescaleDB
+
+[README](./rsiot-timescaledb-storing/README.md)
+
+### Построение интерфейса
+
+#### [ ] leptos
+
+## Описание
 
 Отдельные компоненты выполнены в виде асинхронных задач `tokio`. Взаимодействие через очереди сообщений `tokio::sync::mpsc`.
