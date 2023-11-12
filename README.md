@@ -12,6 +12,10 @@
 
 #### S7 (контроллеры Сименс)
 
+#### [rsiot-http-client]()
+
+Отправка и получение данных на внешний HTTP API сервер
+
 ### Отдача данных
 
 #### [rsiot-http-server](./rsiot-http-server/README.md)

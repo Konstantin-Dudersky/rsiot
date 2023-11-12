@@ -1,0 +1,6 @@
+[package]
+name = "rsiot-http-client"
+version = "0.0.1"
+edition = "2021"
+
+[dependencies]

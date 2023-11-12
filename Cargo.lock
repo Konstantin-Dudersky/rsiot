@@ -1162,6 +1162,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "rsiot-http-client"
+version = "0.0.1"
+
+[[package]]
+name = "rsiot-http-client-config"
+version = "0.1.0"
+
+[[package]]
 name = "rsiot-http-server"
 version = "0.0.1"
 dependencies = [

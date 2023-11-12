@@ -62,7 +62,7 @@ pub async fn save_row_in_db(
 ) -> Result<(), Error> {
     trace!("Save row in database: {:?}", row);
     let _ = query!(
-        r#" 
+        r#"
 INSERT INTO raw
 VALUES ($1, $2, $3, $4, $5::agg_type, $6)
 ON CONFLICT (ts, entity, attr, agg) DO UPDATE
