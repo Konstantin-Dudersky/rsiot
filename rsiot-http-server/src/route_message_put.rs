@@ -16,7 +16,6 @@ where
     TMessage: IMessage,
 {
     let msg = TMessage::from_json(&body)?;
-    info!("Message: {:?}", msg);
     state.stream_output.send(msg).await?;
     Ok(())
 }

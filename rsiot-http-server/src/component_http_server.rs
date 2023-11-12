@@ -6,11 +6,15 @@ use tokio::{
     sync::mpsc,
     time::{sleep, Duration},
 };
-use tower_http::cors::CorsLayer;
+use tower_http::{
+    cors::CorsLayer,
+    trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
+    LatencyUnit,
+};
+use tracing::{error, info, Level};
 
 use rsiot_channel_utils::{component_cache, create_cache};
 use rsiot_messages_core::IMessage;
-use tracing::{error, info};
 
 use crate::{
     error::Error, route_message_get::route_message_get,
@@ -57,11 +61,23 @@ where
     let url = format!("0.0.0.0:{}", port);
     let url = url.parse()?;
 
+    let layer_cors = CorsLayer::permissive();
+
+    let layer_trace = TraceLayer::new_for_http()
+        .make_span_with(DefaultMakeSpan::new().level(Level::DEBUG))
+        .on_request(DefaultOnRequest::new().level(Level::DEBUG))
+        .on_response(
+            DefaultOnResponse::new()
+                .level(Level::DEBUG)
+                .latency_unit(LatencyUnit::Micros),
+        );
+
     let app = routing::Router::new()
         .route("/message/:id", routing::get(route_message_get::<TMessage>))
         .route("/message", routing::put(route_message_put::<TMessage>))
         .with_state(shared_state)
-        .layer(CorsLayer::permissive());
+        .layer(layer_cors)
+        .layer(layer_trace);
 
     axum::Server::bind(&url)
         .serve(app.into_make_service())

@@ -8,6 +8,7 @@ use tokio::{
 use rsiot_http_server::component_http_server;
 use rsiot_messages_core::IMessage;
 use tracing::info;
+use tracing_subscriber::filter::LevelFilter;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 enum Message {
@@ -20,7 +21,9 @@ impl IMessage for Message {}
 
 #[main]
 async fn main() {
-    tracing_subscriber::fmt().init();
+    tracing_subscriber::fmt()
+        .with_max_level(LevelFilter::DEBUG)
+        .init();
 
     let (stream_origin, stream_http_input) = mpsc::channel::<Message>(100);
     let (stream_http_output, mut stream_end) = mpsc::channel::<Message>(100);

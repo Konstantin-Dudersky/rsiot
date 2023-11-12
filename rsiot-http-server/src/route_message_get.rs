@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use axum::extract;
-use tracing::info;
+use tracing::trace;
 
 use rsiot_messages_core::IMessage;
 
@@ -15,7 +15,6 @@ pub async fn route_message_get<TMessage>(
 where
     TMessage: IMessage,
 {
-    info!("Get message key: {key}");
     let msg;
     {
         let lock = cache.cache.lock().await;
@@ -23,6 +22,5 @@ where
     }
     let msg = msg.ok_or(Error::UnknownMessageKey(key))?;
     let json = msg.to_json()?;
-    info!("Answer: {:?}", json);
     return Ok(json);
 }
