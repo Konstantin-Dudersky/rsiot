@@ -1,13 +1,35 @@
 Утилиты для работы очереди сообщений
 
-- component_cache - сохранение сообщений в кеше
+## component_cache
 
-- component_combine_message - сборка нескольких сообщений в одно
+Сохранение сообщений в кеше. Входящие сообщения могут сразу пересылаться на выход.
 
-- component_delay - перенаправление сообщений с задержкой
+![](../doc/component-cache.svg)
 
-- component_filter_message - фильтрация сообщений
+## component_combine_message
 
-- component_mpsc_to_broadcast - преобразование mpsc::Receiver в broadcast::Sender
+Сборка нескольких сообщений в одно
 
-- component_mpsc_to_many_mpsc - преобразование одного mpsc::Receiver в несколько mpsc::Sender
+## component_delay
+
+Перенаправление сообщений с задержкой. Поступающие сообщения сохраняются в кеше, периодически значения из кеша пересылаются на выход.
+
+![](../doc/component-delay.svg)
+
+Пример использования:
+
+- источник генерирует сообщения быстрее, чем потребитель может обработать
+
+- для одновременного обновления данных в интерфейсе пользователя
+
+## component_filter
+
+Фильтрация сообщений
+
+## component_mpsc_to_broadcast
+
+Преобразование mpsc::Receiver в broadcast::Sender
+
+## component_mpsc_to_many_mpsc
+
+Преобразование одного mpsc::Receiver в несколько mpsc::Sender
