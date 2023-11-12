@@ -14,11 +14,17 @@
 
 ### Отдача данных
 
-#### [rsiot-websocket-server](./rsiot-websocket-server/README.md) - Websocket Server
+#### [rsiot-http-server](./rsiot-http-server/README.md)
+
+Получение и ввод данных через HTTP API
+
+![](./doc/component-http-server.svg)
+
+#### [rsiot-websocket-server](./rsiot-websocket-server/README.md)
+
+Получение и ввод данных через Websocket Server
 
 ![](./doc/component-websocket-server.svg)
-
-#### HTTP API
 
 #### MQTT
 
@@ -46,7 +52,7 @@
 
 #### leptos
 
-### Служебные компоненты
+### [Служебные компоненты](./rsiot-channel-utils/README.md)
 
 #### component_cache
 
