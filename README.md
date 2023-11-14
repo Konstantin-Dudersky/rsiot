@@ -84,9 +84,15 @@
 
 ## Публикация версии
 
+Изменяем номер версии проекта:
+
 ```bash
 cargo ws version patch --no-git-push
 # или major, minor, patch
+```
 
+Публикуем на `crates.io`:
+
+```bash
 cargo ws publish --from-git
 ```
