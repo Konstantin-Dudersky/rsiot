@@ -52,15 +52,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "async-task-utils"
-version = "0.0.1"
-dependencies = [
- "tokio",
- "tokio-util",
- "tracing",
-]
-
-[[package]]
 name = "async-trait"
 version = "0.1.74"
 source = "registry+https://github.com/rust-lang/crates.io-index"
