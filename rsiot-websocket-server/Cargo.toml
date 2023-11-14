@@ -2,6 +2,8 @@
 name = "rsiot-websocket-server"
 version = "0.0.2"
 edition = "2021"
+description = "Websocket-сервер"
+license = "MIT"
 
 
 [dependencies]

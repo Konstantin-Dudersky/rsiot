@@ -2,6 +2,8 @@
 name = "rsiot-http-client-config"
 version = "0.0.2"
 edition = "2021"
+description = "Конфигурация HTTP-клиента"
+license = "MIT"
 
 
 [dependencies]

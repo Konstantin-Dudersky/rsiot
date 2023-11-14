@@ -2,7 +2,8 @@
 name = "rsiot-messages-core"
 version = "0.0.2"
 edition = "2021"
-
+description = "Базовые трейты для реализации типа сообщения"
+license = "MIT"
 
 [dependencies]
 serde = { workspace = true }

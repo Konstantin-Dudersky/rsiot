@@ -2,7 +2,8 @@
 name = "rsiot-timescaledb-storing"
 version = "0.0.2"
 edition = "2021"
-
+description = "Сохранение данных в TimescaleDB"
+license = "MIT"
 
 [dependencies]
 chrono = { workspace = true }

@@ -2,6 +2,8 @@
 name = "rsiot-redis-publisher"
 version = "0.0.2"
 edition = "2021"
+description = "Публикация сообщений в Redis"
+license = "MIT"
 
 
 [dependencies]

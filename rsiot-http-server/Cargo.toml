@@ -2,6 +2,8 @@
 name = "rsiot-http-server"
 version = "0.0.2"
 edition = "2021"
+description = "HTTP-сервер"
+license = "MIT"
 
 [dependencies]
 axum = { workspace = true }

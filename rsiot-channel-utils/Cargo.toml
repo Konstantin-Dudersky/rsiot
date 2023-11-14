@@ -2,6 +2,8 @@
 name = "rsiot-channel-utils"
 version = "0.0.2"
 edition = "2021"
+description = "Вспомогательные компоненты"
+license = "MIT"
 
 [dependencies]
 tokio = { workspace = true }
