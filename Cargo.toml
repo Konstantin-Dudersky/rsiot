@@ -11,7 +11,6 @@ members = [
     "./rsiot-redis-subscriber",
     "./rsiot-timescaledb-storing",
     "./rsiot-websocket-server",
-    "./libraries/async-task-utils",
 ]
 resolver = "2"
 
@@ -41,16 +40,11 @@ tracing = { version = "0.1" }
 tracing-subscriber = { version = "0.3" }
 url = { version = "2.4" }
 
+rsiot-channel-utils = { version = "0.0.1" }
+rsiot-messages-core = { version = "0.0.1" }
+rsiot-modbus-client-config = { version = "0.0.1" }
 
-async-task-utils = { path = "./libraries/async-task-utils" }
+[patch.crates-io]
 rsiot-channel-utils = { path = "./rsiot-channel-utils" }
 rsiot-messages-core = { path = "./rsiot-messages-core" }
-rsiot-modbus-client = { path = "./rsiot-modbus-client" }
 rsiot-modbus-client-config = { path = "./rsiot-modbus-client-config" }
-rsiot-redis-publisher = { path = "./rsiot-redis-publisher" }
-rsiot-redis-subscriber = { path = "./rsiot-redis-subscriber" }
-rsiot-timescaledb-storing = { path = "./rsiot-timescaledb-storing" }
-rsiot-websocket-server = { path = "./rsiot-websocket-server" }
-
-# rsiot-modbus-client = { version = "0.0" }
-# rsiot-modbus-client-config = { version = "0.0" }
