@@ -1143,7 +1143,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-channel-utils"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "rsiot-messages-core",
  "serde",
@@ -1154,18 +1154,18 @@ dependencies = [
 
 [[package]]
 name = "rsiot-http-client"
-version = "0.0.1"
+version = "0.0.2"
 
 [[package]]
 name = "rsiot-http-client-config"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "url",
 ]
 
 [[package]]
 name = "rsiot-http-server"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "axum",
  "hyper",
@@ -1181,7 +1181,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-messages-core"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "serde",
  "serde_json",
@@ -1189,7 +1189,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-modbus-client"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "rsiot-messages-core",
  "rsiot-modbus-client-config",
@@ -1203,14 +1203,14 @@ dependencies = [
 
 [[package]]
 name = "rsiot-modbus-client-config"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "url",
 ]
 
 [[package]]
 name = "rsiot-redis-publisher"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "redis",
  "rsiot-messages-core",
@@ -1223,7 +1223,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-redis-subscriber"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "futures-util",
  "redis",
@@ -1237,7 +1237,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-timescaledb-storing"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "chrono",
  "rsiot-messages-core",
@@ -1251,7 +1251,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-websocket-server"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "futures-util",
  "rsiot-channel-utils",

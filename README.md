@@ -85,5 +85,8 @@
 ## Публикация версии
 
 ```bash
-cargo ws publish patch (major, minor)
+cargo ws version patch --no-git-push
+# или major, minor, patch
+
+cargo ws publish --from-git
 ```

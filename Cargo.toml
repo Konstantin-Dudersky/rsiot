@@ -40,9 +40,9 @@ tracing = { version = "0.1" }
 tracing-subscriber = { version = "0.3" }
 url = { version = "2.4" }
 
-rsiot-channel-utils = { version = "0.0.1" }
-rsiot-messages-core = { version = "0.0.1" }
-rsiot-modbus-client-config = { version = "0.0.1" }
+rsiot-channel-utils = { version = "0.0.2" }
+rsiot-messages-core = { version = "0.0.2" }
+rsiot-modbus-client-config = { version = "0.0.2" }
 
 [patch.crates-io]
 rsiot-channel-utils = { path = "./rsiot-channel-utils" }
