@@ -1,25 +1,38 @@
-use std::time::Duration;
+use std::{collections::HashMap, time::Duration};
 
 use serde::{Deserialize, Serialize};
-use tokio::{main, spawn};
-use tracing::{error, level_filters::LevelFilter};
+use serde_json::from_str;
+use tokio::{main, spawn, sync::mpsc};
+use tracing::{info, level_filters::LevelFilter};
 use url::Url;
 
 use rsiot_http_client::component_http_client;
 use rsiot_http_client_config::{
-    ConnectionConfig, HttpClientConfig, RequestCyclic, RequestOnEvent,
-    RequestParam, RequestParamKind,
+    ConnectionConfig, HttpClientConfig, RequestOnEvent, RequestParam,
+    RequestPeriodic,
 };
 use rsiot_messages_core::IMessage;
 
+//------------------------------------------------------------------------------
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 enum Message {
-    Message0(f64),
-    Message1(f64),
-    CombineMessage(f64, f64),
+    HttpMethodsGet(HttpMethodsGet),
 }
 
 impl IMessage for Message {}
+
+//------------------------------------------------------------------------------
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+struct HttpMethodsGet {
+    args: HashMap<String, String>,
+    headers: HashMap<String, String>,
+    origin: String,
+    url: String,
+}
+
+//------------------------------------------------------------------------------
 
 #[main]
 async fn main() {
@@ -32,24 +45,27 @@ async fn main() {
             url: Url::parse("http://127.0.0.1:80").unwrap(),
         },
         requests_on_event: vec![RequestOnEvent {}],
-        requests_cyclic: vec![RequestCyclic {
-            cycle: Duration::from_secs(5),
-            request_params: RequestParam {
-                endpoint: "get1".to_string(),
-                kind: RequestParamKind::Get,
-            },
+        requests_periodic: vec![RequestPeriodic {
+            period: Duration::from_secs(5),
+            request_param: RequestParam::Get("get".to_string()),
             on_success: |body| {
-                println!("{:?}", body);
-                Vec::<Message>::new()
+                let res = from_str::<HttpMethodsGet>(&body).unwrap();
+                vec![Message::HttpMethodsGet(res)]
             },
-            on_failure: || {
-                error!("error");
-                vec![]
-            },
+            on_failure: || vec![],
         }],
     };
 
-    let task_http = spawn(component_http_client(config));
+    let (stream_client_out, mut stream_end) = mpsc::channel::<Message>(10);
+
+    let task_http =
+        spawn(component_http_client(None, Some(stream_client_out), config));
+
+    let _task_end = spawn(async move {
+        while let Some(msg) = stream_end.recv().await {
+            info!("New output message: {:?}", msg);
+        }
+    });
 
     task_http.await.unwrap();
 }
