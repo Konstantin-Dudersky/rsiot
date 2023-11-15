@@ -8,3 +8,5 @@ license = "MIT"
 
 [dependencies]
 url = { workspace = true }
+
+rsiot-messages-core = { workspace = true }

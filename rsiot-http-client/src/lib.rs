@@ -1,14 +1,18 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+use rsiot_http_client_config::HttpClientConfig;
+use rsiot_messages_core::IMessage;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+pub async fn component_http_client<TMessage>(
+    config: HttpClientConfig<TMessage>,
+) -> ()
+where
+    TMessage: IMessage,
+{
+    let body = reqwest::get("http://localhost/get")
+        .await
+        .unwrap()
+        .text()
+        .await
+        .unwrap();
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+    println!("body = {:?}", body);
 }

@@ -2,6 +2,6 @@
 
 use url::Url;
 
-struct ConnectionConfig {
-    url: Url,
+pub struct ConnectionConfig {
+    pub url: Url,
 }
