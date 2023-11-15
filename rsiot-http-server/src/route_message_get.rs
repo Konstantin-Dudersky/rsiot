@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
 use axum::extract;
-use tracing::trace;
 
 use rsiot_messages_core::IMessage;
 

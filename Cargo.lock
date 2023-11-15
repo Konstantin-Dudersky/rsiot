@@ -1350,6 +1350,8 @@ dependencies = [
  "rsiot-messages-core",
  "serde",
  "tokio",
+ "tracing",
+ "tracing-subscriber",
  "url",
 ]
 
@@ -1357,6 +1359,7 @@ dependencies = [
 name = "rsiot-http-client-config"
 version = "0.0.2"
 dependencies = [
+ "http",
  "rsiot-messages-core",
  "url",
 ]
