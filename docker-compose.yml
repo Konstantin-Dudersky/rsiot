@@ -1,0 +1,32 @@
+version: "3.8"
+name: rsiot-dev
+
+services:
+  timescaledb:
+    container_name: timescaledb
+    hostname: timescaledb
+    image: timescale/timescaledb:2.12.2-pg15
+    command: postgres
+      -c config_file=/etc/postgresql/postgresql.conf
+      -c hba_file=/etc/postgresql/pg_hba.conf
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    profiles:
+      - "dev"
+    volumes:
+      - ./rsiot-timescaledb-config/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./rsiot-timescaledb-config/pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - ./rsiot-timescaledb-config/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # для тестирования http-client
+  httpbin:
+    container_name: httpbin
+    hostname: httpbin
+    image: kennethreitz/httpbin
+    ports:
+      - "80:80"
+    profiles:
+      - "dev"

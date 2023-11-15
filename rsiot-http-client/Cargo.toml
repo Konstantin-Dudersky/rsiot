@@ -8,6 +8,7 @@ license = "MIT"
 [dependencies]
 reqwest = { workspace = true }
 tokio = { workspace = true }
+url = { workspace = true }
 
 rsiot-http-client-config = { workspace = true }
 rsiot-messages-core = { workspace = true }

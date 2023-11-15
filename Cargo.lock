@@ -1350,6 +1350,7 @@ dependencies = [
  "rsiot-messages-core",
  "serde",
  "tokio",
+ "url",
 ]
 
 [[package]]

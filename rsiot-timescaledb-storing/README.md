@@ -4,11 +4,7 @@
 
 ## Разработка
 
-Запустить тестовую базу данных:
-
-```bash
-docker compose -f rsiot-timescaledb-storing/docker-compose.yml up -d
-```
+Запустить тестовую базу данных из файла docker compose - см README в корне
 
 Задать переменную окружения в файле .env:
 

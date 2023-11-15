@@ -5,6 +5,6 @@ pub enum RequestKind {
 }
 
 pub struct Request {
-    endpoint: String,
-    kind: RequestKind,
+    pub endpoint: String,
+    pub kind: RequestKind,
 }
