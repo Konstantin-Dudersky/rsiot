@@ -16,6 +16,10 @@
 
 Отправка и получение данных на внешний HTTP API сервер
 
+#### Websocket client
+
+https://github.com/crossbario/autobahn-testsuite
+
 ### Отдача данных
 
 #### [rsiot-http-server](./rsiot-http-server/README.md)

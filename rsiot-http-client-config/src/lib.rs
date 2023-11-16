@@ -12,3 +12,4 @@ pub use request_on_event::RequestOnEvent;
 pub use request_param::RequestParam;
 pub use request_periodic::RequestPeriodic;
 pub use response::Response;
+pub use types::{CbkOnFailure, CbkOnSuccess};

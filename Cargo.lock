@@ -1357,6 +1357,7 @@ name = "rsiot-http-client"
 version = "0.0.2"
 dependencies = [
  "reqwest",
+ "rsiot-channel-utils",
  "rsiot-http-client-config",
  "rsiot-messages-core",
  "serde",

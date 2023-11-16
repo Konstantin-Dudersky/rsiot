@@ -7,12 +7,17 @@ use crate::{
     types::{CbkOnFailure, CbkOnSuccess},
 };
 
+#[derive(Clone)]
 pub struct RequestPeriodic<TMessage>
 where
     TMessage: IMessage,
 {
+    /// Периодичность вызова
     pub period: Duration,
+    /// Параметры запроса
     pub request_param: RequestParam,
+    /// Функция обработки корректного ответа
     pub on_success: CbkOnSuccess<TMessage>,
+    /// Функция обработки некорректного ответа
     pub on_failure: CbkOnFailure<TMessage>,
 }

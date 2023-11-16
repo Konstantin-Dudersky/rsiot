@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum RequestParam {
     /// (endpoint)
     Get(String),

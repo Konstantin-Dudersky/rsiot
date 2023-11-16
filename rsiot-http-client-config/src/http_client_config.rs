@@ -12,7 +12,7 @@ where
     /// Параметры подключения
     pub connection_config: ConnectionConfig,
     /// Запросы, которые формируются на основе входящих сообщений
-    pub requests_on_event: Vec<RequestOnEvent>,
+    pub requests_on_event: Vec<RequestOnEvent<TMessage>>,
     /// Периодические запросы
     pub requests_periodic: Vec<RequestPeriodic<TMessage>>,
 }
