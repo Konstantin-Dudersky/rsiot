@@ -11,6 +11,7 @@ members = [
     "./rsiot-redis-subscriber",
     "./rsiot-timescaledb-storing",
     "./rsiot-websocket-server",
+    "./rsiot-websocket-client",
 ]
 resolver = "2"
 

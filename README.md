@@ -12,13 +12,13 @@
 
 #### S7 (контроллеры Сименс)
 
-#### [rsiot-http-client]()
+#### [rsiot-http-client](./rsiot-http-client/README.md)
 
 Отправка и получение данных на внешний HTTP API сервер
 
-#### Websocket client
+#### [rsiot-websocket-client](./rsiot-websocket-client/README.md)
 
-https://github.com/crossbario/autobahn-testsuite
+Получение и отправка на внешний сервер Websocket
 
 ### Отдача данных
 

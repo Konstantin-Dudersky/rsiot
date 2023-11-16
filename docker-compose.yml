@@ -30,3 +30,14 @@ services:
       - "80:80"
     profiles:
       - "dev"
+
+  # для тестирования websocket
+  websocket-client-testing:
+    container_name: websocket-client-testing
+    hostname: websocket-client-testing
+    image: crossbario/autobahn-testsuite
+    ports:
+      - "9001:9001"
+    profiles:
+      - "dev"
+    command: wstest -m broadcastserver -w ws://localhost:9001

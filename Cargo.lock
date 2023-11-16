@@ -1464,6 +1464,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "rsiot-websocket-client"
+version = "0.0.0"
+dependencies = [
+ "futures-util",
+ "rsiot-channel-utils",
+ "rsiot-messages-core",
+ "serde",
+ "tokio",
+ "tokio-tungstenite",
+ "tracing",
+]
+
+[[package]]
 name = "rsiot-websocket-server"
 version = "0.0.2"
 dependencies = [
