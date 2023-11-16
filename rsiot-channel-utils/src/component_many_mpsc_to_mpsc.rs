@@ -2,6 +2,7 @@ use tokio::{spawn, sync::mpsc};
 
 use rsiot_messages_core::IMessage;
 
+/// Компонент для объединения нескольких потоков в один
 pub async fn component_many_mpsc_to_mpsc<TMessage>(
     streams_input: Vec<mpsc::Receiver<TMessage>>,
     stream_output: mpsc::Sender<TMessage>,
