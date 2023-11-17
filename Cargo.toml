@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "./rsiot-channel-utils",
+    "./rsiot-component-core",
     "./rsiot-http-client",
     "./rsiot-http-client-config",
     "./rsiot-http-server",
@@ -12,6 +13,7 @@ members = [
     "./rsiot-timescaledb-storing",
     "./rsiot-websocket-server",
     "./rsiot-websocket-client",
+
 ]
 resolver = "2"
 
@@ -43,12 +45,14 @@ tracing-subscriber = { version = "0.3" }
 url = { version = "2.4" }
 
 rsiot-channel-utils = { version = "0.0.2" }
+rsiot-component-core = { version = "0.0.2" }
 rsiot-http-client-config = { version = "0.0.2" }
 rsiot-messages-core = { version = "0.0.2" }
 rsiot-modbus-client-config = { version = "0.0.2" }
 
 [patch.crates-io]
 rsiot-channel-utils = { path = "./rsiot-channel-utils" }
+rsiot-component-core = { path = "./rsiot-component-core" }
 rsiot-http-client-config = { path = "./rsiot-http-client-config" }
 rsiot-messages-core = { path = "./rsiot-messages-core" }
 rsiot-modbus-client-config = { path = "./rsiot-modbus-client-config" }

@@ -1,0 +1,10 @@
+[package]
+name = "rsiot-component-core"
+version = "0.0.2"
+edition = "2021"
+
+
+[dependencies]
+tokio = { workspace = true }
+
+rsiot-messages-core = { workspace = true }
