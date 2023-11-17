@@ -108,3 +108,7 @@ cargo ws version patch --no-git-push
 ```bash
 cargo ws publish --from-git
 ```
+
+## Идеи для улучшения
+
+TODO - заменить указатели функций на трейты Fn
