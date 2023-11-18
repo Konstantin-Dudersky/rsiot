@@ -5,6 +5,7 @@ edition = "2021"
 
 
 [dependencies]
+futures = { version = "*" }
 tokio = { workspace = true }
 
 rsiot-messages-core = { workspace = true }

@@ -28,54 +28,46 @@ pub async fn component_inject_periodic<TMessage, TFnPeriodic>(
     }
 }
 
-pub struct InjectPeriodic<TMessage> {
-    stream_input: Option<StreamInput<TMessage>>,
-    stream_output: Option<StreamOutput<TMessage>>,
-    config: fn() -> Vec<TMessage>,
-    period: Duration,
-}
-
-impl<TMessage> InjectPeriodic<TMessage> {
-    pub fn new(config: fn() -> Vec<TMessage>, period: Duration) -> Box<Self> {
-        Self {
-            stream_input: None,
-            stream_output: None,
-            config,
-            period,
+/// Компонент для периодического генерирования сообщений
+pub async fn component_inject_periodic2<TMessage, TFnPeriodic>(
+    input: Option<StreamInput<TMessage>>,
+    mut output: Option<StreamOutput<TMessage>>,
+    mut config: CompInjectPeriodicConfig<TMessage, TFnPeriodic>,
+) where
+    TMessage: IMessage,
+    TFnPeriodic: FnMut() -> Vec<TMessage>,
+{
+    let stream_output = output.take().unwrap();
+    loop {
+        let begin = Instant::now();
+        let msgs = (config.fn_periodic)();
+        for msg in msgs {
+            stream_output.send(msg).await.unwrap();
         }
-        .into()
+        let time_to_sleep = config.period - begin.elapsed();
+        sleep(time_to_sleep).await;
     }
 }
 
-impl<TMessage> IComponent<TMessage> for InjectPeriodic<TMessage>
+#[derive(Clone)]
+pub struct CompInjectPeriodicConfig<TMessage, TFnPeriodic>
+where
+    TMessage: IMessage,
+    TFnPeriodic: FnMut() -> Vec<TMessage>,
+{
+    pub period: Duration,
+    pub fn_periodic: TFnPeriodic,
+}
+
+use rsiot_component_core::Component;
+
+pub fn create_inject_periodic<TMessage, TFnPeriodic>(
+    config: CompInjectPeriodicConfig<TMessage, TFnPeriodic>,
+) -> Box<Component<TMessage, CompInjectPeriodicConfig<TMessage, TFnPeriodic>>>
 where
     TMessage: IMessage + 'static,
+    TFnPeriodic: FnMut() -> Vec<TMessage> + Send + 'static,
 {
-    fn set_stream_input(&mut self, stream_input: StreamInput<TMessage>) {
-        self.stream_input = Some(stream_input);
-    }
-
-    fn set_stream_output(&mut self, stream_output: StreamOutput<TMessage>) {
-        self.stream_output = Some(stream_output);
-    }
-
-    fn spawn(&mut self) -> tokio::task::JoinHandle<()> {
-        let config = self.config.clone();
-        let period = self.period.clone();
-        let stream_output = self.stream_output.take().unwrap();
-        spawn(async move {
-            loop {
-                let begin = Instant::now();
-                let msgs = (config)();
-                for msg in msgs {
-                    let res = stream_output.send(msg).await;
-                    if let Err(err) = res {
-                        error!("Send error: {:?}", err);
-                    }
-                }
-                let time_to_sleep = period - begin.elapsed();
-                sleep(time_to_sleep).await;
-            }
-        })
-    }
+    let component = Component::new(config, component_inject_periodic2);
+    Box::new(component)
 }

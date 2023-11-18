@@ -3,8 +3,8 @@ use tokio::sync::mpsc;
 use rsiot_messages_core::IMessage;
 
 use crate::{
-    icomponent::IComponent,
     types::{StreamInput, StreamOutput},
+    {Component, IComponent},
 };
 
 struct ComponentPipe<TMessage> {
@@ -17,7 +17,10 @@ pub struct ComponentPipeBuilder<TMessage> {
     next_receive: Option<StreamInput<TMessage>>,
 }
 
-impl<TMessage> ComponentPipeBuilder<TMessage> {
+impl<TMessage> ComponentPipeBuilder<TMessage>
+where
+    TMessage: IMessage,
+{
     pub fn new(buffer: usize) -> Self {
         Self {
             buffer,

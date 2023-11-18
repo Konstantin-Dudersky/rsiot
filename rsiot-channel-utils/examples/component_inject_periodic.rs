@@ -41,19 +41,26 @@ async fn main1() {
     task_inject_periodic.await.unwrap();
 }
 
-use rsiot_channel_utils::{InjectPeriodic, Logger};
+use rsiot_channel_utils::{
+    create_inject_periodic, create_logger, CompInjectPeriodicConfig,
+};
 use rsiot_component_core::ComponentPipeBuilder;
 
 #[main]
 async fn main() {
     tracing_subscriber::fmt().init();
 
+    let mut counter = 0.0;
     let pipe = ComponentPipeBuilder::<Message>::new(100)
-        .begin(InjectPeriodic::new(
-            || vec![Message::Message0(123.0)],
-            Duration::from_secs(2),
-        ))
-        .end(Logger::new());
+        .begin(create_inject_periodic(CompInjectPeriodicConfig {
+            period: Duration::from_secs(2),
+            fn_periodic: move || {
+                let msg = Message::Message0(counter);
+                counter += 1.0;
+                vec![msg]
+            },
+        }))
+        .end(Box::new(create_logger(2)));
 
     loop {
         sleep(Duration::from_secs(2)).await;
