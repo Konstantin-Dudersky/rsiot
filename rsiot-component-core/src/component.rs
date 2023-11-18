@@ -11,25 +11,21 @@ use crate::types::{StreamInput, StreamOutput};
 pub trait IComponentFunction<TMessage, TConfig> {
     fn call(
         &self,
-        stream_input: Option<StreamInput<TMessage>>,
-        stream_output: Option<StreamOutput<TMessage>>,
+        stream_input: StreamInput<TMessage>,
+        stream_output: StreamOutput<TMessage>,
         config: TConfig,
     ) -> BoxFuture<'static, ()>;
 }
 
 impl<T, F, TMessage, TConfig> IComponentFunction<TMessage, TConfig> for T
 where
-    T: Fn(
-        Option<StreamInput<TMessage>>,
-        Option<StreamOutput<TMessage>>,
-        TConfig,
-    ) -> F,
+    T: Fn(StreamInput<TMessage>, StreamOutput<TMessage>, TConfig) -> F,
     F: Future<Output = ()> + 'static + Send,
 {
     fn call(
         &self,
-        stream_input: Option<StreamInput<TMessage>>,
-        stream_output: Option<StreamOutput<TMessage>>,
+        stream_input: StreamInput<TMessage>,
+        stream_output: StreamOutput<TMessage>,
         config: TConfig,
     ) -> BoxFuture<'static, ()> {
         Box::pin(self(stream_input, stream_output, config))
@@ -39,8 +35,8 @@ where
 //------------------------------------------------------------------------------
 
 pub struct Component<TMessage, TConfig> {
-    pub stream_input: Option<StreamInput<TMessage>>,
-    pub stream_output: Option<StreamOutput<TMessage>>,
+    pub stream_input: StreamInput<TMessage>,
+    pub stream_output: StreamOutput<TMessage>,
     pub config: TConfig,
     pub function: Box<dyn IComponentFunction<TMessage, TConfig>>,
 }
@@ -57,20 +53,6 @@ impl<TMessage, TConfig> Component<TMessage, TConfig> {
             function: Box::new(func),
         }
     }
-
-    // pub fn spawn(&mut self) -> JoinHandle<()> {
-    //     let stream_input = self.stream_input.take();
-    //     let stream_output = self.stream_output.take();
-    //     spawn(self.function.call(stream_input, stream_output))
-    // }
-
-    // pub fn set_stream_input(&mut self, stream_input: StreamInput<TMessage>) {
-    //     self.stream_input = Some(stream_input);
-    // }
-
-    // pub fn set_stream_output(&mut self, stream_output: StreamOutput<TMessage>) {
-    //     self.stream_output = Some(stream_output);
-    // }
 }
 
 pub trait IComponent<TMessage> {
@@ -89,11 +71,11 @@ where
     TConfig: Clone,
 {
     fn set_stream_input(&mut self, stream_input: StreamInput<TMessage>) {
-        self.stream_input = Some(stream_input);
+        self.stream_input = stream_input;
     }
 
     fn set_stream_output(&mut self, stream_output: StreamOutput<TMessage>) {
-        self.stream_output = Some(stream_output);
+        self.stream_output = stream_output;
     }
 
     fn spawn(&mut self) -> JoinHandle<()> {

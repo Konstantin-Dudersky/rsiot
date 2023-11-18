@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use tokio::{main, spawn, sync::mpsc};
 
-use rsiot_channel_utils::component_logger;
+use rsiot_channel_utils::cmp_logger;
 use rsiot_messages_core::IMessage;
 use rsiot_websocket_client::component_websocket_client;
 use tracing::Level;

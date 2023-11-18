@@ -24,6 +24,7 @@ axum-test = { version = "13.1" }
 chrono = { version = "0.4", features = ["serde"] }
 http = { version = "1.0" }
 hyper = { version = "0.14" }
+futures = { version = "0.3" }
 futures-util = { version = "0.3" }
 redis = { version = "0.23", features = ["tokio-comp"] }
 reqwest = { version = "0.11", features = ["json"] }
