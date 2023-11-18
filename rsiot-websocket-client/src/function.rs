@@ -4,7 +4,7 @@ use tokio_tungstenite::{connect_async, MaybeTlsStream, WebSocketStream};
 
 use rsiot_messages_core::IMessage;
 
-pub async fn component_websocket_client<TMessage>(
+pub async fn function<TMessage>(
     stream_input: mpsc::Receiver<TMessage>,
     stream_output: mpsc::Sender<TMessage>,
     fn_from_server: fn(String) -> Vec<TMessage>,

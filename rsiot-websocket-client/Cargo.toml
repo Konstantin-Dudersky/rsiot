@@ -11,6 +11,7 @@ tokio-tungstenite = { workspace = true }
 tracing = { workspace = true }
 
 rsiot-messages-core = { workspace = true }
+rsiot-component-core = { workspace = true }
 
 [dev-dependencies]
 serde = { workspace = true }
