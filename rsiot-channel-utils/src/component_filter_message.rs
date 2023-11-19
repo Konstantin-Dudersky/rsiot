@@ -19,7 +19,7 @@ pub async fn component_filter_message<TMessage>(
     mut input: Receiver<TMessage>,
     output: Sender<TMessage>,
     filter_fn: FilterFn<TMessage>,
-) -> () {
+) {
     info!("Component component_filter_message started");
     loop {
         let result = loop_(&mut input, &output, filter_fn).await;
@@ -39,9 +39,8 @@ async fn loop_<TMessage>(
 ) -> Result<(), SendError<TMessage>> {
     while let Some(msg) = input.recv().await {
         let msg = filter_fn(msg);
-        match msg {
-            Some(msg) => output.send(msg).await?,
-            None => (),
+        if let Some(msg) = msg {
+            output.send(msg).await?
         }
     }
     Ok(())

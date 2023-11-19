@@ -17,8 +17,7 @@ pub async fn component_http_client<TMessage>(
     stream_input: mpsc::Receiver<TMessage>,
     stream_output: mpsc::Sender<TMessage>,
     config: hcc::HttpClientConfig<TMessage>,
-) -> ()
-where
+) where
     TMessage: IMessage + 'static,
 {
     let url = config.connection_config.url.clone();
@@ -91,7 +90,7 @@ async fn process_periodic_requests<TMessage>(
 {
     let mut periodic_runner: Vec<PeriodicRunner> = requests
         .iter()
-        .map(|r| PeriodicRunner::new(r.period.clone()))
+        .map(|r| PeriodicRunner::new(r.period))
         .collect();
     loop {
         let mut msgs_output: Vec<TMessage> = vec![];
@@ -149,7 +148,7 @@ where
         return Ok(msgs);
     }
     let msgs = (on_success)(text);
-    return Ok(msgs);
+    Ok(msgs)
 }
 
 /// Выполнение запроса

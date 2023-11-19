@@ -18,8 +18,7 @@ pub async fn component_delay<TMessage>(
     stream_input: mpsc::Receiver<TMessage>,
     stream_output: mpsc::Sender<TMessage>,
     delay: Duration,
-) -> ()
-where
+) where
     TMessage: IMessage + 'static,
 {
     let cache = create_cache::<TMessage>();

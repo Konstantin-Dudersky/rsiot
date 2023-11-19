@@ -16,8 +16,7 @@ pub async fn start_modbus_client<TMsg>(
     mut channel_write_to_modbus: Receiver<TMsg>,
     channel_read_from_modbus: Sender<TMsg>,
     client_config: ClientConfig<TMsg>,
-) -> ()
-where
+) where
     TMsg: IMessage,
 {
     loop {
@@ -62,18 +61,14 @@ where
     loop {
         // проверяем, нет ли в канале сообщений для записи
         let msg = channel_write_to_modbus.try_recv();
-        match msg {
-            Ok(msg) => {
-                write_request(&mut ctx, &write_config, &msg).await?;
-            }
-            Err(_) => (),
-        };
-
+        if let Ok(msg) = msg {
+            write_request(&mut ctx, &write_config, &msg).await?;
+        }
         // выполняем чтение регистров
         for req in &read_config {
             let response = read_single_request(&mut ctx, req).await?;
             for msg in response {
-                send_msg_to_channel(msg, &channel_read_from_modbus).await?;
+                send_msg_to_channel(msg, channel_read_from_modbus).await?;
             }
         }
 

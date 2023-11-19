@@ -84,12 +84,9 @@ where
 {
     while let Ok(msg) = input.recv().await {
         let text = (fn_send)(msg);
-        match text {
-            Some(text) => {
-                let text = Message::Text(text);
-                write.send(text).await?;
-            }
-            None => (),
+        if let Some(text) = text {
+            let text = Message::Text(text);
+            write.send(text).await?;
         }
     }
     Ok(())

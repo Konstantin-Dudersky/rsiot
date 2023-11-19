@@ -80,6 +80,6 @@ where
         None => return None,
     };
     msg_hash.insert(msg.key(), msg.clone());
-    let msg_vec: Vec<TMessage> = msg_hash.values().map(|m| m.clone()).collect();
+    let msg_vec: Vec<TMessage> = msg_hash.values().cloned().collect();
     transform_fn(msg_vec)
 }

@@ -18,8 +18,7 @@ use rsiot_messages_core::IMessage;
 pub async fn create<TMessage>(
     input: StreamInput<TMessage>,
     output: broadcast::Sender<TMessage>,
-) -> ()
-where
+) where
     TMessage: IMessage,
 {
     info!("cmpbase_mpsc_to_broadcast started");

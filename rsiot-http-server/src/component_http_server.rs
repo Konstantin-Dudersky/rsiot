@@ -26,8 +26,7 @@ pub async fn component_http_server<TMessage>(
     stream_input: mpsc::Receiver<TMessage>,
     stream_output: mpsc::Sender<TMessage>,
     port: u16,
-) -> ()
-where
+) where
     TMessage: IMessage + 'static,
 {
     // кеширование входящих сообщений

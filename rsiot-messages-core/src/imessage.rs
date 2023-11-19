@@ -33,7 +33,7 @@ where
 
     /// Сериализация в строку json
     fn to_json(&self) -> Result<String, Error> {
-        match to_json::<Self>(&self) {
+        match to_json::<Self>(self) {
             Ok(value) => Ok(value),
             Err(error) => {
                 let error = error.to_string();

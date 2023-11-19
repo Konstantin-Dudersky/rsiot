@@ -21,5 +21,5 @@ where
     }
     let msg = msg.ok_or(Error::UnknownMessageKey(key))?;
     let json = msg.to_json()?;
-    return Ok(json);
+    Ok(json)
 }

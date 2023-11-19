@@ -14,8 +14,7 @@ pub async fn start_timescaledb_storing<TMessage>(
     mut channel_rcv: Receiver<TMessage>,
     config: fn(TMessage) -> Option<Row>,
     db_url: Url,
-) -> ()
-where
+) where
     TMessage: IMessage,
 {
     loop {

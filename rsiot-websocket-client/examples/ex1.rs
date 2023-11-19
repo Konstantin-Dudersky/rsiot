@@ -1,8 +1,5 @@
 use serde::{Deserialize, Serialize};
-use tokio::{
-    main,
-    time::{sleep, Duration},
-};
+use tokio::{main, time::Duration};
 use tracing::Level;
 use url::Url;
 
@@ -45,11 +42,7 @@ async fn main() {
             level: Level::INFO,
         }));
 
-    chain.spawn();
-
-    loop {
-        sleep(Duration::from_secs(2)).await;
-    }
+    chain.spawn().await;
 }
 
 fn fn_send(msg: Message) -> Option<String> {

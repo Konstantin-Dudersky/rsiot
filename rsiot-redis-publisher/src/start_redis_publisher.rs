@@ -14,8 +14,7 @@ pub async fn start_redis_publisher<TMessage>(
     url: Url,
     redis_channel: String,
     mut channel_to_redis_rx: Receiver<TMessage>,
-) -> ()
-where
+) where
     TMessage: IMessage,
 {
     loop {

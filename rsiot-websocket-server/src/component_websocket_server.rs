@@ -7,7 +7,9 @@ use tokio::{
 use tokio_util::sync::CancellationToken;
 use tracing::{error, info};
 
-use rsiot_channel_utils::{component_cache, create, create_cache, CacheType};
+use rsiot_channel_utils::{
+    cmpbase_mpsc_to_broadcast, component_cache, create_cache, CacheType,
+};
 use rsiot_messages_core::IMessage;
 
 use crate::Errors;
@@ -27,8 +29,7 @@ pub async fn component_websocket_server<TMessage>(
     msgs_input: mpsc::Receiver<TMessage>,
     msgs_output: mpsc::Sender<TMessage>,
     ws_port: u16,
-) -> ()
-where
+) where
     TMessage: IMessage + 'static,
 {
     let (msgs_cache_output, msgs_broadcast_input) =
@@ -44,7 +45,10 @@ where
     spawn(cancellable_task(future, cancel.clone()));
 
     // распространяем данные через broadcast
-    let future = create(msgs_broadcast_input, msgs_broadcast_output.clone());
+    let future = cmpbase_mpsc_to_broadcast::create(
+        Some(msgs_broadcast_input),
+        msgs_broadcast_output.clone(),
+    );
     spawn(cancellable_task(future, cancel.clone()));
 
     loop {

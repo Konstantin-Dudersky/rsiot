@@ -16,8 +16,7 @@ pub async fn handle_ws_connection<TMessage>(
     addr: SocketAddr,
     rx: broadcast::Receiver<TMessage>,
     cache: CacheType<TMessage>,
-) -> ()
-where
+) where
     TMessage: IMessage,
 {
     let result = _handle_ws_connection(raw_stream, addr, rx, cache).await;
@@ -46,7 +45,7 @@ where
     // отправляем для нового клиента все сообщение из кеша
     {
         let lock = cache.lock().await;
-        local_cache = lock.values().map(|m| m.clone()).collect();
+        local_cache = lock.values().cloned().collect();
     }
     for msg in local_cache {
         let msg = msg.to_json().unwrap();

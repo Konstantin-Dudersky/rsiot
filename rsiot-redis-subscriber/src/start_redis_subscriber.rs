@@ -14,8 +14,7 @@ pub async fn start_redis_subscriber<TMessage>(
     url: Url,
     redis_channel: String,
     tx: Sender<TMessage>,
-) -> ()
-where
+) where
     TMessage: IMessage,
 {
     loop {

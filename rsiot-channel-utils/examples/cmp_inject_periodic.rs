@@ -1,8 +1,5 @@
 use serde::{Deserialize, Serialize};
-use tokio::{
-    main,
-    time::{sleep, Duration},
-};
+use tokio::{main, time::Duration};
 
 use rsiot_channel_utils::{cmp_inject_periodic, cmp_logger};
 use rsiot_component_core::ComponentChain;
@@ -35,9 +32,5 @@ async fn main() {
         .end_cmp(cmp_logger::create(cmp_logger::Config {
             level: Level::INFO,
         }));
-    chain.spawn();
-
-    loop {
-        sleep(Duration::from_secs(2)).await;
-    }
+    chain.spawn().await;
 }
