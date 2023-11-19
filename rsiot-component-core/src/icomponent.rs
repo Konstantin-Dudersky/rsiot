@@ -6,10 +6,20 @@ use crate::types::{StreamInput, StreamOutput};
 /// ComponentChainBuilder
 pub trait IComponent<TMessage> {
     /// Задать входной поток
-    fn set_stream_input(&mut self, stream_input: StreamInput<TMessage>);
+    fn set_input(&mut self, input: StreamInput<TMessage>);
 
     /// Задать выходной поток
-    fn set_stream_output(&mut self, stream_output: StreamOutput<TMessage>);
+    fn set_output(&mut self, output: StreamOutput<TMessage>);
+
+    /// Задать входной и выходной потоки
+    fn set_input_output(
+        &mut self,
+        input: StreamInput<TMessage>,
+        output: StreamOutput<TMessage>,
+    ) {
+        self.set_input(input);
+        self.set_output(output);
+    }
 
     /// Порождаем асинхронную задачу
     fn spawn(&mut self) -> JoinHandle<()>;

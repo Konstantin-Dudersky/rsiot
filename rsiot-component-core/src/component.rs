@@ -6,9 +6,12 @@ use std::future::Future;
 
 use tokio::{spawn, task::JoinHandle};
 
-use crate::types::{StreamInput, StreamOutput};
+use crate::{
+    types::{StreamInput, StreamOutput},
+    IComponent,
+};
 
-pub trait IComponentFunction<TMessage, TConfig> {
+pub trait IComponentFunction<TMessage, TConfig>: Send {
     fn call(
         &self,
         stream_input: StreamInput<TMessage>,
@@ -19,7 +22,7 @@ pub trait IComponentFunction<TMessage, TConfig> {
 
 impl<T, F, TMessage, TConfig> IComponentFunction<TMessage, TConfig> for T
 where
-    T: Fn(StreamInput<TMessage>, StreamOutput<TMessage>, TConfig) -> F,
+    T: Fn(StreamInput<TMessage>, StreamOutput<TMessage>, TConfig) -> F + Send,
     F: Future<Output = ()> + 'static + Send,
 {
     fn call(
@@ -55,26 +58,15 @@ impl<TMessage, TConfig> Component<TMessage, TConfig> {
     }
 }
 
-pub trait IComponent<TMessage> {
-    /// Задать входной поток
-    fn set_stream_input(&mut self, stream_input: StreamInput<TMessage>);
-
-    /// Задать выходной поток
-    fn set_stream_output(&mut self, stream_output: StreamOutput<TMessage>);
-
-    /// Порождаем асинхронную задачу
-    fn spawn(&mut self) -> JoinHandle<()>;
-}
-
 impl<TMessage, TConfig> IComponent<TMessage> for Component<TMessage, TConfig>
 where
     TConfig: Clone,
 {
-    fn set_stream_input(&mut self, stream_input: StreamInput<TMessage>) {
+    fn set_input(&mut self, stream_input: StreamInput<TMessage>) {
         self.stream_input = stream_input;
     }
 
-    fn set_stream_output(&mut self, stream_output: StreamOutput<TMessage>) {
+    fn set_output(&mut self, stream_output: StreamOutput<TMessage>) {
         self.stream_output = stream_output;
     }
 

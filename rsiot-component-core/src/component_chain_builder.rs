@@ -27,37 +27,38 @@ where
     }
 
     /// Начинаем цепочку
-    pub fn start_with(
+    pub fn start_cmp(
         mut self,
         mut component: Box<dyn IComponent<TMessage>>,
     ) -> Self {
         let (tx, rx) = mpsc::channel::<TMessage>(self.buffer);
-        component.set_stream_output(Some(tx));
+        component.set_output(Some(tx));
         self.next_rx = Some(rx);
         self.components.push(component);
         self
     }
 
     /// Продолжаем цепочку
-    pub fn then_with(
+    pub fn then_cmp(
         mut self,
         mut component: Box<dyn IComponent<TMessage>>,
     ) -> Self {
         let (tx, rx) = mpsc::channel::<TMessage>(self.buffer);
         let next_rx = self.next_rx.take();
-        component.set_stream_input(next_rx);
-        component.set_stream_output(Some(tx));
+        component.set_input(next_rx);
+        component.set_output(Some(tx));
+        self.components.push(component);
         self.next_rx = Some(rx);
         self
     }
 
     /// Заканчиваем цепочку, возращаем готовую коллекцию компонентов
-    pub fn end_with(
+    pub fn end_cmp(
         mut self,
         mut component: Box<dyn IComponent<TMessage>>,
     ) -> ComponentChain<TMessage> {
         let rx = self.next_rx.take();
-        component.set_stream_input(rx);
+        component.set_input(rx);
         self.components.push(component);
         ComponentChain::new(self.components)
     }
