@@ -7,9 +7,7 @@ use tokio::{
 use tokio_util::sync::CancellationToken;
 use tracing::{error, info};
 
-use rsiot_channel_utils::{
-    component_cache, component_mpsc_to_broadcast, create_cache, CacheType,
-};
+use rsiot_channel_utils::{component_cache, create, create_cache, CacheType};
 use rsiot_messages_core::IMessage;
 
 use crate::Errors;
@@ -46,10 +44,7 @@ where
     spawn(cancellable_task(future, cancel.clone()));
 
     // распространяем данные через broadcast
-    let future = component_mpsc_to_broadcast(
-        msgs_broadcast_input,
-        msgs_broadcast_output.clone(),
-    );
+    let future = create(msgs_broadcast_input, msgs_broadcast_output.clone());
     spawn(cancellable_task(future, cancel.clone()));
 
     loop {

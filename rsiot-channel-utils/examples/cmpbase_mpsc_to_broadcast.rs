@@ -5,7 +5,7 @@ use tokio::{
     time::{sleep, Duration},
 };
 
-use rsiot_channel_utils::component_mpsc_to_broadcast;
+use rsiot_channel_utils::cmpbase_mpsc_to_broadcast;
 use rsiot_messages_core::IMessage;
 use tracing::info;
 
@@ -37,7 +37,7 @@ async fn main() {
     });
 
     let main_task =
-        spawn(component_mpsc_to_broadcast(mpsc_rcv, broadcast_send));
+        spawn(cmpbase_mpsc_to_broadcast::create(mpsc_rcv, broadcast_send));
 
     let _end_task_1 = spawn(async move {
         while let Ok(res) = broadcast_rcv_1.recv().await {

@@ -14,7 +14,7 @@ use rsiot_messages_core::IMessage;
 /// Компонент для перенаправления сообщений из `tokio::sync::mpsc`
 /// в `tokio::sync::broadcast`
 ///
-pub async fn component_mpsc_to_broadcast<TMessage>(
+pub async fn create<TMessage>(
     mut input: mpsc::Receiver<TMessage>,
     output: broadcast::Sender<TMessage>,
 ) -> ()

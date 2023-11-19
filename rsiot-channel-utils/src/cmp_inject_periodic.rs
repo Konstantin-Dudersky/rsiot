@@ -1,8 +1,9 @@
 //! Компонент для периодического генерирования сообщений
 
 use tokio::time::{sleep, Duration, Instant};
+use tracing::{error, info};
 
-use rsiot_component_core::{StreamInput, StreamOutput};
+use rsiot_component_core::{Component, StreamInput, StreamOutput};
 use rsiot_messages_core::IMessage;
 
 async fn cmp_inject_periodic<TMessage, TFnPeriodic>(
@@ -44,9 +45,6 @@ where
     /// Функция для генерирования сообщений
     pub fn_periodic: TFnPeriodic,
 }
-
-use rsiot_component_core::Component;
-use tracing::{error, info};
 
 pub fn create<TMessage, TFnPeriodic>(
     config: Config<TMessage, TFnPeriodic>,
