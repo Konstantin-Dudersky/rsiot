@@ -1,5 +1,6 @@
 pub mod cmp_inject_periodic;
 pub mod cmp_logger;
+pub mod cmp_mpsc_to_mpsc;
 mod component_cache;
 mod component_combine_message;
 mod component_delay;

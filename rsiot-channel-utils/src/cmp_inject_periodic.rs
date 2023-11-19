@@ -7,18 +7,26 @@ use rsiot_messages_core::IMessage;
 
 async fn cmp_inject_periodic<TMessage, TFnPeriodic>(
     _input: StreamInput<TMessage>,
-    mut output: StreamOutput<TMessage>,
+    output: StreamOutput<TMessage>,
     mut config: Config<TMessage, TFnPeriodic>,
 ) where
     TMessage: IMessage,
     TFnPeriodic: FnMut() -> Vec<TMessage>,
 {
-    let stream_output = output.take().unwrap();
+    info!("cmp_inject_periodic stop started");
+    let output = match output {
+        Some(val) => val,
+        None => {
+            let msg = "Input stream is None";
+            error!("{:?}", msg);
+            return;
+        }
+    };
     loop {
         let begin = Instant::now();
         let msgs = (config.fn_periodic)();
         for msg in msgs {
-            stream_output.send(msg).await.unwrap();
+            output.send(msg).await.unwrap();
         }
         let time_to_sleep = config.period - begin.elapsed();
         sleep(time_to_sleep).await;
@@ -38,6 +46,7 @@ where
 }
 
 use rsiot_component_core::Component;
+use tracing::{error, info};
 
 pub fn create<TMessage, TFnPeriodic>(
     config: Config<TMessage, TFnPeriodic>,
