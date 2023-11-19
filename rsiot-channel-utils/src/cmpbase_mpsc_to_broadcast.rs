@@ -9,19 +9,28 @@ use tokio::{
 };
 use tracing::{error, info};
 
+use rsiot_component_core::StreamInput;
 use rsiot_messages_core::IMessage;
 
 /// Компонент для перенаправления сообщений из `tokio::sync::mpsc`
 /// в `tokio::sync::broadcast`
 ///
 pub async fn create<TMessage>(
-    mut input: mpsc::Receiver<TMessage>,
+    input: StreamInput<TMessage>,
     output: broadcast::Sender<TMessage>,
 ) -> ()
 where
     TMessage: IMessage,
 {
-    info!("Component component_mpsc_to_broadcast started");
+    info!("cmpbase_mpsc_to_broadcast started");
+    let mut input = match input {
+        Some(val) => val,
+        None => {
+            let msg = "Input stream not set";
+            error!("{}", msg);
+            return;
+        }
+    };
     loop {
         let result = loop_(&mut input, &output).await;
         match result {

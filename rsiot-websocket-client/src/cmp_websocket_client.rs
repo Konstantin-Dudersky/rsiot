@@ -10,9 +10,9 @@ pub struct Config<TMessage> {
     /// Адрес сервера
     pub url: Url,
     /// stream_input -> передача на сервер
-    pub fn_to_server: fn(TMessage) -> Option<String>,
+    pub fn_send: fn(TMessage) -> Option<String>,
     /// Данные от сервера -> stream_output
-    pub fn_from_server: fn(String) -> Vec<TMessage>,
+    pub fn_recv: fn(String) -> Vec<TMessage>,
 }
 
 pub fn create<TMessage>(

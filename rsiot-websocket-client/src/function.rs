@@ -39,16 +39,7 @@ pub async fn function<TMessage>(
     output_stream.set_input_output(Some(from_server_rx), output);
     output_stream.spawn();
 
-    let input = match input {
-        Some(val) => val,
-        None => {
-            let msg = "Not"
-        },
-    };
-    spawn(cmpbase_mpsc_to_broadcast::create(
-        input.unwrap(),
-        input_broadcast_tx,
-    ));
+    spawn(cmpbase_mpsc_to_broadcast::create(input, input_broadcast_tx));
 
     loop {
         let res = task_connect(
@@ -77,8 +68,8 @@ where
 {
     let (ws_stream, _) = connect_async(config.url).await?;
     let (write, read) = ws_stream.split();
-    let task_send = spawn(task_send(input, write, config.fn_to_server));
-    let task_recv = spawn(task_recv(output, read, config.fn_from_server));
+    let task_send = spawn(task_send(input, write, config.fn_send));
+    let task_recv = spawn(task_recv(output, read, config.fn_recv));
     try_join!(flatten(task_recv), flatten(task_send)).map(|_| ())
 }
 

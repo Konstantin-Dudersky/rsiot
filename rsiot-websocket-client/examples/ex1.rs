@@ -38,8 +38,8 @@ async fn main() {
         }))
         .then_cmp(cmp_websocket_client::create(cmp_websocket_client::Config {
             url: Url::parse("ws://localhost:9001").unwrap(),
-            fn_to_server,
-            fn_from_server,
+            fn_send,
+            fn_recv,
         }))
         .end_cmp(cmp_logger::create(cmp_logger::Config {
             level: Level::INFO,
@@ -52,7 +52,7 @@ async fn main() {
     }
 }
 
-fn fn_to_server(msg: Message) -> Option<String> {
+fn fn_send(msg: Message) -> Option<String> {
     match msg {
         Message::Message0(_) => Some(msg.to_json().unwrap()),
         Message::Message1(_) => None,
@@ -61,7 +61,7 @@ fn fn_to_server(msg: Message) -> Option<String> {
     }
 }
 
-fn fn_from_server(data: String) -> Vec<Message> {
+fn fn_recv(data: String) -> Vec<Message> {
     // сообщение tick ...
     match parse_tick(&data) {
         Some(val) => return vec![val],
