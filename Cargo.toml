@@ -44,11 +44,11 @@ tracing = { version = "0.1" }
 tracing-subscriber = { version = "0.3" }
 url = { version = "2.4" }
 
-rsiot-extra-components = { version = "0.0.2" }
-rsiot-component-core = { version = "0.0.2" }
-rsiot-http-client-config = { version = "0.0.2" }
-rsiot-messages-core = { version = "0.0.2" }
-rsiot-modbus-client-config = { version = "0.0.2" }
+rsiot-extra-components = { version = "0.0.3" }
+rsiot-component-core = { version = "0.0.3" }
+rsiot-http-client-config = { version = "0.0.3" }
+rsiot-messages-core = { version = "0.0.3" }
+rsiot-modbus-client-config = { version = "0.0.3" }
 
 [patch.crates-io]
 rsiot-extra-components = { path = "./rsiot-extra-components" }
