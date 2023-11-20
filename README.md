@@ -118,7 +118,7 @@ cargo ws version patch --no-git-push
 Публикуем на `crates.io`:
 
 ```bash
-cargo ws publish --from-git
+cargo ws publish --from-git --allow-dirty
 ```
 
 ## Идеи для улучшения

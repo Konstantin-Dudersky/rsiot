@@ -2,7 +2,8 @@
 name = "rsiot-component-core"
 version = "0.0.3"
 edition = "2021"
-
+description = "Типы данных для создания компонентов"
+license = "MIT"
 
 [dependencies]
 futures = { workspace = true }
