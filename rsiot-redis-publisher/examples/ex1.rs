@@ -4,11 +4,14 @@ use tokio::{
     sync::mpsc,
     time::{sleep, Duration},
 };
+use tracing::Level;
 use tracing_subscriber::fmt;
 use url::Url;
 
+use rsiot_channel_utils::{cmp_inject_periodic, cmp_logger};
+use rsiot_component_core::ComponentChain;
 use rsiot_messages_core::IMessage;
-use rsiot_redis_publisher::start_redis_publisher;
+use rsiot_redis_publisher::cmp_redis_publisher;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 enum Messages {
@@ -21,25 +24,23 @@ impl IMessage for Messages {}
 async fn main() {
     fmt().init();
 
-    let url = Url::parse("redis://127.0.0.1:6379").unwrap();
-
-    let (tx, rx) = mpsc::channel::<Messages>(128);
-
     let mut counter = 0;
-    let _ = spawn(async move {
-        loop {
-            let msg = Messages::Message0(counter);
-            counter += 1;
-            tx.send(msg).await.unwrap();
-            sleep(Duration::from_secs(2)).await;
-        }
-    });
+    let mut chain = ComponentChain::init(100)
+        .start_cmp(cmp_inject_periodic::create(cmp_inject_periodic::Config {
+            period: Duration::from_secs(2),
+            fn_periodic: move || {
+                let msg = Messages::Message0(counter);
+                counter += 1;
+                vec![msg]
+            },
+        }))
+        .then_cmp(cmp_logger::create(cmp_logger::Config {
+            level: Level::INFO,
+        }))
+        .end_cmp(cmp_redis_publisher::create(cmp_redis_publisher::Config {
+            url: Url::parse("redis://127.0.0.1:6379").unwrap(),
+            redis_channel: "rsiot-redis-publisher".to_string(),
+        }));
 
-    let task = spawn(start_redis_publisher(
-        url,
-        "rsiot-redis-publisher".to_string(),
-        rx,
-    ));
-
-    task.await.unwrap();
+    chain.spawn().await;
 }

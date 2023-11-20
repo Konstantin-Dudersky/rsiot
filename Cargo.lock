@@ -1453,6 +1453,8 @@ name = "rsiot-redis-publisher"
 version = "0.0.2"
 dependencies = [
  "redis",
+ "rsiot-channel-utils",
+ "rsiot-component-core",
  "rsiot-messages-core",
  "serde",
  "tokio",

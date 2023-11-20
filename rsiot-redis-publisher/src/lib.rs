@@ -1,5 +1,5 @@
+pub mod cmp_redis_publisher;
 mod error;
-mod start_redis_publisher;
+mod function;
 
 pub use error::Error;
-pub use start_redis_publisher::start_redis_publisher;
