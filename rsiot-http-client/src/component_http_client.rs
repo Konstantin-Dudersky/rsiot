@@ -7,7 +7,7 @@ use tokio::{
 use tracing::error;
 use url::Url;
 
-use rsiot_channel_utils::component_many_mpsc_to_mpsc;
+use rsiot_extra_components::component_many_mpsc_to_mpsc;
 use rsiot_http_client_config as hcc;
 use rsiot_messages_core::IMessage;
 

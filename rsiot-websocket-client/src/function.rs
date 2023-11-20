@@ -15,8 +15,8 @@ use tokio_tungstenite::{
 };
 use tracing::{error, info};
 
-use rsiot_channel_utils::{cmp_mpsc_to_mpsc, cmpbase_mpsc_to_broadcast};
 use rsiot_component_core::{IComponent, StreamInput, StreamOutput};
+use rsiot_extra_components::{cmp_mpsc_to_mpsc, cmpbase_mpsc_to_broadcast};
 use rsiot_messages_core::IMessage;
 
 use crate::{cmp_websocket_client, Error};

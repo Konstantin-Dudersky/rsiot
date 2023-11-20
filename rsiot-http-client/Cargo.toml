@@ -11,7 +11,7 @@ tokio = { workspace = true }
 tracing = { workspace = true }
 url = { workspace = true }
 
-rsiot-channel-utils = { workspace = true }
+rsiot-extra-components = { workspace = true }
 rsiot-http-client-config = { workspace = true }
 rsiot-messages-core = { workspace = true }
 

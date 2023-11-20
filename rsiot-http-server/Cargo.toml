@@ -13,8 +13,8 @@ tracing = { workspace = true }
 tower-http = { workspace = true }
 url = { workspace = true }
 
+rsiot-extra-components = { workspace = true }
 rsiot-messages-core = { workspace = true }
-rsiot-channel-utils = { workspace = true }
 
 
 [dev-dependencies]

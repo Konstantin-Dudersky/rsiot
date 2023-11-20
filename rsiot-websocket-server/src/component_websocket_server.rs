@@ -7,7 +7,7 @@ use tokio::{
 use tokio_util::sync::CancellationToken;
 use tracing::{error, info};
 
-use rsiot_channel_utils::{
+use rsiot_extra_components::{
     cmpbase_mpsc_to_broadcast, component_cache, create_cache, CacheType,
 };
 use rsiot_messages_core::IMessage;

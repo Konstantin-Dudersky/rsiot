@@ -6,8 +6,8 @@ use tokio::{
 };
 use tracing::{error, info};
 
-use rsiot_channel_utils::cmpbase_mpsc_to_broadcast;
 use rsiot_component_core::{StreamInput, StreamOutput};
+use rsiot_extra_components::cmpbase_mpsc_to_broadcast;
 use rsiot_messages_core::IMessage;
 
 use crate::{cmp_redis_publisher, Error};

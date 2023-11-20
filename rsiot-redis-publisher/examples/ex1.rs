@@ -1,15 +1,11 @@
 use serde::{Deserialize, Serialize};
-use tokio::{
-    main, spawn,
-    sync::mpsc,
-    time::{sleep, Duration},
-};
+use tokio::{main, time::Duration};
 use tracing::Level;
 use tracing_subscriber::fmt;
 use url::Url;
 
-use rsiot_channel_utils::{cmp_inject_periodic, cmp_logger};
 use rsiot_component_core::ComponentChain;
+use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use rsiot_messages_core::IMessage;
 use rsiot_redis_publisher::cmp_redis_publisher;
 

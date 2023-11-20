@@ -3,8 +3,8 @@ use tokio::{main, time::Duration};
 use tracing::Level;
 use url::Url;
 
-use rsiot_channel_utils::{cmp_inject_periodic, cmp_logger};
 use rsiot_component_core::ComponentChain;
+use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use rsiot_messages_core::IMessage;
 use rsiot_websocket_client::cmp_websocket_client;
 

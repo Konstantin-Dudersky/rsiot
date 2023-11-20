@@ -66,7 +66,7 @@
 
 #### leptos
 
-### [Служебные компоненты](./rsiot-channel-utils/README.md)
+### [Служебные компоненты](./rsiot-extra-components/README.md)
 
 #### component_cache
 
@@ -101,6 +101,12 @@ docker compose --profile dev up -d
 ```
 
 ## Публикация версии
+
+Проверяем, что все компилируется без ошибок:
+
+```bash
+cargo build
+```
 
 Изменяем номер версии проекта:
 

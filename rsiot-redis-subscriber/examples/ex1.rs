@@ -19,8 +19,8 @@ use tracing::Level;
 use tracing_subscriber::fmt;
 use url::Url;
 
-use rsiot_channel_utils::cmp_logger;
 use rsiot_component_core::ComponentChain;
+use rsiot_extra_components::cmp_logger;
 use rsiot_messages_core::IMessage;
 use rsiot_redis_subscriber::cmp_redis_subscriber;
 

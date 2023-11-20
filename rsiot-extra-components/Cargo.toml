@@ -1,8 +1,8 @@
 [package]
-name = "rsiot-channel-utils"
+name = "rsiot-extra-components"
 version = "0.0.2"
 edition = "2021"
-description = "Вспомогательные компоненты"
+description = "Дополнительные компоненты"
 license = "MIT"
 
 [dependencies]

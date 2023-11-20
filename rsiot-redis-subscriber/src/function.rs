@@ -8,8 +8,8 @@ use tokio::{
 use tracing::{error, info, trace};
 use url::Url;
 
-use rsiot_channel_utils::cmp_mpsc_to_mpsc;
 use rsiot_component_core::{IComponent, StreamInput, StreamOutput};
+use rsiot_extra_components::cmp_mpsc_to_mpsc;
 use rsiot_messages_core::IMessage;
 
 use crate::{

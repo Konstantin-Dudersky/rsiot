@@ -5,7 +5,7 @@ use tokio::{net::TcpStream, sync::broadcast};
 use tokio_tungstenite::{accept_async, tungstenite::Message};
 use tracing::{error, info};
 
-use rsiot_channel_utils::CacheType;
+use rsiot_extra_components::CacheType;
 use rsiot_messages_core::IMessage;
 
 use crate::Errors;

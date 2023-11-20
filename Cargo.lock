@@ -1358,7 +1358,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "rsiot-channel-utils"
+name = "rsiot-component-core"
+version = "0.0.2"
+dependencies = [
+ "futures",
+ "rsiot-messages-core",
+ "tokio",
+]
+
+[[package]]
+name = "rsiot-extra-components"
 version = "0.0.2"
 dependencies = [
  "rsiot-component-core",
@@ -1370,20 +1379,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "rsiot-component-core"
-version = "0.0.2"
-dependencies = [
- "futures",
- "rsiot-messages-core",
- "tokio",
-]
-
-[[package]]
 name = "rsiot-http-client"
 version = "0.0.2"
 dependencies = [
  "reqwest",
- "rsiot-channel-utils",
+ "rsiot-extra-components",
  "rsiot-http-client-config",
  "rsiot-messages-core",
  "serde",
@@ -1409,7 +1409,7 @@ version = "0.0.2"
 dependencies = [
  "axum",
  "hyper",
- "rsiot-channel-utils",
+ "rsiot-extra-components",
  "rsiot-messages-core",
  "serde",
  "tokio",
@@ -1453,8 +1453,8 @@ name = "rsiot-redis-publisher"
 version = "0.0.2"
 dependencies = [
  "redis",
- "rsiot-channel-utils",
  "rsiot-component-core",
+ "rsiot-extra-components",
  "rsiot-messages-core",
  "serde",
  "tokio",
@@ -1469,8 +1469,8 @@ version = "0.0.2"
 dependencies = [
  "futures-util",
  "redis",
- "rsiot-channel-utils",
  "rsiot-component-core",
+ "rsiot-extra-components",
  "rsiot-messages-core",
  "serde",
  "tokio",
@@ -1498,8 +1498,8 @@ name = "rsiot-websocket-client"
 version = "0.0.0"
 dependencies = [
  "futures-util",
- "rsiot-channel-utils",
  "rsiot-component-core",
+ "rsiot-extra-components",
  "rsiot-messages-core",
  "serde",
  "tokio",
@@ -1514,7 +1514,7 @@ name = "rsiot-websocket-server"
 version = "0.0.2"
 dependencies = [
  "futures-util",
- "rsiot-channel-utils",
+ "rsiot-extra-components",
  "rsiot-messages-core",
  "serde",
  "tokio",

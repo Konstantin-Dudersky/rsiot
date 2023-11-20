@@ -1,6 +1,6 @@
 use tokio::sync::mpsc;
 
-use rsiot_channel_utils::CacheType;
+use rsiot_extra_components::CacheType;
 
 #[derive(Clone)]
 pub struct SharedState<TMessage> {
