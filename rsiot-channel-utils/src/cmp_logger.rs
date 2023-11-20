@@ -12,7 +12,7 @@ async fn cmp_logger<TMessage>(
 ) where
     TMessage: IMessage,
 {
-    info!("cmp_logger stop started");
+    info!("cmp_logger started");
     let mut input = match input {
         Some(val) => val,
         None => {
@@ -36,7 +36,7 @@ async fn cmp_logger<TMessage>(
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Config {
     /// Уровень логгирования
     pub level: Level,

@@ -34,7 +34,7 @@ async fn cmp_mpsc_to_mpsc<TMessage>(
     error!("cmp_mpsc_to_mpsc stop");
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Config {}
 
 pub fn create<TMessage>() -> Box<Component<TMessage, Config>>

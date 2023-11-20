@@ -1,5 +1,5 @@
+pub mod cmp_redis_subscriber;
 mod error;
-mod start_redis_subscriber;
+mod function;
 
 pub use error::Error;
-pub use start_redis_subscriber::start_redis_subscriber;

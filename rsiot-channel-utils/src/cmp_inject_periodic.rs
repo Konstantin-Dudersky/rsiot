@@ -34,7 +34,7 @@ async fn cmp_inject_periodic<TMessage, TFnPeriodic>(
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Config<TMessage, TFnPeriodic>
 where
     TMessage: IMessage,

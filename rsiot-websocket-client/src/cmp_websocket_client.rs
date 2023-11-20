@@ -5,8 +5,11 @@ use rsiot_messages_core::IMessage;
 
 use crate::function::function;
 
-#[derive(Clone)]
-pub struct Config<TMessage> {
+#[derive(Clone, Debug)]
+pub struct Config<TMessage>
+where
+    TMessage: IMessage,
+{
     /// Адрес сервера
     pub url: Url,
     /// stream_input -> передача на сервер

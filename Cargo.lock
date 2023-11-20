@@ -1467,6 +1467,8 @@ version = "0.0.2"
 dependencies = [
  "futures-util",
  "redis",
+ "rsiot-channel-utils",
+ "rsiot-component-core",
  "rsiot-messages-core",
  "serde",
  "tokio",

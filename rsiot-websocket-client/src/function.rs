@@ -35,9 +35,8 @@ pub async fn function<TMessage>(
         broadcast::channel::<TMessage>(100);
     let input_broadcast_tx_clone = input_broadcast_tx.clone();
 
-    let mut output_stream = cmp_mpsc_to_mpsc::create::<TMessage>();
-    output_stream.set_input_output(Some(from_server_rx), output);
-    output_stream.spawn();
+    let _output_stream = cmp_mpsc_to_mpsc::create::<TMessage>()
+        .set_and_spawn(Some(from_server_rx), output);
 
     spawn(cmpbase_mpsc_to_broadcast::create(input, input_broadcast_tx));
 

@@ -1,14 +1,32 @@
+//! Пример для проверки компонента
+//!
+//! Проверки:
+//!
+//! - через веб-интрефейс, в Pub/Sub, в канал `rsiot-redis-subscriber`
+//! записать сообщение {"Message0": 123}. В консоли должно прочитаться это
+//! сообщение
+//!
+//! - через веб-интерфейс, перед запуском примера создать хеш с названием
+//! `rsiot-redis-subscriber`, задать ключ `Message0`. После запуска примера
+//! в консоли должно прочитаться это сообщение
+//!
+//! - корректный перезапуск. При отключении Redis, передачи неправильного
+//! сообщения в Pub/Sub
+
 use serde::{Deserialize, Serialize};
-use tokio::{main, spawn, sync::mpsc};
+use tokio::main;
+use tracing::Level;
 use tracing_subscriber::fmt;
 use url::Url;
 
+use rsiot_channel_utils::cmp_logger;
+use rsiot_component_core::ComponentChain;
 use rsiot_messages_core::IMessage;
-use rsiot_redis_subscriber::start_redis_subscriber;
+use rsiot_redis_subscriber::cmp_redis_subscriber;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 enum Messages {
-    Message0,
+    Message0(u32),
 }
 
 impl IMessage for Messages {}
@@ -17,21 +35,13 @@ impl IMessage for Messages {}
 async fn main() {
     fmt().init();
 
-    let url = Url::parse("redis://127.0.0.1:6379").unwrap();
-
-    let (tx, mut rx) = mpsc::channel::<Messages>(128);
-
-    let task = spawn(start_redis_subscriber(
-        url,
-        "rsiot-redis-subscriber".to_string(),
-        tx,
-    ));
-
-    let _print = spawn(async move {
-        while let Some(msg) = rx.recv().await {
-            println!("New message: {:?}", msg);
-        }
-    });
-
-    task.await.unwrap();
+    let mut chain = ComponentChain::<Messages>::init(100)
+        .start_cmp(cmp_redis_subscriber::create(cmp_redis_subscriber::Config {
+            url: Url::parse("redis://127.0.0.1:6379").unwrap(),
+            redis_channel: "rsiot-redis-subscriber".to_string(),
+        }))
+        .end_cmp(cmp_logger::create(cmp_logger::Config {
+            level: Level::INFO,
+        }));
+    chain.spawn().await;
 }

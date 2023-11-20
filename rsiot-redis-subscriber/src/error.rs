@@ -1,5 +1,5 @@
 use redis::RedisError;
-use tokio::sync::mpsc::error::SendError;
+use tokio::{sync::mpsc::error::SendError, task::JoinError};
 
 use rsiot_messages_core::Error as MessagesError;
 
@@ -13,6 +13,7 @@ pub enum Error {
     SendChannelError(String),
     /// Ошибка получения собщения из асинхронной подписки PubSub
     GetMessageError,
+    JoinError(JoinError),
 }
 
 impl From<MessagesError> for Error {
@@ -30,5 +31,11 @@ impl From<RedisError> for Error {
 impl<T> From<SendError<T>> for Error {
     fn from(value: SendError<T>) -> Self {
         Self::SendChannelError(value.to_string())
+    }
+}
+
+impl From<JoinError> for Error {
+    fn from(value: JoinError) -> Self {
+        Self::JoinError(value)
     }
 }

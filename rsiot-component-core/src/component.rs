@@ -1,8 +1,9 @@
 //! https://stackoverflow.com/questions/58173711/how-can-i-store-an-async-function-in-a-struct-and-call-it-from-a-struct-instance
 //!
 
-use futures::future::BoxFuture;
 use std::future::Future;
+
+use futures::future::BoxFuture;
 
 use tokio::{spawn, task::JoinHandle};
 
