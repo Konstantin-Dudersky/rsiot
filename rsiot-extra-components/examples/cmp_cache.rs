@@ -1,11 +1,13 @@
 use serde::{Deserialize, Serialize};
-use tokio::{main, time::Duration};
-use tracing::Level;
+use tokio::{
+    main, spawn,
+    time::{sleep, Duration},
+};
+use tracing::{info, Level};
 
 use rsiot_component_core::ComponentChain;
-use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
+use rsiot_extra_components::{cmp_cache, cmp_inject_periodic, cmp_logger};
 use rsiot_messages_core::IMessage;
-use rsiot_websocket_server::cmp_websocket_server;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 enum Message {
@@ -20,23 +22,34 @@ impl IMessage for Message {}
 async fn main() {
     tracing_subscriber::fmt().init();
 
+    let cache = cmp_cache::create_cache();
     let mut counter = 0.0;
 
     let mut chain = ComponentChain::init(100)
         .start_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
-            period: Duration::from_secs(2),
+            period: Duration::from_millis(500),
             fn_periodic: move || {
                 let msg = Message::Message0(counter);
                 counter += 1.0;
                 vec![msg]
             },
         }))
-        .then_cmp(cmp_websocket_server::new(cmp_websocket_server::Config {
-            port: 8020,
+        .then_cmp(cmp_cache::new(cmp_cache::Config {
+            cache: cache.clone(),
         }))
         .end_cmp(cmp_logger::create(cmp_logger::Config {
             level: Level::INFO,
         }));
 
-    chain.spawn().await
+    let _end_task = spawn(async move {
+        loop {
+            {
+                let lock = cache.lock().await;
+                info!("cache: {:?}", lock);
+            }
+            sleep(Duration::from_secs(5)).await;
+        }
+    });
+
+    chain.spawn().await;
 }

@@ -1367,6 +1367,7 @@ dependencies = [
  "rsiot-redis-publisher",
  "rsiot-redis-subscriber",
  "rsiot-websocket-client",
+ "rsiot-websocket-server",
 ]
 
 [[package]]
@@ -1526,6 +1527,7 @@ name = "rsiot-websocket-server"
 version = "0.0.4"
 dependencies = [
  "futures-util",
+ "rsiot-component-core",
  "rsiot-extra-components",
  "rsiot-messages-core",
  "serde",

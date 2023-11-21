@@ -15,6 +15,7 @@ rsiot-messages-core = { workspace = true }
 rsiot-redis-publisher = { workspace = true }
 rsiot-redis-subscriber = { workspace = true }
 rsiot-websocket-client = { workspace = true }
+rsiot-websocket-server = { workspace = true }
 
 
 [features]
@@ -34,6 +35,7 @@ timescaledb-storing = []
 websocket-client = []
 ## Компонент websocket сервера
 websocket-server = []
+
 
 [package.metadata.docs.rs]
 all-features = true

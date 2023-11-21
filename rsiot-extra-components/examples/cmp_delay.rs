@@ -3,9 +3,8 @@ use tokio::{main, time::Duration};
 use tracing::Level;
 
 use rsiot_component_core::ComponentChain;
-use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
+use rsiot_extra_components::{cmp_delay, cmp_inject_periodic, cmp_logger};
 use rsiot_messages_core::IMessage;
-use rsiot_websocket_server::cmp_websocket_server;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 enum Message {
@@ -24,19 +23,19 @@ async fn main() {
 
     let mut chain = ComponentChain::init(100)
         .start_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
-            period: Duration::from_secs(2),
+            period: Duration::from_millis(10),
             fn_periodic: move || {
                 let msg = Message::Message0(counter);
                 counter += 1.0;
                 vec![msg]
             },
         }))
-        .then_cmp(cmp_websocket_server::new(cmp_websocket_server::Config {
-            port: 8020,
+        .then_cmp(cmp_delay::new(cmp_delay::Config {
+            delay: Duration::from_secs(2),
         }))
         .end_cmp(cmp_logger::create(cmp_logger::Config {
             level: Level::INFO,
         }));
 
-    chain.spawn().await
+    chain.spawn().await;
 }

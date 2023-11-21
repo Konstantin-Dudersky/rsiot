@@ -36,6 +36,9 @@ pub mod cmp_redis_subscriber {
 #[cfg(feature = "websocket-client")]
 pub mod cmp_websocket_client {
     pub use rsiot_websocket_client::{
-        cmp_websocket_client::create, cmp_websocket_client::Config, Error,
+        cmp_websocket_client::new, cmp_websocket_client::Config, Error,
     };
 }
+
+#[cfg(feature = "websocket-server")]
+pub use rsiot_websocket_server::cmp_websocket_server;

@@ -18,7 +18,7 @@ where
     pub fn_recv: fn(String) -> Vec<TMessage>,
 }
 
-pub fn create<TMessage>(
+pub fn new<TMessage>(
     config: Config<TMessage>,
 ) -> Box<Component<TMessage, Config<TMessage>>>
 where

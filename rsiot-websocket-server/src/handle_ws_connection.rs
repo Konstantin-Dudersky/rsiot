@@ -5,10 +5,10 @@ use tokio::{net::TcpStream, sync::broadcast};
 use tokio_tungstenite::{accept_async, tungstenite::Message};
 use tracing::{error, info};
 
-use rsiot_extra_components::CacheType;
+use rsiot_extra_components::cmp_cache::CacheType;
 use rsiot_messages_core::IMessage;
 
-use crate::Errors;
+use crate::errors::Errors;
 
 /// Создание и управление подключением websocket
 pub async fn handle_ws_connection<TMessage>(

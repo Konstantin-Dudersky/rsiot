@@ -14,7 +14,7 @@ async fn cmp_inject_periodic<TMessage, TFnPeriodic>(
     TMessage: IMessage,
     TFnPeriodic: FnMut() -> Vec<TMessage>,
 {
-    info!("cmp_inject_periodic stop started");
+    info!("cmp_inject_periodic started");
     let output = match output {
         Some(val) => val,
         None => {
@@ -46,7 +46,7 @@ where
     pub fn_periodic: TFnPeriodic,
 }
 
-pub fn create<TMessage, TFnPeriodic>(
+pub fn new<TMessage, TFnPeriodic>(
     config: Config<TMessage, TFnPeriodic>,
 ) -> Box<Component<TMessage, Config<TMessage, TFnPeriodic>>>
 where

@@ -61,3 +61,4 @@ rsiot-modbus-client-config = { version = "0.0.4", path = "./rsiot-modbus-client-
 rsiot-redis-publisher = { version = "0.0.4", path = "./rsiot-redis-publisher" }
 rsiot-redis-subscriber = { version = "0.0.4", path = "./rsiot-redis-subscriber" }
 rsiot-websocket-client = { version = "0.0.4", path = "./rsiot-websocket-client" }
+rsiot-websocket-server = { version = "0.0.4", path = "./rsiot-websocket-server" }

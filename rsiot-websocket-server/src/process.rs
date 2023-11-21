@@ -1,3 +1,8 @@
+//! Компонент для подключения через websocket server.
+//!
+//! Перенаправляет поток входящих сообщений подключенным вебсокет-клиентам
+//!
+
 use tokio::{
     net::TcpListener,
     spawn,
@@ -7,42 +12,38 @@ use tokio::{
 use tokio_util::sync::CancellationToken;
 use tracing::{error, info};
 
-use rsiot_extra_components::{
-    cmpbase_mpsc_to_broadcast, component_cache, create_cache, CacheType,
-};
+use rsiot_component_core::{IComponent, StreamInput, StreamOutput};
+use rsiot_extra_components::{cmp_cache, cmpbase_mpsc_to_broadcast};
 use rsiot_messages_core::IMessage;
 
-use crate::Errors;
+use crate::{config::Config, errors::Errors};
 
 use super::{
     async_task_utils::cancellable_task,
     handle_ws_connection::handle_ws_connection,
 };
 
-/// Компонент для подключения через websocket server.
-///
-/// Перенаправляет поток входящих сообщений подключенным вебсокет-клиентам
-///
 /// TODO - получение сообщений от клиентов и перенаправление в выходной поток
-pub async fn component_websocket_server<TMessage>(
-    cancel: CancellationToken,
-    msgs_input: mpsc::Receiver<TMessage>,
-    msgs_output: mpsc::Sender<TMessage>,
-    ws_port: u16,
+pub async fn process<TMessage>(
+    msgs_input: StreamInput<TMessage>,
+    msgs_output: StreamOutput<TMessage>,
+    config: Config,
 ) where
     TMessage: IMessage + 'static,
 {
+    let cancel = CancellationToken::new();
     let (msgs_cache_output, msgs_broadcast_input) =
         mpsc::channel::<TMessage>(1000);
     let (msgs_broadcast_output, mut _rx_broadcast) =
         broadcast::channel::<TMessage>(1000);
 
-    let cache = create_cache::<TMessage>();
+    let cache = cmp_cache::create_cache::<TMessage>();
 
     // кэшируем данные
-    let future =
-        component_cache(msgs_input, Some(msgs_cache_output), cache.clone());
-    spawn(cancellable_task(future, cancel.clone()));
+    let _task_cache = cmp_cache::new(cmp_cache::Config {
+        cache: cache.clone(),
+    })
+    .set_and_spawn(msgs_input, Some(msgs_cache_output));
 
     // распространяем данные через broadcast
     let future = cmpbase_mpsc_to_broadcast::create(
@@ -53,11 +54,11 @@ pub async fn component_websocket_server<TMessage>(
 
     loop {
         info!("Component component_websocket_server started");
-        let result = loop_(
+        let result = task_main(
             cancel.clone(),
             msgs_broadcast_output.clone(),
             &msgs_output,
-            ws_port,
+            config.port,
             cache.clone(),
         )
         .await;
@@ -70,12 +71,12 @@ pub async fn component_websocket_server<TMessage>(
     }
 }
 
-async fn loop_<TMessage>(
+async fn task_main<TMessage>(
     cancel: CancellationToken,
     msgs_broadcast_output: broadcast::Sender<TMessage>,
-    _msgs_output: &mpsc::Sender<TMessage>,
+    _msgs_output: &StreamOutput<TMessage>,
     ws_port: u16,
-    cache: CacheType<TMessage>,
+    cache: cmp_cache::CacheType<TMessage>,
 ) -> Result<(), Errors>
 where
     TMessage: IMessage + 'static,

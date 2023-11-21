@@ -13,7 +13,7 @@ use tower_http::{
 };
 use tracing::{error, info, Level};
 
-use rsiot_extra_components::{component_cache, create_cache};
+use rsiot_extra_components::{create_cache, process};
 use rsiot_messages_core::IMessage;
 
 use crate::{
@@ -31,7 +31,7 @@ pub async fn component_http_server<TMessage>(
 {
     // кеширование входящих сообщений
     let cache = create_cache::<TMessage>();
-    let _task_cache = spawn(component_cache(stream_input, None, cache.clone()));
+    let _task_cache = spawn(process(stream_input, None, cache.clone()));
 
     // общее состояние
     let shared_state = Arc::new(SharedState {
