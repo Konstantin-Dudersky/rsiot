@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\nINSERT INTO raw\nVALUES ($1, $2, $3, $4, $5::agg_type, $6)\nON CONFLICT (ts, entity, attr, agg) DO UPDATE\n    SET value = excluded.value,\n        aggts = excluded.aggts,\n        aggnext = excluded.aggnext;",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Timestamptz",
+        "Text",
+        "Text",
+        "Float8",
+        {
+          "Custom": {
+            "name": "agg_type",
+            "kind": {
+              "Enum": [
+                "curr",
+                "first",
+                "inc",
+                "sum",
+                "mean",
+                "min",
+                "max"
+              ]
+            }
+          }
+        },
+        "Timestamptz"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "8b50201fbf2cb7fc70a92de7d7b118be962745389044950285bc2c9ce242f0a9"
+}
