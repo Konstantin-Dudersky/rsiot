@@ -1,3 +1,14 @@
+//! Метакрейт, импортирующий все другие крейты через флаги feature
+//!
+//! Флаги `feature`:
+#![doc = document_features::document_features!()]
+//!
+//!
+//!
+//!
+
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+
 pub mod component {
     pub use rsiot_component_core::*;
 }

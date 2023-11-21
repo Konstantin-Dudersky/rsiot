@@ -344,6 +344,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "document-features"
+version = "0.2.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e493c573fce17f00dcab13b6ac057994f3ce17d1af4dc39bfd482b83c6eb6157"
+dependencies = [
+ "litrs",
+]
+
+[[package]]
 name = "dotenvy"
 version = "0.15.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -866,6 +875,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "969488b55f8ac402214f3f5fd243ebb7206cf82de60d3172994707a4bcc2b829"
 
 [[package]]
+name = "litrs"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f9275e0933cf8bb20f008924c0cb07a0692fe54d8064996520bf998de9eb79aa"
+
+[[package]]
 name = "lock_api"
 version = "0.4.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1343,8 +1358,9 @@ dependencies = [
 
 [[package]]
 name = "rsiot"
-version = "0.0.0"
+version = "0.0.4"
 dependencies = [
+ "document-features",
  "rsiot-component-core",
  "rsiot-extra-components",
  "rsiot-messages-core",
@@ -1355,7 +1371,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-component-core"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "futures",
  "rsiot-messages-core",
@@ -1364,7 +1380,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-extra-components"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "rsiot-component-core",
  "rsiot-messages-core",
@@ -1376,7 +1392,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-http-client"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "reqwest",
  "rsiot-extra-components",
@@ -1392,7 +1408,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-http-client-config"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "http 1.0.0",
  "rsiot-messages-core",
@@ -1401,7 +1417,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-http-server"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "axum",
  "hyper",
@@ -1417,7 +1433,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-messages-core"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "serde",
  "serde_json",
@@ -1425,7 +1441,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-modbus-client"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "rsiot-messages-core",
  "rsiot-modbus-client-config",
@@ -1439,14 +1455,14 @@ dependencies = [
 
 [[package]]
 name = "rsiot-modbus-client-config"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "url",
 ]
 
 [[package]]
 name = "rsiot-redis-publisher"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "redis",
  "rsiot-component-core",
@@ -1461,7 +1477,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-redis-subscriber"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "futures-util",
  "redis",
@@ -1477,7 +1493,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-timescaledb-storing"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "chrono",
  "rsiot-messages-core",
@@ -1491,7 +1507,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-websocket-client"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "futures-util",
  "rsiot-component-core",
@@ -1507,7 +1523,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-websocket-server"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "futures-util",
  "rsiot-extra-components",

@@ -1,11 +1,14 @@
 [package]
 name = "rsiot"
-version = "0.0.0"
-edition = "2021"
+version = "0.0.4"
 description = "Метакрейт, импортирующий все другие крейты через флаги feature"
-
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
 
 [dependencies]
+document-features = { workspace = true }
+
 rsiot-component-core = { workspace = true }
 rsiot-extra-components = { workspace = true }
 rsiot-messages-core = { workspace = true }
@@ -13,15 +16,25 @@ rsiot-redis-publisher = { workspace = true }
 rsiot-redis-subscriber = { workspace = true }
 rsiot-websocket-client = { workspace = true }
 
+
 [features]
+## Компонент http-клиент
 http-client = []
+## Компонент http-сервер
 http-server = []
+## Компонент Modbus клиент
 modbus-client = []
+## Компонент публикации сообщений в Redis
 redis-publisher = []
+## Компонент подписики на сообщения из Redis
 redis-subscriber = []
+## Компонент сохранения в БД TimescaleDB
 timescaledb-storing = []
+## Компонент websocket клиента
 websocket-client = []
+## Компонент websocket сервера
 websocket-server = []
 
 [package.metadata.docs.rs]
 all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
