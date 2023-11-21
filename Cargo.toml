@@ -13,6 +13,7 @@ members = [
     "./rsiot-timescaledb-storing",
     "./rsiot-websocket-server",
     "./rsiot-websocket-client",
+    "./rsiot",
 ]
 resolver = "2"
 
@@ -44,15 +45,11 @@ tracing = { version = "0.1" }
 tracing-subscriber = { version = "0.3" }
 url = { version = "2.4" }
 
-rsiot-extra-components = { version = "0.0.3" }
-rsiot-component-core = { version = "0.0.3" }
-rsiot-http-client-config = { version = "0.0.3" }
-rsiot-messages-core = { version = "0.0.3" }
-rsiot-modbus-client-config = { version = "0.0.3" }
-
-[patch.crates-io]
-rsiot-extra-components = { path = "./rsiot-extra-components" }
-rsiot-component-core = { path = "./rsiot-component-core" }
-rsiot-http-client-config = { path = "./rsiot-http-client-config" }
-rsiot-messages-core = { path = "./rsiot-messages-core" }
-rsiot-modbus-client-config = { path = "./rsiot-modbus-client-config" }
+rsiot-extra-components = { version = "0.0.3", path = "./rsiot-extra-components" }
+rsiot-component-core = { version = "0.0.3", path = "./rsiot-component-core" }
+rsiot-http-client-config = { version = "0.0.3", path = "./rsiot-http-client-config" }
+rsiot-messages-core = { version = "0.0.3", path = "./rsiot-messages-core" }
+rsiot-modbus-client-config = { version = "0.0.3", path = "./rsiot-modbus-client-config" }
+rsiot-redis-publisher = { version = "0.0.3", path = "./rsiot-redis-publisher" }
+rsiot-redis-subscriber = { version = "0.0.3", path = "./rsiot-redis-subscriber" }
+rsiot-websocket-client = { version = "0.0.3", path = "./rsiot-websocket-client" }

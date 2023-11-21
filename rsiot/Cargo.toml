@@ -1,0 +1,27 @@
+[package]
+name = "rsiot"
+version = "0.0.0"
+edition = "2021"
+description = "Метакрейт, импортирующий все другие крейты через флаги feature"
+
+
+[dependencies]
+rsiot-component-core = { workspace = true }
+rsiot-extra-components = { workspace = true }
+rsiot-messages-core = { workspace = true }
+rsiot-redis-publisher = { workspace = true }
+rsiot-redis-subscriber = { workspace = true }
+rsiot-websocket-client = { workspace = true }
+
+[features]
+http-client = []
+http-server = []
+modbus-client = []
+redis-publisher = []
+redis-subscriber = []
+timescaledb-storing = []
+websocket-client = []
+websocket-server = []
+
+[package.metadata.docs.rs]
+all-features = true
