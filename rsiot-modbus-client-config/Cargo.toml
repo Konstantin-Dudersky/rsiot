@@ -1,10 +1,10 @@
 [package]
 name = "rsiot-modbus-client-config"
 version = "0.0.4"
-edition = "2021"
-license = "MIT"
 description = "Конфигурация для Modbus клиента"
-
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
 
 [dependencies]
 url = { workspace = true }

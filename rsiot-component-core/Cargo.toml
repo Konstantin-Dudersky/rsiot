@@ -1,9 +1,10 @@
 [package]
 name = "rsiot-component-core"
 version = "0.0.4"
-edition = "2021"
 description = "Типы данных для создания компонентов"
-license = "MIT"
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
 
 [dependencies]
 futures = { workspace = true }
