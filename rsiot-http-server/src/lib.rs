@@ -1,7 +1,13 @@
-mod component_http_server;
+mod config;
 mod error;
+mod new;
+mod process;
 mod route_message_get;
 mod route_message_put;
 mod shared_state;
 
-pub use component_http_server::component_http_server;
+/// Компонент для подключения через HTTP server.
+///
+pub mod cmp_http_server {
+    pub use crate::{config::Config, new::new};
+}

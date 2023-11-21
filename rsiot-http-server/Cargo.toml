@@ -14,9 +14,9 @@ tracing = { workspace = true }
 tower-http = { workspace = true }
 url = { workspace = true }
 
+rsiot-component-core = { workspace = true }
 rsiot-extra-components = { workspace = true }
 rsiot-messages-core = { workspace = true }
-
 
 [dev-dependencies]
 serde = { workspace = true }

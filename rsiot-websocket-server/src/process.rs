@@ -25,8 +25,8 @@ use super::{
 
 /// TODO - получение сообщений от клиентов и перенаправление в выходной поток
 pub async fn process<TMessage>(
-    msgs_input: StreamInput<TMessage>,
-    msgs_output: StreamOutput<TMessage>,
+    input: StreamInput<TMessage>,
+    output: StreamOutput<TMessage>,
     config: Config,
 ) where
     TMessage: IMessage + 'static,
@@ -43,7 +43,7 @@ pub async fn process<TMessage>(
     let _task_cache = cmp_cache::new(cmp_cache::Config {
         cache: cache.clone(),
     })
-    .set_and_spawn(msgs_input, Some(msgs_cache_output));
+    .set_and_spawn(input, Some(msgs_cache_output));
 
     // распространяем данные через broadcast
     let future = cmpbase_mpsc_to_broadcast::create(
@@ -57,7 +57,7 @@ pub async fn process<TMessage>(
         let result = task_main(
             cancel.clone(),
             msgs_broadcast_output.clone(),
-            &msgs_output,
+            &output,
             config.port,
             cache.clone(),
         )

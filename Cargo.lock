@@ -1422,6 +1422,7 @@ version = "0.0.4"
 dependencies = [
  "axum",
  "hyper",
+ "rsiot-component-core",
  "rsiot-extra-components",
  "rsiot-messages-core",
  "serde",

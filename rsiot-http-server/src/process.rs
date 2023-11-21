@@ -1,11 +1,7 @@
 use std::sync::Arc;
 
 use axum::routing;
-use tokio::{
-    spawn,
-    sync::mpsc,
-    time::{sleep, Duration},
-};
+use tokio::time::{sleep, Duration};
 use tower_http::{
     cors::CorsLayer,
     trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
@@ -13,35 +9,39 @@ use tower_http::{
 };
 use tracing::{error, info, Level};
 
-use rsiot_extra_components::{create_cache, process};
+use rsiot_component_core::{IComponent, StreamInput, StreamOutput};
+use rsiot_extra_components::cmp_cache;
 use rsiot_messages_core::IMessage;
 
 use crate::{
-    error::Error, route_message_get::route_message_get,
+    config::Config, error::Error, route_message_get::route_message_get,
     route_message_put::route_message_put, shared_state::SharedState,
 };
 
 /// Компонент для получения и ввода сообщений через HTTP Server
-pub async fn component_http_server<TMessage>(
-    stream_input: mpsc::Receiver<TMessage>,
-    stream_output: mpsc::Sender<TMessage>,
-    port: u16,
+pub async fn process<TMessage>(
+    input: StreamInput<TMessage>,
+    output: StreamOutput<TMessage>,
+    config: Config,
 ) where
     TMessage: IMessage + 'static,
 {
-    // кеширование входящих сообщений
-    let cache = create_cache::<TMessage>();
-    let _task_cache = spawn(process(stream_input, None, cache.clone()));
+    // кэшируем данные
+    let cache = cmp_cache::create_cache::<TMessage>();
+    let _task_cache = cmp_cache::new(cmp_cache::Config {
+        cache: cache.clone(),
+    })
+    .set_and_spawn(input, None);
 
     // общее состояние
     let shared_state = Arc::new(SharedState {
         cache,
-        stream_output,
+        stream_output: output.unwrap(),
     });
 
     loop {
         info!("Component started");
-        let result = loop_(shared_state.clone(), port).await;
+        let result = task_main(shared_state.clone(), config.port).await;
         if let Err(err) = result {
             error!("{:?}", err);
         }
@@ -50,7 +50,7 @@ pub async fn component_http_server<TMessage>(
     }
 }
 
-async fn loop_<TMessage>(
+async fn task_main<TMessage>(
     shared_state: Arc<SharedState<TMessage>>,
     port: u16,
 ) -> Result<(), Error<TMessage>>

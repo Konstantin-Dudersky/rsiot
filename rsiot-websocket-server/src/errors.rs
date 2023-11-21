@@ -3,9 +3,7 @@ use tokio_tungstenite::tungstenite::Error as WsError;
 
 #[derive(Debug)]
 pub enum Errors {
-    GetAllFromRedis(String),
     SendToWsError(String),
-    MessagesError(String),
     WsError(WsError),
     BindToPortError(StdIoError),
 }

@@ -1,14 +1,12 @@
 use serde::{Deserialize, Serialize};
-use tokio::{
-    main, spawn,
-    sync::mpsc,
-    time::{sleep, Duration},
-};
-
-use rsiot_http_server::component_http_server;
-use rsiot_messages_core::IMessage;
-use tracing::info;
+use tokio::{main, time::Duration};
+use tracing::Level;
 use tracing_subscriber::filter::LevelFilter;
+
+use rsiot_component_core::ComponentChain;
+use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
+use rsiot_http_server::cmp_http_server;
+use rsiot_messages_core::IMessage;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 enum Message {
@@ -25,30 +23,21 @@ async fn main() {
         .with_max_level(LevelFilter::DEBUG)
         .init();
 
-    let (stream_origin, stream_http_input) = mpsc::channel::<Message>(100);
-    let (stream_http_output, mut stream_end) = mpsc::channel::<Message>(100);
-
     let mut counter = 0.0;
-    let _origin_task = spawn(async move {
-        loop {
-            let msg = Message::Message0(counter);
-            counter += 1.0;
-            stream_origin.send(msg).await.unwrap();
-            sleep(Duration::from_secs(2)).await;
-        }
-    });
 
-    let main_task = spawn(component_http_server(
-        stream_http_input,
-        stream_http_output,
-        8011,
-    ));
+    let mut chain = ComponentChain::init(100)
+        .start_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
+            period: Duration::from_secs(2),
+            fn_periodic: move || {
+                let msg = Message::Message0(counter);
+                counter += 1.0;
+                vec![msg]
+            },
+        }))
+        .then_cmp(cmp_http_server::new(cmp_http_server::Config { port: 8011 }))
+        .end_cmp(cmp_logger::create(cmp_logger::Config {
+            level: Level::INFO,
+        }));
 
-    let _end_task = spawn(async move {
-        while let Some(msg) = stream_end.recv().await {
-            info!("New message from HTTP: {:?}", msg);
-        }
-    });
-
-    main_task.await.unwrap();
+    chain.spawn().await;
 }
