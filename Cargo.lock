@@ -1498,6 +1498,8 @@ name = "rsiot-timescaledb-storing"
 version = "0.0.4"
 dependencies = [
  "chrono",
+ "rsiot-component-core",
+ "rsiot-extra-components",
  "rsiot-messages-core",
  "serde",
  "sqlx",

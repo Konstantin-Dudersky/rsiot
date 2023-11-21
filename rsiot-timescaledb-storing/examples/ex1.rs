@@ -1,14 +1,12 @@
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
-use tokio::{
-    main, spawn,
-    sync::mpsc,
-    time::{sleep, Duration},
-};
+use tokio::{main, time::Duration};
 use url::Url;
 
+use rsiot_component_core::ComponentChain;
+use rsiot_extra_components::cmp_inject_periodic;
 use rsiot_messages_core::IMessage;
-use rsiot_timescaledb_storing::{start_timescaledb_storing, Row};
+use rsiot_timescaledb_storing::cmp_timescaledb_storing::{self, Row};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 enum Message {
@@ -25,27 +23,28 @@ async fn main() {
         Url::parse("postgres://postgres:postgres@localhost:5432/db_data_test")
             .unwrap();
 
-    let (channel_send, channel_rcv) = mpsc::channel::<Message>(128);
+    let mut counter = 0.0;
 
-    let mut counter = 0;
-    let _task_simulation = spawn(async move {
-        loop {
-            channel_send
-                .send(Message::Message0(counter as f64))
-                .await
-                .unwrap();
-            counter += 1;
-            sleep(Duration::from_secs(2)).await;
-        }
-    });
+    let mut chain = ComponentChain::init(100)
+        .start_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
+            period: Duration::from_secs(2),
+            fn_periodic: move || {
+                let msg = Message::Message0(counter);
+                counter += 1.0;
+                vec![msg]
+            },
+        }))
+        .end_cmp(cmp_timescaledb_storing::new(
+            cmp_timescaledb_storing::Config {
+                fn_process,
+                connection_string: url,
+            },
+        ));
 
-    let task_storing =
-        spawn(start_timescaledb_storing(channel_rcv, config, url));
-
-    task_storing.await.unwrap();
+    chain.spawn().await;
 }
 
-fn config(msg: Message) -> Option<Row> {
+fn fn_process(msg: Message) -> Option<Row> {
     let entity = msg.key();
     let ts_now = Utc::now().into();
     match msg {

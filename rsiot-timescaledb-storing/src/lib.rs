@@ -1,7 +1,13 @@
+mod config;
 mod error;
+mod new;
+mod process;
 mod row;
-mod start_timescaledb_storing;
 
-pub use error::Error;
-pub use row::{AggType, Row};
-pub use start_timescaledb_storing::start_timescaledb_storing;
+pub mod cmp_timescaledb_storing {
+    pub use crate::{
+        config::Config,
+        new::new,
+        row::{AggType, Row},
+    };
+}

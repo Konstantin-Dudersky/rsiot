@@ -1,28 +1,42 @@
 use sqlx::{postgres::PgPoolOptions, query, Pool, Postgres};
 use tokio::{
-    sync::mpsc::Receiver,
+    sync::mpsc,
     time::{sleep, Duration},
 };
 use tracing::{error, info, trace};
 use url::Url;
 
+use rsiot_component_core::{StreamInput, StreamOutput};
 use rsiot_messages_core::IMessage;
 
-use crate::{AggType, Error, Row};
+use crate::{
+    config::Config,
+    error::Error,
+    row::{AggType, Row},
+};
 
-pub async fn start_timescaledb_storing<TMessage>(
-    mut channel_rcv: Receiver<TMessage>,
-    config: fn(TMessage) -> Option<Row>,
-    db_url: Url,
+pub async fn process<TMessage>(
+    input: StreamInput<TMessage>,
+    _output: StreamOutput<TMessage>,
+    config: Config<TMessage>,
 ) where
     TMessage: IMessage,
 {
+    info!("Start timescaledb-storing");
+    let mut input = match input {
+        Some(val) => val,
+        None => {
+            let err = "Input stream not set, exit";
+            error!(err);
+            return;
+        }
+    };
+
     loop {
-        info!("Start timescaledb-storing");
-        let result = start_timescaledb_storing_loop::<TMessage>(
-            &mut channel_rcv,
-            config,
-            &db_url,
+        let result = task_main::<TMessage>(
+            &mut input,
+            config.fn_process,
+            &config.connection_string,
         )
         .await;
         match result {
@@ -34,31 +48,28 @@ pub async fn start_timescaledb_storing<TMessage>(
     }
 }
 
-async fn start_timescaledb_storing_loop<TMessage>(
-    channel_rcv: &mut Receiver<TMessage>,
-    config: fn(TMessage) -> Option<Row>,
-    db_url: &Url,
+async fn task_main<TMessage>(
+    input: &mut mpsc::Receiver<TMessage>,
+    fn_process: fn(TMessage) -> Option<Row>,
+    connection_string: &Url,
 ) -> Result<(), Error>
 where
     TMessage: IMessage,
 {
     let pool = PgPoolOptions::new()
         .max_connections(5)
-        .connect(db_url.as_str())
+        .connect(connection_string.as_str())
         .await?;
-    while let Some(msg) = channel_rcv.recv().await {
-        let row = config(msg);
+    while let Some(msg) = input.recv().await {
+        let row = fn_process(msg);
         if let Some(row) = row {
-            save_row_in_db(&row, &pool).await.unwrap();
+            save_row_in_db(&row, &pool).await?;
         };
     }
     Ok(())
 }
 
-pub async fn save_row_in_db(
-    row: &Row,
-    pool: &Pool<Postgres>,
-) -> Result<(), Error> {
+async fn save_row_in_db(row: &Row, pool: &Pool<Postgres>) -> Result<(), Error> {
     trace!("Save row in database: {:?}", row);
     let _ = query!(
         r#"

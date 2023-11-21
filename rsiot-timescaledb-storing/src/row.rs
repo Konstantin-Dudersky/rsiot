@@ -1,3 +1,5 @@
+//! Модель строки в БД
+
 use chrono::{DateTime, FixedOffset};
 use sqlx::{FromRow, Type};
 
