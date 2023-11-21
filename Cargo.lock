@@ -89,7 +89,7 @@ dependencies = [
  "bytes",
  "futures-util",
  "http 0.2.11",
- "http-body 0.4.5",
+ "http-body",
  "hyper",
  "itoa",
  "matchit",
@@ -119,7 +119,7 @@ dependencies = [
  "bytes",
  "futures-util",
  "http 0.2.11",
- "http-body 0.4.5",
+ "http-body",
  "mime",
  "rustversion",
  "tower-layer",
@@ -709,27 +709,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "http-body"
-version = "1.0.0"
+name = "http-range-header"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1cac85db508abc24a2e48553ba12a996e87244a0395ce011e62b37158745d643"
-dependencies = [
- "bytes",
- "http 1.0.0",
-]
-
-[[package]]
-name = "http-body-util"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "41cb79eb393015dadd30fc252023adb0b2400a0caee0fa2a077e6e21a551e840"
-dependencies = [
- "bytes",
- "futures-util",
- "http 1.0.0",
- "http-body 1.0.0",
- "pin-project-lite",
-]
+checksum = "add0ab9360ddbd88cfeb3bd9574a1d85cfdfa14db10b3e21d3700dbc4328758f"
 
 [[package]]
 name = "httparse"
@@ -755,7 +738,7 @@ dependencies = [
  "futures-util",
  "h2",
  "http 0.2.11",
- "http-body 0.4.5",
+ "http-body",
  "httparse",
  "httpdate",
  "itoa",
@@ -1328,7 +1311,7 @@ dependencies = [
  "futures-util",
  "h2",
  "http 0.2.11",
- "http-body 0.4.5",
+ "http-body",
  "hyper",
  "hyper-tls",
  "ipnet",
@@ -1375,7 +1358,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "document-features",
  "rsiot-component-core",
@@ -1390,7 +1373,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-component-core"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "futures",
  "rsiot-messages-core",
@@ -1399,7 +1382,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-extra-components"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "rsiot-component-core",
  "rsiot-messages-core",
@@ -1411,7 +1394,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-http-client"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "reqwest",
  "rsiot-extra-components",
@@ -1427,7 +1410,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-http-client-config"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "http 1.0.0",
  "rsiot-messages-core",
@@ -1436,7 +1419,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-http-server"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "axum",
  "hyper",
@@ -1453,7 +1436,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-messages-core"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "serde",
  "serde_json",
@@ -1461,7 +1444,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-modbus-client"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "rsiot-messages-core",
  "rsiot-modbus-client-config",
@@ -1475,14 +1458,14 @@ dependencies = [
 
 [[package]]
 name = "rsiot-modbus-client-config"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "url",
 ]
 
 [[package]]
 name = "rsiot-redis-publisher"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "redis",
  "rsiot-component-core",
@@ -1497,7 +1480,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-redis-subscriber"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "futures-util",
  "redis",
@@ -1513,7 +1496,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-timescaledb-storing"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "chrono",
  "rsiot-component-core",
@@ -1529,7 +1512,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-websocket-client"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "futures-util",
  "rsiot-component-core",
@@ -1545,7 +1528,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-websocket-server"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "futures-util",
  "rsiot-component-core",
@@ -2243,16 +2226,17 @@ dependencies = [
 
 [[package]]
 name = "tower-http"
-version = "0.5.0"
+version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "09e12e6351354851911bdf8c2b8f2ab15050c567d70a8b9a37ae7b8301a4080d"
+checksum = "61c5bb1d698276a2443e5ecfabc1008bf15a36c12e6a7176e7bf089ea9131140"
 dependencies = [
  "bitflags 2.4.1",
  "bytes",
+ "futures-core",
  "futures-util",
- "http 1.0.0",
- "http-body 1.0.0",
- "http-body-util",
+ "http 0.2.11",
+ "http-body",
+ "http-range-header",
  "pin-project-lite",
  "tower-layer",
  "tower-service",

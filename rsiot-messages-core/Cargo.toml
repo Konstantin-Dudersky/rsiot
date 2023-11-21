@@ -1,6 +1,6 @@
 [package]
 name = "rsiot-messages-core"
-version = "0.0.4"
+version = "0.0.5"
 description = "Базовые трейты для реализации типа сообщения"
 license.workspace = true
 edition.workspace = true

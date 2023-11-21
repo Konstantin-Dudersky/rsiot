@@ -1,6 +1,6 @@
 [package]
 name = "rsiot-modbus-client-config"
-version = "0.0.4"
+version = "0.0.5"
 description = "Конфигурация для Modbus клиента"
 license.workspace = true
 edition.workspace = true
