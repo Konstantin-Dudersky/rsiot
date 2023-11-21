@@ -45,7 +45,7 @@ tokio = { version = "1", features = ["full"] }
 tokio-modbus = { version = "0.9", default-features = false, features = ["tcp"] }
 tokio-tungstenite = { version = "0.20" }
 tokio-util = { version = "0.7" }
-tower-http = { version = "0.4", features = ["cors", "trace"] }
+tower-http = { version = "0.5", features = ["cors", "trace"] }
 tracing = { version = "0.1" }
 tracing-subscriber = { version = "0.3" }
 url = { version = "2.4" }
@@ -60,5 +60,6 @@ rsiot-messages-core = { version = "0.0.4", path = "./rsiot-messages-core" }
 rsiot-modbus-client-config = { version = "0.0.4", path = "./rsiot-modbus-client-config" }
 rsiot-redis-publisher = { version = "0.0.4", path = "./rsiot-redis-publisher" }
 rsiot-redis-subscriber = { version = "0.0.4", path = "./rsiot-redis-subscriber" }
+rsiot-timescaledb-storing = { version = "0.0.4", path = "./rsiot-timescaledb-storing" }
 rsiot-websocket-client = { version = "0.0.4", path = "./rsiot-websocket-client" }
 rsiot-websocket-server = { version = "0.0.4", path = "./rsiot-websocket-server" }

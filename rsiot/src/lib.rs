@@ -4,8 +4,6 @@
 #![doc = document_features::document_features!()]
 //!
 //!
-//!
-//!
 
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 
@@ -32,6 +30,9 @@ pub mod cmp_redis_subscriber {
         cmp_redis_subscriber::create, cmp_redis_subscriber::Config, Error,
     };
 }
+
+#[cfg(feature = "timescaledb-storing")]
+pub use rsiot_timescaledb_storing::cmp_timescaledb_storing;
 
 #[cfg(feature = "websocket-client")]
 pub mod cmp_websocket_client {
