@@ -1,3 +1,7 @@
+//! Modbus клиент
+#![doc=include_str!("../../doc/component-modbus-client.svg")]
+//!
+
 mod errors;
 mod start_modbus_client;
 mod types;

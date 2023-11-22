@@ -1,10 +1,10 @@
-//! Метакрейт, импортирующий все другие крейты через флаги feature
-//!
-//! Флаги `feature`:
-#![doc = document_features::document_features!()]
+#![doc = include_str!("../../README.md")]
+
+//! ## Флаги `feature`:
 //!
 //!
 
+#![doc = document_features::document_features!()]
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 
 pub mod component {
@@ -16,6 +16,9 @@ pub mod message {
 }
 
 pub use rsiot_extra_components::*;
+
+#[cfg(feature = "http-server")]
+pub use rsiot_http_server::cmp_http_server;
 
 #[cfg(feature = "redis-publisher")]
 pub mod cmp_redis_publisher {

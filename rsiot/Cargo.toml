@@ -11,12 +11,18 @@ document-features = { workspace = true }
 
 rsiot-component-core = { workspace = true }
 rsiot-extra-components = { workspace = true }
+rsiot-http-client = { workspace = true }
+rsiot-http-server = { workspace = true }
 rsiot-messages-core = { workspace = true }
 rsiot-redis-publisher = { workspace = true }
 rsiot-redis-subscriber = { workspace = true }
 rsiot-websocket-client = { workspace = true }
 rsiot-websocket-server = { workspace = true }
 rsiot-timescaledb-storing = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }
+serde = { workspace = true }
 
 [features]
 ## Компонент http-клиент

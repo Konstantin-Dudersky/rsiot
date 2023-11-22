@@ -1,128 +1,117 @@
 Компоненты для построения системы сбора данных
 
-Можно использовать для разработки:
-
-- шлюзов данных, для связи устройств автоматизации с системами верхнего уровня
-
-- устройства для сбора и архивирования данных с устройств автоматизации
+[Документация](https://docs.rs/rsiot/latest/)
 
 ## Компоненты
 
-### Опрос и управление устройствами
+#### Взаимодействие с устройствами нижнего уровня
 
-#### [rsiot-modbus-client](./rsiot-modbus-client/README.md) - Modbus client (TCP, RTU)
+- modbus-client
 
-![](./doc/component-modbus-client.svg)
+Взаимодейтсвие с устройствами, поддерживающими протокол Modbus TCP сервер / Modbus RTU slave.
+[Документация](https://docs.rs/rsiot-modbus-client/latest/)
 
-#### OPC UA
+- http-client
 
-#### S7 (контроллеры Сименс)
+Взаимодействие с устройствами, имеющих HTTP API.
+[Документация](https://docs.rs/rsiot-http-client/latest/)
 
-#### [rsiot-http-client](./rsiot-http-client/README.md)
+- websocket-client
 
-Отправка и получение данных на внешний HTTP API сервер
+Взаимодействие с устройствами, поддерживющими функциональность Websocket сервера.
+[Документация](https://docs.rs/rsiot-websocket-client/latest/)
 
-#### [rsiot-websocket-client](./rsiot-websocket-client/README.md)
+- TODO opcua-client
 
-Получение и отправка на внешний сервер Websocket
+Взаимодействие с контроллерами, имеющими функциональность OPC UA сервера.
 
-### Отдача данных
+- TODO s7-client
 
-#### [rsiot-http-server](./rsiot-http-server/README.md)
+Взаимодействие с контроллерами Siemens по протоколу S7.
 
-Получение и ввод данных через HTTP API
+#### Взаимодействие с системами верхнего уровня
 
-![](./doc/component-http-server.svg)
+- http-server
 
-#### [rsiot-websocket-server](./rsiot-websocket-server/README.md)
+Поддержка HTTP API, через который внешние клиенты могут получать и вводить данные.
+[Документация](https://docs.rs/rsiot-http-server/latest/)
 
-Получение и ввод данных через Websocket Server
+- websocket-server
 
-![](./doc/component-websocket-server.svg)
+Поддержка Websocket сервера, к которому могут подключаться внешние клиенты.
+[Документация](https://docs.rs/rsiot-websocket-server/latest/)
 
-#### MQTT
+- TODO mqtt
 
-#### Modbus TCP master
+- TODO telegram
 
-#### Telegram bot - отправка сообщений
+#### Брокеры сообщений
 
-### Брокеры сообщений
+- redis-publisher
 
-#### [rsiot-redis-publisher](./rsiot-redis-publisher/README.md) - публикация сообщений в Redis
+Публикация сообщений в Redis.
+[Документация](https://docs.rs/rsiot-redis-publisher/latest/)
 
-![](./doc/component-redis-publisher.svg)
+- redis-subscriber
 
-#### [rsiot-redis-subscriber](./rsiot-redis-subscriber/README.md) - получение данных из Redis
+Подписка на сообщения из Redis.
+[Документация](https://docs.rs/rsiot-redis-subscriber/latest/)
 
-![](./doc/component-redis-subscriber.svg)
+#### Сохранение данных в БД
 
-### Сохранение данных в базе
+- timescaledb-storing
 
-#### [rsiot-timescaledb-storing](./rsiot-timescaledb-storing/README.md) - TimescaleDB
+Сохрание сообщений в виде временных рядов в TimescaleDB.
+[Документация](https://docs.rs/rsiot-timescaledb-storing/latest)
 
-![](./doc/component-timescaledb-storing.svg)
+#### Интерфейсы пользователя
 
-### Построение интерфейса
-
-#### leptos
-
-### [Служебные компоненты](./rsiot-extra-components/README.md)
-
-#### component_cache
-
-Сохранение сообщений в кеше. Входящие сообщения могут сразу пересылаться на выход.
-
-![](./doc/component-cache.svg)
-
-#### component_combine
-
-#### component_delay
-
-Перенаправление сообщений с задержкой. Поступающие сообщения сохраняются в кеше, периодически значения из кеша пересылаются на выход.
-
-![](./doc/component-delay.svg)
-
-#### component_filter
-
-#### component_mpsc_to_broadcast
-
-#### component_mpsc_to_many_mpsc
+- TODO leptos
 
 ## Описание
 
-Отдельные компоненты выполнены в виде асинхронных задач `tokio`. Взаимодействие через очереди сообщений `tokio::sync::mpsc`.
+**Компоненты** представляют собой асинхронные функции. У всех функций три аргумента:
 
-## Разработка
-
-Для запуска необходимых docker-образов:
-
-```bash
-docker compose --profile dev up -d
+```rust
+# use tokio;
+# use rsiot_messages_core::IMessage;
+async fn component<TMessage, TConfig>(
+    input: Option<tokio::sync::mpsc::Receiver<TMessage>>,
+    output: Option<tokio::sync::mpsc::Sender<TMessage>>,
+    config: TConfig,
+) -> ()
+where
+    TMessage: IMessage
+{}
 ```
 
-## Публикация версии
+Сообщения между компонентами передаются через каналы "many producers to a single consumer" библиотеки `tokio`.
 
-Проверяем, что все компилируется без ошибок:
+Входной или выходной потоки могут быть не заданы, поэтому каналы обернуты в Option.
 
-```bash
-cargo build
+Структура конфигурации типа `TConfig` у каждого компонента своя.
+
+Компоненты ничего не возвращают (точнее, возвращают тип `()`). Если в компоненте возникает ошибка, логику перезапуска необходимо реализовать внутри данной функции.
+TODO - пересмотреть, возможно стоит возвращать Result при критических ошибках.
+
+**Сообщения** представляют собой тип enum, например:
+
+```rust
+# use rsiot_messages_core::IMessage;
+# use serde::{Deserialize, Serialize};
+#[derive(Clone, Debug, Deserialize, Serialize)]
+enum Message {
+    /// Текущее значение температуры
+    Temperature(f64),
+    /// Задание уставки
+    ChangeSetpoint(f64),
+}
+
+impl IMessage for Message {}
 ```
 
-Изменяем номер версии проекта:
+Трейт `IMessage` реализует основные методы - см. документацию по крейту [rsiot-messages-core](https://docs.rs/rsiot-messages-core/latest)
 
-```bash
-cargo ws version patch --no-git-push
-# или major, minor, patch
-```
+Для упрощения компоненты можно создавать и объединять в **цепочку компонентов**.
 
-Публикуем на `crates.io`:
-
-```bash
-cargo ws publish --from-git --allow-dirty
-```
-
-## Идеи для улучшения
-
-TODO - заменить указатели функций на трейты Fn
-
-TODO - обновить до hyper версии 1.0 - какие-то ошибки. Подождать обновления axum
+TODO - добавить пример с Modbus-клиентом

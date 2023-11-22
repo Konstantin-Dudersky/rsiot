@@ -1363,12 +1363,16 @@ dependencies = [
  "document-features",
  "rsiot-component-core",
  "rsiot-extra-components",
+ "rsiot-http-client",
+ "rsiot-http-server",
  "rsiot-messages-core",
  "rsiot-redis-publisher",
  "rsiot-redis-subscriber",
  "rsiot-timescaledb-storing",
  "rsiot-websocket-client",
  "rsiot-websocket-server",
+ "serde",
+ "tokio",
 ]
 
 [[package]]
