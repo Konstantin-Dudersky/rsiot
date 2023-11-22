@@ -24,7 +24,7 @@ async fn main() {
 
     let mut chain = ComponentChain::init(100)
         .start_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
-            period: Duration::from_secs(2),
+            period: Duration::from_secs(10),
             fn_periodic: move || {
                 let msg = Message::Message0(counter);
                 counter += 1.0;
@@ -33,6 +33,8 @@ async fn main() {
         }))
         .then_cmp(cmp_websocket_server::new(cmp_websocket_server::Config {
             port: 8020,
+            fn_send_to_client: |msg: Message| msg.to_json().ok(),
+            fn_recv_from_client: |data: &str| Message::from_json(data).ok(),
         }))
         .end_cmp(cmp_logger::create(cmp_logger::Config {
             level: Level::INFO,

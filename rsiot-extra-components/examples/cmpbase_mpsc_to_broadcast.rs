@@ -36,7 +36,7 @@ async fn main() {
         }
     });
 
-    let main_task = spawn(cmpbase_mpsc_to_broadcast::create(
+    let main_task = spawn(cmpbase_mpsc_to_broadcast::new(
         Some(mpsc_rcv),
         broadcast_send,
     ));

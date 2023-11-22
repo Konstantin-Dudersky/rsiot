@@ -3,7 +3,9 @@ use rsiot_messages_core::IMessage;
 
 use crate::{config::Config, process::process};
 
-pub fn new<TMessage>(config: Config) -> Box<Component<TMessage, Config>>
+pub fn new<TMessage>(
+    config: Config<TMessage>,
+) -> Box<Component<TMessage, Config<TMessage>>>
 where
     TMessage: IMessage + 'static,
 {

@@ -2,8 +2,8 @@ use std::net::SocketAddr;
 
 use futures_util::SinkExt;
 use tokio::{net::TcpStream, sync::broadcast};
-use tokio_tungstenite::{accept_async, tungstenite::Message};
-use tracing::{error, info};
+use tokio_tungstenite::{accept_async, tungstenite::Message, WebSocketStream};
+use tracing::{info, warn};
 
 use rsiot_extra_components::cmp_cache::CacheType;
 use rsiot_messages_core::IMessage;
@@ -12,44 +12,68 @@ use crate::errors::Errors;
 
 /// Создание и управление подключением websocket
 pub async fn handle_ws_connection<TMessage>(
-    raw_stream: TcpStream,
-    addr: SocketAddr,
-    rx: broadcast::Receiver<TMessage>,
+    stream_and_addr: (TcpStream, SocketAddr),
+    input: broadcast::Receiver<TMessage>,
     cache: CacheType<TMessage>,
+    fn_senf_to_client: fn(TMessage) -> Option<String>,
 ) where
-    TMessage: IMessage,
+    TMessage: IMessage + 'static,
 {
-    let result = _handle_ws_connection(raw_stream, addr, rx, cache).await;
+    let addr = stream_and_addr.1.clone();
+    let result =
+        _handle_ws_connection(input, stream_and_addr, cache, fn_senf_to_client)
+            .await;
     match result {
         Ok(_) => (),
         Err(err) => {
-            error!("Websocket client from address: {}, error: {:?}", addr, err)
+            warn!("Websocket client from address: {}, error: {:?}", addr, err)
         }
     }
 }
 
 async fn _handle_ws_connection<TMessage>(
-    raw_stream: TcpStream,
-    addr: SocketAddr,
-    mut rx: broadcast::Receiver<TMessage>,
+    input: broadcast::Receiver<TMessage>,
+    stream_and_addr: (TcpStream, SocketAddr),
+    cache: CacheType<TMessage>,
+    fn_senf_to_client: fn(TMessage) -> Option<String>,
+) -> Result<(), Errors>
+where
+    TMessage: IMessage + 'static,
+{
+    info!("Incoming TCP connection from: {}", stream_and_addr.1);
+    let mut ws_stream = accept_async(stream_and_addr.0).await?;
+    info!("WebSocket connection established: {:?}", stream_and_addr.1);
+
+    let _send_cache =
+        send_cache(&mut ws_stream, fn_senf_to_client, cache.clone()).await?;
+
+    let _send_new_msgs =
+        send_new_msgs(input, &mut ws_stream, fn_senf_to_client).await?;
+
+    Ok(())
+}
+
+/// При подключении нового клиента отправляем все данные из кеша
+async fn send_cache<TMessage>(
+    ws_stream_output: &mut WebSocketStream<TcpStream>,
+    fn_senf_to_client: fn(TMessage) -> Option<String>,
     cache: CacheType<TMessage>,
 ) -> Result<(), Errors>
 where
     TMessage: IMessage,
 {
-    info!("Incoming TCP connection from: {}", addr);
-    let mut ws_stream = accept_async(raw_stream).await?;
-    info!("WebSocket connection established: {:?}", addr);
-
     let local_cache: Vec<TMessage>;
-    // отправляем для нового клиента все сообщение из кеша
     {
         let lock = cache.lock().await;
         local_cache = lock.values().cloned().collect();
     }
     for msg in local_cache {
-        let msg = msg.to_json().unwrap();
-        let result = ws_stream.send(Message::Text(msg)).await;
+        let msg = (fn_senf_to_client)(msg);
+        let msg = match msg {
+            Some(val) => val,
+            None => continue,
+        };
+        let result = ws_stream_output.send(Message::Text(msg)).await;
         match result {
             Ok(_) => (),
             Err(error) => {
@@ -58,11 +82,25 @@ where
             }
         };
     }
+    Ok(())
+}
 
-    // отправляем новые сообщения
-    while let Ok(msg) = rx.recv().await {
-        let msg = msg.to_json().unwrap();
-        let result = ws_stream.send(Message::Text(msg)).await;
+/// При получении новых сообщений, отправляем клиенту
+async fn send_new_msgs<TMessage>(
+    mut input: broadcast::Receiver<TMessage>,
+    ws_stream_output: &mut WebSocketStream<TcpStream>,
+    fn_senf_to_client: fn(TMessage) -> Option<String>,
+) -> Result<(), Errors>
+where
+    TMessage: IMessage,
+{
+    while let Ok(msg) = input.recv().await {
+        let msg = (fn_senf_to_client)(msg);
+        let msg = match msg {
+            Some(val) => val,
+            None => continue,
+        };
+        let result = ws_stream_output.send(Message::Text(msg)).await;
         match result {
             Ok(_) => (),
             Err(error) => {

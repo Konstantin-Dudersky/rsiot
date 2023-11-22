@@ -27,10 +27,12 @@ use super::{
 pub async fn process<TMessage>(
     input: StreamInput<TMessage>,
     output: StreamOutput<TMessage>,
-    config: Config,
+    config: Config<TMessage>,
 ) where
     TMessage: IMessage + 'static,
 {
+    info!("Component component_websocket_server started");
+
     let cancel = CancellationToken::new();
     let (msgs_cache_output, msgs_broadcast_input) =
         mpsc::channel::<TMessage>(1000);
@@ -46,20 +48,19 @@ pub async fn process<TMessage>(
     .set_and_spawn(input, Some(msgs_cache_output));
 
     // распространяем данные через broadcast
-    let future = cmpbase_mpsc_to_broadcast::create(
+    let future = cmpbase_mpsc_to_broadcast::new(
         Some(msgs_broadcast_input),
         msgs_broadcast_output.clone(),
     );
     spawn(cancellable_task(future, cancel.clone()));
 
     loop {
-        info!("Component component_websocket_server started");
         let result = task_main(
             cancel.clone(),
             msgs_broadcast_output.clone(),
             &output,
-            config.port,
             cache.clone(),
+            config.clone(),
         )
         .await;
         match result {
@@ -75,23 +76,23 @@ async fn task_main<TMessage>(
     cancel: CancellationToken,
     msgs_broadcast_output: broadcast::Sender<TMessage>,
     _msgs_output: &StreamOutput<TMessage>,
-    ws_port: u16,
     cache: cmp_cache::CacheType<TMessage>,
+    config: Config<TMessage>,
 ) -> Result<(), Errors>
 where
     TMessage: IMessage + 'static,
 {
-    let addr = format!("0.0.0.0:{}", ws_port);
+    let addr = format!("0.0.0.0:{}", config.port);
 
     let listener = create_tcp_listener(addr).await?;
 
     // слушаем порт, при получении запроса создаем новое подключение WS
-    while let Ok((stream, addr)) = listener.accept().await {
+    while let Ok(stream_and_addr) = listener.accept().await {
         let future = handle_ws_connection(
-            stream,
-            addr,
+            stream_and_addr,
             msgs_broadcast_output.subscribe(),
             cache.clone(),
+            config.fn_send_to_client,
         );
         spawn(cancellable_task(future, cancel.clone()));
     }

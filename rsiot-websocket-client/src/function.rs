@@ -38,7 +38,7 @@ pub async fn function<TMessage>(
     let _output_stream = cmp_mpsc_to_mpsc::create::<TMessage>()
         .set_and_spawn(Some(from_server_rx), output);
 
-    spawn(cmpbase_mpsc_to_broadcast::create(input, input_broadcast_tx));
+    spawn(cmpbase_mpsc_to_broadcast::new(input, input_broadcast_tx));
 
     loop {
         let res = task_connect(

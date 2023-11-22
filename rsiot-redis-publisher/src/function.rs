@@ -25,7 +25,7 @@ pub async fn function<TMessage>(
     let (input_broadcast_tx, _input_broadcast_rx) =
         broadcast::channel::<TMessage>(100);
     let future =
-        cmpbase_mpsc_to_broadcast::create(input, input_broadcast_tx.clone());
+        cmpbase_mpsc_to_broadcast::new(input, input_broadcast_tx.clone());
     let _task_to_output = spawn(future);
 
     loop {
