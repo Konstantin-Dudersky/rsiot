@@ -1,6 +1,6 @@
 [package]
 name = "rsiot-http-client-config"
-version = "0.0.5"
+version = "0.0.6"
 description = "Конфигурация HTTP-клиента"
 license.workspace = true
 edition.workspace = true
