@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "./rsiot",
     "./rsiot-component-core",
     "./rsiot-extra-components",
     "./rsiot-http-client",
@@ -13,7 +14,6 @@ members = [
     "./rsiot-timescaledb-storing",
     "./rsiot-websocket-server",
     "./rsiot-websocket-client",
-    "./rsiot",
 ]
 resolver = "2"
 

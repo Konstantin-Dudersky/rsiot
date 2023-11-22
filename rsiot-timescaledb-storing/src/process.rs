@@ -9,11 +9,7 @@ use url::Url;
 use rsiot_component_core::{StreamInput, StreamOutput};
 use rsiot_messages_core::IMessage;
 
-use crate::{
-    config::Config,
-    error::Error,
-    row::{AggType, Row},
-};
+use crate::{config::Config, error::Error, row::Row};
 
 pub async fn process<TMessage>(
     input: StreamInput<TMessage>,
@@ -71,22 +67,26 @@ where
 
 async fn save_row_in_db(row: &Row, pool: &Pool<Postgres>) -> Result<(), Error> {
     trace!("Save row in database: {:?}", row);
-    let _ = query!(
+    query(
         r#"
-INSERT INTO raw
-VALUES ($1, $2, $3, $4, $5::agg_type, $6)
+INSERT INTO raw 
+VALUES ($1, $2, $3, $4, $5::agg_type, $6, $7)
 ON CONFLICT (ts, entity, attr, agg) DO UPDATE
     SET value = excluded.value,
         aggts = excluded.aggts,
         aggnext = excluded.aggnext;"#,
-        row.ts,
-        row.entity,
-        row.attr,
-        row.value,
-        row.agg.clone() as AggType,
-        row.aggts,
     )
+    .bind(row.ts)
+    .bind(&row.entity)
+    .bind(&row.attr)
+    .bind(row.value)
+    .bind(&row.agg)
+    .bind(row.aggts)
+    .bind(&row.aggnext)
     .execute(pool)
     .await?;
     Ok(())
 }
+
+// TODO - Макрос `query!()` не работает.
+// Пакет `rsiot`, который импортирует данный крейт, всегда сваливается с ошибкой
