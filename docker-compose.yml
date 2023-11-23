@@ -42,6 +42,18 @@ services:
       - "dev"
     command: wstest -m broadcastserver -w ws://localhost:9001
 
+  # для тестирования modbus-client
+  modbus-server:
+    container_name: modbus-server
+    hostname: modbus-server
+    image: oitc/modbus-server
+    ports:
+      - "5020:5020"
+    profiles:
+      - "dev"
+    volumes:
+      - ./rsiot-modbus-client/modbus_server.json:/app/modbus_server.json
+
   # redis
   redis:
     container_name: redis

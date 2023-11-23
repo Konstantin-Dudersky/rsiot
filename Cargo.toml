@@ -2,13 +2,13 @@
 members = [
     "./rsiot",
     "./rsiot-component-core",
+    "./rsiot-components-config",
     "./rsiot-extra-components",
     "./rsiot-http-client",
     "./rsiot-http-client-config",
     "./rsiot-http-server",
     "./rsiot-messages-core",
     "./rsiot-modbus-client",
-    "./rsiot-modbus-client-config",
     "./rsiot-redis-publisher",
     "./rsiot-redis-subscriber",
     "./rsiot-timescaledb-storing",
@@ -41,6 +41,7 @@ sqlx = { version = "0.7", features = [
     "postgres",
     "runtime-tokio",
 ] }
+# TODO - возможно, не все фичи tokio нужны
 tokio = { version = "1", features = ["full"] }
 tokio-modbus = { version = "0.9", default-features = false, features = ["tcp"] }
 tokio-tungstenite = { version = "0.20" }
@@ -55,12 +56,12 @@ document-features = { version = "0.2" }
 
 rsiot-extra-components = { version = "0.0.6", path = "./rsiot-extra-components" }
 rsiot-component-core = { version = "0.0.6", path = "./rsiot-component-core" }
+rsiot-components-config = { version = "0.0.0", path = "./rsiot-components-config" }
 rsiot-http-client = { version = "0.0.6", path = "./rsiot-http-client" }
 rsiot-http-client-config = { version = "0.0.6", path = "./rsiot-http-client-config" }
 rsiot-http-server = { version = "0.0.6", path = "./rsiot-http-server" }
 rsiot-messages-core = { version = "0.0.6", path = "./rsiot-messages-core" }
 rsiot-modbus-client = { version = "0.0.6", path = "./rsiot-modbus-client" }
-rsiot-modbus-client-config = { version = "0.0.6", path = "./rsiot-modbus-client-config" }
 rsiot-redis-publisher = { version = "0.0.6", path = "./rsiot-redis-publisher" }
 rsiot-redis-subscriber = { version = "0.0.6", path = "./rsiot-redis-subscriber" }
 rsiot-timescaledb-storing = { version = "0.0.6", path = "./rsiot-timescaledb-storing" }

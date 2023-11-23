@@ -1385,6 +1385,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "rsiot-components-config"
+version = "0.0.0"
+dependencies = [
+ "url",
+]
+
+[[package]]
 name = "rsiot-extra-components"
 version = "0.0.6"
 dependencies = [
@@ -1450,20 +1457,15 @@ dependencies = [
 name = "rsiot-modbus-client"
 version = "0.0.6"
 dependencies = [
+ "rsiot-component-core",
+ "rsiot-components-config",
+ "rsiot-extra-components",
  "rsiot-messages-core",
- "rsiot-modbus-client-config",
  "serde",
  "tokio",
  "tokio-modbus",
  "tracing",
  "tracing-subscriber",
- "url",
-]
-
-[[package]]
-name = "rsiot-modbus-client-config"
-version = "0.0.6"
-dependencies = [
  "url",
 ]
 

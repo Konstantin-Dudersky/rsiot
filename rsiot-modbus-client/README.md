@@ -1,5 +1,11 @@
 Опрос устройств Modbus, используя библиотеку [tokio-modbus](https://crates.io/crates/tokio-modbus)
 
-Идеи для улучшения TODO:
+## Тестирование
 
-- настраиваемый период опроса для каждого запроса
+Готовый docker-образ для тестов - [GitHub](https://github.com/cybcon/modbus-server).
+
+Запускается через docker compose в корне. [Инструкция](../doc/development.md).
+
+## Идеи для улучшения
+
+- TODO настраиваемый период опроса для каждого запроса

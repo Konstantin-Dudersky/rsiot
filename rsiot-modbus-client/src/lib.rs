@@ -1,11 +1,11 @@
-//! Modbus клиент
-#![doc=include_str!("../../doc/component-modbus-client.svg")]
-//!
-
+mod config;
 mod errors;
-mod start_modbus_client;
+mod new;
+mod process;
 mod types;
 
-pub use errors::Errors;
-pub use start_modbus_client::start_modbus_client;
-pub use types::Result_;
+#[doc=include_str!("../../doc/component-modbus-client.svg")]
+pub mod cmp_modbus_client {
+    pub use crate::new::new;
+    pub use rsiot_components_config::modbus_client::*;
+}
