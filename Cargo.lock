@@ -1414,6 +1414,7 @@ version = "0.0.6"
 dependencies = [
  "futures",
  "rsiot-messages-core",
+ "serde",
  "tokio",
 ]
 
