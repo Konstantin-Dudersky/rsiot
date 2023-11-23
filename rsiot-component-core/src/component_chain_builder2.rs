@@ -4,6 +4,8 @@ use rsiot_messages_core::IMessage;
 
 use crate::{ComponentChain, IComponent, StreamInput};
 
+type Id = usize;
+
 /// Построитель для цепочки компонентов
 pub struct ComponentChainBuilder<TMessage> {
     /// Размер буфера сообщений в канале
@@ -12,10 +14,12 @@ pub struct ComponentChainBuilder<TMessage> {
     components: Vec<Box<dyn IComponent<TMessage>>>,
     /// Используется для сохраниния приемной стороны канала сообщений
     next_rx: StreamInput<TMessage>,
-    nodes: Vec<Node>,
-    mode: States,
-    split_node: Option<Node>,
-    end_branch_nodes: Vec<Node>,
+    /// -- experiment
+    prev_node: PrevNodeType,
+    transitions: Vec<(Id, Id)>,
+    split_node: Option<Id>,
+    open_branshes: Vec<Id>,
+    components2: Vec<()>,
 }
 
 impl<TMessage> ComponentChainBuilder<TMessage>
@@ -27,10 +31,11 @@ where
             buffer,
             components: vec![],
             next_rx: None,
-            nodes: vec![],
-            mode: States::Start,
+            prev_node: PrevNodeType::NoNode,
+            transitions: vec![],
             split_node: None,
-            end_branch_nodes: vec![],
+            open_branshes: vec![],
+            components2: vec![],
         }
     }
 
@@ -66,64 +71,50 @@ where
     }
 
     pub fn add(mut self) -> Self {
-        let node = match self.mode {
-            States::Start => {
-                self.mode = States::Normal;
-                Node::new(0)
+        let id = self.components2.len();
+
+        self.components2.push(());
+
+        match self.prev_node {
+            PrevNodeType::NoNode => {
+                self.prev_node = PrevNodeType::PrevNode(id);
             }
-            States::Normal => {
-                let id = self.nodes.len();
-                let prev_id = id - 1;
-                self.nodes[prev_id].next.push(id);
-                let mut node = Node::new(id);
-                node.prev.push(prev_id);
-                node
+            PrevNodeType::PrevNode(prev_id) => {
+                self.transitions.push((prev_id, id));
+                self.prev_node = PrevNodeType::PrevNode(id);
             }
-            States::Split => todo!(),
-            States::Branch => todo!(),
-            States::Join => todo!(),
-        };
-        self.nodes.push(node);
+            PrevNodeType::OpenBranches(ids) => {
+                for _id in ids {
+                    self.transitions.push((_id, id));
+                }
+                self.prev_node = PrevNodeType::PrevNode(id);
+            }
+        }
         self
     }
 
     pub fn split(mut self) -> Self {
-        self.mode = States::Split;
+        self.split_node = Some(self.components2.len() - 1);
         self
     }
 
     pub fn branch(mut self) -> Self {
+        self.prev_node = PrevNodeType::PrevNode(self.split_node.unwrap());
+        self.open_branshes.push(self.components2.len() - 1);
         self
     }
 
     pub fn join(mut self) -> Self {
+        self.open_branshes.push(self.components2.len() - 1);
+        self.prev_node = PrevNodeType::OpenBranches(self.open_branshes.clone());
         self
     }
 }
 
-#[derive(Debug)]
-struct Node {
-    id: usize,
-    prev: Vec<usize>,
-    next: Vec<usize>,
-}
-
-impl Node {
-    fn new(id: usize) -> Self {
-        Self {
-            id,
-            prev: vec![],
-            next: vec![],
-        }
-    }
-}
-
-enum States {
-    Start,
-    Normal,
-    Split,
-    Branch,
-    Join,
+enum PrevNodeType {
+    NoNode,
+    PrevNode(usize),
+    OpenBranches(Vec<usize>),
 }
 
 #[cfg(test)]
@@ -141,8 +132,20 @@ mod tests {
         let chain = ComponentChainBuilder::<TestMessage>::new(100)
             .add()
             .add()
+            .split()
+            .add()
+            .add()
+            .branch()
+            .add()
+            .add()
+            .branch()
+            .add()
+            .add()
+            .add()
+            .join()
+            .add()
             .add();
 
-        println!("{:?}", chain.nodes);
+        println!("{:?}", chain.transitions);
     }
 }
