@@ -1,6 +1,6 @@
 //! Конфигурация запросов, которые выполняются на основе входного потока сообщений
 
-use super::{FnOnFailure, FnOnSuccess, Request, Response};
+use super::{FnOnFailure, FnOnSuccess, Request};
 
 /// Конфигурация запросов, которые выполняются на основе входного потока сообщений
 #[derive(Clone, Debug)]

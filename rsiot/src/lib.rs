@@ -1,8 +1,6 @@
 #![doc = include_str!("../../README.md")]
 
 //! ## Флаги `feature`:
-//!
-//!
 
 #![doc = document_features::document_features!()]
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
@@ -19,6 +17,9 @@ pub use rsiot_extra_components::*;
 
 #[cfg(feature = "http-server")]
 pub use rsiot_http_server::cmp_http_server;
+
+#[cfg(feature = "modbus-client")]
+pub use rsiot_modbus_client::cmp_modbus_client;
 
 #[cfg(feature = "redis-publisher")]
 pub mod cmp_redis_publisher {

@@ -6,67 +6,59 @@
 
 #### Взаимодействие с устройствами нижнего уровня
 
-- modbus-client
+[**modbus-client**](https://docs.rs/rsiot-modbus-client/latest/)
 
 Взаимодейтсвие с устройствами, поддерживающими протокол Modbus TCP сервер / Modbus RTU slave.
-[Документация](https://docs.rs/rsiot-modbus-client/latest/)
 
-- http-client
+[**http-client**](https://docs.rs/rsiot-http-client/latest/)
 
 Взаимодействие с устройствами, имеющих HTTP API.
-[Документация](https://docs.rs/rsiot-http-client/latest/)
 
-- websocket-client
+[**websocket-client**](https://docs.rs/rsiot-websocket-client/latest/)
 
 Взаимодействие с устройствами, поддерживющими функциональность Websocket сервера.
-[Документация](https://docs.rs/rsiot-websocket-client/latest/)
 
-- TODO opcua-client
+TODO **opcua-client**
 
 Взаимодействие с контроллерами, имеющими функциональность OPC UA сервера.
 
-- TODO s7-client
+TODO **s7-client**
 
 Взаимодействие с контроллерами Siemens по протоколу S7.
 
 #### Взаимодействие с системами верхнего уровня
 
-- http-server
+[**http-server**](https://docs.rs/rsiot-http-server/latest/)
 
 Поддержка HTTP API, через который внешние клиенты могут получать и вводить данные.
-[Документация](https://docs.rs/rsiot-http-server/latest/)
 
-- websocket-server
+[**websocket-server**](https://docs.rs/rsiot-websocket-server/latest/)
 
 Поддержка Websocket сервера, к которому могут подключаться внешние клиенты.
-[Документация](https://docs.rs/rsiot-websocket-server/latest/)
 
-- TODO mqtt
+TODO **mqtt**
 
-- TODO telegram
+TODO **telegram**
 
 #### Брокеры сообщений
 
-- redis-publisher
+[**redis-publisher**](https://docs.rs/rsiot-redis-publisher/latest/)
 
 Публикация сообщений в Redis.
-[Документация](https://docs.rs/rsiot-redis-publisher/latest/)
 
-- redis-subscriber
+[**redis-subscriber**](https://docs.rs/rsiot-redis-subscriber/latest/)
 
 Подписка на сообщения из Redis.
-[Документация](https://docs.rs/rsiot-redis-subscriber/latest/)
 
 #### Сохранение данных в БД
 
-- timescaledb-storing
+[**timescaledb-storing**](https://docs.rs/rsiot-timescaledb-storing/latest)
 
 Сохрание сообщений в виде временных рядов в TimescaleDB.
-[Документация](https://docs.rs/rsiot-timescaledb-storing/latest)
 
 #### Интерфейсы пользователя
 
-- TODO leptos
+TODO **leptos**
 
 ## Описание
 

@@ -103,11 +103,10 @@ where
 {
     loop {
         let begin = Instant::now();
-        let request = &periodic_config.request;
-        let response = modbus_request(ctx.clone(), &request).await;
+        let response = modbus_request(ctx.clone(), &periodic_config.request).await;
         modbus_response(
             output.clone(),
-            request,
+            &periodic_config.request,
             &response,
             periodic_config.fn_on_success,
             periodic_config.fn_on_failure,
@@ -159,7 +158,10 @@ async fn modbus_request(
             let response = lock.read_holding_registers(*start_address, *count).await?;
             Ok(config::Response::U16(response))
         }
-        config::Request::WriteSingleRegister(_, _) => todo!(),
+        config::Request::WriteSingleRegister(start_address, value) => {
+            lock.write_single_register(*start_address, *value).await?;
+            Ok(config::Response::Unit)
+        }
     }
 }
 

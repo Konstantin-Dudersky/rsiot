@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use tokio::{main, time::Duration};
 
 use rsiot_component_core::ComponentChain;
-use rsiot_extra_components::cmp_logger;
+use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use rsiot_messages_core::IMessage;
 use rsiot_modbus_client::cmp_modbus_client::{self, *};
 
@@ -28,8 +28,10 @@ async fn main() {
         host: IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)),
         port: 5020,
         input_config: vec![InputConfig {
-            fn_input: |msg| None,
-            fn_on_success: |data| vec![],
+            fn_input: |msg| match msg {
+                Messages::Value0(val) => Some(Request::WriteSingleRegister(0, *val as u16)),
+            },
+            fn_on_success: |_data| vec![],
             fn_on_failure: || vec![],
         }],
         periodic_config: vec![PeriodicConfig {
@@ -46,8 +48,17 @@ async fn main() {
         }],
     });
 
+    let mut counter = 0.0;
     let mut chain = ComponentChain::init(100)
-        .start_cmp(cmp_modbus_client::new(modbus_client_config))
+        .start_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
+            period: Duration::from_secs(2),
+            fn_periodic: move || {
+                let msg = Messages::Value0(counter);
+                counter += 1.0;
+                vec![msg]
+            },
+        }))
+        .then_cmp(cmp_modbus_client::new(modbus_client_config))
         .end_cmp(cmp_logger::create(cmp_logger::Config {
             level: Level::INFO,
         }));

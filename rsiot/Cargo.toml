@@ -14,6 +14,7 @@ rsiot-extra-components = { workspace = true }
 rsiot-http-client = { workspace = true }
 rsiot-http-server = { workspace = true }
 rsiot-messages-core = { workspace = true }
+rsiot-modbus-client = { workspace = true }
 rsiot-redis-publisher = { workspace = true }
 rsiot-redis-subscriber = { workspace = true }
 rsiot-websocket-client = { workspace = true }

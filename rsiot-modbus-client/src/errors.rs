@@ -4,7 +4,6 @@ use tokio::{sync::mpsc::error::SendError, task::JoinError};
 
 #[derive(Debug)]
 pub enum Errors {
-    Request(String),
     Connection(StdIoError),
     JoinError(JoinError),
     SendError(String),

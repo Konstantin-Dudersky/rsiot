@@ -3,4 +3,5 @@
 pub enum Response {
     U16(Vec<u16>),
     Bool(Vec<bool>),
+    Unit,
 }
