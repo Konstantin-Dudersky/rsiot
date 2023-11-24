@@ -35,6 +35,7 @@ async fn main() {
         // Логгирование
         .add_cmp(cmp_logger::create(cmp_logger::Config {
             level: Level::INFO,
+            header: "".into(),
         }));
     chain.spawn().await;
 }

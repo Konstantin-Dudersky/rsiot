@@ -12,7 +12,11 @@ async fn cmp_logger<TMessage>(
 ) where
     TMessage: IMessage,
 {
-    info!("cmp_logger started");
+    debug!("cmp_logger started");
+    let header = match config.header.as_str() {
+        "" => "".to_string(),
+        _ => format!("{}: ", config.header),
+    };
     let mut input = match input {
         Some(val) => val,
         None => {
@@ -23,11 +27,11 @@ async fn cmp_logger<TMessage>(
     };
     while let Some(msg) = input.recv().await {
         match config.level {
-            Level::TRACE => trace!("{:?}", msg),
-            Level::DEBUG => debug!("{:?}", msg),
-            Level::INFO => info!("{:?}", msg),
-            Level::WARN => warn!("{:?}", msg),
-            Level::ERROR => error!("{:?}", msg),
+            Level::TRACE => trace!("{}{:?}", header, msg),
+            Level::DEBUG => debug!("{}{:?}", header, msg),
+            Level::INFO => info!("{}{:?}", header, msg),
+            Level::WARN => warn!("{}{:?}", header, msg),
+            Level::ERROR => error!("{}{:?}", header, msg),
         }
         match &output {
             Some(stream) => stream.send(msg).await.unwrap(),
@@ -36,10 +40,13 @@ async fn cmp_logger<TMessage>(
     }
 }
 
+/// Настройки компонента логгирования
 #[derive(Clone, Debug)]
 pub struct Config {
     /// Уровень логгирования
     pub level: Level,
+    /// Добавляется в начале каждого сообщения
+    pub header: String,
 }
 
 pub fn create<TMessage>(config: Config) -> Box<Component<TMessage, Config>>

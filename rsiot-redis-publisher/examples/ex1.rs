@@ -32,6 +32,7 @@ async fn main() {
         }))
         .add_cmp(cmp_logger::create(cmp_logger::Config {
             level: Level::INFO,
+            header: "".into(),
         }))
         .add_cmp(cmp_redis_publisher::create(cmp_redis_publisher::Config {
             url: Url::parse("redis://127.0.0.1:6379").unwrap(),

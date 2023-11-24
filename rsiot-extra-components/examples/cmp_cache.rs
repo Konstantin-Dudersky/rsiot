@@ -39,6 +39,7 @@ async fn main() {
         }))
         .add_cmp(cmp_logger::create(cmp_logger::Config {
             level: Level::INFO,
+            header: "".to_string(),
         }));
 
     let _end_task = spawn(async move {

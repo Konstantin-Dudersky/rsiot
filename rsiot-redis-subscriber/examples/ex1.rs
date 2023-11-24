@@ -42,6 +42,7 @@ async fn main() {
         }))
         .add_cmp(cmp_logger::create(cmp_logger::Config {
             level: Level::INFO,
+            header: "".into(),
         }));
     chain.spawn().await;
 }
