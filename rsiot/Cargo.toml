@@ -1,6 +1,6 @@
 [package]
 name = "rsiot"
-version = "0.0.6"
+version = "0.0.7"
 description = "Метакрейт, импортирующий все другие крейты через флаги feature"
 license.workspace = true
 edition.workspace = true
