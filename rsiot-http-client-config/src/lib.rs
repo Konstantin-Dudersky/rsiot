@@ -13,3 +13,5 @@ pub use request_param::RequestParam;
 pub use request_periodic::RequestPeriodic;
 pub use response::Response;
 pub use types::{CbkOnFailure, CbkOnSuccess};
+
+// TODO - переместить в rsiot-components-config

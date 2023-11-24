@@ -29,9 +29,20 @@ async fn main() {
                 vec![msg]
             },
         }))
+        .split()
         .add_cmp(cmp_logger::create(cmp_logger::Config {
             level: Level::INFO,
-            header: "Injected value: ".into(),
+            header: "Branch 1: ".into(),
+        }))
+        .branch()
+        .add_cmp(cmp_logger::create(cmp_logger::Config {
+            level: Level::INFO,
+            header: "Branch 2: ".into(),
+        }))
+        .join()
+        .add_cmp(cmp_logger::create(cmp_logger::Config {
+            level: Level::INFO,
+            header: "Join: ".into(),
         }));
     chain.spawn().await;
 }

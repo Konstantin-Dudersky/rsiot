@@ -29,12 +29,8 @@ pub async fn process<TMessage>(
     };
 
     loop {
-        let result = task_main::<TMessage>(
-            &mut input,
-            config.fn_process,
-            &config.connection_string,
-        )
-        .await;
+        let result =
+            task_main::<TMessage>(&mut input, config.fn_process, &config.connection_string).await;
         match result {
             Ok(_) => (),
             Err(err) => error!("{:?}", err),
@@ -90,3 +86,4 @@ ON CONFLICT (ts, entity, attr, agg) DO UPDATE
 
 // TODO - Макрос `query!()` не работает.
 // Пакет `rsiot`, который импортирует данный крейт, всегда сваливается с ошибкой
+// Возможно, добавить в .cargo/config.toml эти переменные? Возможно пройдет
