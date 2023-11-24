@@ -2,8 +2,9 @@
 name = "rsiot-messages-core"
 version = "0.0.7"
 description = "Базовые трейты для реализации типа сообщения"
-license.workspace = true
 edition.workspace = true
+license.workspace = true
+readme.workspace = true
 rust-version.workspace = true
 
 [dependencies]

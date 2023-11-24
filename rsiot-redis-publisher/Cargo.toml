@@ -2,8 +2,9 @@
 name = "rsiot-redis-publisher"
 version = "0.0.7"
 description = "Публикация сообщений в Redis"
-license.workspace = true
 edition.workspace = true
+license.workspace = true
+readme.workspace = true
 rust-version.workspace = true
 
 

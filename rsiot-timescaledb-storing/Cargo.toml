@@ -2,8 +2,9 @@
 name = "rsiot-timescaledb-storing"
 version = "0.0.7"
 description = "Сохранение данных в TimescaleDB"
-license.workspace = true
 edition.workspace = true
+license.workspace = true
+readme.workspace = true
 rust-version.workspace = true
 
 [dependencies]

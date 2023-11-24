@@ -2,8 +2,9 @@
 name = "rsiot-component-core"
 version = "0.0.7"
 description = "Типы данных для создания компонентов"
-license.workspace = true
 edition.workspace = true
+license.workspace = true
+readme.workspace = true
 rust-version.workspace = true
 
 [dependencies]
