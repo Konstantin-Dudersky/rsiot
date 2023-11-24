@@ -14,7 +14,7 @@ pub async fn component_mpsc_to_many_mpsc<TMessage>(
 ) where
     TMessage: IMessage,
 {
-    info!("Component component_mpsc_to_vec_mpsc started");
+    info!("Component component_mpsc_to_many_mpsc started");
     loop {
         let result = loop_(&mut channel_rcv, &channels_send).await;
         match result {

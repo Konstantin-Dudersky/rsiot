@@ -6,6 +6,7 @@ use crate::{
     IComponent,
 };
 
+/// Обобщенный компонент
 pub struct Component<TMessage, TConfig> {
     pub stream_input: StreamInput<TMessage>,
     pub stream_output: StreamOutput<TMessage>,

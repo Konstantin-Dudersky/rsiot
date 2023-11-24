@@ -5,7 +5,7 @@ use tokio::{
     time::{sleep, Duration},
 };
 
-use rsiot_extra_components::component_mpsc_to_many_mpsc;
+use rsiot_component_core::component_mpsc_to_many_mpsc;
 use rsiot_messages_core::IMessage;
 use tracing::info;
 

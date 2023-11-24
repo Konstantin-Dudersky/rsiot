@@ -1416,6 +1416,8 @@ dependencies = [
  "rsiot-messages-core",
  "serde",
  "tokio",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]

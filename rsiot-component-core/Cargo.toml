@@ -9,8 +9,10 @@ rust-version.workspace = true
 [dependencies]
 futures = { workspace = true }
 tokio = { workspace = true }
+tracing = { workspace = true }
 
 rsiot-messages-core = { workspace = true }
 
 [dev-dependencies]
 serde = { workpace = true }
+tracing-subscriber = { workspace = true }

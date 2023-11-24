@@ -9,6 +9,7 @@ use futures::future::BoxFuture;
 
 use crate::types::{StreamInput, StreamOutput};
 
+/// Трейт для функции компонента
 pub trait IComponentFunction<TMessage, TConfig>: Send {
     fn call(
         &self,
