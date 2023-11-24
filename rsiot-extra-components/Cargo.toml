@@ -2,7 +2,9 @@
 name = "rsiot-extra-components"
 version = "0.0.7"
 description = "Дополнительные компоненты"
+categories.workspace = true
 edition.workspace = true
+keywords.workspace = true
 license.workspace = true
 readme.workspace = true
 rust-version.workspace = true
