@@ -25,8 +25,8 @@ async fn main() {
 
     let mut counter = 0.0;
 
-    let mut chain = ComponentChain::init(100)
-        .start_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
+    let mut chain = ComponentChain::new(100)
+        .add_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
             period: Duration::from_secs(2),
             fn_periodic: move || {
                 let msg = Message::Message0(counter);
@@ -34,8 +34,8 @@ async fn main() {
                 vec![msg]
             },
         }))
-        .then_cmp(cmp_http_server::new(cmp_http_server::Config { port: 8011 }))
-        .end_cmp(cmp_logger::create(cmp_logger::Config {
+        .add_cmp(cmp_http_server::new(cmp_http_server::Config { port: 8011 }))
+        .add_cmp(cmp_logger::create(cmp_logger::Config {
             level: Level::INFO,
         }));
 

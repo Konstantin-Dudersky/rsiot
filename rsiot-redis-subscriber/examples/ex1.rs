@@ -35,12 +35,12 @@ impl IMessage for Messages {}
 async fn main() {
     fmt().init();
 
-    let mut chain = ComponentChain::<Messages>::init(100)
-        .start_cmp(cmp_redis_subscriber::create(cmp_redis_subscriber::Config {
+    let mut chain = ComponentChain::<Messages>::new(100)
+        .add_cmp(cmp_redis_subscriber::create(cmp_redis_subscriber::Config {
             url: Url::parse("redis://127.0.0.1:6379").unwrap(),
             redis_channel: "rsiot-redis-subscriber".to_string(),
         }))
-        .end_cmp(cmp_logger::create(cmp_logger::Config {
+        .add_cmp(cmp_logger::create(cmp_logger::Config {
             level: Level::INFO,
         }));
     chain.spawn().await;

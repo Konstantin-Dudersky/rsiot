@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use tokio::{main, time::Duration};
 use tracing::Level;
 
-use rsiot_component_core::ComponentChain2;
+use rsiot_component_core::ComponentChain;
 use rsiot_extra_components::{cmp_delay, cmp_inject_periodic, cmp_logger};
 use rsiot_messages_core::IMessage;
 
@@ -21,7 +21,7 @@ async fn main() {
 
     let mut counter = 0.0;
 
-    let mut chain = ComponentChain2::new(100)
+    let mut chain = ComponentChain::new(100)
         .add_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
             period: Duration::from_millis(10),
             fn_periodic: move || {
@@ -35,8 +35,7 @@ async fn main() {
         }))
         .add_cmp(cmp_logger::create(cmp_logger::Config {
             level: Level::INFO,
-        }))
-        .build();
+        }));
 
     chain.spawn().await;
 }

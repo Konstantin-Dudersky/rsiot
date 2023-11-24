@@ -49,8 +49,8 @@ async fn main() {
     });
 
     let mut counter = 0.0;
-    let mut chain = ComponentChain::init(100)
-        .start_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
+    let mut chain = ComponentChain::new(100)
+        .add_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
             period: Duration::from_secs(2),
             fn_periodic: move || {
                 let msg = Messages::Value0(counter);
@@ -58,8 +58,8 @@ async fn main() {
                 vec![msg]
             },
         }))
-        .then_cmp(cmp_modbus_client::new(modbus_client_config))
-        .end_cmp(cmp_logger::create(cmp_logger::Config {
+        .add_cmp(cmp_modbus_client::new(modbus_client_config))
+        .add_cmp(cmp_logger::create(cmp_logger::Config {
             level: Level::INFO,
         }));
 

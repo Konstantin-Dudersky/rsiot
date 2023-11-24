@@ -21,8 +21,8 @@ async fn main() {
     fmt().init();
 
     let mut counter = 0;
-    let mut chain = ComponentChain::init(100)
-        .start_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
+    let mut chain = ComponentChain::new(100)
+        .add_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
             period: Duration::from_secs(2),
             fn_periodic: move || {
                 let msg = Messages::Message0(counter);
@@ -30,10 +30,10 @@ async fn main() {
                 vec![msg]
             },
         }))
-        .then_cmp(cmp_logger::create(cmp_logger::Config {
+        .add_cmp(cmp_logger::create(cmp_logger::Config {
             level: Level::INFO,
         }))
-        .end_cmp(cmp_redis_publisher::create(cmp_redis_publisher::Config {
+        .add_cmp(cmp_redis_publisher::create(cmp_redis_publisher::Config {
             url: Url::parse("redis://127.0.0.1:6379").unwrap(),
             redis_channel: "rsiot-redis-publisher".to_string(),
         }));

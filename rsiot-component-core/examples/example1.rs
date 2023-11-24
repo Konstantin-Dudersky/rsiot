@@ -4,7 +4,7 @@
 //!        -> 6 -> 7 -> 8
 //!
 
-use rsiot_component_core::{component_example, ComponentChain2 as ComponentChain};
+use rsiot_component_core::{component_example, ComponentChain};
 use rsiot_messages_core::IMessage;
 use serde::{Deserialize, Serialize};
 
@@ -29,6 +29,5 @@ fn main() {
         .add_cmp(component_example::new())
         .join()
         .add_cmp(component_example::new())
-        .add_cmp(component_example::new())
-        .build();
+        .add_cmp(component_example::new());
 }

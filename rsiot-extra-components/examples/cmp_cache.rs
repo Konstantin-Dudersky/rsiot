@@ -25,8 +25,8 @@ async fn main() {
     let cache = cmp_cache::create_cache();
     let mut counter = 0.0;
 
-    let mut chain = ComponentChain::init(100)
-        .start_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
+    let mut chain = ComponentChain::new(100)
+        .add_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
             period: Duration::from_millis(500),
             fn_periodic: move || {
                 let msg = Message::Message0(counter);
@@ -34,10 +34,10 @@ async fn main() {
                 vec![msg]
             },
         }))
-        .then_cmp(cmp_cache::new(cmp_cache::Config {
+        .add_cmp(cmp_cache::new(cmp_cache::Config {
             cache: cache.clone(),
         }))
-        .end_cmp(cmp_logger::create(cmp_logger::Config {
+        .add_cmp(cmp_logger::create(cmp_logger::Config {
             level: Level::INFO,
         }));
 

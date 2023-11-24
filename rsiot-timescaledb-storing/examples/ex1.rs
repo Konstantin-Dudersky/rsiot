@@ -19,14 +19,12 @@ impl IMessage for Message {}
 async fn main() {
     tracing_subscriber::fmt().init();
 
-    let url =
-        Url::parse("postgres://postgres:postgres@localhost:5432/db_data_test")
-            .unwrap();
+    let url = Url::parse("postgres://postgres:postgres@localhost:5432/db_data_test").unwrap();
 
     let mut counter = 0.0;
 
-    let mut chain = ComponentChain::init(100)
-        .start_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
+    let mut chain = ComponentChain::new(100)
+        .add_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
             period: Duration::from_secs(2),
             fn_periodic: move || {
                 let msg = Message::Message0(counter);
@@ -34,7 +32,7 @@ async fn main() {
                 vec![msg]
             },
         }))
-        .end_cmp(cmp_timescaledb_storing::new(
+        .add_cmp(cmp_timescaledb_storing::new(
             cmp_timescaledb_storing::Config {
                 fn_process,
                 connection_string: url,
