@@ -1390,7 +1390,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot"
-version = "0.0.8"
+version = "0.0.9"
 dependencies = [
  "document-features",
  "rsiot-component-core",
@@ -1410,7 +1410,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-component-core"
-version = "0.0.8"
+version = "0.0.9"
 dependencies = [
  "futures",
  "rsiot-messages-core",
@@ -1422,7 +1422,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-components-config"
-version = "0.0.8"
+version = "0.0.9"
 dependencies = [
  "http 1.0.0",
  "rsiot-messages-core",
@@ -1431,7 +1431,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-extra-components"
-version = "0.0.8"
+version = "0.0.9"
 dependencies = [
  "rsiot-component-core",
  "rsiot-messages-core",
@@ -1443,7 +1443,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-http-client"
-version = "0.0.8"
+version = "0.0.9"
 dependencies = [
  "reqwest",
  "rsiot-components-config",
@@ -1459,7 +1459,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-http-server"
-version = "0.0.8"
+version = "0.0.9"
 dependencies = [
  "axum",
  "hyper",
@@ -1477,7 +1477,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-messages-core"
-version = "0.0.8"
+version = "0.0.9"
 dependencies = [
  "serde",
  "serde_json",
@@ -1485,7 +1485,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-modbus-client"
-version = "0.0.8"
+version = "0.0.9"
 dependencies = [
  "rsiot-component-core",
  "rsiot-components-config",
@@ -1501,7 +1501,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-redis-publisher"
-version = "0.0.8"
+version = "0.0.9"
 dependencies = [
  "redis",
  "rsiot-component-core",
@@ -1517,7 +1517,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-redis-subscriber"
-version = "0.0.8"
+version = "0.0.9"
 dependencies = [
  "futures-util",
  "redis",
@@ -1534,7 +1534,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-timescaledb-storing"
-version = "0.0.8"
+version = "0.0.9"
 dependencies = [
  "chrono",
  "rsiot-component-core",
@@ -1550,7 +1550,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-websocket-client"
-version = "0.0.8"
+version = "0.0.9"
 dependencies = [
  "futures-util",
  "rsiot-component-core",
@@ -1567,7 +1567,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-websocket-server"
-version = "0.0.8"
+version = "0.0.9"
 dependencies = [
  "futures-util",
  "rsiot-component-core",
