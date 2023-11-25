@@ -1,6 +1,6 @@
 [package]
 name = "rsiot-redis-subscriber"
-version = "0.0.7"
+version = "0.0.8"
 description = "Подписка на сообщения Redis"
 categories.workspace = true
 edition.workspace = true

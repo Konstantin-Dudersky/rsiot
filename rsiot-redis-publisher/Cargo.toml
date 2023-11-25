@@ -1,6 +1,6 @@
 [package]
 name = "rsiot-redis-publisher"
-version = "0.0.7"
+version = "0.0.8"
 description = "Публикация сообщений в Redis"
 categories.workspace = true
 edition.workspace = true
