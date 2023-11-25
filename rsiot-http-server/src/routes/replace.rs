@@ -7,7 +7,7 @@ use rsiot_messages_core::IMessage;
 use crate::{error::Error, shared_state::SharedState};
 
 /// Маршрут для ввода сообщений
-pub async fn route_message_put<TMessage>(
+pub async fn replace<TMessage>(
     extract::State(state): extract::State<Arc<SharedState<TMessage>>>,
     body: String,
 ) -> Result<(), Error<TMessage>>

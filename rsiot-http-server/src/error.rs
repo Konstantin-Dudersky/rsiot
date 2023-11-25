@@ -1,10 +1,10 @@
 use std::net::AddrParseError;
 
 use axum::{http::StatusCode, response::IntoResponse};
-
 use hyper::Error as HyperError;
-use rsiot_messages_core::Error as MessageError;
 use tokio::sync::mpsc::error::SendError;
+
+use rsiot_messages_core::Error as MessageError;
 
 #[derive(Debug)]
 pub enum Error<TMessage> {
@@ -13,6 +13,18 @@ pub enum Error<TMessage> {
     ChannelSendError(SendError<TMessage>),
     HyperError(HyperError),
     AddrParseError(AddrParseError),
+}
+
+impl<TMessage> From<AddrParseError> for Error<TMessage> {
+    fn from(value: AddrParseError) -> Self {
+        Self::AddrParseError(value)
+    }
+}
+
+impl<TMessage> From<HyperError> for Error<TMessage> {
+    fn from(value: HyperError) -> Self {
+        Self::HyperError(value)
+    }
 }
 
 impl<TMessage> From<MessageError> for Error<TMessage> {
@@ -27,28 +39,17 @@ impl<TMessage> From<SendError<TMessage>> for Error<TMessage> {
     }
 }
 
-impl<TMessage> From<HyperError> for Error<TMessage> {
-    fn from(value: HyperError) -> Self {
-        Self::HyperError(value)
-    }
-}
-
-impl<TMessage> From<AddrParseError> for Error<TMessage> {
-    fn from(value: AddrParseError) -> Self {
-        Self::AddrParseError(value)
-    }
-}
-
+/// Преобразование ошибки в понятный пользователю ответ
 impl<TMessage> IntoResponse for Error<TMessage> {
     fn into_response(self) -> axum::response::Response {
         let body = match self {
+            Error::AddrParseError(err) => format!("{:?}", err),
+            Error::ChannelSendError(err) => format!("{:?}", err),
+            Error::HyperError(err) => format!("{:?}", err),
+            Error::Message(err) => format!("{:?}", err),
             Error::UnknownMessageKey(key) => {
                 format!("Unknown message key: {}", key)
             }
-            Error::Message(err) => format!("{:?}", err),
-            Error::ChannelSendError(err) => format!("{:?}", err),
-            Error::HyperError(err) => format!("{:?}", err),
-            Error::AddrParseError(err) => format!("{:?}", err),
         };
         (StatusCode::INTERNAL_SERVER_ERROR, body).into_response()
     }

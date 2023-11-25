@@ -13,10 +13,7 @@ use rsiot_component_core::{IComponent, StreamInput, StreamOutput};
 use rsiot_extra_components::cmp_cache;
 use rsiot_messages_core::IMessage;
 
-use crate::{
-    config::Config, error::Error, route_message_get::route_message_get,
-    route_message_put::route_message_put, shared_state::SharedState,
-};
+use crate::{config::Config, error::Error, routes, shared_state::SharedState};
 
 /// Компонент для получения и ввода сообщений через HTTP Server
 pub async fn process<TMessage>(
@@ -72,8 +69,9 @@ where
         );
 
     let app = routing::Router::new()
-        .route("/message/:id", routing::get(route_message_get::<TMessage>))
-        .route("/message", routing::put(route_message_put::<TMessage>))
+        .route("/messages", routing::get(routes::list::<TMessage>))
+        .route("/messages/:id", routing::get(routes::get::<TMessage>))
+        .route("/messages", routing::put(routes::replace::<TMessage>))
         .with_state(shared_state)
         .layer(layer_cors)
         .layer(layer_trace);

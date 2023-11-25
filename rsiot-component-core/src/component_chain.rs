@@ -134,7 +134,7 @@ where
         for cmp in self.components.iter_mut() {
             set.spawn(cmp.spawn());
         }
-        while additional_tasks.len() > 0 {
+        while additional_tasks.is_empty() {
             let a = additional_tasks.pop().unwrap();
             set.spawn(a);
         }
@@ -148,7 +148,7 @@ fn create_link_groups_based_on_links(links: &Vec<Link>) -> Vec<LinkGroup> {
     for link in links {
         let mut found = false;
         for l_g in link_groups.iter_mut() {
-            found = l_g.try_add_link(&link);
+            found = l_g.try_add_link(link);
             if found {
                 break;
             }
@@ -244,9 +244,11 @@ impl LinkGroup {
     /// Определяем, какой канал tokio подходит для данного LinkGroup
     fn get_channel(&self) -> LinkGroupToChannel {
         if self.end.len() == 1 {
-            LinkGroupToChannel::Mpsc((self.begin.clone(), self.end[0]));
+            let params = (self.begin.clone(), self.end[0]);
+            return LinkGroupToChannel::Mpsc(params);
         }
-        LinkGroupToChannel::Broadcast((self.begin.clone(), self.end.clone()))
+        let params = (self.begin.clone(), self.end.clone());
+        LinkGroupToChannel::Broadcast(params)
     }
 }
 

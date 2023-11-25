@@ -29,9 +29,10 @@ async fn main() {
         .add_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
             period: Duration::from_secs(2),
             fn_periodic: move || {
-                let msg = Message::Message0(counter);
+                let msg1 = Message::Message0(counter);
+                let msg2 = Message::Message1(counter * 2.0);
                 counter += 1.0;
-                vec![msg]
+                vec![msg1, msg2]
             },
         }))
         .add_cmp(cmp_http_server::new(cmp_http_server::Config { port: 8011 }))

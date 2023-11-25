@@ -1,6 +1,1 @@
-/// Конфигурация HTTP-сервера
-#[derive(Clone, Debug)]
-pub struct Config {
-    /// Порт, через который доступен сервер
-    pub port: u16,
-}
+pub use rsiot_components_config::http_server::Config;

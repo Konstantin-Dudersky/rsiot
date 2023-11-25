@@ -1471,6 +1471,7 @@ dependencies = [
  "axum",
  "hyper",
  "rsiot-component-core",
+ "rsiot-components-config",
  "rsiot-extra-components",
  "rsiot-messages-core",
  "serde",
