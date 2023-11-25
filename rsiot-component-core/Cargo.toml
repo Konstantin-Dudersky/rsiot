@@ -1,13 +1,13 @@
 [package]
-name = "rsiot-component-core"
-version = "0.0.8"
 description = "Типы данных для создания компонентов"
 categories.workspace = true
 edition.workspace = true
 keywords.workspace = true
 license.workspace = true
-readme.workspace = true
+name = "rsiot-component-core"
+readme = "README.md"
 rust-version.workspace = true
+version = "0.0.8"
 
 [dependencies]
 futures = { workspace = true }

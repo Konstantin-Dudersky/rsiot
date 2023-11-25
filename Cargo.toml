@@ -22,7 +22,6 @@ categories = ["api-bindings", "gui", "network-programming"]
 edition = "2021"
 keywords = ["iot"]
 license = "MIT OR Apache-2.0"
-readme = "README.md"
 repository = "https://github.com/Konstantin-Dudersky/rsiot"
 rust-version = "1.74.0"
 
