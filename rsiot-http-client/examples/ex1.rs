@@ -10,11 +10,10 @@ use tokio::{
 use tracing::{info, level_filters::LevelFilter};
 use url::Url;
 
-use rsiot_http_client::component_http_client;
-use rsiot_http_client_config::{
-    ConnectionConfig, HttpClientConfig, RequestOnEvent, RequestParam,
-    RequestPeriodic,
+use rsiot_components_config::http_client::{
+    ConnectionConfig, HttpClientConfig, RequestOnEvent, RequestParam, RequestPeriodic,
 };
+use rsiot_http_client::component_http_client;
 use rsiot_messages_core::IMessage;
 
 //------------------------------------------------------------------------------

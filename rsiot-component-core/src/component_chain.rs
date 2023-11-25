@@ -107,8 +107,6 @@ where
     }
 
     /// Запустить на выполнение все компоненты. Поток ожидает выполения всех задач
-    ///
-    /// TODO - обработка ошибок
     pub async fn spawn(&mut self) {
         // Преобразовываем вектор связей в вектор LinkGroup
         let link_groups = create_link_groups_based_on_links(&self.links);
@@ -131,12 +129,11 @@ where
         }
 
         let mut set = JoinSet::new();
-        for cmp in self.components.iter_mut() {
+        while let Some(mut cmp) = self.components.pop() {
             set.spawn(cmp.spawn());
         }
-        while additional_tasks.is_empty() {
-            let a = additional_tasks.pop().unwrap();
-            set.spawn(a);
+        while let Some(add) = additional_tasks.pop() {
+            set.spawn(add);
         }
         while (set.join_next().await).is_some() {}
     }

@@ -11,4 +11,7 @@ rust-version.workspace = true
 
 
 [dependencies]
+http = { workspace = true }
 url = { workspace = true }
+
+rsiot-messages-core = { workspace = true }

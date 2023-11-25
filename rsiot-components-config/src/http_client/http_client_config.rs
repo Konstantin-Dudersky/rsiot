@@ -1,6 +1,6 @@
 use rsiot_messages_core::IMessage;
 
-use crate::{
+use super::{
     connection_config::ConnectionConfig, request_on_event::RequestOnEvent,
     request_periodic::RequestPeriodic,
 };

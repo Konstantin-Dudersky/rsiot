@@ -1424,6 +1424,8 @@ dependencies = [
 name = "rsiot-components-config"
 version = "0.0.8"
 dependencies = [
+ "http 1.0.0",
+ "rsiot-messages-core",
  "url",
 ]
 
@@ -1444,23 +1446,14 @@ name = "rsiot-http-client"
 version = "0.0.8"
 dependencies = [
  "reqwest",
+ "rsiot-components-config",
  "rsiot-extra-components",
- "rsiot-http-client-config",
  "rsiot-messages-core",
  "serde",
  "serde_json",
  "tokio",
  "tracing",
  "tracing-subscriber",
- "url",
-]
-
-[[package]]
-name = "rsiot-http-client-config"
-version = "0.0.8"
-dependencies = [
- "http 1.0.0",
- "rsiot-messages-core",
  "url",
 ]
 
@@ -1512,6 +1505,7 @@ version = "0.0.8"
 dependencies = [
  "redis",
  "rsiot-component-core",
+ "rsiot-components-config",
  "rsiot-extra-components",
  "rsiot-messages-core",
  "serde",
@@ -1528,6 +1522,7 @@ dependencies = [
  "futures-util",
  "redis",
  "rsiot-component-core",
+ "rsiot-components-config",
  "rsiot-extra-components",
  "rsiot-messages-core",
  "serde",
@@ -1559,6 +1554,7 @@ version = "0.0.8"
 dependencies = [
  "futures-util",
  "rsiot-component-core",
+ "rsiot-components-config",
  "rsiot-extra-components",
  "rsiot-messages-core",
  "serde",
@@ -1575,6 +1571,7 @@ version = "0.0.8"
 dependencies = [
  "futures-util",
  "rsiot-component-core",
+ "rsiot-components-config",
  "rsiot-extra-components",
  "rsiot-messages-core",
  "serde",

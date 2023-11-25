@@ -5,7 +5,3 @@
 Готовый docker-образ для тестов - [GitHub](https://github.com/cybcon/modbus-server).
 
 Запускается через docker compose в корне. [Инструкция](../doc/development.md).
-
-## Идеи для улучшения
-
-- TODO настраиваемый период опроса для каждого запроса

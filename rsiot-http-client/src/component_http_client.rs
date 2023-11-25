@@ -7,8 +7,8 @@ use tokio::{
 use tracing::error;
 use url::Url;
 
+use rsiot_components_config::http_client as hcc;
 use rsiot_extra_components::component_many_mpsc_to_mpsc;
-use rsiot_http_client_config as hcc;
 use rsiot_messages_core::IMessage;
 
 use crate::{error::Error, periodic_runner::PeriodicRunner, types::Result_};
@@ -65,14 +65,10 @@ async fn process_on_event_requests<TMessage>(
                 Some(val) => val,
                 None => continue,
             };
-            let msgs = process_request_and_response(
-                &url,
-                &request_param,
-                req.on_success,
-                req.on_failure,
-            )
-            .await
-            .unwrap();
+            let msgs =
+                process_request_and_response(&url, &request_param, req.on_success, req.on_failure)
+                    .await
+                    .unwrap();
             for msg in msgs {
                 stream_output.send(msg).await.unwrap();
             }

@@ -19,6 +19,7 @@ tracing = { workspace = true }
 url = { workspace = true }
 
 rsiot-component-core = { workspace = true }
+rsiot-components-config = { workspace = true }
 rsiot-extra-components = { workspace = true }
 rsiot-messages-core = { workspace = true }
 
