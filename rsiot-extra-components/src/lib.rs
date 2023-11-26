@@ -11,3 +11,5 @@ mod component_many_mpsc_to_mpsc;
 pub use component_combine_message::component_combine_message;
 pub use component_filter_message::component_filter_message;
 pub use component_many_mpsc_to_mpsc::component_many_mpsc_to_mpsc;
+pub use rsiot_component_core::ComponentChain;
+pub use rsiot_messages_core::IMessage;

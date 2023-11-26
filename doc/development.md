@@ -32,3 +32,5 @@ cargo ws publish --from-git --allow-dirty
 TODO - заменить указатели функций на трейты Fn
 
 TODO - обновить до hyper версии 1.0 - какие-то ошибки. Подождать обновления axum до 0.7
+
+TODO - выделить component-core и т.д. в отдельные фичи.

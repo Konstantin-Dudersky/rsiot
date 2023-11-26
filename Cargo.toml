@@ -1,6 +1,5 @@
 [workspace]
 members = [
-    "./rsiot",
     "./rsiot-component-core",
     "./rsiot-components-config",
     "./rsiot-extra-components",
