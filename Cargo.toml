@@ -2,6 +2,7 @@
 members = [
     "./rsiot-component-core",
     "./rsiot-components-config",
+    "./rsiot-env-vars",
     "./rsiot-extra-components",
     "./rsiot-http-client",
     "./rsiot-http-server",
@@ -14,6 +15,7 @@ members = [
     "./rsiot-websocket-client",
 ]
 resolver = "2"
+
 
 [workspace.package]
 categories = ["api-bindings", "gui", "network-programming"]
@@ -28,6 +30,9 @@ rust-version = "1.74.0"
 axum = { version = "0.6.20" }
 axum-test = { version = "13.4.1" }
 chrono = { version = "0.4.31", features = ["serde"] }
+clap = { version = "4.4", features = ["derive"] }
+dotenvy = { version = "0.15" }
+envy = { version = "0.4" }
 http = { version = "1.0.0" }
 hyper = { version = "0.14" }
 futures = { version = "0.3.29" }
@@ -54,17 +59,17 @@ tokio-modbus = { version = "0.9.0", default-features = false, features = [
 ] }
 tokio-tungstenite = { version = "0.20.1" }
 tokio-util = { version = "0.7.10" }
+toml = { version = "0.8" }
 tower-http = { version = "0.4.4", features = ["cors", "trace"] }
 tracing = { version = "0.1.40" }
 tracing-subscriber = { version = "0.3.18" }
 url = { version = "2.5.0" }
 
-# документация
-document-features = { version = "0.2" }
 
-rsiot-extra-components = { version = "0.0.10", path = "./rsiot-extra-components" }
 rsiot-component-core = { version = "0.0.9", path = "./rsiot-component-core" }
 rsiot-components-config = { version = "0.0.9", path = "./rsiot-components-config" }
+rsiot-env-vars = { version = "0.0.0", path = "./rsiot-env-vars" }
+rsiot-extra-components = { version = "0.0.10", path = "./rsiot-extra-components" }
 rsiot-http-client = { version = "0.0.10", path = "./rsiot-http-client" }
 rsiot-http-server = { version = "0.0.10", path = "./rsiot-http-server" }
 rsiot-messages-core = { version = "0.0.9", path = "./rsiot-messages-core" }
