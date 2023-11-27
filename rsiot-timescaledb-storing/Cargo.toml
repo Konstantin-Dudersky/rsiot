@@ -1,6 +1,6 @@
 [package]
 name = "rsiot-timescaledb-storing"
-version = "0.0.10"
+version = "0.0.11"
 description = "Сохранение данных в TimescaleDB"
 categories.workspace = true
 edition.workspace = true
