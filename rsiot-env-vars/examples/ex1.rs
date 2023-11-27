@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use rsiot_env_vars::{load_config, IConfig};
+use rsiot_env_vars::{load_config, IEnvVars};
 
 /// Структура со всеми переменными
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -36,7 +36,7 @@ impl Config {
     }
 }
 
-impl IConfig for Config {}
+impl IEnvVars for Config {}
 
 fn main() {
     let config = load_config::<Config>();

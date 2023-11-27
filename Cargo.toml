@@ -27,14 +27,13 @@ rust-version = "1.74.0"
 
 
 [workspace.dependencies]
-axum = { version = "0.6.20" }
+axum = { version = "0.7.1" }
 axum-test = { version = "13.4.1" }
 chrono = { version = "0.4.31", features = ["serde"] }
 clap = { version = "4.4", features = ["derive"] }
 dotenvy = { version = "0.15" }
 envy = { version = "0.4" }
 http = { version = "1.0.0" }
-hyper = { version = "0.14" }
 futures = { version = "0.3.29" }
 futures-util = { version = "0.3.29" }
 redis = { version = "0.23.3", features = ["tokio-comp"] }
@@ -60,7 +59,7 @@ tokio-modbus = { version = "0.9.0", default-features = false, features = [
 tokio-tungstenite = { version = "0.20.1" }
 tokio-util = { version = "0.7.10" }
 toml = { version = "0.8" }
-tower-http = { version = "0.4.4", features = ["cors", "trace"] }
+tower-http = { version = "0.5.0", features = ["cors", "trace"] }
 tracing = { version = "0.1.40" }
 tracing-subscriber = { version = "0.3.18" }
 url = { version = "2.5.0" }

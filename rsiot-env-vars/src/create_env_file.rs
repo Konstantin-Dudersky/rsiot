@@ -5,18 +5,17 @@
 
 use std::fs::write;
 
-use serde::Serialize;
 use toml::to_string as serialize;
 
-use crate::Errors;
+use crate::{Errors, IEnvVars};
 
 /// Создать файл с настройками по-умолчанию
-pub fn create_env_file<T>(filename: &str) -> Result<(), Errors>
+pub fn create_env_file<TEnvVars>(filename: &str) -> Result<(), Errors>
 where
-    T: Default + Serialize,
+    TEnvVars: IEnvVars,
 {
     // значения по-умолчанию
-    let default = T::default();
+    let default = TEnvVars::default();
     // сериализуем в TOML
     let s = serialize(&default)?;
     // переводим название переменных в UPPER_CASE

@@ -10,7 +10,7 @@ use rsiot_component_core::{StreamInput, StreamOutput};
 use rsiot_extra_components::cmpbase_mpsc_to_broadcast;
 use rsiot_messages_core::IMessage;
 
-use crate::{cmp_redis_publisher, Error};
+use crate::{cmp_redis_publisher, error::Error};
 
 pub async fn function<TMessage>(
     input: StreamInput<TMessage>,
@@ -22,20 +22,14 @@ pub async fn function<TMessage>(
     info!("Initialization. Config: {:?}", config);
 
     // Создаем канал для пересылки сообщений со входа потокам
-    let (input_broadcast_tx, _input_broadcast_rx) =
-        broadcast::channel::<TMessage>(100);
-    let future =
-        cmpbase_mpsc_to_broadcast::new(input, input_broadcast_tx.clone());
+    let (input_broadcast_tx, _input_broadcast_rx) = broadcast::channel::<TMessage>(100);
+    let future = cmpbase_mpsc_to_broadcast::new(input, input_broadcast_tx.clone());
     let _task_to_output = spawn(future);
 
     loop {
         info!("Starting");
 
-        let result = task_main::<TMessage>(
-            input_broadcast_tx.subscribe(),
-            config.clone(),
-        )
-        .await;
+        let result = task_main::<TMessage>(input_broadcast_tx.subscribe(), config.clone()).await;
         match result {
             Ok(_) => (),
             Err(err) => error!("{:?}", err),

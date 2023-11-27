@@ -1,4 +1,7 @@
-use std::sync::Arc;
+use std::{
+    net::{IpAddr, Ipv4Addr, SocketAddr},
+    sync::Arc,
+};
 
 use axum::routing;
 use tokio::time::{sleep, Duration};
@@ -54,8 +57,8 @@ async fn task_main<TMessage>(
 where
     TMessage: IMessage + 'static,
 {
-    let url = format!("0.0.0.0:{}", port);
-    let url = url.parse()?;
+    let ipaddr = IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0));
+    let socket_addr = SocketAddr::new(ipaddr, port);
 
     let layer_cors = CorsLayer::permissive();
 
@@ -76,9 +79,13 @@ where
         .layer(layer_cors)
         .layer(layer_trace);
 
-    axum::Server::bind(&url)
-        .serve(app.into_make_service())
-        .await?;
+    let listener = tokio::net::TcpListener::bind(socket_addr)
+        .await
+        .map_err(|err| Error::BindPort(err))?;
+
+    axum::serve(listener, app)
+        .await
+        .map_err(|err| Error::AxumServe(err))?;
 
     Ok(())
 }

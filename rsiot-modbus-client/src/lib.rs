@@ -4,7 +4,17 @@ mod new;
 mod process;
 mod types;
 
+#[doc = include_str!("../README.md")]
+///
+/// # Диаграмма
+///
 #[doc = include_str!("../doc/component-modbus-client.svg")]
+///
+/// # Пример
+///
+/// ```rust
+#[doc = include_str!("../examples/modbus_tcp_client.rs")]
+/// ```
 pub mod cmp_modbus_client {
     pub use crate::new::new;
     pub use rsiot_components_config::modbus_client::*;

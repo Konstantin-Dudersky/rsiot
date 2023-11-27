@@ -14,7 +14,7 @@ use rsiot_messages_core::IMessage;
 
 use crate::{
     cmp_redis_subscriber::{self, Config},
-    Error,
+    error::Error,
 };
 
 type TaskResult = Result<(), Error>;
@@ -29,16 +29,13 @@ pub async fn function<TMessage>(
     info!("Initialization. Config: {:?}", config);
 
     // Создаем канал для пересылки сообщений на выход
-    let (stream_to_output_tx, stream_to_output_rx) =
-        mpsc::channel::<TMessage>(100);
-    let _task_to_output = cmp_mpsc_to_mpsc::create()
-        .set_and_spawn(Some(stream_to_output_rx), output);
+    let (stream_to_output_tx, stream_to_output_rx) = mpsc::channel::<TMessage>(100);
+    let _task_to_output =
+        cmp_mpsc_to_mpsc::create().set_and_spawn(Some(stream_to_output_rx), output);
 
     loop {
         info!("Starting");
-        let result =
-            task_main::<TMessage>(stream_to_output_tx.clone(), config.clone())
-                .await;
+        let result = task_main::<TMessage>(stream_to_output_tx.clone(), config.clone()).await;
         match result {
             Ok(_) => (),
             Err(err) => error!("{:?}", err),
@@ -91,7 +88,7 @@ where
         let redis_msg = stream.next().await;
         let redis_msg = match redis_msg {
             Some(value) => value,
-            None => return Err(Error::GetMessageError),
+            None => return Err(Error::GetMessage),
         };
         trace!("New message from Redis: {:?}", redis_msg);
         let payload: String = redis_msg.get_payload()?;
@@ -99,8 +96,7 @@ where
         match msg {
             Ok(msg) => output.send(msg).await?,
             Err(err) => {
-                let err =
-                    format!("Wrong message: {:?}; error: {:?}", payload, err);
+                let err = format!("Wrong message: {:?}; error: {:?}", payload, err);
                 error!(err);
             }
         }
@@ -125,8 +121,7 @@ where
         let msg = match msg {
             Ok(val) => val,
             Err(err) => {
-                let err =
-                    format!("Wrong message: {:?}; error: {:?}", value, err);
+                let err = format!("Wrong message: {:?}; error: {:?}", value, err);
                 error!(err);
                 continue;
             }

@@ -3,7 +3,7 @@
 use clap::{Parser, Subcommand};
 use tracing::info;
 
-use crate::{create_env_file::create_env_file, load_config, Errors, IConfig};
+use crate::{create_env_file::create_env_file, load_config, Errors, IEnvVars};
 
 const ENV_EXAMPLE_FILE: &str = ".env.example";
 
@@ -27,7 +27,7 @@ pub enum Commands {
 /// Запускаем CLI
 pub fn env_vars_cli<TConfig>()
 where
-    TConfig: IConfig,
+    TConfig: IEnvVars,
 {
     let cli = Cli::parse();
 
@@ -41,7 +41,7 @@ where
 
 fn command_create<TConfig>() -> Result<(), Errors>
 where
-    TConfig: IConfig,
+    TConfig: IEnvVars,
 {
     info!("Создаем файл {}", ENV_EXAMPLE_FILE);
     create_env_file::<TConfig>(ENV_EXAMPLE_FILE)?;
@@ -51,7 +51,7 @@ where
 
 fn command_check<TConfig>() -> Result<(), Errors>
 where
-    TConfig: IConfig,
+    TConfig: IEnvVars,
 {
     info!("Пробуем загрузить файл .env");
     let config = load_config::<TConfig>()?;

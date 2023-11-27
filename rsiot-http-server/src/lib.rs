@@ -16,7 +16,6 @@ mod shared_state;
 /// ```rust
 #[doc = include_str!("../examples/http-server-example.rs")]
 /// ```
-///
 pub mod cmp_http_server {
     pub use crate::{config::Config, new::new};
 }

@@ -1,18 +1,15 @@
-use std::fmt::Debug;
-
 use dotenvy::dotenv;
 use envy::from_env;
-use serde::de::DeserializeOwned;
 use tracing::{error, info};
 
-use crate::{Errors, IConfig};
+use crate::{Errors, IEnvVars};
 
 /// Загрузить настройки:
 /// - из переменных среды
 /// - из файла .env в корне проекта
-pub fn load_config<TConfig>() -> Result<TConfig, Errors>
+pub fn load_config<TEnvVars>() -> Result<TEnvVars, Errors>
 where
-    TConfig: IConfig,
+    TEnvVars: IEnvVars,
 {
     let vars = _load_config();
     match &vars {
@@ -26,13 +23,13 @@ where
     vars
 }
 
-fn _load_config<T>() -> Result<T, Errors>
+fn _load_config<TEnvVars>() -> Result<TEnvVars, Errors>
 where
-    T: DeserializeOwned + Debug,
+    TEnvVars: IEnvVars,
 {
     // загружаем из файла .env
     dotenv()?;
     // десериализуем в структуру
-    let vars = from_env::<T>()?;
+    let vars = from_env::<TEnvVars>()?;
     Ok(vars)
 }

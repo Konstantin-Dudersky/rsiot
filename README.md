@@ -4,7 +4,7 @@
 
 #### Взаимодействие с устройствами нижнего уровня
 
-[**modbus-client**](https://docs.rs/rsiot-modbus-client/latest/)
+[**modbus-client**](https://docs.rs/rsiot-modbus-client/latest/rsiot_modbus_client/cmp_modbus_client)
 
 Взаимодейтсвие с устройствами, поддерживающими протокол Modbus TCP сервер / Modbus RTU slave.
 
@@ -12,7 +12,7 @@
 
 Взаимодействие с устройствами, имеющих HTTP API.
 
-[**websocket-client**](https://docs.rs/rsiot-websocket-client/latest/)
+[**websocket-client**](https://docs.rs/rsiot-websocket-client/latest/rsiot_websocket_client/cmp_websocket_client)
 
 Взаимодействие с устройствами, поддерживющими функциональность Websocket сервера.
 
@@ -26,11 +26,11 @@ TODO **s7-client**
 
 #### Взаимодействие с системами верхнего уровня
 
-[**http-server**](https://docs.rs/rsiot-http-server/latest/)
+[**http-server**](https://docs.rs/rsiot-http-server/latest/rsiot_http_server/cmp_http_server)
 
 Поддержка HTTP API, через который внешние клиенты могут получать и вводить данные.
 
-[**websocket-server**](https://docs.rs/rsiot-websocket-server/latest/)
+[**websocket-server**](https://docs.rs/rsiot-websocket-server/latest/rsiot_websocket_server/cmp_websocket_server)
 
 Поддержка Websocket сервера, к которому могут подключаться внешние клиенты.
 
@@ -40,17 +40,17 @@ TODO **telegram**
 
 #### Брокеры сообщений
 
-[**redis-publisher**](https://docs.rs/rsiot-redis-publisher/latest/)
+[**redis-publisher**](https://docs.rs/rsiot-redis-publisher/latest/rsiot_redis_publisher/cmp_redis_publisher)
 
 Публикация сообщений в Redis.
 
-[**redis-subscriber**](https://docs.rs/rsiot-redis-subscriber/latest/)
+[**redis-subscriber**](https://docs.rs/rsiot-redis-subscriber/latest/rsiot_redis_subscriber/cmp_redis_subscriber)
 
 Подписка на сообщения из Redis.
 
 #### Сохранение данных в БД
 
-[**timescaledb-storing**](https://docs.rs/rsiot-timescaledb-storing/latest)
+[**timescaledb-storing**](https://docs.rs/rsiot-timescaledb-storing/latest/rsiot_timescaledb_storing/cmp_timescaledb_storing)
 
 Сохрание сообщений в виде временных рядов в TimescaleDB.
 
@@ -60,9 +60,13 @@ TODO **leptos**
 
 #### Вспомогательные крейты
 
-[**timescaledb-storing**](https://docs.rs/rsiot-env-vars/latest)
+[**env-vars**](https://docs.rs/rsiot-env-vars/latest)
 
 Чтение конфигурации из файла `.env`.
+
+TODO **logging**
+
+Настройка логгирования
 
 ## Описание
 
@@ -95,6 +99,7 @@ TODO - пересмотреть, возможно стоит возвращат�
 ```rust
 use rsiot_messages_core::IMessage;
 use serde::{Deserialize, Serialize};
+
 [derive(Clone, Debug, Deserialize, Serialize)]
 enum Message {
     /// Текущее значение температуры
@@ -109,5 +114,3 @@ impl IMessage for Message {}
 Трейт `IMessage` реализует основные методы - см. документацию по крейту [rsiot-messages-core](https://docs.rs/rsiot-messages-core/latest)
 
 Для упрощения компоненты можно создавать и объединять в **цепочку компонентов**.
-
-TODO - добавить пример с Modbus-клиентом
