@@ -65,16 +65,16 @@ tracing-subscriber = { version = "0.3.18" }
 url = { version = "2.5.0" }
 
 
-rsiot-component-core = { version = "0.0.11", path = "./rsiot-component-core" }
-rsiot-components-config = { version = "0.0.11", path = "./rsiot-components-config" }
-rsiot-env-vars = { version = "0.0.11", path = "./rsiot-env-vars" }
-rsiot-extra-components = { version = "0.0.11", path = "./rsiot-extra-components" }
-rsiot-http-client = { version = "0.0.11", path = "./rsiot-http-client" }
-rsiot-http-server = { version = "0.0.11", path = "./rsiot-http-server" }
-rsiot-messages-core = { version = "0.0.11", path = "./rsiot-messages-core" }
-rsiot-modbus-client = { version = "0.0.11", path = "./rsiot-modbus-client" }
-rsiot-redis-publisher = { version = "0.0.11", path = "./rsiot-redis-publisher" }
-rsiot-redis-subscriber = { version = "0.0.11", path = "./rsiot-redis-subscriber" }
-rsiot-timescaledb-storing = { version = "0.0.11", path = "./rsiot-timescaledb-storing" }
-rsiot-websocket-client = { version = "0.0.11", path = "./rsiot-websocket-client" }
-rsiot-websocket-server = { version = "0.0.11", path = "./rsiot-websocket-server" }
+rsiot-component-core = { version = "0.0.12", path = "./rsiot-component-core" }
+rsiot-components-config = { version = "0.0.12", path = "./rsiot-components-config" }
+rsiot-env-vars = { version = "0.0.12", path = "./rsiot-env-vars" }
+rsiot-extra-components = { version = "0.0.12", path = "./rsiot-extra-components" }
+rsiot-http-client = { version = "0.0.12", path = "./rsiot-http-client" }
+rsiot-http-server = { version = "0.0.12", path = "./rsiot-http-server" }
+rsiot-messages-core = { version = "0.0.12", path = "./rsiot-messages-core" }
+rsiot-modbus-client = { version = "0.0.12", path = "./rsiot-modbus-client" }
+rsiot-redis-publisher = { version = "0.0.12", path = "./rsiot-redis-publisher" }
+rsiot-redis-subscriber = { version = "0.0.12", path = "./rsiot-redis-subscriber" }
+rsiot-timescaledb-storing = { version = "0.0.12", path = "./rsiot-timescaledb-storing" }
+rsiot-websocket-client = { version = "0.0.12", path = "./rsiot-websocket-client" }
+rsiot-websocket-server = { version = "0.0.12", path = "./rsiot-websocket-server" }

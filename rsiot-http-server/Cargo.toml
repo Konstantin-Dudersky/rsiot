@@ -1,6 +1,6 @@
 [package]
 name = "rsiot-http-server"
-version = "0.0.11"
+version = "0.0.12"
 description = "HTTP-сервер"
 categories.workspace = true
 edition.workspace = true
