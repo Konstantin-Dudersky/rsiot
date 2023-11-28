@@ -34,6 +34,12 @@ pub enum EavValueType {
     F64(f64),
 }
 
+impl From<f64> for EavValueType {
+    fn from(value: f64) -> Self {
+        EavValueType::F64(value)
+    }
+}
+
 impl Default for EavValueType {
     fn default() -> Self {
         Self::F64(0.0)
