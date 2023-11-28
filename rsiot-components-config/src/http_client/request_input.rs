@@ -1,12 +1,13 @@
 use super::{
     types::{CbkOnFailure, CbkOnSuccess},
-    RequestParam,
+    HttpParam,
 };
 
-#[derive(Clone)]
-pub struct RequestOnEvent<TMessage> {
+/// Параметры запроса на основе входящего потока сообщений
+#[derive(Clone, Debug)]
+pub struct RequestInput<TMessage> {
     /// Функция выдает параметры запроса, на основе входных сообщений
-    pub condition: fn(TMessage) -> Option<RequestParam>,
+    pub fn_input: fn(&TMessage) -> Option<HttpParam>,
     /// Функция обработки корректного ответа
     pub on_success: CbkOnSuccess<TMessage>,
     /// Функция обработки некорректного ответа

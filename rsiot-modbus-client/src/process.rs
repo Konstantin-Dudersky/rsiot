@@ -25,11 +25,13 @@ pub async fn process<TMessage>(
 {
     info!("Starting modbus client, configuration: {:?}", config);
 
-    let (to_output_tx, to_output_rx) = mpsc::channel::<TMessage>(100);
+    // Канал для распространения входного потока сообщений по порождаемым задачам
     let (from_input_tx, _from_inpit_rx) = broadcast::channel::<TMessage>(100);
-
-    let _task_to_output = cmp_mpsc_to_mpsc::create().set_and_spawn(Some(to_output_rx), output);
     let _task_from_input = spawn(cmpbase_mpsc_to_broadcast::new(input, from_input_tx.clone()));
+
+    // Канал для сбора выходных потоков из порожденных задач в один
+    let (to_output_tx, to_output_rx) = mpsc::channel::<TMessage>(100);
+    let _task_to_output = cmp_mpsc_to_mpsc::create().set_and_spawn(Some(to_output_rx), output);
 
     loop {
         let res =
@@ -39,10 +41,10 @@ pub async fn process<TMessage>(
             Ok(_) => (),
             Err(err) => {
                 error!("Error in Modbus client: {:?}", err);
-                sleep(Duration::from_secs(2)).await;
-                info!("Restarting...");
             }
         }
+        info!("Restarting...");
+        sleep(Duration::from_secs(2)).await;
     }
 }
 

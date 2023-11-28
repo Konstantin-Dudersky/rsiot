@@ -1,9 +1,24 @@
-mod component_http_client;
+mod config;
 mod error;
-mod periodic_runner;
+mod fn_process;
+mod new;
 mod types;
-
-pub use component_http_client::component_http_client;
 
 pub use rsiot_component_core::ComponentChain;
 pub use rsiot_messages_core::IMessage;
+
+#[doc = include_str!("../README.md")]
+///
+/// # Диаграмма
+///
+// #[doc = include_str!("../doc/component-modbus-client.svg")]
+///
+/// # Пример
+///
+/// ```rust
+#[doc = include_str!("../examples/http_client.rs")]
+/// ```
+pub mod cmp_http_client {
+    pub use crate::config::config;
+    pub use crate::new::new;
+}

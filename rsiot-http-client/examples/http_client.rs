@@ -1,19 +1,14 @@
 use std::collections::HashMap;
 
+use rsiot_component_core::ComponentChain;
+use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
-use tokio::{
-    main, spawn,
-    sync::mpsc,
-    time::{sleep, Duration},
-};
-use tracing::{info, level_filters::LevelFilter};
+use tokio::{main, time::Duration};
+use tracing::{level_filters::LevelFilter, Level};
 use url::Url;
 
-use rsiot_components_config::http_client::{
-    ConnectionConfig, HttpClientConfig, RequestOnEvent, RequestParam, RequestPeriodic,
-};
-use rsiot_http_client::component_http_client;
+use rsiot_http_client::cmp_http_client::{self, config};
 use rsiot_messages_core::IMessage;
 
 //------------------------------------------------------------------------------
@@ -45,27 +40,27 @@ async fn main() {
         .with_max_level(LevelFilter::INFO)
         .init();
 
-    let config = HttpClientConfig::<Message> {
-        connection_config: ConnectionConfig {
-            url: Url::parse("http://127.0.0.1:80").unwrap(),
+    let http_config = config::Config::<Message> {
+        connection_config: config::ConnectionConfig {
+            base_url: Url::parse("http://127.0.0.1:80").unwrap(),
         },
-        requests_on_event: vec![RequestOnEvent {
-            condition: |msg| match msg {
+        requests_input: vec![config::RequestInput {
+            fn_input: |msg| match msg {
                 Message::HttpMethodsGetOnEventRequest => {
-                    let param = RequestParam::Get("get".to_string());
+                    let param = config::HttpParam::Get("get".to_string());
                     Some(param)
                 }
                 _ => None,
             },
             on_success: |body| {
-                let res = from_str::<HttpMethodsGet>(&body).unwrap();
+                let res = from_str::<HttpMethodsGet>(body).unwrap();
                 vec![Message::HttpMethodsGetOnEventResponse(res)]
             },
             on_failure: || vec![],
         }],
-        requests_periodic: vec![RequestPeriodic {
+        requests_periodic: vec![config::RequestPeriodic {
             period: Duration::from_secs(5),
-            request_param: RequestParam::Get("get".to_string()),
+            http_param: config::HttpParam::Get("get".to_string()),
             on_success: |body| {
                 let res = from_str::<HttpMethodsGet>(&body).unwrap();
                 vec![Message::HttpMethodsGetPeriodicRespone(res)]
@@ -74,27 +69,19 @@ async fn main() {
         }],
     };
 
-    let (stream_begin, stream_client_in) = mpsc::channel::<Message>(10);
-    let (stream_client_out, mut stream_end) = mpsc::channel::<Message>(10);
+    let mut chain = ComponentChain::new(100)
+        .add_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
+            period: Duration::from_secs(2),
+            fn_periodic: move || {
+                let msg = Message::HttpMethodsGetOnEventRequest;
+                vec![msg]
+            },
+        }))
+        .add_cmp(cmp_http_client::new(http_config))
+        .add_cmp(cmp_logger::create(cmp_logger::Config {
+            level: Level::INFO,
+            header: "HTTP response".into(),
+        }));
 
-    let _task_begin = spawn(async move {
-        loop {
-            let msg = Message::HttpMethodsGetOnEventRequest;
-            stream_begin.send(msg).await.unwrap();
-            sleep(Duration::from_secs(2)).await
-        }
-    });
-    let task_http = spawn(component_http_client(
-        stream_client_in,
-        stream_client_out,
-        config,
-    ));
-
-    let _task_end = spawn(async move {
-        while let Some(msg) = stream_end.recv().await {
-            info!("New output message: {:?}", msg);
-        }
-    });
-
-    task_http.await.unwrap();
+    chain.spawn().await;
 }

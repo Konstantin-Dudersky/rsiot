@@ -1,5 +1,6 @@
+/// Параметры HTTP
 #[derive(Clone, Debug)]
-pub enum RequestParam {
+pub enum HttpParam {
     /// (endpoint)
     Get(String),
     Put(String),

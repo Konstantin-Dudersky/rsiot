@@ -2,6 +2,8 @@
 
 use url::Url;
 
+/// Параметры HTTP-сервера, к которому отправляются запросы
+#[derive(Clone, Debug)]
 pub struct ConnectionConfig {
-    pub url: Url,
+    pub base_url: Url,
 }

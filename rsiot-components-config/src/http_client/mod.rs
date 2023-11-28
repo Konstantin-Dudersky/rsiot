@@ -1,15 +1,15 @@
+mod config;
 mod connection_config;
-mod http_client_config;
-mod request_on_event;
-mod request_param;
+mod http_param;
+mod request_input;
 mod request_periodic;
 mod response;
 mod types;
 
+pub use config::Config;
 pub use connection_config::ConnectionConfig;
-pub use http_client_config::HttpClientConfig;
-pub use request_on_event::RequestOnEvent;
-pub use request_param::RequestParam;
+pub use http_param::HttpParam;
+pub use request_input::RequestInput;
 pub use request_periodic::RequestPeriodic;
 pub use response::Response;
 pub use types::{CbkOnFailure, CbkOnSuccess};
