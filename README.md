@@ -8,9 +8,9 @@
 
 Взаимодейтсвие с устройствами, поддерживающими протокол Modbus TCP сервер / Modbus RTU slave.
 
-[**http-client**](https://docs.rs/rsiot-http-client/latest/)
+[**http-client**](https://docs.rs/rsiot-http-client/latest/rsiot_http_client/cmp_http_client)
 
-Взаимодействие с устройствами, имеющих HTTP API.
+Взаимодействие с устройствами, имеющими HTTP API.
 
 [**websocket-client**](https://docs.rs/rsiot-websocket-client/latest/rsiot_websocket_client/cmp_websocket_client)
 

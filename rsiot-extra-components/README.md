@@ -45,5 +45,3 @@
 ## component_mpsc_to_many_mpsc
 
 Преобразование одного mpsc::Receiver в несколько mpsc::Sender
-
-TODO - компонент-заглушка, который потребляет все входящие сообщения

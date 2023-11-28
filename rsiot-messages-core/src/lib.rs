@@ -1,3 +1,5 @@
+mod eav;
+mod eav_test;
 mod error;
 mod imessage;
 
