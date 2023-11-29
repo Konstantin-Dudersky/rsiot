@@ -9,44 +9,44 @@ readme = "README.md"
 rust-version.workspace = true
 version = "0.0.14"
 
+
 [dependencies]
 document-features = { workspace = true }
 
-rsiot-component-core = { workspace = true }
-rsiot-extra-components = { workspace = true }
-rsiot-http-client = { workspace = true }
-rsiot-http-server = { workspace = true }
+rsiot-component-core = { workspace = true, optional = true }
+rsiot-extra-components = { workspace = true, optional = true }
+rsiot-http-client = { workspace = true, optional = true }
+rsiot-http-server = { workspace = true, optional = true }
 rsiot-messages-core = { workspace = true }
-rsiot-modbus-client = { workspace = true }
-rsiot-redis-publisher = { workspace = true }
-rsiot-redis-subscriber = { workspace = true }
-rsiot-websocket-client = { workspace = true }
-rsiot-websocket-server = { workspace = true }
-rsiot-timescaledb-storing = { workspace = true }
+rsiot-modbus-client = { workspace = true, optional = true }
+rsiot-redis-publisher = { workspace = true, optional = true }
+rsiot-redis-subscriber = { workspace = true, optional = true }
+rsiot-websocket-client = { workspace = true, optional = true }
+rsiot-websocket-server = { workspace = true, optional = true }
+rsiot-timescaledb-storing = { workspace = true, optional = true }
 
 [dev-dependencies]
-# tokio = { workspace = true }
-# serde = { workspace = true }
+
 
 [features]
 ## Базовые компоненты
-components = []
+components = ["dep:rsiot-component-core"]
 ## Компонент http-клиент
-http-client = ["components"]
+http-client = ["components", "dep:rsiot-http-client"]
 ## Компонент http-сервер
-http-server = ["components"]
+http-server = ["components", "dep:rsiot-http-server"]
 ## Компонент Modbus клиент
-modbus-client = ["components"]
+modbus-client = ["components", "dep:rsiot-modbus-client"]
 ## Компонент публикации сообщений в Redis
-redis-publisher = ["components"]
+redis-publisher = ["components", "dep:rsiot-redis-publisher"]
 ## Компонент подписики на сообщения из Redis
-redis-subscriber = ["components"]
+redis-subscriber = ["components", "dep:rsiot-redis-subscriber"]
 ## Компонент сохранения в БД TimescaleDB
-timescaledb-storing = ["components"]
+timescaledb-storing = ["components", "dep:rsiot-timescaledb-storing"]
 ## Компонент websocket клиента
-websocket-client = ["components"]
+websocket-client = ["components", "dep:rsiot-websocket-client"]
 ## Компонент websocket сервера
-websocket-server = ["components"]
+websocket-server = ["components", "dep:rsiot-websocket-server"]
 
 
 [package.metadata.docs.rs]
