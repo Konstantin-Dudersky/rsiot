@@ -32,21 +32,21 @@ rsiot-timescaledb-storing = { workspace = true }
 ## Базовые компоненты
 components = []
 ## Компонент http-клиент
-http-client = []
+http-client = ["components"]
 ## Компонент http-сервер
-http-server = []
+http-server = ["components"]
 ## Компонент Modbus клиент
-modbus-client = []
+modbus-client = ["components"]
 ## Компонент публикации сообщений в Redis
-redis-publisher = []
+redis-publisher = ["components"]
 ## Компонент подписики на сообщения из Redis
-redis-subscriber = []
+redis-subscriber = ["components"]
 ## Компонент сохранения в БД TimescaleDB
-timescaledb-storing = []
+timescaledb-storing = ["components"]
 ## Компонент websocket клиента
-websocket-client = []
+websocket-client = ["components"]
 ## Компонент websocket сервера
-websocket-server = []
+websocket-server = ["components"]
 
 
 [package.metadata.docs.rs]

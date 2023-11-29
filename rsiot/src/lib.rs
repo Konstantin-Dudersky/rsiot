@@ -3,7 +3,7 @@
 //! ## Флаги `feature`:
 
 #![doc = document_features::document_features!()]
-// #![cfg_attr(docsrs, feature(doc_auto_cfg))]
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
 
 pub mod message {
     pub use rsiot_messages_core::*;
