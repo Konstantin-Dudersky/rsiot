@@ -1,0 +1,54 @@
+[package]
+categories.workspace = true
+description = "Метакрейт, импортирующий все другие крейты через флаги feature"
+edition.workspace = true
+keywords.workspace = true
+license.workspace = true
+name = "rsiot"
+readme = "README.md"
+rust-version.workspace = true
+version = "0.0.0"
+
+[dependencies]
+document-features = { workspace = true }
+
+rsiot-component-core = { workspace = true }
+rsiot-extra-components = { workspace = true }
+rsiot-http-client = { workspace = true }
+rsiot-http-server = { workspace = true }
+rsiot-messages-core = { workspace = true }
+rsiot-modbus-client = { workspace = true }
+rsiot-redis-publisher = { workspace = true }
+rsiot-redis-subscriber = { workspace = true }
+rsiot-websocket-client = { workspace = true }
+rsiot-websocket-server = { workspace = true }
+rsiot-timescaledb-storing = { workspace = true }
+
+[dev-dependencies]
+# tokio = { workspace = true }
+# serde = { workspace = true }
+
+[features]
+## Базовые компоненты
+components = []
+## Компонент http-клиент
+http-client = []
+## Компонент http-сервер
+http-server = []
+## Компонент Modbus клиент
+modbus-client = []
+## Компонент публикации сообщений в Redis
+redis-publisher = []
+## Компонент подписики на сообщения из Redis
+redis-subscriber = []
+## Компонент сохранения в БД TimescaleDB
+timescaledb-storing = []
+## Компонент websocket клиента
+websocket-client = []
+## Компонент websocket сервера
+websocket-server = []
+
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

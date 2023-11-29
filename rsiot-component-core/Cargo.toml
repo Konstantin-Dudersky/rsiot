@@ -1,6 +1,6 @@
 [package]
-description = "Типы данных для создания компонентов"
 categories.workspace = true
+description = "Типы данных для создания компонентов"
 edition.workspace = true
 keywords.workspace = true
 license.workspace = true
