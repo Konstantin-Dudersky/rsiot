@@ -30,7 +30,7 @@ rsiot-timescaledb-storing = { workspace = true, optional = true }
 
 [features]
 ## Базовые компоненты
-components = ["dep:rsiot-component-core"]
+components = ["dep:rsiot-component-core", "dep:rsiot-extra-components"]
 ## Компонент http-клиент
 http-client = ["components", "dep:rsiot-http-client"]
 ## Компонент http-сервер
