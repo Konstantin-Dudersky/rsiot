@@ -20,7 +20,11 @@ enum Message {
     HttpMethodsGetOnEventRequest,
 }
 
-impl IMessage for Message {}
+impl IMessage for Message {
+    fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
+        todo!()
+    }
+}
 
 //------------------------------------------------------------------------------
 

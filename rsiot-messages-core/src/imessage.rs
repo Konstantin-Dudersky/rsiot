@@ -3,8 +3,9 @@ use std::fmt::Debug;
 use serde::{de::DeserializeOwned, Serialize};
 use serde_json::{from_str as from_json, to_string as to_json};
 
-use crate::Error;
+use crate::{eav, Error};
 
+/// Трейт, который необходимо реализовать на конкретном типе сообщения
 pub trait IMessage
 where
     Self: Clone + Debug + DeserializeOwned + Send + Serialize,
@@ -41,4 +42,9 @@ where
             }
         }
     }
+
+    /// Представление сообщения в виде модели EAV.
+    ///
+    /// Из одного сообщения, в общем виде, можно получить несколько структур `EavModel`
+    fn into_eav(self) -> Vec<eav::EavModel>;
 }

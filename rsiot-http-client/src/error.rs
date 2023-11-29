@@ -4,15 +4,15 @@ use tokio::{sync::mpsc::error::SendError, task::JoinError};
 #[derive(Debug)]
 pub enum Error<TMessage> {
     /// Ошибка конфигурации пользователя
-    ConfigurationError(String),
-    ReqwestError(ReqwestError),
+    Configuration(String),
+    Reqwest(ReqwestError),
     SendChannel(SendError<TMessage>),
     TokioJoin(JoinError),
 }
 
 impl<TMessage> From<ReqwestError> for Error<TMessage> {
     fn from(value: ReqwestError) -> Self {
-        Self::ReqwestError(value)
+        Self::Reqwest(value)
     }
 }
 

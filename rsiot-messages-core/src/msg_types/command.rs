@@ -2,6 +2,9 @@ use serde::{Deserialize, Serialize};
 
 use chrono::{DateTime, FixedOffset, Utc};
 
+/// Тип "Команда"
+///
+/// Содержит только метку времени
 #[derive(Serialize, Clone, Deserialize, Debug, Copy, PartialEq)]
 pub struct Command {
     pub ts: DateTime<FixedOffset>,

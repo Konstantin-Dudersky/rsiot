@@ -150,7 +150,7 @@ where
     let response = match response {
         Ok(val) => val,
         Err(err) => match err {
-            Error::ReqwestError(err) => {
+            Error::Reqwest(err) => {
                 error!("{:?}", err);
                 let msgs = (on_failure)();
                 return Ok(msgs);
@@ -181,7 +181,7 @@ async fn send_request<TMessage>(url: Url, req: &config::HttpParam) -> Result_<Re
     };
     let url = url.join(endpoint).map_err(|err| {
         let err = err.to_string();
-        Error::ConfigurationError(err)
+        Error::Configuration(err)
     })?;
     let client = Client::new();
     let response = match req {

@@ -1674,7 +1674,6 @@ name = "rsiot-messages-core"
 version = "0.0.12"
 dependencies = [
  "chrono",
- "rsiot-macros",
  "serde",
  "serde_json",
 ]
