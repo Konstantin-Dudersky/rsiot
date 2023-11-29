@@ -266,7 +266,11 @@ mod tests {
     #[derive(Clone, Debug, Deserialize, Serialize)]
     enum TestMessage {}
 
-    impl IMessage for TestMessage {}
+    impl IMessage for TestMessage {
+        fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
+            todo!()
+        }
+    }
 
     #[tokio::test]
     async fn test1() {

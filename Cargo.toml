@@ -13,7 +13,6 @@ members = [
     "./rsiot-timescaledb-storing",
     "./rsiot-websocket-server",
     "./rsiot-websocket-client",
-    "./rsiot-macros",
 ]
 resolver = "2"
 

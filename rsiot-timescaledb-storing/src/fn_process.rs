@@ -9,12 +9,12 @@ use url::Url;
 use rsiot_component_core::{StreamInput, StreamOutput};
 use rsiot_messages_core::IMessage;
 
-use crate::{config::Config, error::Error, row::Row};
+use crate::{config::Config, error::Error, model::Row};
 
-pub async fn process<TMessage>(
+pub async fn fn_process<TMessage>(
     input: StreamInput<TMessage>,
     _output: StreamOutput<TMessage>,
-    config: Config<TMessage>,
+    config: Config,
 ) where
     TMessage: IMessage,
 {
@@ -29,8 +29,7 @@ pub async fn process<TMessage>(
     };
 
     loop {
-        let result =
-            task_main::<TMessage>(&mut input, config.fn_process, &config.connection_string).await;
+        let result = task_main::<TMessage>(&mut input, &config.connection_string).await;
         match result {
             Ok(_) => (),
             Err(err) => error!("{:?}", err),
@@ -42,7 +41,6 @@ pub async fn process<TMessage>(
 
 async fn task_main<TMessage>(
     input: &mut mpsc::Receiver<TMessage>,
-    fn_process: fn(TMessage) -> Option<Row>,
     connection_string: &Url,
 ) -> Result<(), Error>
 where
@@ -53,10 +51,11 @@ where
         .connect(connection_string.as_str())
         .await?;
     while let Some(msg) = input.recv().await {
-        let row = fn_process(msg);
-        if let Some(row) = row {
+        let msgs_eav = msg.into_eav();
+        for msg in msgs_eav {
+            let row: Row = msg.into();
             save_row_in_db(&row, &pool).await?;
-        };
+        }
     }
     Ok(())
 }

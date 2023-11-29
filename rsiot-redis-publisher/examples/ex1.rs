@@ -1,4 +1,3 @@
-use serde::{Deserialize, Serialize};
 use tokio::{main, time::Duration};
 use tracing::Level;
 use tracing_subscriber::fmt;
@@ -6,15 +5,8 @@ use url::Url;
 
 use rsiot_component_core::ComponentChain;
 use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::{msg_types, ExampleMessage};
 use rsiot_redis_publisher::cmp_redis_publisher;
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-enum Messages {
-    Message0(u16),
-}
-
-impl IMessage for Messages {}
 
 #[main]
 async fn main() {
@@ -25,7 +17,8 @@ async fn main() {
         .add_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
             period: Duration::from_secs(2),
             fn_periodic: move || {
-                let msg = Messages::Message0(counter);
+                let msg = ExampleMessage::ValueInstantF64(msg_types::Value::new(counter as f64));
+
                 counter += 1;
                 vec![msg]
             },

@@ -16,7 +16,11 @@ pub enum Messages {
     Value0(f64),
 }
 
-impl IMessage for Messages {}
+impl IMessage for Messages {
+    fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
+        todo!()
+    }
+}
 
 #[main]
 async fn main() {

@@ -16,7 +16,7 @@ impl IMessage for ExampleMessage {
         match self {
             ExampleMessage::ValueInstantF64(msg_content) => eav_helpers::ValueInstant {
                 ts: msg_content.ts,
-                entity: "".into(),
+                entity: "ValueInstantF64".into(),
                 attr: "".into(),
                 value: msg_content.value.into(),
             }
@@ -24,7 +24,7 @@ impl IMessage for ExampleMessage {
 
             ExampleMessage::ValueInstantBool(msg_content) => eav_helpers::ValueInstant {
                 ts: msg_content.ts,
-                entity: "".into(),
+                entity: "ValueInstantBool".into(),
                 attr: "".into(),
                 value: msg_content.value.into(),
             }
@@ -32,14 +32,14 @@ impl IMessage for ExampleMessage {
 
             ExampleMessage::ValueInstantString(msg_content) => eav_helpers::ValueInstant {
                 ts: msg_content.ts,
-                entity: "".into(),
+                entity: "ValueInstantString".into(),
                 attr: "".into(),
                 value: msg_content.value.clone().into(),
             }
             .into(),
             ExampleMessage::Command(msg_content) => eav_helpers::Command {
                 ts: msg_content.ts,
-                entity: "".into(),
+                entity: "Command".into(),
                 attr: "".into(),
             }
             .into(),
@@ -53,7 +53,7 @@ mod tests {
 
     #[test]
     fn test1() {
-        let msg = ExampleMessage::ValueInstantF64(msg_types::Value::new(12.3, None));
+        let msg = ExampleMessage::ValueInstantF64(msg_types::Value::new(12.3));
         let eav = msg.into_eav();
         println!("{:?}", eav);
     }

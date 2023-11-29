@@ -16,7 +16,11 @@ enum Message {
     Tick(u64),
 }
 
-impl IMessage for Message {}
+impl IMessage for Message {
+    fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
+        todo!()
+    }
+}
 
 #[main]
 async fn main() {

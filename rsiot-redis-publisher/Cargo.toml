@@ -22,5 +22,4 @@ rsiot-messages-core = { workspace = true }
 
 [dev-dependencies]
 tracing-subscriber = { workspace = true }
-serde = { workspace = true }
 url = { workspace = true }
