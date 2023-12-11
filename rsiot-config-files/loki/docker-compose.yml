@@ -1,0 +1,17 @@
+services:
+  loki:
+    container_name: loki
+    hostname: loki
+    # https://hub.docker.com/r/grafana/loki/tags?page=1&name=2.
+    image: grafana/loki:2.9.2
+    ports:
+      - "${LOKI_PORT}:3100"
+    profiles:
+      - dev
+      - target
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - network_internal
+
+networks:
+  network_internal:

@@ -1,0 +1,28 @@
+services:
+  grafana:
+    container_name: grafana
+    hostname: grafana
+    image: grafana/grafana:10.2.2 # https://hub.docker.com/r/grafana/grafana/tags
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+        # настройки источников данных
+      - TIMESCALEDB_HOST=db
+      - TIMESCALEDB_PORT=5432
+      - TIMESCALEDB_DB_DATA=db_data
+      - LOKI_HOST=loki
+      - LOKI_PORT=3100
+    ports:
+      - "${GRAFANA_PORT}:3000"
+    profiles:
+      - dev
+      - target
+    volumes:
+      - ./services/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./services/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    networks:
+      - network_internal
+
+networks:
+  network_internal:
