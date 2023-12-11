@@ -4,8 +4,8 @@ services:
     hostname: redis
     image: redis/redis-stack:latest
     ports:
-      - "6379:6379" # порт Redis
-      - "8001:8001" # порт UI
+      - "${REDIS_PORT}:6379" # порт Redis
+      - "${REDIS_PORT_UI}:8001" # порт UI
     volumes:
       - redis_data:/data # для сохранения данных
       - ./services/redis/redis.conf:/redis-stack.conf # путь к файлу конфигурации
