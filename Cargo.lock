@@ -1561,7 +1561,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot"
-version = "0.0.17"
+version = "0.0.18"
 dependencies = [
  "document-features",
  "rsiot-component-core",
@@ -1685,7 +1685,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-redis-publisher"
-version = "0.0.17"
+version = "0.0.18"
 dependencies = [
  "redis",
  "rsiot-component-core",
@@ -1700,7 +1700,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-redis-subscriber"
-version = "0.0.17"
+version = "0.0.18"
 dependencies = [
  "futures-util",
  "redis",
