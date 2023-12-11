@@ -15,6 +15,12 @@ pub mod component {
     pub use rsiot_extra_components::*;
 }
 
+/// Реэкспорт необходимых модулей
+pub mod reexport {
+    #[cfg(feature = "components")]
+    pub use tokio;
+}
+
 #[cfg(feature = "http-client")]
 pub use rsiot_http_client::cmp_http_client;
 

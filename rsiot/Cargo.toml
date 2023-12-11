@@ -13,6 +13,8 @@ version = "0.0.16"
 [dependencies]
 document-features = { workspace = true }
 
+tokio = { workspace = true, optional = true }
+
 rsiot-component-core = { workspace = true, optional = true }
 rsiot-extra-components = { workspace = true, optional = true }
 rsiot-http-client = { workspace = true, optional = true }
