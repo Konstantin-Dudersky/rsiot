@@ -1,7 +1,5 @@
 [workspace]
 members = [
-    "./redis/rsiot-redis-publisher",
-    "./redis/rsiot-redis-subscriber",
     "./rsiot",
     "./rsiot-component-core",
     "./rsiot-components-config",
@@ -11,6 +9,8 @@ members = [
     "./rsiot-http-server",
     "./rsiot-messages-core",
     "./rsiot-modbus-client",
+    "./rsiot-redis-publisher",
+    "./rsiot-redis-subscriber",
     "./rsiot-timescaledb-storing",
     "./rsiot-websocket-server",
     "./rsiot-websocket-client",
@@ -24,7 +24,7 @@ edition = "2021"
 keywords = ["iot"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/Konstantin-Dudersky/rsiot"
-rust-version = "1.74.0"
+rust-version = "1.74.1"
 
 
 [workspace.dependencies]
@@ -83,8 +83,8 @@ rsiot-http-client = { version = "0.0.17", path = "./rsiot-http-client" }
 rsiot-http-server = { version = "0.0.17", path = "./rsiot-http-server" }
 rsiot-messages-core = { version = "0.0.17", path = "./rsiot-messages-core" }
 rsiot-modbus-client = { version = "0.0.17", path = "./rsiot-modbus-client" }
-rsiot-redis-publisher = { version = "0.0.17", path = "./redis/rsiot-redis-publisher" }
-rsiot-redis-subscriber = { version = "0.0.17", path = "./redis/rsiot-redis-subscriber" }
+rsiot-redis-publisher = { version = "0.0.17", path = "./rsiot-redis-publisher" }
+rsiot-redis-subscriber = { version = "0.0.17", path = "./rsiot-redis-subscriber" }
 rsiot-timescaledb-storing = { version = "0.0.17", path = "./rsiot-timescaledb-storing" }
 rsiot-websocket-client = { version = "0.0.17", path = "./rsiot-websocket-client" }
 rsiot-websocket-server = { version = "0.0.17", path = "./rsiot-websocket-server" }
