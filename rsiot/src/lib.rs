@@ -17,6 +17,9 @@ pub mod component {
 
 /// Реэкспорт необходимых модулей
 pub mod reexport {
+    pub use chrono;
+    pub use url;
+
     #[cfg(feature = "components")]
     pub use tokio;
 }
