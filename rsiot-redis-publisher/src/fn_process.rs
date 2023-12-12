@@ -8,16 +8,17 @@ use tracing::{error, info};
 
 use rsiot_component_core::{StreamInput, StreamOutput};
 use rsiot_extra_components::cmpbase_mpsc_to_broadcast;
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::{IMessage, IMessageChannel};
 
 use crate::{cmp_redis_publisher, error::Error};
 
-pub async fn function<TMessage>(
+pub async fn fn_process<TMessage, TMessageChannel>(
     input: StreamInput<TMessage>,
     _output: StreamOutput<TMessage>,
-    config: cmp_redis_publisher::Config,
+    config: cmp_redis_publisher::Config<TMessage, TMessageChannel>,
 ) where
     TMessage: IMessage + 'static,
+    TMessageChannel: IMessageChannel + 'static,
 {
     info!("Initialization. Config: {:?}", config);
 
@@ -29,7 +30,9 @@ pub async fn function<TMessage>(
     loop {
         info!("Starting");
 
-        let result = task_main::<TMessage>(input_broadcast_tx.subscribe(), config.clone()).await;
+        let result =
+            task_main::<TMessage, TMessageChannel>(input_broadcast_tx.subscribe(), config.clone())
+                .await;
         match result {
             Ok(_) => (),
             Err(err) => error!("{:?}", err),
@@ -39,21 +42,24 @@ pub async fn function<TMessage>(
     }
 }
 
-async fn task_main<TMessage>(
+async fn task_main<TMessage, TMessageChannel>(
     mut input: broadcast::Receiver<TMessage>,
-    config: cmp_redis_publisher::Config,
+    config: cmp_redis_publisher::Config<TMessage, TMessageChannel>,
 ) -> Result<(), Error>
 where
     TMessage: IMessage,
+    TMessageChannel: IMessageChannel,
 {
     let client = redis::Client::open(config.url.to_string())?;
     let mut connection = client.get_async_connection().await?;
     while let Ok(msg) = input.recv().await {
-        let json = msg.to_json()?;
-        connection
-            .hset(&config.redis_channel, msg.key(), &json)
-            .await?;
-        connection.publish(&config.redis_channel, &json).await?;
+        let channels = (config.fn_input)(&msg);
+        for channel in channels {
+            let json = msg.to_json()?;
+            let channel = channel.to_string();
+            connection.hset(&channel, msg.key(), &json).await?;
+            connection.publish(&channel, &json).await?;
+        }
     }
     Ok(())
 }

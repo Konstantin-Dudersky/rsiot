@@ -5,7 +5,7 @@ use url::Url;
 
 use rsiot_component_core::ComponentChain;
 use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-use rsiot_messages_core::{msg_types, ExampleMessage};
+use rsiot_messages_core::{msg_types, ExampleMessage, ExampleMessageChannel};
 use rsiot_redis_publisher::cmp_redis_publisher;
 
 #[main]
@@ -29,7 +29,7 @@ async fn main() {
         }))
         .add_cmp(cmp_redis_publisher::new(cmp_redis_publisher::Config {
             url: Url::parse("redis://127.0.0.1:6379").unwrap(),
-            redis_channel: "rsiot-redis-publisher".to_string(),
+            fn_input: |_| vec![ExampleMessageChannel::Output],
         }));
 
     chain.spawn().await;
