@@ -1,6 +1,6 @@
 [package]
 name = "rsiot-message-router"
-version = "0.0.19"
+version = "0.0.20"
 description = "Маршрутизация сообщений"
 categories.workspace = true
 edition.workspace = true
