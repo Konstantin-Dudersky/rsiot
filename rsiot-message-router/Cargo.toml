@@ -1,10 +1,12 @@
 [package]
 name = "rsiot-message-router"
 version = "0.0.19"
-edition = "2021"
+description = "Маршрутизация сообщений"
 categories.workspace = true
+edition.workspace = true
 keywords.workspace = true
 license.workspace = true
+readme = "README.md"
 repository.workspace = true
 rust-version.workspace = true
 
