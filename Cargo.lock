@@ -1680,7 +1680,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot"
-version = "0.0.18"
+version = "0.0.19"
 dependencies = [
  "chrono",
  "document-features",
@@ -1724,7 +1724,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-env-vars"
-version = "0.0.17"
+version = "0.0.19"
 dependencies = [
  "clap",
  "dotenvy",
@@ -1783,7 +1783,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-logging"
-version = "0.0.0"
+version = "0.0.19"
 dependencies = [
  "tokio",
  "tracing",
@@ -1793,7 +1793,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-message-router"
-version = "0.0.0"
+version = "0.0.19"
 
 [[package]]
 name = "rsiot-messages-core"
@@ -1806,7 +1806,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-modbus-client"
-version = "0.0.17"
+version = "0.0.19"
 dependencies = [
  "rsiot-component-core",
  "rsiot-components-config",
@@ -1822,7 +1822,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-redis-publisher"
-version = "0.0.18"
+version = "0.0.19"
 dependencies = [
  "redis",
  "rsiot-component-core",
@@ -1837,7 +1837,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-redis-subscriber"
-version = "0.0.18"
+version = "0.0.19"
 dependencies = [
  "futures-util",
  "redis",
