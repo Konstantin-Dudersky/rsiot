@@ -6,7 +6,7 @@ use rsiot_messages_core::IMessage;
 
 use crate::function::function;
 
-pub fn create<TMessage>(config: Config) -> Box<Component<TMessage, Config>>
+pub fn new<TMessage>(config: Config) -> Box<Component<TMessage, Config>>
 where
     TMessage: IMessage + 'static,
 {

@@ -16,15 +16,13 @@ use rsiot_messages_core::IMessage;
 
 use crate::{config::Config, errors::Errors, types::Result_};
 
-pub async fn process<TMessage>(
+pub async fn fn_process<TMessage>(
     input: StreamInput<TMessage>,
     output: StreamOutput<TMessage>,
     config: Config<TMessage>,
 ) where
     TMessage: IMessage + 'static,
 {
-    info!("Starting modbus client, configuration: {:?}", config);
-
     // Канал для распространения входного потока сообщений по порождаемым задачам
     let (from_input_tx, _from_inpit_rx) = broadcast::channel::<TMessage>(100);
     let _task_from_input = spawn(cmpbase_mpsc_to_broadcast::new(input, from_input_tx.clone()));
@@ -34,6 +32,7 @@ pub async fn process<TMessage>(
     let _task_to_output = cmp_mpsc_to_mpsc::create().set_and_spawn(Some(to_output_rx), output);
 
     loop {
+        info!("Starting modbus client, configuration: {:?}", config);
         let res =
             task_main::<TMessage>(from_input_tx.clone(), to_output_tx.clone(), config.clone())
                 .await;

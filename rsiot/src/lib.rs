@@ -15,6 +15,15 @@ pub mod component {
     pub use rsiot_extra_components::*;
 }
 
+#[cfg(feature = "env-vars")]
+pub mod env_vars {
+    pub use rsiot_env_vars::*;
+}
+
+pub mod logging {
+    pub use rsiot_logging::*;
+}
+
 /// Реэкспорт необходимых модулей
 pub mod reexport {
     pub use chrono;

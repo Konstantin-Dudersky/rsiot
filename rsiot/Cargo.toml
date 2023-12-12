@@ -18,9 +18,11 @@ chrono = { workspace = true }
 url = { workspace = true }
 
 rsiot-component-core = { workspace = true, optional = true }
+rsiot-env-vars = { workspace = true, optional = true }
 rsiot-extra-components = { workspace = true, optional = true }
 rsiot-http-client = { workspace = true, optional = true }
 rsiot-http-server = { workspace = true, optional = true }
+rsiot-logging = { workspace = true }
 rsiot-messages-core = { workspace = true }
 rsiot-modbus-client = { workspace = true, optional = true }
 rsiot-redis-publisher = { workspace = true, optional = true }
@@ -39,6 +41,8 @@ components = [
     "dep:rsiot-component-core",
     "dep:rsiot-extra-components",
 ]
+# Конфигурирование через переменные
+env-vars = ["dep:rsiot-env-vars"]
 ## Компонент http-клиент
 http-client = ["components", "dep:rsiot-http-client"]
 ## Компонент http-сервер

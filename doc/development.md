@@ -30,5 +30,3 @@ cargo ws publish --from-git --allow-dirty
 ## Идеи для улучшения
 
 TODO - заменить указатели функций на трейты Fn
-
-TODO - вернуть модуль rsiot с фичами

@@ -29,7 +29,7 @@ async fn main() {
     fmt().init();
 
     let mut chain = ComponentChain::<ExampleMessage>::new(100)
-        .add_cmp(cmp_redis_subscriber::create(cmp_redis_subscriber::Config {
+        .add_cmp(cmp_redis_subscriber::new(cmp_redis_subscriber::Config {
             url: Url::parse("redis://127.0.0.1:6379").unwrap(),
             redis_channel: "rsiot-redis-subscriber".to_string(),
         }))

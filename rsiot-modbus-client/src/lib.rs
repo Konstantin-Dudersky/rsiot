@@ -1,7 +1,7 @@
 mod config;
 mod errors;
+mod fn_process;
 mod new;
-mod process;
 mod types;
 
 pub use rsiot_component_core::ComponentChain;

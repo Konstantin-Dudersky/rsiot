@@ -7,14 +7,15 @@ services:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
-        # настройки источников данных
-      - TIMESCALEDB_HOST=db
+        # настройки источника - база данных
+      - TIMESCALEDB_HOST=timescaledb
       - TIMESCALEDB_PORT=5432
       - TIMESCALEDB_DB_DATA=db_data
+        # настройки источника - логгер loki
       - LOKI_HOST=loki
       - LOKI_PORT=3100
     ports:
-      - "${GRAFANA_PORT}:3000"
+      - "3000:3000"
     profiles:
       - dev
       - target
