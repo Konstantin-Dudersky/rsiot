@@ -10,8 +10,6 @@
 //!
 //! - [Примеры](https://github.com/Konstantin-Dudersky/rsiot/tree/main/rsiot-modbus-client/examples)
 //!
-//! ![](./doc/component-modbus-client.svg)
-//!
 //! ## Тестирование
 //!
 //! Готовый docker-образ для тестов - [GitHub](https://github.com/cybcon/modbus-server).
@@ -20,6 +18,7 @@
 //!
 //! # Диаграмма
 //!
+//! ![](./doc/component-modbus-client.svg)
 #![doc = include_str!("../doc/component-modbus-client.svg")]
 //!
 //! # Пример
@@ -38,7 +37,9 @@ mod types;
 pub use rsiot_component_core::ComponentChain;
 pub use rsiot_messages_core::IMessage;
 
-/// Обмен данными с устройством, поддерживающим Modbus TCP сервер
+/// Обмен данными с устройством, поддерживающим Modbus TCP сервер.
+///
+/// См. [документацию](https://docs.rs/rsiot-modbus-client/latest/)
 pub mod cmp_modbus_client {
     pub use crate::conversion;
     pub use crate::new::new;
