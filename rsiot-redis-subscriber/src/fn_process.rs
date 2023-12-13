@@ -10,7 +10,7 @@ use url::Url;
 
 use rsiot_component_core::{IComponent, StreamInput, StreamOutput};
 use rsiot_extra_components::cmp_mpsc_to_mpsc;
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::{IMessage, IMessageChannel};
 
 use crate::{
     cmp_redis_subscriber::{self, Config},
@@ -19,12 +19,13 @@ use crate::{
 
 type TaskResult = Result<(), Error>;
 
-pub async fn function<TMessage>(
+pub async fn fn_process<TMessage, TMessageChannel>(
     _input: StreamInput<TMessage>,
     output: StreamOutput<TMessage>,
-    config: Config,
+    config: Config<TMessageChannel>,
 ) where
     TMessage: IMessage + 'static,
+    TMessageChannel: IMessageChannel + 'static,
 {
     info!("Initialization. Config: {:?}", config);
 
@@ -35,7 +36,7 @@ pub async fn function<TMessage>(
 
     loop {
         info!("Starting");
-        let result = task_main::<TMessage>(stream_to_output_tx.clone(), config.clone()).await;
+        let result = task_main(stream_to_output_tx.clone(), config.clone()).await;
         match result {
             Ok(_) => (),
             Err(err) => error!("{:?}", err),
@@ -45,12 +46,13 @@ pub async fn function<TMessage>(
     }
 }
 
-async fn task_main<TMessage>(
+async fn task_main<TMessage, TMessageChannel>(
     output: mpsc::Sender<TMessage>,
-    config: cmp_redis_subscriber::Config,
+    config: cmp_redis_subscriber::Config<TMessageChannel>,
 ) -> TaskResult
 where
     TMessage: IMessage + 'static,
+    TMessageChannel: IMessageChannel + 'static,
 {
     let mut set = JoinSet::new();
     set.spawn(task_subscription(
@@ -70,19 +72,20 @@ where
 }
 
 /// Подписка на канал Pub/Sub
-async fn task_subscription<TMessage>(
+async fn task_subscription<TMessage, TMessageChannel>(
     output: mpsc::Sender<TMessage>,
     url: Url,
-    redis_channel: String,
+    redis_channel: TMessageChannel,
 ) -> TaskResult
 where
     TMessage: IMessage,
+    TMessageChannel: IMessageChannel,
 {
     info!("Start redis subscription");
     let client = Client::open(url.to_string())?;
     let connection = client.get_async_connection().await?;
     let mut pubsub = connection.into_pubsub();
-    pubsub.subscribe(redis_channel).await?;
+    pubsub.subscribe(redis_channel.to_string()).await?;
     let mut stream = pubsub.on_message();
     loop {
         let redis_msg = stream.next().await;
@@ -104,18 +107,19 @@ where
 }
 
 /// Чтение данных из хеша
-async fn task_read_hash<TMessage>(
+async fn task_read_hash<TMessage, TMessageChannel>(
     output: mpsc::Sender<TMessage>,
     url: Url,
-    redis_channel: String,
+    redis_channel: TMessageChannel,
 ) -> TaskResult
 where
     TMessage: IMessage,
+    TMessageChannel: IMessageChannel,
 {
     info!("Start reading redis hash");
     let client = Client::open(url.to_string())?;
     let mut connection = client.get_async_connection().await?;
-    let values: Vec<String> = connection.hvals(redis_channel).await?;
+    let values: Vec<String> = connection.hvals(redis_channel.to_string()).await?;
     for value in values {
         let msg = TMessage::from_json(&value);
         let msg = match msg {

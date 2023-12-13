@@ -21,7 +21,7 @@ use url::Url;
 
 use rsiot_component_core::ComponentChain;
 use rsiot_extra_components::cmp_logger;
-use rsiot_messages_core::ExampleMessage;
+use rsiot_messages_core::{ExampleMessage, ExampleMessageChannel};
 use rsiot_redis_subscriber::cmp_redis_subscriber;
 
 #[main]
@@ -31,7 +31,7 @@ async fn main() {
     let mut chain = ComponentChain::<ExampleMessage>::new(100)
         .add_cmp(cmp_redis_subscriber::new(cmp_redis_subscriber::Config {
             url: Url::parse("redis://127.0.0.1:6379").unwrap(),
-            redis_channel: "rsiot-redis-subscriber".to_string(),
+            redis_channel: ExampleMessageChannel::Output,
         }))
         .add_cmp(cmp_logger::create(cmp_logger::Config {
             level: Level::INFO,
