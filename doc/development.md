@@ -11,7 +11,7 @@ docker compose up -d
 Проверяем, что все компилируется без ошибок:
 
 ```bash
-cargo build
+nu scripts/prepare_for_publish.nu
 ```
 
 Изменяем номер версии проекта:

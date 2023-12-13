@@ -7,7 +7,7 @@ use tokio::{
     time::{sleep, Duration},
 };
 use tokio_modbus::{client::Context, prelude::*};
-use tracing::{error, info, warn};
+use tracing::{debug, error, info, trace, warn};
 
 use rsiot_component_core::{IComponent, StreamInput, StreamOutput};
 use rsiot_components_config::modbus_client as config;
@@ -58,13 +58,15 @@ where
     let (ctx, periodic_config, input_config) = match client_config {
         Config::Tcp(config) => {
             let socket_addr = SocketAddr::new(config.host, config.port);
-            (
-                tcp::connect(socket_addr).await?,
-                config.periodic_config,
-                config.input_config,
-            )
+            debug!("Try to establish connection to socket: {:?}", socket_addr);
+            let slave = Slave(config.unit_id);
+            let ctx = tcp::connect_slave(socket_addr, slave).await?;
+            debug!("Connection established: {:?}", ctx);
+            (ctx, config.periodic_config, config.input_config)
         }
-        Config::Rtu => todo!(),
+        Config::Rtu => {
+            todo!();
+        }
     };
     let ctx = Arc::new(Mutex::new(ctx));
 
@@ -113,7 +115,12 @@ where
             periodic_config.fn_on_failure,
         )
         .await?;
-        let sleep_time = periodic_config.period - begin.elapsed();
+        let elapsed = begin.elapsed();
+        let sleep_time = if periodic_config.period <= elapsed {
+            Duration::from_millis(10)
+        } else {
+            periodic_config.period - begin.elapsed()
+        };
         sleep(sleep_time).await;
     }
 }
@@ -174,6 +181,7 @@ async fn modbus_response<TMessage>(
     fn_on_success: config::FnOnSuccess<TMessage>,
     fn_on_failure: config::FnOnFailure<TMessage>,
 ) -> Result_<()> {
+    trace!("Modbus response: {:?}", response);
     let msgs = match response {
         Ok(val) => (fn_on_success)(val),
         Err(err) => {

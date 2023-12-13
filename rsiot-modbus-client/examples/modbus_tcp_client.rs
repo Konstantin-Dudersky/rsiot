@@ -31,6 +31,7 @@ async fn main() {
     let modbus_client_config = Config::<Messages>::Tcp(TcpClientConfig {
         host: IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)),
         port: 5020,
+        unit_id: 1,
         input_config: vec![InputConfig {
             fn_input: |msg| match msg {
                 Messages::Value0(val) => Some(Request::WriteSingleRegister(0, *val as u16)),
@@ -40,7 +41,7 @@ async fn main() {
         }],
         periodic_config: vec![PeriodicConfig {
             period: Duration::from_secs(2),
-            request: Request::ReadHoldingRegisters(0, 1),
+            request: Request::ReadHoldingRegisters(0, 2),
             fn_on_success: |data| {
                 let mut msgs = vec![];
                 if let Response::U16(data) = data {
