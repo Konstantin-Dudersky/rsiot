@@ -105,7 +105,13 @@ where
         for msg in msgs {
             output.send(msg).await?;
         }
-        let sleep_time = config.period - begin.elapsed();
+        let elapsed = begin.elapsed();
+        let sleep_time = if config.period <= elapsed {
+            Duration::from_millis(10)
+        } else {
+            config.period - elapsed
+        };
+
         sleep(sleep_time).await;
     }
 }

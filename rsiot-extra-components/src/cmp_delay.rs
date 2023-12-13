@@ -56,7 +56,13 @@ where
             }
             lock.clear();
         }
-        sleep(delay - begin.elapsed()).await;
+        let elapsed = begin.elapsed();
+        let sleep_time = if delay <= elapsed {
+            Duration::from_millis(10)
+        } else {
+            delay - elapsed
+        };
+        sleep(sleep_time).await;
     }
 }
 

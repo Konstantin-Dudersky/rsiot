@@ -119,7 +119,7 @@ where
         let sleep_time = if periodic_config.period <= elapsed {
             Duration::from_millis(10)
         } else {
-            periodic_config.period - begin.elapsed()
+            periodic_config.period - elapsed
         };
         sleep(sleep_time).await;
     }

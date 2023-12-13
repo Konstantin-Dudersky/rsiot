@@ -29,8 +29,13 @@ async fn cmp_inject_periodic<TMessage, TFnPeriodic>(
         for msg in msgs {
             output.send(msg).await.unwrap();
         }
-        let time_to_sleep = config.period - begin.elapsed();
-        sleep(time_to_sleep).await;
+        let elapsed = begin.elapsed();
+        let sleep_time = if config.period <= elapsed {
+            Duration::from_millis(10)
+        } else {
+            config.period - elapsed
+        };
+        sleep(sleep_time).await;
     }
 }
 
