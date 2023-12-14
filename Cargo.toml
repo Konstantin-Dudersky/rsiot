@@ -86,7 +86,7 @@ rsiot-env-vars = { version = "0.0.21", path = "./rsiot-env-vars" }
 rsiot-extra-components = { version = "0.0.22", path = "./rsiot-extra-components" }
 rsiot-http-client = { version = "0.0.23", path = "./rsiot-http-client" }
 rsiot-http-server = { version = "0.0.23", path = "./rsiot-http-server" }
-rsiot-logging = { version = "0.0.24", path = "./rsiot-logging" }
+rsiot-logging = { version = "0.0.25", path = "./rsiot-logging" }
 rsiot-message-router = { version = "0.0.21", path = "./rsiot-message-router" }
 rsiot-messages-core = { version = "0.0.21", path = "./rsiot-messages-core" }
 rsiot-modbus-client = { version = "0.0.23", path = "./rsiot-modbus-client" }

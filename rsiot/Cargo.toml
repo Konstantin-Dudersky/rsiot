@@ -7,7 +7,7 @@ license.workspace = true
 name = "rsiot"
 readme = "README.md"
 rust-version.workspace = true
-version = "0.0.24"
+version = "0.0.25"
 
 
 [dependencies]
