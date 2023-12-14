@@ -1,3 +1,5 @@
+use tracing::warn;
+
 /// Конвертация двух чисел u16 в массив 4 байт
 pub fn conv_u16x2_to_u8x4(data: &[u16]) -> [u8; 4] {
     let mut bytes = [0; 4];
@@ -10,4 +12,33 @@ pub fn conv_u16x2_to_u8x4(data: &[u16]) -> [u8; 4] {
     bytes[2] = register[0];
     bytes[3] = register[1];
     bytes
+}
+
+/// Проверка правильной длины среза
+///
+/// Если возвращает true - длина неправильная
+pub fn is_wrong_len(data: &[u16], need_len: usize) -> bool {
+    if data.len() != need_len {
+        warn!(
+            "Length of slice must be equal to {need_len}, current data: {:?}",
+            data,
+            need_len = need_len
+        );
+        return true;
+    }
+    false
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_is_wrong_len() {
+        let data = [0, 1, 2, 3, 4];
+        assert_eq!(is_wrong_len(&data[0..=1], 0), true);
+        assert_eq!(is_wrong_len(&data[0..=1], 1), true);
+        assert_eq!(is_wrong_len(&data[0..=1], 2), false);
+        assert_eq!(is_wrong_len(&data[0..=1], 3), true);
+    }
 }
