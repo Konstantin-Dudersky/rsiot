@@ -12,8 +12,6 @@
 
 - [Примеры](https://github.com/Konstantin-Dudersky/rsiot/tree/main/rsiot-modbus-client/examples)
 
-![](./doc/component-modbus-client.svg)
-
 ## Тестирование
 
 Готовый docker-образ для тестов - [GitHub](https://github.com/cybcon/modbus-server).
@@ -22,6 +20,7 @@
 
 # Диаграмма
 
+![](./doc/component-modbus-client.svg)
 
 # Пример
 
