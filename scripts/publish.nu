@@ -1,3 +1,5 @@
+# публикация пакетов, пока cargo ws publish выдает ошибку SSL
+
 do -i {
     cargo publish --allow-dirty -p rsiot-messages-core
 }

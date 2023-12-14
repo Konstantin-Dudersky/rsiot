@@ -1,11 +1,11 @@
+#![allow(unused_imports)]
+
 mod error;
 
 use std::env;
 
-use tokio::spawn;
 use tracing::info;
-use tracing_loki::url::Url;
-use tracing_subscriber::{prelude::*, EnvFilter};
+use url::Url;
 
 pub use error::Error;
 
@@ -16,8 +16,11 @@ pub use error::Error;
 /// Потребители логов:
 /// - stdout (в режиме Debug)
 /// - Grafana Loki
-#[cfg(not(target_arch = "wasm"))]
+#[cfg(any(target_arch = "x86_64"))]
 pub async fn configure_logging(loki_url: &Url) -> Result<(), Error> {
+    use tokio::spawn;
+    use tracing_subscriber::{prelude::*, EnvFilter};
+
     let service = env::args().collect::<Vec<String>>()[0].clone();
 
     let (layer_loki, task) = tracing_loki::builder()
@@ -42,5 +45,5 @@ pub async fn configure_logging(loki_url: &Url) -> Result<(), Error> {
     Ok(())
 }
 
-#[cfg(target_arch = "wasm")]
+#[cfg(target_arch = "wasm32")]
 pub fn configure_logging() {}

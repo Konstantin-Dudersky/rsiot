@@ -1789,6 +1789,7 @@ dependencies = [
  "tracing",
  "tracing-loki",
  "tracing-subscriber",
+ "url",
 ]
 
 [[package]]
