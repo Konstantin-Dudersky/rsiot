@@ -1680,7 +1680,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot"
-version = "0.0.23"
+version = "0.0.24"
 dependencies = [
  "chrono",
  "document-features",
@@ -1783,7 +1783,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-logging"
-version = "0.0.23"
+version = "0.0.24"
 dependencies = [
  "tokio",
  "tracing",
