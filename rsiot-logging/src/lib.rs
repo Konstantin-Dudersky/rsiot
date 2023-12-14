@@ -16,6 +16,7 @@ pub use error::Error;
 /// Потребители логов:
 /// - stdout (в режиме Debug)
 /// - Grafana Loki
+#[cfg(not(target_arch = "wasm"))]
 pub async fn configure_logging(loki_url: &Url) -> Result<(), Error> {
     let service = env::args().collect::<Vec<String>>()[0].clone();
 
@@ -40,3 +41,6 @@ pub async fn configure_logging(loki_url: &Url) -> Result<(), Error> {
     info!("service {} started", service);
     Ok(())
 }
+
+#[cfg(target_arch = "wasm")]
+pub fn configure_logging() {}

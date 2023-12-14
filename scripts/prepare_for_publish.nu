@@ -13,4 +13,9 @@ do {
     cargo rdme --force
 }
 
+do {
+    cd rsiot-websocket-server
+    cargo rdme --force
+}
+
 cp rsiot/README.md .

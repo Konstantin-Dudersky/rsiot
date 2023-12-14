@@ -1,5 +1,2 @@
-Подключение к сообщениям через сервер websocket.
-
-При подключении клиент сначала получает все актуальные сообщения из кеша, далее только новые.
-
-Используется библиотека [tokio-tungstenite](https://crates.io/crates/tokio-tungstenite).
+<!-- cargo-rdme start -->
+<!-- cargo-rdme end -->

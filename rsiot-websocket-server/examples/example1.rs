@@ -1,3 +1,5 @@
+//! Простеший пример сервера websocket
+
 use serde::{Deserialize, Serialize};
 use tokio::{main, time::Duration};
 use tracing::Level;
@@ -16,7 +18,7 @@ enum Message {
 
 impl IMessage for Message {
     fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
-        todo!()
+        vec![]
     }
 }
 
@@ -37,8 +39,8 @@ async fn main() {
         }))
         .add_cmp(cmp_websocket_server::new(cmp_websocket_server::Config {
             port: 8020,
-            fn_send_to_client: |msg: Message| msg.to_json().ok(),
-            fn_recv_from_client: |data: &str| Message::from_json(data).ok(),
+            fn_input: |msg: &Message| msg.to_json().ok(),
+            fn_output: |data: &str| Message::from_json(data).ok(),
         }))
         .add_cmp(cmp_logger::create(cmp_logger::Config {
             level: Level::INFO,

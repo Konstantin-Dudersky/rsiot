@@ -63,9 +63,9 @@ where
     // Подготавливаем новые сообщения для отправки
     set.spawn(send_prepare_new_msgs(input, prepare_tx.clone()));
     // Отправляем клиенту
-    set.spawn(send_to_client(prepare_rx, write, config.fn_send_to_client));
+    set.spawn(send_to_client(prepare_rx, write, config.fn_input));
     // Получаем данные от клиента
-    set.spawn(recv(read, output, config.fn_recv_from_client));
+    set.spawn(recv(read, output, config.fn_output));
 
     while let Some(res) = set.join_next().await {
         res??;
@@ -110,10 +110,10 @@ where
 async fn send_to_client<TMessage>(
     mut input: mpsc::Receiver<TMessage>,
     mut ws_stream_output: SplitSink<WebSocketStream<TcpStream>, Message>,
-    fn_send_to_client: fn(TMessage) -> Option<String>,
+    fn_send_to_client: fn(&TMessage) -> Option<String>,
 ) -> Result<(), Errors> {
     while let Some(msg) = input.recv().await {
-        let msg = (fn_send_to_client)(msg);
+        let msg = (fn_send_to_client)(&msg);
         let data = match msg {
             Some(val) => val,
             None => continue,

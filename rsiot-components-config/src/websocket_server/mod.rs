@@ -13,9 +13,9 @@ where
     ///
     /// Если нужно просто переделать в json:
     /// ```
-    /// |msg: TMessage| msg.to_json().ok()
+    /// |msg: &TMessage| msg.to_json().ok()
     /// ```
-    pub fn_send_to_client: fn(TMessage) -> Option<String>,
+    pub fn_input: fn(&TMessage) -> Option<String>,
 
     /// Функция преобразования данных, полученных от клиента
     ///
@@ -23,5 +23,5 @@ where
     /// ```
     /// |data: &str| TMessage::from_json(data).ok()
     /// ```
-    pub fn_recv_from_client: fn(&str) -> Option<TMessage>,
+    pub fn_output: fn(&str) -> Option<TMessage>,
 }
