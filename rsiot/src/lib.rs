@@ -1,72 +1,69 @@
-// #![doc = include_str!("../README.md")]
+/*! Компоненты для построения системы сбора данных
+[Документация](https://docs.rs/rsiot/latest/rsiot)
 
-//! Компоненты для построения системы сбора данных
-//!
-//! [Документация](https://docs.rs/rsiot/latest/rsiot)
-//!
-//! ## Компоненты
-//!
-//! #### Взаимодействие с устройствами нижнего уровня
-//!
-//! [**modbus-client**](https://docs.rs/rsiot-modbus-client/latest/rsiot_modbus_client/cmp_modbus_client)
-//!
-//! Взаимодейтсвие с устройствами, поддерживающими протокол Modbus TCP сервер / Modbus RTU slave.
-//!
-//! [**http-client**](https://docs.rs/rsiot-http-client/latest/rsiot_http_client/cmp_http_client)
-//!
-//! Взаимодействие с устройствами, имеющими HTTP API.
-//!
-//! [**websocket-client**](https://docs.rs/rsiot-websocket-client/latest/rsiot_websocket_client/cmp_websocket_client)
-//!
-//! Взаимодействие с устройствами, поддерживющими функциональность Websocket сервера.
-//!
-//! TODO **opcua-client**
-//!
-//! Взаимодействие с контроллерами, имеющими функциональность OPC UA сервера.
-//!
-//! TODO **s7-client**
-//!
-//! Взаимодействие с контроллерами Siemens по протоколу S7.
-//!
-//! #### Взаимодействие с системами верхнего уровня
-//!
-//! [**http-server**](https://docs.rs/rsiot-http-server/latest/rsiot_http_server/cmp_http_server)
-//!
-//! Поддержка HTTP API, через который внешние клиенты могут получать и вводить данные.
-//!
-//! [**websocket-server**](https://docs.rs/rsiot-websocket-server/latest/rsiot_websocket_server/cmp_websocket_server)
-//!
-//! Поддержка Websocket сервера, к которому могут подключаться внешние клиенты.
-//!
-//! TODO **mqtt**
-//!
-//! TODO **telegram**
-//!
-//! #### Брокеры сообщений
-//!
-//! [**redis-publisher**](https://docs.rs/rsiot-redis-publisher/latest/rsiot_redis_publisher/cmp_redis_publisher)
-//!
-//! Публикация сообщений в Redis.
-//!
-//! [**redis-subscriber**](https://docs.rs/rsiot-redis-subscriber/latest/rsiot_redis_subscriber/cmp_redis_subscriber)
-//!
-//! Подписка на сообщения из Redis.
-//!
-//! #### Сохранение данных в БД
-//!
-//! [**timescaledb-storing**](https://docs.rs/rsiot-timescaledb-storing/latest/rsiot_timescaledb_storing/cmp_timescaledb_storing)
-//!
-//! Сохрание сообщений в виде временных рядов в TimescaleDB.
-//!
-//! #### Интерфейсы пользователя
-//!
-//! TODO **leptos**
-//!
-//! #### Вспомогательные крейты
-//!
-//! TODO [**message-router**](https://docs.rs/rsiot-message-router/latest)
-//!
-//! Настройка маршрутизации сообщений.
+## Компоненты
+
+#### Взаимодействие с устройствами нижнего уровня
+
+[**modbus-client**](https://docs.rs/rsiot-modbus-client/latest/rsiot_modbus_client/cmp_modbus_client)
+
+Взаимодейтсвие с устройствами, поддерживающими протокол Modbus TCP сервер / Modbus RTU slave.
+
+W*http-client**](https://docs.rs/rsiot-http-client/latest/rsiot_http_client/cmp_http_client)
+
+Взаимодействие с устройствами, имеющими HTTP API.
+
+[**websocket-client**](https://docs.rs/rsiot-websocket-client/latest/rsiot_websocket_client/cmp_websocket_client)
+
+Взаимодействие с устройствами, поддерживющими функциональность Websocket сервера.
+
+TODO **opcua-client**
+
+Взаимодействие с контроллерами, имеющими функциональность OPC UA сервера.
+
+TODO **s7-client**
+
+Взаимодействие с контроллерами Siemens по протоколу S7.
+
+#### Взаимодействие с системами верхнего уровня
+
+[**http-server**](https://docs.rs/rsiot-http-server/latest/rsiot_http_server/cmp_http_server)
+
+Поддержка HTTP API, через который внешние клиенты могут получать и вводить данные.
+
+[**websocket-server**](https://docs.rs/rsiot-websocket-server/latest/rsiot_websocket_server/cmp_websocket_server)
+
+Поддержка Websocket сервера, к которому могут подключаться внешние клиенты.
+
+TODO **telegram**
+
+#### Брокеры сообщений
+
+[**redis-publisher**](https://docs.rs/rsiot-redis-publisher/latest/rsiot_redis_publisher/cmp_redis_publisher)
+
+Публикация сообщений в Redis.
+
+[**redis-subscriber**](https://docs.rs/rsiot-redis-subscriber/latest/rsiot_redis_subscriber/cmp_redis_subscriber)
+
+Подписка на сообщения из Redis.
+
+TODO **mqtt**
+
+#### Сохранение данных в БД
+
+[**timescaledb-storing**](https://docs.rs/rsiot-timescaledb-storing/latest/rsiot_timescaledb_storing/cmp_timescaledb_storing)
+
+Сохрание сообщений в виде временных рядов в TimescaleDB.
+
+#### Интерфейсы пользователя
+
+TODO **leptos**
+
+#### Вспомогательные крейты
+
+TODO [**message-router**](https://docs.rs/rsiot-message-router/latest)
+
+Настройка маршрутизации сообщений.
 //!
 //! [**env-vars**](https://docs.rs/rsiot-env-vars/latest)
 //!
@@ -133,7 +130,7 @@
 
 //!
 //! ## Флаги `feature`:
-
+*/
 #![doc = document_features::document_features!()]
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 
