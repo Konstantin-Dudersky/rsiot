@@ -1692,6 +1692,7 @@ dependencies = [
  "rsiot-logging",
  "rsiot-messages-core",
  "rsiot-modbus-client",
+ "rsiot-plc",
  "rsiot-redis-publisher",
  "rsiot-redis-subscriber",
  "rsiot-timescaledb-storing",
@@ -1819,6 +1820,20 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "url",
+]
+
+[[package]]
+name = "rsiot-plc"
+version = "0.0.0"
+dependencies = [
+ "rsiot-component-core",
+ "rsiot-extra-components",
+ "rsiot-messages-core",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]

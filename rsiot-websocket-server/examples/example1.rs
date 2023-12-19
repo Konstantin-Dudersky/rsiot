@@ -42,7 +42,7 @@ async fn main() {
             fn_input: |msg: &Message| msg.to_json().ok(),
             fn_output: |data: &str| Message::from_json(data).ok(),
         }))
-        .add_cmp(cmp_logger::create(cmp_logger::Config {
+        .add_cmp(cmp_logger::new(cmp_logger::Config {
             level: Level::INFO,
             header: "".into(),
         }));

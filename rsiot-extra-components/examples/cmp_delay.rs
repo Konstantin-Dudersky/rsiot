@@ -23,7 +23,7 @@ async fn main() {
         .add_cmp(cmp_delay::new(cmp_delay::Config {
             delay: Duration::from_secs(2),
         }))
-        .add_cmp(cmp_logger::create(cmp_logger::Config {
+        .add_cmp(cmp_logger::new(cmp_logger::Config {
             level: Level::INFO,
             header: "".into(),
         }));

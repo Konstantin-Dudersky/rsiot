@@ -33,7 +33,7 @@ async fn main() {
             url: Url::parse("redis://127.0.0.1:6379").unwrap(),
             redis_channel: ExampleMessageChannel::Output,
         }))
-        .add_cmp(cmp_logger::create(cmp_logger::Config {
+        .add_cmp(cmp_logger::new(cmp_logger::Config {
             level: Level::INFO,
             header: "".into(),
         }));

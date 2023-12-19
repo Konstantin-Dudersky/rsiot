@@ -74,7 +74,7 @@ async fn main() {
         // Клиент modbus
         .add_cmp(cmp_modbus_client::new(modbus_client_config))
         // Вывод сообщений в лог
-        .add_cmp(cmp_logger::create(cmp_logger::Config {
+        .add_cmp(cmp_logger::new(cmp_logger::Config {
             level: Level::INFO,
             header: "".into(),
         }));

@@ -82,7 +82,7 @@ async fn main() {
             },
         }))
         .add_cmp(cmp_http_client::new(http_config))
-        .add_cmp(cmp_logger::create(cmp_logger::Config {
+        .add_cmp(cmp_logger::new(cmp_logger::Config {
             level: Level::INFO,
             header: "HTTP response".into(),
         }));

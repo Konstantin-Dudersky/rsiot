@@ -42,7 +42,7 @@ async fn main() {
             fn_send,
             fn_recv,
         }))
-        .add_cmp(cmp_logger::create(cmp_logger::Config {
+        .add_cmp(cmp_logger::new(cmp_logger::Config {
             level: Level::INFO,
             header: "".into(),
         }));

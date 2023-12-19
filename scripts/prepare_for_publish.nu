@@ -14,6 +14,11 @@ do {
 }
 
 do {
+    cd rsiot-plc
+    cargo rdme --force
+}
+
+do {
     cd rsiot-websocket-server
     cargo rdme --force
 }

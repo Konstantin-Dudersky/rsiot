@@ -49,7 +49,7 @@ pub struct Config {
     pub header: String,
 }
 
-pub fn create<TMessage>(config: Config) -> Box<Component<TMessage, Config>>
+pub fn new<TMessage>(config: Config) -> Box<Component<TMessage, Config>>
 where
     TMessage: IMessage + 'static,
 {

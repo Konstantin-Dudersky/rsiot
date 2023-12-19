@@ -23,7 +23,7 @@ async fn main() {
                 vec![msg]
             },
         }))
-        .add_cmp(cmp_logger::create(cmp_logger::Config {
+        .add_cmp(cmp_logger::new(cmp_logger::Config {
             level: Level::INFO,
             header: "".into(),
         }))

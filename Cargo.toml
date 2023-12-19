@@ -11,6 +11,7 @@ members = [
     "./rsiot-message-router",
     "./rsiot-messages-core",
     "./rsiot-modbus-client",
+    "./rsiot-plc",
     "./rsiot-redis-publisher",
     "./rsiot-redis-subscriber",
     "./rsiot-timescaledb-storing",
@@ -69,7 +70,7 @@ url = { version = "2.5.0" }
 document-features = { version = "0.2.7" }
 
 # логгирование
-tracing = { version = "0.1.40" }
+tracing = { version = "0.1.40", features = ["log"] }
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 tracing-loki = { version = "0.2.4" }
 
@@ -90,6 +91,7 @@ rsiot-logging = { version = "0.0.25", path = "./rsiot-logging" }
 rsiot-message-router = { version = "0.0.21", path = "./rsiot-message-router" }
 rsiot-messages-core = { version = "0.0.21", path = "./rsiot-messages-core" }
 rsiot-modbus-client = { version = "0.0.23", path = "./rsiot-modbus-client" }
+rsiot-plc = { version = "0.0.0", path = "./rsiot-plc" }
 rsiot-redis-publisher = { version = "0.0.23", path = "./rsiot-redis-publisher" }
 rsiot-redis-subscriber = { version = "0.0.23", path = "./rsiot-redis-subscriber" }
 rsiot-timescaledb-storing = { version = "0.0.23", path = "./rsiot-timescaledb-storing" }

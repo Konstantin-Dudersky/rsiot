@@ -41,7 +41,7 @@ pub use rsiot_messages_core::IMessage;
 ///
 /// См. [документацию](https://docs.rs/rsiot-modbus-client/latest/)
 pub mod cmp_modbus_client {
+    pub use crate::config::*;
     pub use crate::conversion;
     pub use crate::new::new;
-    pub use rsiot_components_config::modbus_client::*;
 }

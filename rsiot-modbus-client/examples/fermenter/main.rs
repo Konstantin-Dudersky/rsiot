@@ -17,7 +17,7 @@ async fn main() {
 
     let mut chain = ComponentChain::new(100)
         .add_cmp(cmp_modbus_client::new(config::config()))
-        .add_cmp(cmp_logger::create(cmp_logger::Config {
+        .add_cmp(cmp_logger::new(cmp_logger::Config {
             level: Level::INFO,
             header: "".into(),
         }));
