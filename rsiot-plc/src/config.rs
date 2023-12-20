@@ -20,7 +20,7 @@ where
     /// Шаблон:
     ///
     /// ```rust
-    /// fn_input: |input: &mut I, msg: &TMessage| match msg {}
+    /// fn_input: |input: &mut fb_main::I, msg: &TMessage| match msg {}
     /// ```
     pub fn_input: fn(&mut I, &TMessage) -> (),
 

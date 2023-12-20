@@ -1,0 +1,28 @@
+[package]
+name = "esp32-c3"
+version = "0.0.1"
+authors = ["Konstantin-Dudersky <Konstantin.Dudersky@gmail.com>"]
+edition = "2021"
+resolver = "2"
+rust-version = "1.71"
+
+[profile.release]
+opt-level = "s"
+
+[profile.dev]
+debug = true
+opt-level = "z"
+
+[dependencies]
+log = { version = "0.4", default-features = false }
+esp-idf-svc = { version = "0.47.3", features = ["std"] }
+serde = { version = "*" }
+tokio = { version = "*" }
+tracing = { version = "*" }
+
+rsiot = { path = "../../../rsiot", features = ["plc"] }
+
+[build-dependencies]
+embuild = "0.31.3"
+
+[workspace]
