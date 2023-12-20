@@ -1737,6 +1737,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "rsiot-esp-gpio"
+version = "0.0.0"
+dependencies = [
+ "rsiot-component-core",
+ "rsiot-messages-core",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "rsiot-extra-components"
 version = "0.0.22"
 dependencies = [

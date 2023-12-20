@@ -9,6 +9,11 @@ do {
 }
 
 do {
+    cd rsiot-esp-gpio
+    cargo rdme --force
+}
+
+do {
     cd rsiot-modbus-client
     cargo rdme --force
 }

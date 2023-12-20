@@ -13,6 +13,9 @@ do -i {
     cargo publish --allow-dirty -p rsiot-env-vars
 }
 do -i {
+    cargo publish --allow-dirty -p rsiot-esp-gpio
+}
+do -i {
     cargo publish --allow-dirty -p rsiot-extra-components
 }
 do -i {

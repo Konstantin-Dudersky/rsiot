@@ -9,7 +9,7 @@
 
 Взаимодейтсвие с устройствами, поддерживающими протокол Modbus TCP сервер / Modbus RTU slave.
 
-W*http-client**](https://docs.rs/rsiot-http-client/latest/rsiot_http_client/cmp_http_client)
+[**http-client**](https://docs.rs/rsiot-http-client/latest/rsiot_http_client/cmp_http_client)
 
 Взаимодействие с устройствами, имеющими HTTP API.
 
@@ -24,6 +24,10 @@ TODO **opcua-client**
 TODO **s7-client**
 
 Взаимодействие с контроллерами Siemens по протоколу S7.
+
+[**esp-gpio**](https://docs.rs/rsiot-esp-gpio/latest/rsiot_esp_gpio/cmp_esp_gpio)
+
+Чтение / запись данных с пинов GPIO микроконтроллера ESP.
 
 #### Взаимодействие с системами верхнего уровня
 

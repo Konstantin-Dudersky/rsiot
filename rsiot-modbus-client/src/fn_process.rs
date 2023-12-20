@@ -10,11 +10,14 @@ use tokio_modbus::{client::Context, prelude::*};
 use tracing::{debug, error, info, trace, warn};
 
 use rsiot_component_core::{IComponent, StreamInput, StreamOutput};
-use rsiot_components_config::modbus_client as config;
 use rsiot_extra_components::{cmp_mpsc_to_mpsc, cmpbase_mpsc_to_broadcast};
 use rsiot_messages_core::IMessage;
 
-use crate::{config::Config, errors::Errors, types::Result_};
+use crate::{
+    config::{self, Config},
+    errors::Errors,
+    types::Result_,
+};
 
 pub async fn fn_process<TMessage>(
     input: StreamInput<TMessage>,
