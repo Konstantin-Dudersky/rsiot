@@ -18,7 +18,7 @@ async fn cmp_inject_periodic<TMessage, TFnPeriodic>(
     let output = match output {
         Some(val) => val,
         None => {
-            let msg = "Input stream is None";
+            let msg = "Output stream is None";
             error!("{:?}", msg);
             return;
         }
