@@ -13,10 +13,10 @@ do -i {
     cargo publish --allow-dirty -p rsiot-env-vars
 }
 do -i {
-    cargo publish --allow-dirty -p rsiot-esp-gpio
+    cargo publish --allow-dirty -p rsiot-extra-components
 }
 do -i {
-    cargo publish --allow-dirty -p rsiot-extra-components
+    cargo publish --allow-dirty -p rsiot-gpio-read-esp
 }
 do -i {
     cargo publish --allow-dirty -p rsiot-http-client
