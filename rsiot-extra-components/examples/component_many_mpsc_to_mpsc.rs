@@ -5,7 +5,7 @@ use tokio::{
     time::{sleep, Duration},
 };
 
-use rsiot_extra_components::component_many_mpsc_to_mpsc;
+use rsiot_extra_components::cmpbase_many_mpsc_to_mpsc;
 use rsiot_messages_core::IMessage;
 use tracing::info;
 
@@ -18,7 +18,7 @@ enum Message {
 
 impl IMessage for Message {
     fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
-        todo!()
+        vec![]
     }
 }
 
@@ -50,9 +50,9 @@ async fn main() {
         }
     });
 
-    let main_task = spawn(component_many_mpsc_to_mpsc::<Message>(
-        vec![steam1_rx, steam2_rx],
-        stream_out_tx,
+    let main_task = spawn(cmpbase_many_mpsc_to_mpsc::new::<Message>(
+        vec![Some(steam1_rx), Some(steam2_rx)],
+        Some(stream_out_tx),
     ));
 
     let _end_task = spawn(async move {

@@ -10,7 +10,7 @@ use crate::{
 pub struct Component<TMessage, TConfig> {
     pub stream_input: StreamInput<TMessage>,
     pub stream_output: StreamOutput<TMessage>,
-    pub config: TConfig,
+    pub config: Option<TConfig>,
     pub function: Box<dyn IComponentFunction<TMessage, TConfig>>,
 }
 
@@ -22,16 +22,13 @@ impl<TMessage, TConfig> Component<TMessage, TConfig> {
         Self {
             stream_input: None,
             stream_output: None,
-            config,
+            config: Some(config),
             function: Box::new(func),
         }
     }
 }
 
-impl<TMessage, TConfig> IComponent<TMessage> for Component<TMessage, TConfig>
-where
-    TConfig: Clone,
-{
+impl<TMessage, TConfig> IComponent<TMessage> for Component<TMessage, TConfig> {
     fn set_input(&mut self, stream_input: StreamInput<TMessage>) {
         self.stream_input = stream_input;
     }
@@ -43,7 +40,7 @@ where
     fn spawn(&mut self) -> JoinHandle<()> {
         let stream_input = self.stream_input.take();
         let stream_output = self.stream_output.take();
-        let config = self.config.clone();
+        let config = self.config.take().unwrap();
         spawn(self.function.call(stream_input, stream_output, config))
     }
 }

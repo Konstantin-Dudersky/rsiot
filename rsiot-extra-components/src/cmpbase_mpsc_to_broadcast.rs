@@ -12,13 +12,9 @@ use tracing::{error, info};
 use rsiot_component_core::StreamInput;
 use rsiot_messages_core::IMessage;
 
-/// Компонент для перенаправления сообщений из `tokio::sync::mpsc`
-/// в `tokio::sync::broadcast`
-///
-pub async fn new<TMessage>(
-    input: StreamInput<TMessage>,
-    output: broadcast::Sender<TMessage>,
-) where
+/// Компонент для перенаправления сообщений из `tokio::sync::mpsc` в `tokio::sync::broadcast`
+pub async fn new<TMessage>(input: StreamInput<TMessage>, output: broadcast::Sender<TMessage>)
+where
     TMessage: IMessage,
 {
     info!("cmpbase_mpsc_to_broadcast started");

@@ -23,7 +23,8 @@ tokio = { version = "*" }
 tracing = { version = "*", features = ["log"] }
 
 rsiot-gpio-read-esp = { path = "../../../rsiot-gpio-read-esp" }
-rsiot = { version = "*", features = ["components"] }
+# TODO - убрать path после новой версии
+rsiot = { version = "*", features = ["components"], path = "../../../rsiot" }
 
 [build-dependencies]
 embuild = "0.31.3"

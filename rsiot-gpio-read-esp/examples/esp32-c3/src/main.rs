@@ -1,17 +1,7 @@
-use std::{sync::Arc, time::Duration};
+use esp_idf_svc::{log::EspLogger, sys::link_patches};
+use tokio::{main, spawn, sync::mpsc};
 
-use esp_idf_svc::{
-    hal::{
-        gpio::{Input, InputPin, PinDriver},
-        peripherals::Peripherals,
-    },
-    log::EspLogger,
-    sys::link_patches,
-};
-use tokio::{main, sync::Mutex};
-
-use rsiot::component::{cmp_logger, ComponentChain};
-use rsiot_gpio_read_esp::cmp_gpio_read_esp;
+use rsiot::component::{cmp_add_input_stream, cmp_logger, ComponentChain};
 
 use message::Message;
 use tracing::Level;
@@ -24,22 +14,22 @@ async fn main() {
     link_patches();
     EspLogger::initialize_default();
 
-    let peripherals = Peripherals::take().unwrap();
-    let button = PinDriver::input(peripherals.pins.gpio9).unwrap();
+    let (output_hal_tx, output_hal_rx) = mpsc::channel(10);
+
+    spawn(hal::hal(None, Some(output_hal_tx)));
+
+    let output_hal_config = cmp_add_input_stream::Config {
+        channel: output_hal_rx,
+    };
 
     let logger_config = cmp_logger::Config {
         level: Level::INFO,
         header: "Logger: ".into(),
     };
 
-    let gpio_read_config = cmp_gpio_read_esp::Config {
-        period: Duration::from_millis(100),
-        fn_output: |_| vec![],
-    };
-
     let mut chain = ComponentChain::<Message>::new(10)
-        .add_cmp(cmp_gpio_read_esp::new(gpio_read_config))
-        .add_cmp(cmp_logger::create(logger_config));
+        .add_cmp(cmp_add_input_stream::new(output_hal_config))
+        .add_cmp(cmp_logger::new(logger_config));
 
     chain.spawn().await;
 }
