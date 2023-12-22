@@ -24,7 +24,7 @@ tokio = { version = "*" }
 tracing = { version = "*", features = ["log"] }
 rgb = { version = "0.8.37", features = ["serde"] }
 
-rsiot-gpio-read-esp = { path = "../../../rsiot-gpio-read-esp" }
+rsiot-esp = { path = "../../" }
 # TODO - убрать path после новой версии
 rsiot = { version = "*", features = [
     "components",

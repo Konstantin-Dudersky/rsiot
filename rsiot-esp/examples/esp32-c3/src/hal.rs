@@ -6,9 +6,7 @@ use esp_idf_svc::{
         gpio::{Input, InputPin, Level, PinDriver},
         peripherals::Peripherals,
     },
-    nvs::EspDefaultNvsPartition,
-    timer::EspTaskTimerService,
-    wifi::{AccessPointConfiguration, AsyncWifi, ClientConfiguration, Configuration, EspWifi},
+    wifi::{AccessPointConfiguration, BlockingWifi, Configuration, EspWifi},
 };
 use rgb::RGB8;
 use rsiot::{
@@ -37,8 +35,7 @@ pub async fn hal(input: Option<mpsc::Receiver<Message>>, output: Option<mpsc::Se
 
     let peripherals = Peripherals::take().unwrap();
     let sys_loop = EspSystemEventLoop::take().unwrap();
-    let timer_service = EspTaskTimerService::new().unwrap();
-    let nvs = EspDefaultNvsPartition::take().unwrap();
+    // let nvs = EspDefaultNvsPartition::take().unwrap();
 
     // читаем кнопку с gpio9
     let button = PinDriver::input(peripherals.pins.gpio9).unwrap();
@@ -62,29 +59,25 @@ pub async fn hal(input: Option<mpsc::Receiver<Message>>, output: Option<mpsc::Se
     ));
 
     // настраиваем Wi-Fi
-    let wifi_configuration: Configuration = Configuration::Client(ClientConfiguration {
+    let mut wifi = BlockingWifi::wrap(
+        EspWifi::new(peripherals.modem, sys_loop.clone(), None).unwrap(),
+        sys_loop.clone(),
+    )
+    .unwrap();
+    wifi_acces_point(&mut wifi);
+
+    while (set.join_next().await).is_some() {}
+}
+
+fn wifi_acces_point<'a>(wifi: &mut BlockingWifi<EspWifi<'a>>) {
+    let wifi_configuration: Configuration = Configuration::AccessPoint(AccessPointConfiguration {
         ssid: "test_esp_ap".into(),
         ..Default::default()
     });
-
-    let mut wifi = AsyncWifi::wrap(
-        EspWifi::new(peripherals.modem, sys_loop.clone(), Some(nvs)).unwrap(),
-        sys_loop,
-        timer_service,
-    )
-    .unwrap();
-
     wifi.set_configuration(&wifi_configuration).unwrap();
-    wifi.start().await.unwrap();
-    info!("Wifi started");
-    wifi.connect().await.unwrap();
-    info!("Wifi connected");
-    wifi.wait_netif_up().await.unwrap();
-    info!("Wifi netif up");
-    let ip_info = wifi.wifi().sta_netif().get_ip_info().unwrap();
-    info!("Wifi DHCP info: {:?}", ip_info);
-
-    while (set.join_next().await).is_some() {}
+    wifi.start().unwrap();
+    info!("is wifi started: {:?}", wifi.is_started());
+    info!("{:?}", wifi.get_capabilities());
 }
 
 async fn gpio_read<'a, TPin, TMessage>(

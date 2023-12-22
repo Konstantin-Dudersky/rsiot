@@ -1,7 +1,14 @@
 use std::time::Duration;
 
-use esp_idf_svc::{log::EspLogger, sys::link_patches};
-use tokio::{main, spawn, sync::mpsc};
+use esp_idf_svc::{
+    http::{
+        server::{Configuration as HttpServerConfiguration, EspHttpServer},
+        Method,
+    },
+    io::Write,
+    {log::EspLogger, sys::link_patches},
+};
+use tokio::{main, spawn, sync::mpsc, time::sleep};
 
 use rsiot::{
     cmp_plc,
@@ -10,6 +17,7 @@ use rsiot::{
     },
     message::msg_types::Value,
 };
+use rsiot_esp::cmp_http_server_esp;
 
 use message::Message;
 use rgb::RGB8;
@@ -66,12 +74,47 @@ async fn main() {
         delay: Duration::from_secs(2),
     };
 
+    // настраиваем http server
+    sleep(Duration::from_secs(5)).await;
+    let mut server = EspHttpServer::new(&HttpServerConfiguration::default()).unwrap();
+    server
+        .fn_handler("/temperature", Method::Get, move |request| {
+            let html = temperature(12.3);
+            let mut response = request.into_ok_response()?;
+            response.write_all(html.as_bytes())?;
+            Ok(())
+        })
+        .unwrap();
+
     let mut chain = ComponentChain::<Message>::new(10)
         .add_cmp(cmp_add_input_stream::new(output_hal_config))
         .add_cmp(cmp_plc::new(plc_config))
         .add_cmp(cmp_add_output_stream::new(input_hal_config))
         .add_cmp(cmp_delay::new(delay_config))
-        .add_cmp(cmp_logger::new(logger_config));
+        .add_cmp(cmp_logger::new(logger_config))
+        .add_cmp(cmp_http_server_esp::new(cmp_http_server_esp::Config {}));
 
     chain.spawn().await;
+}
+
+fn temperature(val: f32) -> String {
+    templated(format!("Chip temperature: {:.2}°C", val))
+}
+
+fn templated(content: impl AsRef<str>) -> String {
+    format!(
+        r#"
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>esp-rs web server</title>
+    </head>
+    <body>
+        {}
+    </body>
+</html>
+"#,
+        content.as_ref()
+    )
 }

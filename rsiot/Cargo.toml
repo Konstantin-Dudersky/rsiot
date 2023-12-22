@@ -18,6 +18,7 @@ tokio = { workspace = true, optional = true }
 chrono = { workspace = true }
 url = { workspace = true }
 
+
 rsiot-component-core = { workspace = true, optional = true }
 rsiot-env-vars = { workspace = true, optional = true }
 rsiot-extra-components = { workspace = true, optional = true }
@@ -43,7 +44,7 @@ components = [
     "dep:rsiot-component-core",
     "dep:rsiot-extra-components",
 ]
-# Конфигурирование через переменные
+## Конфигурирование через переменные
 env-vars = ["dep:rsiot-env-vars"]
 ## Компонент http-клиент
 http-client = ["components", "dep:rsiot-http-client"]

@@ -1216,11 +1216,34 @@ dependencies = [
 [[package]]
 name = "rsiot-component-core"
 version = "0.0.21"
+dependencies = [
+ "futures",
+ "rsiot-messages-core 0.0.21",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "rsiot-component-core"
+version = "0.0.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "56830d880c3b80882a1c0eca55cb7d4b99a1749b704e2b40e13889a41a679631"
 dependencies = [
  "futures",
- "rsiot-messages-core",
+ "rsiot-messages-core 0.0.21 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "rsiot-esp"
+version = "0.0.0"
+dependencies = [
+ "embuild",
+ "esp-idf-svc",
+ "rsiot-component-core 0.0.21",
+ "rsiot-extra-components",
+ "rsiot-messages-core 0.0.21",
  "tokio",
  "tracing",
 ]
@@ -1231,23 +1254,19 @@ version = "0.0.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "12dba3a076622ac6f2a53a660432d65d39c9d0ed67e53513697fb9990f7f4243"
 dependencies = [
- "rsiot-component-core",
- "rsiot-messages-core",
+ "rsiot-component-core 0.0.21 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rsiot-messages-core 0.0.21 (registry+https://github.com/rust-lang/crates.io-index)",
  "tokio",
  "tracing",
 ]
 
 [[package]]
-name = "rsiot-gpio-read-esp"
-version = "0.0.0"
+name = "rsiot-messages-core"
+version = "0.0.21"
 dependencies = [
- "embuild",
- "esp-idf-svc",
- "rsiot-component-core",
- "rsiot-extra-components",
- "rsiot-messages-core",
- "tokio",
- "tracing",
+ "chrono",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -1537,6 +1556,7 @@ version = "0.1.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c3523ab5a71916ccf420eebdf5521fcef02141234bbc0b8a49f2fdc4544364ef"
 dependencies = [
+ "log",
  "pin-project-lite",
  "tracing-attributes",
  "tracing-core",

@@ -18,6 +18,7 @@ members = [
     "./rsiot-websocket-server",
     "./rsiot-websocket-client",
 ]
+exclude = ["./rsiot-esp"]
 resolver = "2"
 
 
@@ -85,6 +86,7 @@ rsiot-component-core = { version = "0.0.21", path = "./rsiot-component-core" }
 rsiot-components-config = { version = "0.0.23", path = "./rsiot-components-config" }
 rsiot-env-vars = { version = "0.0.21", path = "./rsiot-env-vars" }
 rsiot-extra-components = { version = "0.0.22", path = "./rsiot-extra-components" }
+rsiot-esp = { version = "0.0.0", path = "./rsiot-esp" }
 rsiot-http-client = { version = "0.0.23", path = "./rsiot-http-client" }
 rsiot-http-server = { version = "0.0.23", path = "./rsiot-http-server" }
 rsiot-logging = { version = "0.0.25", path = "./rsiot-logging" }
