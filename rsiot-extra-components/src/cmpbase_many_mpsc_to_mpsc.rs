@@ -5,10 +5,8 @@ use rsiot_messages_core::IMessage;
 use tracing::error;
 
 /// Компонент для объединения нескольких потоков в один
-pub async fn new<TMessage>(
-    streams_input: Vec<StreamInput<TMessage>>,
-    output: StreamOutput<TMessage>,
-) where
+pub async fn new<TMessage>(inputs: Vec<StreamInput<TMessage>>, output: StreamOutput<TMessage>)
+where
     TMessage: IMessage + 'static,
 {
     let output = match output {
@@ -21,7 +19,7 @@ pub async fn new<TMessage>(
 
     let (tx, mut rx) = mpsc::channel::<TMessage>(100);
 
-    for stream in streams_input {
+    for stream in inputs {
         let mut stream = match stream {
             Some(val) => val,
             None => continue,

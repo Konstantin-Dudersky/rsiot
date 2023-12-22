@@ -14,8 +14,8 @@ use rsiot_messages_core::IMessage;
 use crate::cmp_cache;
 
 async fn process<TMessage>(
-    stream_input: StreamInput<TMessage>,
-    stream_output: StreamOutput<TMessage>,
+    input: StreamInput<TMessage>,
+    output: StreamOutput<TMessage>,
     config: Config,
 ) where
     TMessage: IMessage + 'static,
@@ -25,10 +25,10 @@ async fn process<TMessage>(
     let _task_cache = cmp_cache::new(cmp_cache::Config {
         cache: cache.clone(),
     })
-    .set_and_spawn(stream_input, None);
+    .set_and_spawn(input, None);
 
     info!("Component started");
-    let result = task_main(cache.clone(), stream_output, config.delay).await;
+    let result = task_main(cache.clone(), output, config.delay).await;
     match result {
         Ok(_) => (),
         Err(err) => error!("{:?}", err),
@@ -81,6 +81,7 @@ pub struct Config {
     pub delay: Duration,
 }
 
+/// Перенаправление сообщений с задержкой
 pub fn new<TMessage>(config: Config) -> Box<Component<TMessage, Config>>
 where
     TMessage: IMessage + 'static + Sync,

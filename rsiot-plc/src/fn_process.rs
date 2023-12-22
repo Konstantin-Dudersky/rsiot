@@ -1,10 +1,18 @@
+//! Схема потока сообщений:
+//!
+//! ```text
+//!       ----> cache
+//! input       plc ------> output
+//!       ---------------->
+//! ```
+
 use std::time::{Duration, Instant};
 
 use serde::Serialize;
 use tokio::{spawn, sync::mpsc, time::sleep};
 
 use rsiot_component_core::{IComponent, StreamInput, StreamOutput};
-use rsiot_extra_components::{cmp_cache, cmp_mpsc_to_mpsc};
+use rsiot_extra_components::{cmp_cache, cmpbase_many_mpsc_to_mpsc, cmpbase_mpsc_to_many_mpsc};
 use rsiot_messages_core::IMessage;
 
 use crate::{
@@ -23,19 +31,30 @@ pub async fn fn_process<TMessage, I, Q, S>(
     S: Clone + Default + Send + Serialize + 'static + Sync,
     FunctionBlockBase<I, Q, S>: IFunctionBlock<I, Q, S>,
 {
+    let (input_to_cache_tx, input_to_cache_rx) = mpsc::channel::<TMessage>(config.buffer_size);
+    let (input_to_output_tx, input_to_output_rx) = mpsc::channel::<TMessage>(config.buffer_size);
+    let (plc_to_output_tx, plc_to_output_rx) = mpsc::channel::<TMessage>(config.buffer_size);
+
+    spawn(cmpbase_mpsc_to_many_mpsc::new(
+        input,
+        vec![Some(input_to_cache_tx), Some(input_to_output_tx)],
+    ));
+
+    spawn(cmpbase_many_mpsc_to_mpsc::new(
+        vec![Some(plc_to_output_rx), Some(input_to_output_rx)],
+        output,
+    ));
+
     // кэшируем данные
     let cache = cmp_cache::create_cache::<TMessage>();
     let task_cache_config = cmp_cache::Config {
         cache: cache.clone(),
     };
-    let _task_cache = cmp_cache::new(task_cache_config).set_and_spawn(input, None);
-
-    // выходной канал
-    let (to_output_tx, to_output_rx) = mpsc::channel::<TMessage>(config.buffer_size);
-    let _task_output = cmp_mpsc_to_mpsc::create().set_and_spawn(Some(to_output_rx), output);
+    let _task_cache =
+        cmp_cache::new(task_cache_config).set_and_spawn(Some(input_to_cache_rx), None);
 
     spawn(task_main_loop::<TMessage, I, Q, S>(
-        to_output_tx.clone(),
+        plc_to_output_tx.clone(),
         config,
         cache.clone(),
     ));
