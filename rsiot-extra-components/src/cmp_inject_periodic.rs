@@ -1,28 +1,20 @@
 //! Компонент для периодического генерирования сообщений
 
 use tokio::time::{sleep, Duration, Instant};
-use tracing::{error, info};
+use tracing::debug;
 
-use rsiot_component_core::{Component, StreamInput, StreamOutput};
+use rsiot_component_core::{Component, Input, Output};
 use rsiot_messages_core::IMessage;
 
 async fn cmp_inject_periodic<TMessage, TFnPeriodic>(
-    _input: StreamInput<TMessage>,
-    output: StreamOutput<TMessage>,
+    _input: Input<TMessage>,
+    output: Output<TMessage>,
     mut config: Config<TMessage, TFnPeriodic>,
 ) where
     TMessage: IMessage,
     TFnPeriodic: FnMut() -> Vec<TMessage>,
 {
-    info!("cmp_inject_periodic started");
-    let output = match output {
-        Some(val) => val,
-        None => {
-            let msg = "Output stream is None";
-            error!("{:?}", msg);
-            return;
-        }
-    };
+    debug!("cmp_inject_periodic started");
     loop {
         let begin = Instant::now();
         let msgs = (config.fn_periodic)();

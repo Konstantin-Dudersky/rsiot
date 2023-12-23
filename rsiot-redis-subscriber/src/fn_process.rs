@@ -8,7 +8,7 @@ use tokio::{
 use tracing::{error, info, trace};
 use url::Url;
 
-use rsiot_component_core::{IComponent, StreamInput, StreamOutput};
+use rsiot_component_core::{IComponent, Input, Output};
 use rsiot_extra_components::cmp_mpsc_to_mpsc;
 use rsiot_messages_core::{IMessage, IMessageChannel};
 
@@ -20,8 +20,8 @@ use crate::{
 type TaskResult = Result<(), Error>;
 
 pub async fn fn_process<TMessage, TMessageChannel>(
-    _input: StreamInput<TMessage>,
-    output: StreamOutput<TMessage>,
+    _input: Input<TMessage>,
+    output: Output<TMessage>,
     config: Config<TMessageChannel>,
 ) where
     TMessage: IMessage + 'static,

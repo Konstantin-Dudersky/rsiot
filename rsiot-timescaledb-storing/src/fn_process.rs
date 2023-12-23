@@ -6,16 +6,13 @@ use tokio::{
 use tracing::{error, info, trace};
 use url::Url;
 
-use rsiot_component_core::{StreamInput, StreamOutput};
+use rsiot_component_core::{Input, Output};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::Config, error::Error, model::Row};
 
-pub async fn fn_process<TMessage>(
-    input: StreamInput<TMessage>,
-    _output: StreamOutput<TMessage>,
-    config: Config,
-) where
+pub async fn fn_process<TMessage>(input: Input<TMessage>, _output: Output<TMessage>, config: Config)
+where
     TMessage: IMessage,
 {
     info!("Start timescaledb-storing");

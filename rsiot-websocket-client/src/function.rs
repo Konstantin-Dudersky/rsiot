@@ -10,20 +10,18 @@ use tokio::{
     time::{sleep, Duration},
     try_join,
 };
-use tokio_tungstenite::{
-    connect_async, tungstenite::Message, MaybeTlsStream, WebSocketStream,
-};
+use tokio_tungstenite::{connect_async, tungstenite::Message, MaybeTlsStream, WebSocketStream};
 use tracing::{error, info};
 
-use rsiot_component_core::{IComponent, StreamInput, StreamOutput};
+use rsiot_component_core::{IComponent, Input, Output};
 use rsiot_extra_components::{cmp_mpsc_to_mpsc, cmpbase_mpsc_to_broadcast};
 use rsiot_messages_core::IMessage;
 
 use crate::{cmp_websocket_client, Error};
 
 pub async fn function<TMessage>(
-    input: StreamInput<TMessage>,
-    output: StreamOutput<TMessage>,
+    input: Input<TMessage>,
+    output: Output<TMessage>,
     config: cmp_websocket_client::Config<TMessage>,
 ) where
     TMessage: IMessage + 'static,
@@ -31,12 +29,11 @@ pub async fn function<TMessage>(
     info!("cmp_websocket_client starting");
 
     let (from_server_tx, from_server_rx) = mpsc::channel::<TMessage>(100);
-    let (input_broadcast_tx, _input_broadcast_rx) =
-        broadcast::channel::<TMessage>(100);
+    let (input_broadcast_tx, _input_broadcast_rx) = broadcast::channel::<TMessage>(100);
     let input_broadcast_tx_clone = input_broadcast_tx.clone();
 
-    let _output_stream = cmp_mpsc_to_mpsc::create::<TMessage>()
-        .set_and_spawn(Some(from_server_rx), output);
+    let _output_stream =
+        cmp_mpsc_to_mpsc::create::<TMessage>().set_and_spawn(Some(from_server_rx), output);
 
     spawn(cmpbase_mpsc_to_broadcast::new(input, input_broadcast_tx));
 

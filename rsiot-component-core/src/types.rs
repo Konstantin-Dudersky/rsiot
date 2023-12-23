@@ -1,4 +1,4 @@
-use tokio::sync::mpsc;
+use tokio::sync::{broadcast, mpsc};
 
-pub type StreamInput<TMessage> = Option<mpsc::Receiver<TMessage>>;
-pub type StreamOutput<TMessage> = Option<mpsc::Sender<TMessage>>;
+pub type Input<TMessage> = broadcast::Receiver<TMessage>;
+pub type Output<TMessage> = mpsc::Sender<TMessage>;

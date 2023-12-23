@@ -49,10 +49,14 @@ async fn main() {
         buffer_size: 10,
     };
 
-    let mut chain = ComponentChain::<Message>::new(100)
-        .add_cmp(cmp_inject_periodic::new(inject_config))
-        .add_cmp(cmp_plc::new(plc_config))
-        .add_cmp(cmp_logger::new(logger_config));
+    let mut chain = ComponentChain::<Message>::new(
+        100,
+        vec![
+            cmp_inject_periodic::new(inject_config),
+            cmp_plc::new(plc_config),
+            cmp_logger::new(logger_config),
+        ],
+    );
 
     chain.spawn().await;
 }

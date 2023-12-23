@@ -10,15 +10,15 @@ use tokio::{
 use tracing::{error, info};
 use url::Url;
 
-use rsiot_component_core::{IComponent, StreamInput, StreamOutput};
+use rsiot_component_core::{IComponent, Input, Output};
 use rsiot_extra_components::{cmp_mpsc_to_mpsc, cmpbase_mpsc_to_broadcast};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::config, error::Error, types::Result_};
 
 pub async fn process<TMessage>(
-    input: StreamInput<TMessage>,
-    output: StreamOutput<TMessage>,
+    input: Input<TMessage>,
+    output: Output<TMessage>,
     config: config::Config<TMessage>,
 ) where
     TMessage: IMessage + 'static,

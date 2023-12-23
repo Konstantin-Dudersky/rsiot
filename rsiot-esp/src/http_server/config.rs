@@ -1,4 +1,9 @@
+use rsiot_extra_components::cmp_cache::CacheType;
 use rsiot_messages_core::IMessage;
 
-#[derive(Clone)]
-pub struct Config {}
+pub struct Config<TMessage>
+where
+    TMessage: IMessage,
+{
+    pub cache: CacheType<TMessage>,
+}

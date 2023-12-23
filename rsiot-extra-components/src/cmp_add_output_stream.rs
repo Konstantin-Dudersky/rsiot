@@ -2,19 +2,19 @@
 
 use tokio::sync::mpsc;
 
-use rsiot_component_core::{Component, StreamInput, StreamOutput};
+use rsiot_component_core::{Component, Input, Output};
 use rsiot_messages_core::IMessage;
 
 use super::cmpbase_mpsc_to_many_mpsc;
 
 async fn fn_process<TMessage>(
-    input: StreamInput<TMessage>,
-    output: StreamOutput<TMessage>,
+    input: Input<TMessage>,
+    output: Output<TMessage>,
     config: Config<TMessage>,
 ) where
     TMessage: IMessage + 'static,
 {
-    cmpbase_mpsc_to_many_mpsc::new(input, vec![output, Some(config.channel)]).await;
+    cmpbase_mpsc_to_many_mpsc::new(input, vec![output, config.channel]).await;
 }
 
 /// Настройки

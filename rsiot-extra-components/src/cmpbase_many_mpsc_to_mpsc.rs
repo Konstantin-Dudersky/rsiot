@@ -1,32 +1,19 @@
 use tokio::{spawn, sync::mpsc};
 
-use rsiot_component_core::{StreamInput, StreamOutput};
+use rsiot_component_core::{Input, Output};
 use rsiot_messages_core::IMessage;
-use tracing::error;
 
 /// Компонент для объединения нескольких потоков в один
-pub async fn new<TMessage>(inputs: Vec<StreamInput<TMessage>>, output: StreamOutput<TMessage>)
+pub async fn new<TMessage>(inputs: Vec<Input<TMessage>>, output: Output<TMessage>)
 where
     TMessage: IMessage + 'static,
 {
-    let output = match output {
-        Some(val) => val,
-        None => {
-            error!("Output stream not set, exit");
-            return;
-        }
-    };
-
     let (tx, mut rx) = mpsc::channel::<TMessage>(100);
 
-    for stream in inputs {
-        let mut stream = match stream {
-            Some(val) => val,
-            None => continue,
-        };
+    for mut stream in inputs {
         let tx_clone = tx.clone();
         spawn(async move {
-            while let Some(msg) = stream.recv().await {
+            while let Ok(msg) = stream.recv().await {
                 tx_clone.send(msg).await.unwrap();
             }
         });

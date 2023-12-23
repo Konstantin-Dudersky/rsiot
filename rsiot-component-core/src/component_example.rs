@@ -2,13 +2,10 @@
 
 use rsiot_messages_core::IMessage;
 
-use crate::{Component, StreamInput, StreamOutput};
+use crate::{Component, Input, Output};
 
-async fn process<TMessage>(
-    _input: StreamInput<TMessage>,
-    _output: StreamOutput<TMessage>,
-    _config: Config,
-) where
+async fn process<TMessage>(_input: Input<TMessage>, _output: Output<TMessage>, _config: Config)
+where
     TMessage: IMessage,
 {
 }

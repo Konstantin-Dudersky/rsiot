@@ -8,16 +8,13 @@ use tokio::{
 };
 use tracing::{error, info};
 
-use rsiot_component_core::{Component, IComponent, StreamInput, StreamOutput};
+use rsiot_component_core::{Component, IComponent, Input, Output};
 use rsiot_messages_core::IMessage;
 
 use crate::cmp_cache;
 
-async fn process<TMessage>(
-    input: StreamInput<TMessage>,
-    output: StreamOutput<TMessage>,
-    config: Config,
-) where
+async fn process<TMessage>(input: Input<TMessage>, output: Output<TMessage>, config: Config)
+where
     TMessage: IMessage + 'static,
 {
     let cache = cmp_cache::create_cache::<TMessage>();
@@ -37,13 +34,13 @@ async fn process<TMessage>(
 
 async fn task_main<TMessage>(
     cache: cmp_cache::CacheType<TMessage>,
-    stream_output: StreamOutput<TMessage>,
+    output: Output<TMessage>,
     delay: Duration,
 ) -> Result<(), Error<TMessage>>
 where
     TMessage: IMessage + 'static,
 {
-    let stream_output = match stream_output {
+    let stream_output = match output {
         Some(val) => val,
         None => return Ok(()),
     };

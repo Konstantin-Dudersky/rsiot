@@ -12,7 +12,7 @@ use tokio::{
 use tokio_util::sync::CancellationToken;
 use tracing::{error, info};
 
-use rsiot_component_core::{IComponent, StreamInput, StreamOutput};
+use rsiot_component_core::{IComponent, Input, Output};
 use rsiot_extra_components::{cmp_cache, cmp_mpsc_to_mpsc, cmpbase_mpsc_to_broadcast};
 use rsiot_messages_core::IMessage;
 
@@ -21,8 +21,8 @@ use crate::{config::Config, errors::Errors};
 use super::{async_task_utils::cancellable_task, handle_ws_connection::handle_ws_connection};
 
 pub async fn process<TMessage>(
-    input: StreamInput<TMessage>,
-    output: StreamOutput<TMessage>,
+    input: Input<TMessage>,
+    output: Output<TMessage>,
     config: Config<TMessage>,
 ) where
     TMessage: IMessage + 'static,

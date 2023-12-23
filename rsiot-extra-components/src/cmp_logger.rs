@@ -2,14 +2,11 @@
 
 use tracing::{debug, error, info, trace, warn, Level};
 
-use rsiot_component_core::{Component, StreamInput, StreamOutput};
+use rsiot_component_core::{Component, Input, Output};
 use rsiot_messages_core::IMessage;
 
-async fn cmp_logger<TMessage>(
-    input: StreamInput<TMessage>,
-    output: StreamOutput<TMessage>,
-    config: Config,
-) where
+async fn cmp_logger<TMessage>(mut input: Input<TMessage>, _output: Output<TMessage>, config: Config)
+where
     TMessage: IMessage,
 {
     debug!("cmp_logger started");
@@ -17,25 +14,13 @@ async fn cmp_logger<TMessage>(
         "" => "".to_string(),
         _ => format!("{}: ", config.header),
     };
-    let mut input = match input {
-        Some(val) => val,
-        None => {
-            let msg = "Input stream is None";
-            error!("{:?}", msg);
-            return;
-        }
-    };
-    while let Some(msg) = input.recv().await {
+    while let Ok(msg) = input.recv().await {
         match config.level {
             Level::TRACE => trace!("{}{:?}", header, msg),
             Level::DEBUG => debug!("{}{:?}", header, msg),
             Level::INFO => info!("{}{:?}", header, msg),
             Level::WARN => warn!("{}{:?}", header, msg),
             Level::ERROR => error!("{}{:?}", header, msg),
-        }
-        match &output {
-            Some(stream) => stream.send(msg).await.unwrap(),
-            None => (),
         }
     }
 }

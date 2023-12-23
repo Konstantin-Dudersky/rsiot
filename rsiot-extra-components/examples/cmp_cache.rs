@@ -15,22 +15,26 @@ async fn main() {
     let cache = cmp_cache::create_cache();
     let mut counter = 0.0;
 
-    let mut chain = ComponentChain::new(100)
-        .add_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
-            period: Duration::from_millis(500),
-            fn_periodic: move || {
-                let msg = ExampleMessage::ValueInstantF64(msg_types::Value::new(counter));
-                counter += 1.0;
-                vec![msg]
-            },
-        }))
-        .add_cmp(cmp_cache::new(cmp_cache::Config {
-            cache: cache.clone(),
-        }))
-        .add_cmp(cmp_logger::new(cmp_logger::Config {
-            level: Level::INFO,
-            header: "".to_string(),
-        }));
+    let mut chain = ComponentChain::new(
+        100,
+        vec![
+            cmp_inject_periodic::new(cmp_inject_periodic::Config {
+                period: Duration::from_millis(500),
+                fn_periodic: move || {
+                    let msg = ExampleMessage::ValueInstantF64(msg_types::Value::new(counter));
+                    counter += 1.0;
+                    vec![msg]
+                },
+            }),
+            cmp_cache::new(cmp_cache::Config {
+                cache: cache.clone(),
+            }),
+            cmp_logger::new(cmp_logger::Config {
+                level: Level::INFO,
+                header: "".to_string(),
+            }),
+        ],
+    );
 
     let _end_task = spawn(async move {
         loop {

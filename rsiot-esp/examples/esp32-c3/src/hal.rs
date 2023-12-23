@@ -9,10 +9,7 @@ use esp_idf_svc::{
     wifi::{AccessPointConfiguration, BlockingWifi, Configuration, EspWifi},
 };
 use rgb::RGB8;
-use rsiot::{
-    component::{cmp_mpsc_to_mpsc, cmpbase_mpsc_to_broadcast, IComponent},
-    message::{msg_types::Value, IMessage},
-};
+use rsiot::message::{msg_types::Value, IMessage};
 use tokio::{
     sync::{broadcast, mpsc},
     task::JoinSet,
@@ -22,16 +19,14 @@ use tracing::info;
 use super::message::Message;
 use super::ws2812rmt::WS2812RMT;
 
-pub async fn hal(input: Option<mpsc::Receiver<Message>>, output: Option<mpsc::Sender<Message>>) {
-    let (input_b_tx, _input_b_rx) = broadcast::channel(10);
-    let (output_tx, output_rx) = mpsc::channel(10);
+pub struct Config;
 
+pub async fn hal(
+    input: broadcast::Receiver<Message>,
+    output: mpsc::Sender<Message>,
+    _config: Config,
+) {
     let mut set: JoinSet<()> = JoinSet::new();
-
-    let task_input = cmpbase_mpsc_to_broadcast::new(input, input_b_tx.clone());
-    set.spawn(task_input);
-
-    let _task_output = cmp_mpsc_to_mpsc::create().set_and_spawn(Some(output_rx), output);
 
     let peripherals = Peripherals::take().unwrap();
     let sys_loop = EspSystemEventLoop::take().unwrap();
@@ -40,8 +35,8 @@ pub async fn hal(input: Option<mpsc::Receiver<Message>>, output: Option<mpsc::Se
     // читаем кнопку с gpio9
     let button = PinDriver::input(peripherals.pins.gpio9).unwrap();
     set.spawn(gpio_read(
-        input_b_tx.subscribe(),
-        output_tx.clone(),
+        input.resubscribe(),
+        output.clone(),
         button,
         |level| Message::Button(Value::new(*level)),
     ));
@@ -49,8 +44,8 @@ pub async fn hal(input: Option<mpsc::Receiver<Message>>, output: Option<mpsc::Se
     // отправляем код цвета на LED
     let led = WS2812RMT::new(peripherals.pins.gpio8, peripherals.rmt.channel0).unwrap();
     set.spawn(ws2812(
-        input_b_tx.subscribe(),
-        output_tx.clone(),
+        input.resubscribe(),
+        output.clone(),
         led,
         |msg| match msg {
             Message::SetLedColor(val) => Some(val.value),
@@ -120,4 +115,26 @@ fn gpio_level_to_bool(level: &Level) -> bool {
         Level::Low => true,
         Level::High => false,
     }
+}
+
+fn temperature(val: f32) -> String {
+    templated(format!("Chip temperature: {:.2}°C", val))
+}
+
+fn templated(content: impl AsRef<str>) -> String {
+    format!(
+        r#"
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>esp-rs web server</title>
+    </head>
+    <body>
+        {}
+    </body>
+</html>
+"#,
+        content.as_ref()
+    )
 }

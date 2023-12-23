@@ -6,15 +6,15 @@ use tokio::{
 };
 use tracing::{error, info};
 
-use rsiot_component_core::{StreamInput, StreamOutput};
+use rsiot_component_core::{Input, Output};
 use rsiot_extra_components::cmpbase_mpsc_to_broadcast;
 use rsiot_messages_core::{IMessage, IMessageChannel};
 
 use crate::{cmp_redis_publisher, error::Error};
 
 pub async fn fn_process<TMessage, TMessageChannel>(
-    input: StreamInput<TMessage>,
-    _output: StreamOutput<TMessage>,
+    input: Input<TMessage>,
+    _output: Output<TMessage>,
     config: cmp_redis_publisher::Config<TMessage, TMessageChannel>,
 ) where
     TMessage: IMessage + 'static,

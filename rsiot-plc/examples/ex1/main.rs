@@ -19,7 +19,7 @@ async fn main() {
 
     let plc_config = cmp_plc::Config {
         fn_input: |_input: &mut fb1_example::I, msg: &Message| match msg {
-            Message::OutputValue(_) => todo!(),
+            Message::OutputValue(_) => (),
         },
         fn_output: |data: &fb1_example::Q| {
             let msg = Message::OutputValue(msg_types::Value::new(data.out_counter));
@@ -34,9 +34,10 @@ async fn main() {
         level: Level::INFO,
         header: "Logger: ".into(),
     };
-    let mut chain = ComponentChain::<message::Message>::new(100)
-        .add_cmp(cmp_plc::new(plc_config))
-        .add_cmp(cmp_logger::new(logger_config));
+    let mut chain = ComponentChain::<message::Message>::new(
+        100,
+        vec![cmp_plc::new(plc_config), cmp_logger::new(logger_config)],
+    );
 
     chain.spawn().await;
 }

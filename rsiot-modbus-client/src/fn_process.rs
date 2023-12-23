@@ -9,7 +9,7 @@ use tokio::{
 use tokio_modbus::{client::Context, prelude::*};
 use tracing::{debug, error, info, trace, warn};
 
-use rsiot_component_core::{IComponent, StreamInput, StreamOutput};
+use rsiot_component_core::{IComponent, Input, Output};
 use rsiot_extra_components::{cmp_mpsc_to_mpsc, cmpbase_mpsc_to_broadcast};
 use rsiot_messages_core::IMessage;
 
@@ -20,8 +20,8 @@ use crate::{
 };
 
 pub async fn fn_process<TMessage>(
-    input: StreamInput<TMessage>,
-    output: StreamOutput<TMessage>,
+    input: Input<TMessage>,
+    output: Output<TMessage>,
     config: Config<TMessage>,
 ) where
     TMessage: IMessage + 'static,
