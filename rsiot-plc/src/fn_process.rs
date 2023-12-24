@@ -76,7 +76,7 @@ async fn task_main<TMessage, I, Q, S>(
 {
     let mut input = I::default();
     {
-        let cache = cache.lock().await;
+        let cache = cache.read().await;
         for msg in cache.values() {
             (config.fn_input)(&mut input, &msg);
         }

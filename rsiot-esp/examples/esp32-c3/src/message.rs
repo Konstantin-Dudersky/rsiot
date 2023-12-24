@@ -5,6 +5,7 @@ use rsiot::message::{msg_types::Value, Deserialize, IMessage, Serialize};
 pub enum Message {
     Button(Value<bool>),
     SetLedColor(Value<RGB8>),
+    TestFromHttpServer(u16),
 }
 
 impl IMessage for Message {

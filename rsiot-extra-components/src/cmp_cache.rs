@@ -16,7 +16,7 @@ async fn fn_process<TMessage>(
 {
     while let Ok(msg) = input.recv().await {
         {
-            let mut lock = config.cache.lock().await;
+            let mut lock = config.cache.write().await;
             let key = msg.key().clone();
             let value = msg.clone();
             lock.insert(key, value);

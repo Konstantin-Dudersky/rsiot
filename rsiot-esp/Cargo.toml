@@ -23,11 +23,12 @@ opt-level = "z"
 tokio = { version = "*" }
 # serde = { version = "*" }
 esp-idf-svc = { version = "0.47.3", features = ["std"] }
+embedded-svc = { version = "*" }
 tracing = { version = "*" }
 
-rsiot-messages-core = { version = "0.0.21", path = "../rsiot-messages-core" }
 rsiot-component-core = { version = "0.0.21", path = "../rsiot-component-core" }
-rsiot-extra-components = { version = "0.0.22" }
+rsiot-extra-components = { version = "0.0.22", path = "../rsiot-extra-components" }
+rsiot-messages-core = { version = "0.0.21", path = "../rsiot-messages-core" }
 
 [build-dependencies]
 embuild = "0.31.3"

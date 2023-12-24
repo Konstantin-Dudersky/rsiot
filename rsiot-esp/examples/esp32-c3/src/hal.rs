@@ -116,25 +116,3 @@ fn gpio_level_to_bool(level: &Level) -> bool {
         Level::High => false,
     }
 }
-
-fn temperature(val: f32) -> String {
-    templated(format!("Chip temperature: {:.2}°C", val))
-}
-
-fn templated(content: impl AsRef<str>) -> String {
-    format!(
-        r#"
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>esp-rs web server</title>
-    </head>
-    <body>
-        {}
-    </body>
-</html>
-"#,
-        content.as_ref()
-    )
-}

@@ -25,7 +25,7 @@ async fn main() {
 
     let cache = cmp_cache::create_cache();
 
-    let logger_config = cmp_logger::Config {
+    let _logger_config = cmp_logger::Config {
         level: Level::INFO,
         header: "Logger: ".into(),
     };
@@ -34,6 +34,7 @@ async fn main() {
         fn_input: |_input: &mut fb_main::I, msg: &Message| match msg {
             Message::Button(_) => (),
             Message::SetLedColor(_) => (),
+            Message::TestFromHttpServer(_) => (),
         },
         fn_output: |output: &fb_main::Q| {
             let msg1 = Message::SetLedColor(Value::new(output.color));
@@ -48,13 +49,15 @@ async fn main() {
         cache: cache.clone(),
     };
 
-    let http_config = cmp_http_server_esp::Config { cache };
+    let http_config = cmp_http_server_esp::Config {
+        cache: cache.clone(),
+    };
 
     let mut chain = ComponentChain::<Message>::new(
         10,
         vec![
             cmp_plc::new(plc_config),
-            cmp_logger::new(logger_config),
+            // cmp_logger::new(logger_config),
             cmp_cache::new(cache_config),
             cmp_http_server_esp::new(http_config),
             cmp_external_fn_process::new(hal::Config {}, hal::hal),

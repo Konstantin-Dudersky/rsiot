@@ -486,10 +486,12 @@ dependencies = [
  "embedded-io-async",
  "enumset",
  "heapless",
+ "log",
  "no-std-net",
  "num_enum",
  "serde",
  "strum 0.25.0",
+ "strum_macros 0.25.3",
 ]
 
 [[package]]
@@ -523,6 +525,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "226c0da7462c13fb57e5cc9e0dc8f0635e7d27f276a3a7fd30054647f669007d"
 dependencies = [
  "enumset_derive",
+ "serde",
 ]
 
 [[package]]
@@ -808,6 +811,7 @@ dependencies = [
  "atomic-polyfill",
  "hash32",
  "rustc_version",
+ "serde",
  "spin",
  "stable_deref_trait",
 ]
@@ -1014,6 +1018,9 @@ name = "no-std-net"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1bcece43b12349917e096cddfa66107277f123e6c96a5aea78711dc601a47152"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "nom"
@@ -1218,19 +1225,7 @@ name = "rsiot-component-core"
 version = "0.0.21"
 dependencies = [
  "futures",
- "rsiot-messages-core 0.0.21",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "rsiot-component-core"
-version = "0.0.21"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "56830d880c3b80882a1c0eca55cb7d4b99a1749b704e2b40e13889a41a679631"
-dependencies = [
- "futures",
- "rsiot-messages-core 0.0.21 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rsiot-messages-core",
  "tokio",
  "tracing",
 ]
@@ -1239,11 +1234,12 @@ dependencies = [
 name = "rsiot-esp"
 version = "0.0.0"
 dependencies = [
+ "embedded-svc",
  "embuild",
  "esp-idf-svc",
- "rsiot-component-core 0.0.21",
+ "rsiot-component-core",
  "rsiot-extra-components",
- "rsiot-messages-core 0.0.21",
+ "rsiot-messages-core",
  "tokio",
  "tracing",
 ]
@@ -1251,11 +1247,9 @@ dependencies = [
 [[package]]
 name = "rsiot-extra-components"
 version = "0.0.22"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "12dba3a076622ac6f2a53a660432d65d39c9d0ed67e53513697fb9990f7f4243"
 dependencies = [
- "rsiot-component-core 0.0.21 (registry+https://github.com/rust-lang/crates.io-index)",
- "rsiot-messages-core 0.0.21 (registry+https://github.com/rust-lang/crates.io-index)",
+ "rsiot-component-core",
+ "rsiot-messages-core",
  "tokio",
  "tracing",
 ]
@@ -1263,17 +1257,6 @@ dependencies = [
 [[package]]
 name = "rsiot-messages-core"
 version = "0.0.21"
-dependencies = [
- "chrono",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "rsiot-messages-core"
-version = "0.0.21"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "862aedda97a565ff25e7ee32a2e11e19105fbdfdd2834f155c4726f55538a01b"
 dependencies = [
  "chrono",
  "serde",

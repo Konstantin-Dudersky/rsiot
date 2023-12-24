@@ -8,7 +8,7 @@ use crate::{eav, Error};
 /// Трейт, который необходимо реализовать на конкретном типе сообщения
 pub trait IMessage
 where
-    Self: Clone + Debug + DeserializeOwned + Send + Serialize,
+    Self: Clone + Debug + DeserializeOwned + Send + Serialize + Sync,
 {
     /// Ключ для сохранения в базе данных
     fn key(&self) -> String {
