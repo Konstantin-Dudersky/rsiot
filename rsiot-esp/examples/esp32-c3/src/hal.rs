@@ -84,11 +84,11 @@ async fn gpio_read<'a, TPin, TMessage>(
     TPin: InputPin,
 {
     loop {
-        driver.wait_for_any_edge().await.unwrap();
         let level = driver.get_level();
         let level = gpio_level_to_bool(&level);
         let msg = (fn_output)(&level);
         output.send(msg).await.unwrap();
+        driver.wait_for_any_edge().await.unwrap();
     }
 }
 
