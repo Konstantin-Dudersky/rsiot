@@ -35,6 +35,7 @@ async fn main() {
             Message::Button(_) => (),
             Message::SetLedColor(_) => (),
             Message::TestFromHttpServer(_) => (),
+            Message::Relay2(_) => (),
         },
         fn_output: |output: &fb_main::Q| {
             let msg1 = Message::SetLedColor(Value::new(output.color));

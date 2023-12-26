@@ -6,6 +6,7 @@ pub enum Message {
     Button(Value<bool>),
     SetLedColor(Value<RGB8>),
     TestFromHttpServer(u16),
+    Relay2(Value<bool>),
 }
 
 impl IMessage for Message {

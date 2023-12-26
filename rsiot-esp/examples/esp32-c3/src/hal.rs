@@ -2,14 +2,12 @@
 
 use esp_idf_svc::{
     eventloop::EspSystemEventLoop,
-    hal::{
-        gpio::{Input, InputPin, Level, PinDriver},
-        peripherals::Peripherals,
-    },
+    hal::{gpio::PinDriver, peripherals::Peripherals},
     wifi::{AccessPointConfiguration, BlockingWifi, Configuration, EspWifi},
 };
 use rgb::RGB8;
 use rsiot::message::{msg_types::Value, IMessage};
+use rsiot_esp::hardware_tasks::{gpio_input, gpio_output, GpioOutputConfig};
 use tokio::{
     sync::{broadcast, mpsc},
     task::JoinSet,
@@ -34,11 +32,26 @@ pub async fn hal(
 
     // читаем кнопку с gpio9
     let button = PinDriver::input(peripherals.pins.gpio9).unwrap();
-    set.spawn(gpio_read(
+    set.spawn(gpio_input(
         input.resubscribe(),
         output.clone(),
         button,
         |level| Message::Button(Value::new(*level)),
+    ));
+
+    // включаем реле
+    let relay = PinDriver::output(peripherals.pins.gpio2).unwrap();
+    set.spawn(gpio_output(
+        input.resubscribe(),
+        output.clone(),
+        GpioOutputConfig {
+            driver: relay,
+            fn_input: |msg| match msg {
+                Message::Relay2(val) => Some(val.value),
+                _ => None,
+            },
+            is_low_triggered: false,
+        },
     ));
 
     // отправляем код цвета на LED
@@ -75,23 +88,6 @@ fn wifi_acces_point<'a>(wifi: &mut BlockingWifi<EspWifi<'a>>) {
     info!("{:?}", wifi.get_capabilities());
 }
 
-async fn gpio_read<'a, TPin, TMessage>(
-    _input: broadcast::Receiver<TMessage>,
-    output: mpsc::Sender<TMessage>,
-    mut driver: PinDriver<'a, TPin, Input>,
-    fn_output: fn(&bool) -> TMessage,
-) where
-    TPin: InputPin,
-{
-    loop {
-        let level = driver.get_level();
-        let level = gpio_level_to_bool(&level);
-        let msg = (fn_output)(&level);
-        output.send(msg).await.unwrap();
-        driver.wait_for_any_edge().await.unwrap();
-    }
-}
-
 async fn ws2812<'a, TMessage>(
     mut input: broadcast::Receiver<TMessage>,
     _output: mpsc::Sender<TMessage>,
@@ -107,12 +103,5 @@ async fn ws2812<'a, TMessage>(
             None => continue,
         };
         driver.set_pixel(color).unwrap();
-    }
-}
-
-fn gpio_level_to_bool(level: &Level) -> bool {
-    match level {
-        Level::Low => true,
-        Level::High => false,
     }
 }
