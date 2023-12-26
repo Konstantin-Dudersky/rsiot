@@ -3,16 +3,16 @@
 use esp_idf_svc::{
     eventloop::EspSystemEventLoop,
     hal::{gpio::PinDriver, peripherals::Peripherals},
-    wifi::{AccessPointConfiguration, BlockingWifi, Configuration, EspWifi},
+    wifi::{AccessPointConfiguration, AuthMethod, ClientConfiguration, Configuration, EspWifi},
 };
 use rgb::RGB8;
-use rsiot::message::{msg_types::Value, IMessage};
-use rsiot_esp::hardware_tasks::{gpio_input, gpio_output, GpioOutputConfig};
 use tokio::{
     sync::{broadcast, mpsc},
     task::JoinSet,
 };
-use tracing::info;
+
+use rsiot::message::{msg_types::Value, IMessage};
+use rsiot_esp::hardware_tasks::{gpio_input, gpio_output, wifi_setup_mixed, GpioOutputConfig};
 
 use super::message::Message;
 use super::ws2812rmt::WS2812RMT;
@@ -30,16 +30,7 @@ pub async fn hal(
     let sys_loop = EspSystemEventLoop::take().unwrap();
     // let nvs = EspDefaultNvsPartition::take().unwrap();
 
-    // читаем кнопку с gpio9
-    let button = PinDriver::input(peripherals.pins.gpio9).unwrap();
-    set.spawn(gpio_input(
-        input.resubscribe(),
-        output.clone(),
-        button,
-        |level| Message::Button(Value::new(*level)),
-    ));
-
-    // включаем реле
+    // включаем реле на gpio2
     let relay = PinDriver::output(peripherals.pins.gpio2).unwrap();
     set.spawn(gpio_output(
         input.resubscribe(),
@@ -54,7 +45,7 @@ pub async fn hal(
         },
     ));
 
-    // отправляем код цвета на LED
+    // отправляем код цвета на LED gpio8
     let led = WS2812RMT::new(peripherals.pins.gpio8, peripherals.rmt.channel0).unwrap();
     set.spawn(ws2812(
         input.resubscribe(),
@@ -66,26 +57,35 @@ pub async fn hal(
         },
     ));
 
+    // читаем кнопку с gpio9
+    let button = PinDriver::input(peripherals.pins.gpio9).unwrap();
+    set.spawn(gpio_input(
+        input.resubscribe(),
+        output.clone(),
+        button,
+        |level| Message::Button(Value::new(*level)),
+    ));
+
     // настраиваем Wi-Fi
-    let mut wifi = BlockingWifi::wrap(
-        EspWifi::new(peripherals.modem, sys_loop.clone(), None).unwrap(),
+    let mut wifi = EspWifi::new(peripherals.modem, sys_loop.clone(), None).unwrap();
+    wifi_setup_mixed(
+        &mut wifi,
         sys_loop.clone(),
-    )
-    .unwrap();
-    wifi_acces_point(&mut wifi);
+        Configuration::Mixed(
+            ClientConfiguration {
+                ssid: "internet".into(),
+                password: "k33n3+Ik".into(),
+                auth_method: AuthMethod::WPA,
+                ..Default::default()
+            },
+            AccessPointConfiguration {
+                ssid: "test_esp_ap".into(),
+                ..Default::default()
+            },
+        ),
+    );
 
     while (set.join_next().await).is_some() {}
-}
-
-fn wifi_acces_point<'a>(wifi: &mut BlockingWifi<EspWifi<'a>>) {
-    let wifi_configuration: Configuration = Configuration::AccessPoint(AccessPointConfiguration {
-        ssid: "test_esp_ap".into(),
-        ..Default::default()
-    });
-    wifi.set_configuration(&wifi_configuration).unwrap();
-    wifi.start().unwrap();
-    info!("is wifi started: {:?}", wifi.is_started());
-    info!("{:?}", wifi.get_capabilities());
 }
 
 async fn ws2812<'a, TMessage>(
