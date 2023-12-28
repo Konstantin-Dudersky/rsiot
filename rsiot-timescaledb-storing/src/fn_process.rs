@@ -1,8 +1,5 @@
 use sqlx::{postgres::PgPoolOptions, query, Pool, Postgres};
-use tokio::{
-    sync::mpsc,
-    time::{sleep, Duration},
-};
+use tokio::time::{sleep, Duration};
 use tracing::{error, info, trace};
 use url::Url;
 
@@ -11,19 +8,14 @@ use rsiot_messages_core::IMessage;
 
 use crate::{config::Config, error::Error, model::Row};
 
-pub async fn fn_process<TMessage>(input: Input<TMessage>, _output: Output<TMessage>, config: Config)
-where
+pub async fn fn_process<TMessage>(
+    mut input: Input<TMessage>,
+    _output: Output<TMessage>,
+    config: Config,
+) where
     TMessage: IMessage,
 {
     info!("Start timescaledb-storing");
-    let mut input = match input {
-        Some(val) => val,
-        None => {
-            let err = "Input stream not set, exit";
-            error!(err);
-            return;
-        }
-    };
 
     loop {
         let result = task_main::<TMessage>(&mut input, &config.connection_string).await;
@@ -37,7 +29,7 @@ where
 }
 
 async fn task_main<TMessage>(
-    input: &mut mpsc::Receiver<TMessage>,
+    input: &mut Input<TMessage>,
     connection_string: &Url,
 ) -> Result<(), Error>
 where
@@ -47,7 +39,7 @@ where
         .max_connections(5)
         .connect(connection_string.as_str())
         .await?;
-    while let Some(msg) = input.recv().await {
+    while let Ok(msg) = input.recv().await {
         let msgs_eav = msg.into_eav();
         for msg in msgs_eav {
             let row: Row = msg.into();
