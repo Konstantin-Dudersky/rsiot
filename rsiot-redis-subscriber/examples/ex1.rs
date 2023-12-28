@@ -1,19 +1,21 @@
 //! Пример для проверки компонента
 //!
+//! Запуск:
+//!
+//! ```bash
+//! cargo run -p rsiot-redis-subscriber --example ex1
+//! ```
+//!
 //! Проверки:
 //!
-//! - через веб-интрефейс, в Pub/Sub, в канал `rsiot-redis-subscriber`
-//! записать сообщение {"Message0": 123}. В консоли должно прочитаться это
-//! сообщение
+//! - через веб-интрефейс, в Pub/Sub, в канал `rsiot-redis-subscriber` записать сообщение
+//! {"Message0": 123}. В консоли должно прочитаться это сообщение
 //!
-//! - через веб-интерфейс, перед запуском примера создать хеш с названием
-//! `rsiot-redis-subscriber`, задать ключ `Message0`. После запуска примера
-//! в консоли должно прочитаться это сообщение
+//! - через веб-интерфейс, перед запуском примера создать хеш с названием `rsiot-redis-subscriber`,
+//! задать ключ `Message0`. После запуска примера в консоли должно прочитаться это сообщение
 //!
-//! - корректный перезапуск. При отключении Redis, передачи неправильного
-//! сообщения в Pub/Sub
+//! - корректный перезапуск. При отключении Redis, передачи неправильного сообщения в Pub/Sub
 
-// use serde::{Deserialize, Serialize};
 use tokio::main;
 use tracing::Level;
 use tracing_subscriber::fmt;
@@ -28,14 +30,18 @@ use rsiot_redis_subscriber::cmp_redis_subscriber;
 async fn main() {
     fmt().init();
 
-    let mut chain = ComponentChain::<ExampleMessage>::new(100)
-        .add_cmp(cmp_redis_subscriber::new(cmp_redis_subscriber::Config {
-            url: Url::parse("redis://127.0.0.1:6379").unwrap(),
-            redis_channel: ExampleMessageChannel::Output,
-        }))
-        .add_cmp(cmp_logger::new(cmp_logger::Config {
-            level: Level::INFO,
-            header: "".into(),
-        }));
+    let mut chain = ComponentChain::<ExampleMessage>::new(
+        100,
+        vec![
+            cmp_redis_subscriber::new(cmp_redis_subscriber::Config {
+                url: Url::parse("redis://127.0.0.1:6379").unwrap(),
+                redis_channel: ExampleMessageChannel::Output,
+            }),
+            cmp_logger::new(cmp_logger::Config {
+                level: Level::INFO,
+                header: "".into(),
+            }),
+        ],
+    );
     chain.spawn().await;
 }

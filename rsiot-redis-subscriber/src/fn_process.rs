@@ -8,14 +8,10 @@ use tokio::{
 use tracing::{error, info, trace};
 use url::Url;
 
-use rsiot_component_core::{IComponent, Input, Output};
-use rsiot_extra_components::cmp_mpsc_to_mpsc;
+use rsiot_component_core::{Input, Output};
 use rsiot_messages_core::{IMessage, IMessageChannel};
 
-use crate::{
-    cmp_redis_subscriber::{self, Config},
-    error::Error,
-};
+use crate::{config::Config, error::Error};
 
 type TaskResult = Result<(), Error>;
 
@@ -29,14 +25,9 @@ pub async fn fn_process<TMessage, TMessageChannel>(
 {
     info!("Initialization. Config: {:?}", config);
 
-    // Создаем канал для пересылки сообщений на выход
-    let (stream_to_output_tx, stream_to_output_rx) = mpsc::channel::<TMessage>(100);
-    let _task_to_output =
-        cmp_mpsc_to_mpsc::create().set_and_spawn(Some(stream_to_output_rx), output);
-
     loop {
         info!("Starting");
-        let result = task_main(stream_to_output_tx.clone(), config.clone()).await;
+        let result = task_main(output.clone(), config.clone()).await;
         match result {
             Ok(_) => (),
             Err(err) => error!("{:?}", err),
@@ -48,7 +39,7 @@ pub async fn fn_process<TMessage, TMessageChannel>(
 
 async fn task_main<TMessage, TMessageChannel>(
     output: mpsc::Sender<TMessage>,
-    config: cmp_redis_subscriber::Config<TMessageChannel>,
+    config: Config<TMessageChannel>,
 ) -> TaskResult
 where
     TMessage: IMessage + 'static,
