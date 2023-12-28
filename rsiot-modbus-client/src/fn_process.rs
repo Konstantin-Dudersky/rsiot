@@ -1,16 +1,14 @@
 use std::{net::SocketAddr, sync::Arc, time::Instant};
 
 use tokio::{
-    spawn,
-    sync::{broadcast, mpsc, Mutex},
+    sync::Mutex,
     task::JoinSet,
     time::{sleep, Duration},
 };
 use tokio_modbus::{client::Context, prelude::*};
 use tracing::{debug, error, info, trace, warn};
 
-use rsiot_component_core::{IComponent, Input, Output};
-use rsiot_extra_components::{cmp_mpsc_to_mpsc, cmpbase_mpsc_to_broadcast};
+use rsiot_component_core::{Input, Output};
 use rsiot_messages_core::IMessage;
 
 use crate::{
@@ -26,19 +24,9 @@ pub async fn fn_process<TMessage>(
 ) where
     TMessage: IMessage + 'static,
 {
-    // Канал для распространения входного потока сообщений по порождаемым задачам
-    let (from_input_tx, _from_inpit_rx) = broadcast::channel::<TMessage>(100);
-    let _task_from_input = spawn(cmpbase_mpsc_to_broadcast::new(input, from_input_tx.clone()));
-
-    // Канал для сбора выходных потоков из порожденных задач в один
-    let (to_output_tx, to_output_rx) = mpsc::channel::<TMessage>(100);
-    let _task_to_output = cmp_mpsc_to_mpsc::create().set_and_spawn(Some(to_output_rx), output);
-
     loop {
         info!("Starting modbus client, configuration: {:?}", config);
-        let res =
-            task_main::<TMessage>(from_input_tx.clone(), to_output_tx.clone(), config.clone())
-                .await;
+        let res = task_main::<TMessage>(input.resubscribe(), output.clone(), config.clone()).await;
         match res {
             Ok(_) => (),
             Err(err) => {
@@ -51,8 +39,8 @@ pub async fn fn_process<TMessage>(
 }
 
 async fn task_main<TMessage>(
-    input: broadcast::Sender<TMessage>,
-    output: mpsc::Sender<TMessage>,
+    input: Input<TMessage>,
+    output: Output<TMessage>,
     client_config: Config<TMessage>,
 ) -> Result<(), Errors>
 where
@@ -86,7 +74,7 @@ where
     // Запускаем задачи запросов на основе входного потока сообщений
     for item in input_config {
         set.spawn(task_input_request(
-            input.subscribe(),
+            input.resubscribe(),
             output.clone(),
             ctx.clone(),
             item,
@@ -100,7 +88,7 @@ where
 
 /// Задача обработки периодического запроса
 async fn task_periodic_request<TMessage>(
-    output: mpsc::Sender<TMessage>,
+    output: Output<TMessage>,
     ctx: Arc<Mutex<Context>>,
     periodic_config: config::PeriodicConfig<TMessage>,
 ) -> Result_<()>
@@ -130,8 +118,8 @@ where
 
 /// Задача обработки запроса на основе входного потока сообщений
 async fn task_input_request<TMessage>(
-    mut input: broadcast::Receiver<TMessage>,
-    output: mpsc::Sender<TMessage>,
+    mut input: Input<TMessage>,
+    output: Output<TMessage>,
     ctx: Arc<Mutex<Context>>,
     input_config: config::InputConfig<TMessage>,
 ) -> Result_<()>
@@ -178,7 +166,7 @@ async fn modbus_request(
 
 /// Обратываем ответ modbus
 async fn modbus_response<TMessage>(
-    output: mpsc::Sender<TMessage>,
+    output: Output<TMessage>,
     request: &config::Request,
     response: &Result<config::Response, Errors>,
     fn_on_success: config::FnOnSuccess<TMessage>,

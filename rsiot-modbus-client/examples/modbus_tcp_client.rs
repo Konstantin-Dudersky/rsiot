@@ -5,6 +5,12 @@
 //! Выполняется две операции:
 //! - раз в 2 секунды на сервер в регистр 0 записывается значение счетчика (`input_config`)
 //! - раз в 2 секунды считывается значение регистра 0 (`periodic_config`) и отправляется в логгер
+//!
+//! Запуск:
+//!
+//! ```bash
+//! cargo run -p rsiot-modbus-client --example modbus_tcp_client
+//! ```
 
 use std::net::{IpAddr, Ipv4Addr};
 
@@ -20,7 +26,8 @@ use rsiot_modbus_client::cmp_modbus_client::{self, *};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum Messages {
-    Value0(f64),
+    ValueWrite(f64),
+    ValueRead(f64),
 }
 
 impl IMessage for Messages {
@@ -41,7 +48,8 @@ async fn main() {
         unit_id: 1,
         input_config: vec![InputConfig {
             fn_input: |msg| match msg {
-                Messages::Value0(val) => Some(Request::WriteSingleRegister(0, *val as u16)),
+                Messages::ValueWrite(val) => Some(Request::WriteSingleRegister(0, *val as u16)),
+                Messages::ValueRead(_) => None,
             },
             fn_on_success: |_data| vec![],
             fn_on_failure: || vec![],
@@ -52,7 +60,7 @@ async fn main() {
             fn_on_success: |data| {
                 let mut msgs = vec![];
                 if let Response::U16(data) = data {
-                    msgs.push(Messages::Value0(data[0] as f64));
+                    msgs.push(Messages::ValueRead(data[0] as f64));
                 }
                 msgs
             },
@@ -61,23 +69,27 @@ async fn main() {
     });
 
     let mut counter = 0.0;
-    let mut chain = ComponentChain::new(100)
-        // Периодическое генерирование сообщения для записи счетчика на сервер
-        .add_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
-            period: Duration::from_secs(2),
-            fn_periodic: move || {
-                let msg = Messages::Value0(counter);
-                counter += 1.0;
-                vec![msg]
-            },
-        }))
-        // Клиент modbus
-        .add_cmp(cmp_modbus_client::new(modbus_client_config))
-        // Вывод сообщений в лог
-        .add_cmp(cmp_logger::new(cmp_logger::Config {
-            level: Level::INFO,
-            header: "".into(),
-        }));
+    let mut chain = ComponentChain::new(
+        100,
+        vec![
+            // Периодическое генерирование сообщения для записи счетчика на сервер
+            cmp_inject_periodic::new(cmp_inject_periodic::Config {
+                period: Duration::from_secs(2),
+                fn_periodic: move || {
+                    let msg = Messages::ValueWrite(counter);
+                    counter += 1.0;
+                    vec![msg]
+                },
+            }),
+            // Клиент modbus
+            cmp_modbus_client::new(modbus_client_config),
+            // Вывод сообщений в лог
+            cmp_logger::new(cmp_logger::Config {
+                level: Level::INFO,
+                header: "".into(),
+            }),
+        ],
+    );
 
     chain.spawn().await;
 }

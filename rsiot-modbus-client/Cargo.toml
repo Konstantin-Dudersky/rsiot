@@ -20,7 +20,8 @@ url = { workspace = true }
 rsiot-component-core = { workspace = true }
 rsiot-components-config = { workspace = true }
 rsiot-messages-core = { workspace = true }
-rsiot-extra-components = { workspace = true }
 
 [dev-dependencies]
 tracing-subscriber = { workspace = true }
+
+rsiot-extra-components = { workspace = true }

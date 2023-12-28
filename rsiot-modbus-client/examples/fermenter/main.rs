@@ -15,12 +15,16 @@ async fn main() {
     // логгирование
     fmt().with_max_level(LevelFilter::INFO).init();
 
-    let mut chain = ComponentChain::new(100)
-        .add_cmp(cmp_modbus_client::new(config::config()))
-        .add_cmp(cmp_logger::new(cmp_logger::Config {
-            level: Level::INFO,
-            header: "".into(),
-        }));
+    let mut chain = ComponentChain::new(
+        100,
+        vec![
+            cmp_modbus_client::new(config::config()),
+            cmp_logger::new(cmp_logger::Config {
+                level: Level::INFO,
+                header: "".into(),
+            }),
+        ],
+    );
 
     chain.spawn().await;
 }
