@@ -5,59 +5,43 @@ use futures_util::{
 use tokio::{
     net::TcpStream,
     spawn,
-    sync::{broadcast, mpsc},
     task::JoinHandle,
     time::{sleep, Duration},
     try_join,
 };
 use tokio_tungstenite::{connect_async, tungstenite::Message, MaybeTlsStream, WebSocketStream};
-use tracing::{error, info};
+use tracing::{error, info, warn};
 
-use rsiot_component_core::{IComponent, Input, Output};
-use rsiot_extra_components::{cmp_mpsc_to_mpsc, cmpbase_mpsc_to_broadcast};
+use rsiot_component_core::{Input, Output};
 use rsiot_messages_core::IMessage;
 
-use crate::{cmp_websocket_client, Error};
+use crate::{config::Config, Error};
 
-pub async fn function<TMessage>(
+pub async fn fn_process<TMessage>(
     input: Input<TMessage>,
     output: Output<TMessage>,
-    config: cmp_websocket_client::Config<TMessage>,
+    config: Config<TMessage>,
 ) where
     TMessage: IMessage + 'static,
 {
     info!("cmp_websocket_client starting");
 
-    let (from_server_tx, from_server_rx) = mpsc::channel::<TMessage>(100);
-    let (input_broadcast_tx, _input_broadcast_rx) = broadcast::channel::<TMessage>(100);
-    let input_broadcast_tx_clone = input_broadcast_tx.clone();
-
-    let _output_stream =
-        cmp_mpsc_to_mpsc::create::<TMessage>().set_and_spawn(Some(from_server_rx), output);
-
-    spawn(cmpbase_mpsc_to_broadcast::new(input, input_broadcast_tx));
-
     loop {
-        let res = task_connect(
-            input_broadcast_tx_clone.subscribe(),
-            from_server_tx.clone(),
-            config.clone(),
-        )
-        .await;
+        let res = task_connect(input.resubscribe(), output.clone(), config.clone()).await;
         match res {
             Ok(_) => (),
             Err(err) => error!("{:?}", err),
         }
-        info!("Restaring...");
+        warn!("Restaring...");
         sleep(Duration::from_secs(2)).await;
     }
 }
 
 /// Подключаемся к серверу и запускаем потоки получения и отправки
 async fn task_connect<TMessage>(
-    input: broadcast::Receiver<TMessage>,
-    output: mpsc::Sender<TMessage>,
-    config: cmp_websocket_client::Config<TMessage>,
+    input: Input<TMessage>,
+    output: Output<TMessage>,
+    config: Config<TMessage>,
 ) -> Result<(), Error>
 where
     TMessage: IMessage + 'static,
@@ -71,7 +55,7 @@ where
 
 /// Задача отправки данных на сервер Websocket
 async fn task_send<TMessage>(
-    mut input: broadcast::Receiver<TMessage>,
+    mut input: Input<TMessage>,
     mut write: SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>,
     fn_send: fn(TMessage) -> Option<String>,
 ) -> Result<(), Error>
@@ -90,7 +74,7 @@ where
 
 /// Задача приема данных с сервера Websocket
 async fn task_recv<TMessage>(
-    stream_output: mpsc::Sender<TMessage>,
+    output: Output<TMessage>,
     mut read: SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>,
     fn_recv: fn(String) -> Vec<TMessage>,
 ) -> Result<(), Error>
@@ -101,7 +85,7 @@ where
         let data = msg?.into_text()?;
         let msgs = (fn_recv)(data);
         for msg in msgs {
-            stream_output.send(msg).await?;
+            output.send(msg).await?;
         }
     }
     Ok(())
