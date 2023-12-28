@@ -25,12 +25,11 @@ pub async fn handle_ws_connection<TMessage>(
     output: mpsc::Sender<TMessage>,
     config: Config<TMessage>,
     stream_and_addr: (TcpStream, SocketAddr),
-    cache: CacheType<TMessage>,
 ) where
     TMessage: IMessage + 'static,
 {
     let addr = stream_and_addr.1;
-    let result = _handle_ws_connection(input, output, stream_and_addr, cache, config).await;
+    let result = _handle_ws_connection(input, output, stream_and_addr, config).await;
     match result {
         Ok(_) => (),
         Err(err) => {
@@ -43,7 +42,6 @@ async fn _handle_ws_connection<TMessage>(
     input: broadcast::Receiver<TMessage>,
     output: mpsc::Sender<TMessage>,
     stream_and_addr: (TcpStream, SocketAddr),
-    cache: CacheType<TMessage>,
     config: Config<TMessage>,
 ) -> Result<(), Errors>
 where
@@ -59,7 +57,7 @@ where
     let mut set = JoinSet::new();
 
     // Подготавливаем кеш для отправки
-    set.spawn(send_prepare_cache(prepare_tx.clone(), cache.clone()));
+    set.spawn(send_prepare_cache(prepare_tx.clone(), config.cache.clone()));
     // Подготавливаем новые сообщения для отправки
     set.spawn(send_prepare_new_msgs(input, prepare_tx.clone()));
     // Отправляем клиенту
@@ -83,7 +81,7 @@ where
 {
     let local_cache: Vec<TMessage>;
     {
-        let lock = cache.lock().await;
+        let lock = cache.read().await;
         local_cache = lock.values().cloned().collect();
     }
     for msg in local_cache {
@@ -106,7 +104,7 @@ where
     Ok(())
 }
 
-/// Отпрвляем данные клиенту
+/// Отправляем данные клиенту
 async fn send_to_client<TMessage>(
     mut input: mpsc::Receiver<TMessage>,
     mut ws_stream_output: SplitSink<WebSocketStream<TcpStream>, Message>,
@@ -122,6 +120,7 @@ async fn send_to_client<TMessage>(
     }
     Ok(())
 }
+
 /// Получение данных от клиента
 async fn recv<TMessage>(
     mut ws_stream_input: SplitStream<WebSocketStream<TcpStream>>,

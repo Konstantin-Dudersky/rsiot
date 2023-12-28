@@ -14,9 +14,9 @@
 mod async_task_utils;
 mod config;
 mod errors;
+mod fn_process;
 mod handle_ws_connection;
 mod new;
-mod process;
 
 /// Компонент для подключения через websocket server.
 pub mod cmp_websocket_server {
