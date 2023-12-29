@@ -1,3 +1,9 @@
+//! Запуск:
+//!
+//! ```bash
+//! cargo run -p rsiot-http-client --example http_client
+//! ```
+
 use std::collections::HashMap;
 
 use rsiot_component_core::ComponentChain;
@@ -22,7 +28,7 @@ enum Message {
 
 impl IMessage for Message {
     fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
-        todo!()
+        vec![]
     }
 }
 
@@ -73,19 +79,23 @@ async fn main() {
         }],
     };
 
-    let mut chain = ComponentChain::new(100)
-        .add_cmp(cmp_inject_periodic::new(cmp_inject_periodic::Config {
-            period: Duration::from_secs(2),
-            fn_periodic: move || {
-                let msg = Message::HttpMethodsGetOnEventRequest;
-                vec![msg]
-            },
-        }))
-        .add_cmp(cmp_http_client::new(http_config))
-        .add_cmp(cmp_logger::new(cmp_logger::Config {
-            level: Level::INFO,
-            header: "HTTP response".into(),
-        }));
+    let mut chain = ComponentChain::new(
+        100,
+        vec![
+            cmp_inject_periodic::new(cmp_inject_periodic::Config {
+                period: Duration::from_secs(2),
+                fn_periodic: move || {
+                    let msg = Message::HttpMethodsGetOnEventRequest;
+                    vec![msg]
+                },
+            }),
+            cmp_http_client::new(http_config),
+            cmp_logger::new(cmp_logger::Config {
+                level: Level::INFO,
+                header: "HTTP response".into(),
+            }),
+        ],
+    );
 
     chain.spawn().await;
 }

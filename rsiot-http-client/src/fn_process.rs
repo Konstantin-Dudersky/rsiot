@@ -2,16 +2,13 @@ use std::time::Duration;
 
 use reqwest::{Client, Response, StatusCode};
 use tokio::{
-    spawn,
-    sync::{broadcast, mpsc},
     task::JoinSet,
     time::{sleep, Instant},
 };
 use tracing::{error, info};
 use url::Url;
 
-use rsiot_component_core::{IComponent, Input, Output};
-use rsiot_extra_components::{cmp_mpsc_to_mpsc, cmpbase_mpsc_to_broadcast};
+use rsiot_component_core::{Input, Output};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::config, error::Error, types::Result_};
@@ -25,18 +22,8 @@ pub async fn process<TMessage>(
 {
     info!("Starting http-client, configuration: {:?}", config);
 
-    // Канал для распространения входного потока сообщений по порождаемым задачам
-    let (from_input_tx, _from_inpit_rx) = broadcast::channel::<TMessage>(100);
-    let _task_from_input = spawn(cmpbase_mpsc_to_broadcast::new(input, from_input_tx.clone()));
-
-    // Канал для сбора выходных потоков из порожденных задач в один
-    let (to_output_tx, to_output_rx) = mpsc::channel::<TMessage>(100);
-    let _task_to_output = cmp_mpsc_to_mpsc::create().set_and_spawn(Some(to_output_rx), output);
-
     loop {
-        let res =
-            task_main::<TMessage>(from_input_tx.clone(), to_output_tx.clone(), config.clone())
-                .await;
+        let res = task_main::<TMessage>(input.resubscribe(), output.clone(), config.clone()).await;
         match res {
             Ok(_) => (),
             Err(err) => {
@@ -50,8 +37,8 @@ pub async fn process<TMessage>(
 
 /// Основная задача
 async fn task_main<TMessage>(
-    input: broadcast::Sender<TMessage>,
-    output: mpsc::Sender<TMessage>,
+    input: Input<TMessage>,
+    output: Output<TMessage>,
     config: config::Config<TMessage>,
 ) -> Result_<(), TMessage>
 where
@@ -70,7 +57,7 @@ where
     // Запускаем задачи запросов на основе входного потока сообщений
     for item in config.requests_input {
         let future = task_input_request(
-            input.subscribe(),
+            input.resubscribe(),
             output.clone(),
             config.connection_config.base_url.clone(),
             item,
@@ -85,7 +72,7 @@ where
 
 /// Задача обработки периодического запроса
 async fn task_periodic_request<TMessage>(
-    output: mpsc::Sender<TMessage>,
+    output: Output<TMessage>,
     config: config::RequestPeriodic<TMessage>,
     url: Url,
 ) -> Result_<(), TMessage>
@@ -118,8 +105,8 @@ where
 
 /// Задача обработки запросов на основе входящего потока сообщений
 async fn task_input_request<TMessage>(
-    mut input: broadcast::Receiver<TMessage>,
-    output: mpsc::Sender<TMessage>,
+    mut input: Input<TMessage>,
+    output: Output<TMessage>,
     url: Url,
     config: config::RequestInput<TMessage>,
 ) -> Result_<(), TMessage>
