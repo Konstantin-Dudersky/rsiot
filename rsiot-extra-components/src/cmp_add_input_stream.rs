@@ -1,26 +1,41 @@
 //! Компонент для добавления сообщений из побочного потока
 
-use tokio::sync::broadcast;
+use tokio::task::JoinSet;
 
 use rsiot_component_core::{Component, Input, Output};
 use rsiot_messages_core::IMessage;
 
-use super::cmpbase_many_mpsc_to_mpsc;
-
 async fn fn_process<TMessage>(
-    input: Input<TMessage>,
+    mut input: Input<TMessage>,
     output: Output<TMessage>,
-    config: Config<TMessage>,
+    mut config: Config<TMessage>,
 ) where
     TMessage: IMessage + 'static,
 {
-    cmpbase_many_mpsc_to_mpsc::new(vec![input, config.channel], output).await;
+    let mut task_set = JoinSet::new();
+
+    let output_clone = output.clone();
+    task_set.spawn(async move {
+        while let Ok(msg) = input.recv().await {
+            output_clone.send(msg).await.unwrap();
+        }
+    });
+
+    task_set.spawn(async move {
+        while let Ok(msg) = config.channel.recv().await {
+            output.send(msg).await.unwrap();
+        }
+    });
+
+    while let Some(res) = task_set.join_next().await {
+        res.unwrap();
+    }
 }
 
 /// Настройки
 #[derive(Debug)]
 pub struct Config<TMessage> {
-    pub channel: broadcast::Receiver<TMessage>,
+    pub channel: Input<TMessage>,
 }
 
 /// Компонент для добавления сообщений из побочного потока

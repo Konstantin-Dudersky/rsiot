@@ -1,4 +1,4 @@
-mod cmpbase_mpsc_to_broadcast;
+pub mod cmpbase_mpsc_to_broadcast;
 mod component;
 mod component_chain;
 pub mod component_example;

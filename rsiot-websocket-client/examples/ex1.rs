@@ -16,8 +16,8 @@ use rsiot_websocket_client::cmp_websocket_client;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 enum Message {
-    MessageSend(f64),
-    MessageRecv(f64),
+    Send(f64),
+    Recv(f64),
     Tick(u64),
 }
 
@@ -39,7 +39,7 @@ async fn main() {
             cmp_inject_periodic::new(cmp_inject_periodic::Config {
                 period: Duration::from_secs(2),
                 fn_periodic: move || {
-                    let msg = Message::MessageSend(counter);
+                    let msg = Message::Send(counter);
                     counter += 1.0;
                     vec![msg]
                 },
@@ -61,31 +61,29 @@ async fn main() {
 
 fn fn_send(msg: Message) -> Option<String> {
     match msg {
-        Message::MessageSend(_) => Some(msg.to_json().unwrap()),
-        Message::MessageRecv(_) => None,
+        Message::Send(_) => Some(msg.to_json().unwrap()),
+        Message::Recv(_) => None,
         Message::Tick(_) => None,
     }
 }
 
 fn fn_recv(data: String) -> Vec<Message> {
     // сообщение tick ...
-    match parse_tick(&data) {
-        Some(val) => return vec![val],
-        None => (),
+    if let Some(val) = parse_tick(&data) {
+        return vec![val];
     }
-    match Message::from_json(&data) {
-        Ok(msg) => match msg {
-            Message::MessageSend(val) => return vec![Message::MessageRecv(val)],
-            Message::MessageRecv(_) => return vec![],
+    if let Ok(msg) = Message::from_json(&data) {
+        match msg {
+            Message::Send(val) => return vec![Message::Recv(val)],
+            Message::Recv(_) => return vec![],
             Message::Tick(_) => return vec![],
-        },
-        Err(_) => (),
-    };
+        }
+    }
     vec![]
 }
 
-fn parse_tick(data: &String) -> Option<Message> {
-    let parts: Vec<&str> = data.split(" ").collect();
+fn parse_tick(data: &str) -> Option<Message> {
+    let parts: Vec<&str> = data.split(' ').collect();
     if parts.len() != 2 {
         return None;
     }

@@ -15,3 +15,4 @@ http = { workspace = true }
 url = { workspace = true }
 
 rsiot-messages-core = { workspace = true }
+rsiot-extra-components = { workspace = true }

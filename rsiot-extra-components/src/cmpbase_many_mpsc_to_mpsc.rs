@@ -1,10 +1,9 @@
 use tokio::{spawn, sync::mpsc};
 
-use rsiot_component_core::{Input, Output};
 use rsiot_messages_core::IMessage;
 
 /// Компонент для объединения нескольких потоков в один
-pub async fn new<TMessage>(inputs: Vec<Input<TMessage>>, output: Output<TMessage>)
+pub async fn new<TMessage>(inputs: Vec<mpsc::Receiver<TMessage>>, output: mpsc::Sender<TMessage>)
 where
     TMessage: IMessage + 'static,
 {
@@ -13,7 +12,7 @@ where
     for mut stream in inputs {
         let tx_clone = tx.clone();
         spawn(async move {
-            while let Ok(msg) = stream.recv().await {
+            while let Some(msg) = stream.recv().await {
                 tx_clone.send(msg).await.unwrap();
             }
         });

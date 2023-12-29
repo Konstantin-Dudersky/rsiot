@@ -1,3 +1,4 @@
+use rsiot_extra_components::cmp_cache::CacheType;
 use rsiot_messages_core::IMessage;
 
 /// Конфигурация Websocket-сервера
@@ -24,4 +25,7 @@ where
     /// |data: &str| TMessage::from_json(data).ok()
     /// ```
     pub fn_output: fn(&str) -> Option<TMessage>,
+
+    /// Кеш
+    pub cache: CacheType<TMessage>,
 }

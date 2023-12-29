@@ -1,0 +1,16 @@
+TODO Собрать приложение leptos + tailwind + tw-elements. Собрать с помощью tauri под web и android.
+Если не получиться, то придется учить SolidJS.
+
+TODO - создать пробную мнемосхему в svg с возможностью изменения фона элемента через leptos
+
+TODO - всплывающие окна как в SCADA
+
+TODO - leptos + plotlyjs?
+
+TODO - tauri push уведомления
+
+TODO - перенести CacheType в component-core
+
+TODO - переиманость Input в InputComponent, Output -> OutputComponent
+
+TODO - ComponentChain -> ComponentCollection ?

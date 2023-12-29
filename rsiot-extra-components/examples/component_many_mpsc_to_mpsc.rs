@@ -13,7 +13,7 @@ use tracing::info;
 enum Message {
     Message0(f64),
     Message1(f64),
-    CombineMessage(f64, f64),
+    Combine(f64, f64),
 }
 
 impl IMessage for Message {
@@ -51,8 +51,8 @@ async fn main() {
     });
 
     let main_task = spawn(cmpbase_many_mpsc_to_mpsc::new::<Message>(
-        vec![Some(steam1_rx), Some(steam2_rx)],
-        Some(stream_out_tx),
+        vec![steam1_rx, steam2_rx],
+        stream_out_tx,
     ));
 
     let _end_task = spawn(async move {

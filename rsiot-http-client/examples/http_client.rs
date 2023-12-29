@@ -19,6 +19,7 @@ use rsiot_messages_core::IMessage;
 
 //------------------------------------------------------------------------------
 
+#[allow(clippy::enum_variant_names)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 enum Message {
     HttpMethodsGetPeriodicRespone(HttpMethodsGet),
@@ -66,16 +67,16 @@ async fn main() {
                 let res = from_str::<HttpMethodsGet>(body).unwrap();
                 vec![Message::HttpMethodsGetOnEventResponse(res)]
             },
-            on_failure: || vec![],
+            on_failure: Vec::new,
         }],
         requests_periodic: vec![config::RequestPeriodic {
             period: Duration::from_secs(5),
             http_param: config::HttpParam::Get("get".to_string()),
             on_success: |body| {
-                let res = from_str::<HttpMethodsGet>(&body).unwrap();
+                let res = from_str::<HttpMethodsGet>(body).unwrap();
                 vec![Message::HttpMethodsGetPeriodicRespone(res)]
             },
-            on_failure: || vec![],
+            on_failure: Vec::new,
         }],
     };
 

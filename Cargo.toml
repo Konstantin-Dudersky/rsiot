@@ -28,7 +28,7 @@ edition = "2021"
 keywords = ["iot"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/Konstantin-Dudersky/rsiot"
-rust-version = "1.74.1"
+rust-version = "1.75.0"
 
 
 [workspace.dependencies]

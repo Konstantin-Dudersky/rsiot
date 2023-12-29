@@ -13,12 +13,12 @@ use tracing::info;
 enum Message {
     Message0(f64),
     Message1(f64),
-    CombineMessage(f64, f64),
+    Combine(f64, f64),
 }
 
 impl IMessage for Message {
     fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
-        todo!()
+        vec![]
     }
 }
 

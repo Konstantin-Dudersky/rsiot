@@ -16,7 +16,7 @@ pub use error::Error;
 /// Потребители логов:
 /// - stdout (в режиме Debug)
 /// - Grafana Loki
-#[cfg(any(target_arch = "x86_64"))]
+#[cfg(target_arch = "x86_64")]
 pub async fn configure_logging(loki_url: &Url) -> Result<(), Error> {
     use tokio::spawn;
     use tracing_subscriber::{prelude::*, EnvFilter};

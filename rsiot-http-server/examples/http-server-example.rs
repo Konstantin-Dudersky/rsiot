@@ -18,7 +18,7 @@ use rsiot_messages_core::IMessage;
 enum Message {
     Message0(f64),
     Message1(f64),
-    CombineMessage(f64, f64),
+    Combine(f64, f64),
 }
 
 impl IMessage for Message {

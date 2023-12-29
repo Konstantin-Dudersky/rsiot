@@ -52,7 +52,7 @@ async fn main() {
                 Messages::ValueRead(_) => None,
             },
             fn_on_success: |_data| vec![],
-            fn_on_failure: || vec![],
+            fn_on_failure: Vec::new,
         }],
         periodic_config: vec![PeriodicConfig {
             period: Duration::from_secs(2),
@@ -64,7 +64,7 @@ async fn main() {
                 }
                 msgs
             },
-            fn_on_failure: || vec![],
+            fn_on_failure: Vec::new,
         }],
     });
 

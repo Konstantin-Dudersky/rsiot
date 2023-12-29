@@ -36,9 +36,9 @@ mod tests {
     #[test]
     fn test_is_wrong_len() {
         let data = [0, 1, 2, 3, 4];
-        assert_eq!(is_wrong_len(&data[0..=1], 0), true);
-        assert_eq!(is_wrong_len(&data[0..=1], 1), true);
-        assert_eq!(is_wrong_len(&data[0..=1], 2), false);
-        assert_eq!(is_wrong_len(&data[0..=1], 3), true);
+        assert!(is_wrong_len(&data[0..=1], 0));
+        assert!(is_wrong_len(&data[0..=1], 1));
+        assert!(!is_wrong_len(&data[0..=1], 2));
+        assert!(is_wrong_len(&data[0..=1], 3));
     }
 }

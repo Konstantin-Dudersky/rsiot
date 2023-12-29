@@ -28,10 +28,7 @@ async fn main() {
         }
     });
 
-    let main_task = spawn(cmpbase_mpsc_to_broadcast::new(
-        Some(mpsc_rcv),
-        broadcast_send,
-    ));
+    let main_task = spawn(cmpbase_mpsc_to_broadcast::new(mpsc_rcv, broadcast_send));
 
     let _end_task_1 = spawn(async move {
         while let Ok(res) = broadcast_rcv_1.recv().await {

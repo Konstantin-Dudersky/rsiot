@@ -12,7 +12,7 @@ use tracing::info;
 /// Запустить Wi-Fi в комбинированном режиме.
 ///
 /// TODO - обработка ошибок, перезапуск
-pub fn wifi_setup_mixed<'a>(
+pub fn wifi_setup<'a>(
     wifi: &mut EspWifi<'a>,
     sys_loop: EspEventLoop<System>,
     configuration: Configuration,
@@ -22,10 +22,16 @@ pub fn wifi_setup_mixed<'a>(
     wifi.start().unwrap();
     info!("is wifi started: {:?}", wifi.is_started());
     info!("{:?}", wifi.get_capabilities());
-    wifi.connect().unwrap();
-    info!("Wifi connected");
-    wifi.wait_netif_up().unwrap();
-    info!("Wifi netif up");
-    let ip_info = wifi.wifi().sta_netif().get_ip_info().unwrap();
-    info!("Wifi DHCP info: {:?}", ip_info);
+
+    // Подключаемся к внешней точке Wi-Fi
+    if matches!(configuration, Configuration::Client(_))
+        || matches!(configuration, Configuration::Mixed(_, _))
+    {
+        wifi.connect().unwrap();
+        info!("Wifi connected");
+        wifi.wait_netif_up().unwrap();
+        info!("Wifi netif up");
+        let ip_info = wifi.wifi().sta_netif().get_ip_info().unwrap();
+        info!("Wifi DHCP info: {:?}", ip_info);
+    }
 }

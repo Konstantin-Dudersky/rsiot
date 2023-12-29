@@ -13,7 +13,7 @@ pub enum Error<TMessage> {
     BindPort(StdIoError),
     UnknownMessageKey(String),
     Message(MessageError),
-    ChannelSendError(SendError<TMessage>),
+    ChannelSend(SendError<TMessage>),
 }
 
 impl<TMessage> From<MessageError> for Error<TMessage> {
@@ -24,7 +24,7 @@ impl<TMessage> From<MessageError> for Error<TMessage> {
 
 impl<TMessage> From<SendError<TMessage>> for Error<TMessage> {
     fn from(value: SendError<TMessage>) -> Self {
-        Self::ChannelSendError(value)
+        Self::ChannelSend(value)
     }
 }
 
@@ -34,7 +34,7 @@ impl<TMessage> IntoResponse for Error<TMessage> {
         let body = match self {
             Error::AxumServe(err) => format!("{:?}", err),
             Error::BindPort(err) => format!("{:?}", err),
-            Error::ChannelSendError(err) => format!("{:?}", err),
+            Error::ChannelSend(err) => format!("{:?}", err),
             Error::Message(err) => format!("{:?}", err),
             Error::UnknownMessageKey(key) => {
                 format!("Unknown message key: {}", key)
