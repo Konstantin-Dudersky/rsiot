@@ -9,7 +9,7 @@ do {
 }
 
 do {
-    cd rsiot-gpio-read-esp
+    cd rsiot-esp
     cargo rdme --force
 }
 

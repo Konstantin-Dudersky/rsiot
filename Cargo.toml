@@ -82,20 +82,20 @@ quote = "1.0"
 syn = "2.0"
 
 
-rsiot-component-core = { version = "0.0.21", path = "./rsiot-component-core" }
-rsiot-components-config = { version = "0.0.23", path = "./rsiot-components-config" }
+rsiot-component-core = { version = "0.0.26", path = "./rsiot-component-core" }
+rsiot-components-config = { version = "0.0.26", path = "./rsiot-components-config" }
 rsiot-env-vars = { version = "0.0.21", path = "./rsiot-env-vars" }
-rsiot-extra-components = { version = "0.0.22", path = "./rsiot-extra-components" }
+rsiot-extra-components = { version = "0.0.26", path = "./rsiot-extra-components" }
 rsiot-esp = { version = "0.0.0", path = "./rsiot-esp" }
-rsiot-http-client = { version = "0.0.23", path = "./rsiot-http-client" }
-rsiot-http-server = { version = "0.0.23", path = "./rsiot-http-server" }
-rsiot-logging = { version = "0.0.25", path = "./rsiot-logging" }
+rsiot-http-client = { version = "0.0.26", path = "./rsiot-http-client" }
+rsiot-http-server = { version = "0.0.26", path = "./rsiot-http-server" }
+rsiot-logging = { version = "0.0.26", path = "./rsiot-logging" }
 rsiot-message-router = { version = "0.0.21", path = "./rsiot-message-router" }
-rsiot-messages-core = { version = "0.0.21", path = "./rsiot-messages-core" }
-rsiot-modbus-client = { version = "0.0.23", path = "./rsiot-modbus-client" }
-rsiot-plc = { version = "0.0.0", path = "./rsiot-plc" }
-rsiot-redis-publisher = { version = "0.0.23", path = "./rsiot-redis-publisher" }
-rsiot-redis-subscriber = { version = "0.0.23", path = "./rsiot-redis-subscriber" }
-rsiot-timescaledb-storing = { version = "0.0.23", path = "./rsiot-timescaledb-storing" }
-rsiot-websocket-client = { version = "0.0.23", path = "./rsiot-websocket-client" }
-rsiot-websocket-server = { version = "0.0.23", path = "./rsiot-websocket-server" }
+rsiot-messages-core = { version = "0.0.26", path = "./rsiot-messages-core" }
+rsiot-modbus-client = { version = "0.0.26", path = "./rsiot-modbus-client" }
+rsiot-plc = { version = "0.0.26", path = "./rsiot-plc" }
+rsiot-redis-publisher = { version = "0.0.26", path = "./rsiot-redis-publisher" }
+rsiot-redis-subscriber = { version = "0.0.26", path = "./rsiot-redis-subscriber" }
+rsiot-timescaledb-storing = { version = "0.0.26", path = "./rsiot-timescaledb-storing" }
+rsiot-websocket-client = { version = "0.0.26", path = "./rsiot-websocket-client" }
+rsiot-websocket-server = { version = "0.0.26", path = "./rsiot-websocket-server" }

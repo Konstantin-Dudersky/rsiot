@@ -7,7 +7,7 @@ license.workspace = true
 name = "rsiot-component-core"
 readme = "README.md"
 rust-version.workspace = true
-version = "0.0.21"
+version = "0.0.26"
 
 [dependencies]
 futures = { workspace = true }
