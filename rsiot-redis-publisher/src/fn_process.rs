@@ -1,38 +1,27 @@
 use redis::AsyncCommands;
-use tokio::{
-    spawn,
-    sync::broadcast,
-    time::{sleep, Duration},
-};
+use tokio::time::{sleep, Duration};
 use tracing::{error, info};
 
 use rsiot_component_core::{Input, Output};
-use rsiot_extra_components::cmpbase_mpsc_to_broadcast;
 use rsiot_messages_core::{IMessage, IMessageChannel};
 
-use crate::{cmp_redis_publisher, error::Error};
+use crate::{config::Config, error::Error};
 
 pub async fn fn_process<TMessage, TMessageChannel>(
     input: Input<TMessage>,
     _output: Output<TMessage>,
-    config: cmp_redis_publisher::Config<TMessage, TMessageChannel>,
+    config: Config<TMessage, TMessageChannel>,
 ) where
     TMessage: IMessage + 'static,
     TMessageChannel: IMessageChannel + 'static,
 {
     info!("Initialization. Config: {:?}", config);
 
-    // Создаем канал для пересылки сообщений со входа потокам
-    let (input_broadcast_tx, _input_broadcast_rx) = broadcast::channel::<TMessage>(100);
-    let future = cmpbase_mpsc_to_broadcast::new(input, input_broadcast_tx.clone());
-    let _task_to_output = spawn(future);
-
     loop {
         info!("Starting");
 
         let result =
-            task_main::<TMessage, TMessageChannel>(input_broadcast_tx.subscribe(), config.clone())
-                .await;
+            task_main::<TMessage, TMessageChannel>(input.resubscribe(), config.clone()).await;
         match result {
             Ok(_) => (),
             Err(err) => error!("{:?}", err),
@@ -43,8 +32,8 @@ pub async fn fn_process<TMessage, TMessageChannel>(
 }
 
 async fn task_main<TMessage, TMessageChannel>(
-    mut input: broadcast::Receiver<TMessage>,
-    config: cmp_redis_publisher::Config<TMessage, TMessageChannel>,
+    mut input: Input<TMessage>,
+    config: Config<TMessage, TMessageChannel>,
 ) -> Result<(), Error>
 where
     TMessage: IMessage,
