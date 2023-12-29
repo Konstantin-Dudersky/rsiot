@@ -15,7 +15,7 @@ where
 {
     let mut msgs_json: Vec<String> = vec![];
     {
-        let lock = cache.cache.lock().await;
+        let lock = cache.cache.read().await;
         for msg in lock.values() {
             let msg_json = msg.to_json()?;
             msgs_json.push(msg_json);

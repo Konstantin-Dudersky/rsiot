@@ -22,8 +22,11 @@ use rsiot_messages_core::IMessage;
 use crate::{config::Config, error::Error, routes, shared_state::SharedState};
 
 /// Компонент для получения и ввода сообщений через HTTP Server
-pub async fn process<TMessage>(input: Input<TMessage>, output: Output<TMessage>, config: Config)
-where
+pub async fn fn_process<TMessage>(
+    input: Input<TMessage>,
+    output: Output<TMessage>,
+    config: Config<TMessage>,
+) where
     TMessage: IMessage + 'static,
 {
     // кэшируем данные

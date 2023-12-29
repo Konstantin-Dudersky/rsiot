@@ -16,7 +16,7 @@ where
 {
     let msg;
     {
-        let lock = cache.cache.lock().await;
+        let lock = cache.cache.read().await;
         msg = lock.get(&key).map(|m| m.to_owned());
     }
     let msg = msg.ok_or(Error::UnknownMessageKey(key))?;
