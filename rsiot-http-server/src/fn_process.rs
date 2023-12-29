@@ -4,10 +4,7 @@ use std::{
 };
 
 use axum::routing;
-use tokio::{
-    spawn,
-    time::{sleep, Duration},
-};
+use tokio::time::{sleep, Duration};
 use tower_http::{
     cors::CorsLayer,
     trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
@@ -15,29 +12,20 @@ use tower_http::{
 };
 use tracing::{error, info, Level};
 
-use rsiot_component_core::{ComponentInput, ComponentOutput};
-use rsiot_extra_components::cmpbase_cache;
+use rsiot_component_core::{CacheType, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::Config, error::Error, routes, shared_state::SharedState};
 
 /// Компонент для получения и ввода сообщений через HTTP Server
 pub async fn fn_process<TMessage>(
-    input: ComponentInput<TMessage>,
+    _input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
-    config: Config<TMessage>,
+    config: Config,
+    cache: CacheType<TMessage>,
 ) where
     TMessage: IMessage + 'static,
 {
-    // кэшируем данные
-    let cache = cmpbase_cache::create_cache::<TMessage>();
-    let _task_cache = spawn(cmpbase_cache::cmpbase_cache(
-        input,
-        cmpbase_cache::Config {
-            cache: cache.clone(),
-        },
-    ));
-
     // общее состояние
     let shared_state = Arc::new(SharedState { cache, output });
 

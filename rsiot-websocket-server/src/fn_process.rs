@@ -12,17 +12,18 @@ use tokio::{
 use tokio_util::sync::CancellationToken;
 use tracing::{error, info};
 
-use rsiot_component_core::{ComponentInput, ComponentOutput};
+use rsiot_component_core::{CacheType, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::Config, errors::Errors};
 
 use super::{async_task_utils::cancellable_task, handle_ws_connection::handle_ws_connection};
 
-pub async fn process<TMessage>(
+pub async fn fn_process<TMessage>(
     input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
     config: Config<TMessage>,
+    cache: CacheType<TMessage>,
 ) where
     TMessage: IMessage + 'static,
 {
@@ -35,6 +36,7 @@ pub async fn process<TMessage>(
             input.resubscribe(),
             output.clone(),
             config.clone(),
+            cache.clone(),
             cancel.clone(),
         )
         .await;
@@ -51,6 +53,7 @@ async fn task_main<TMessage>(
     input: broadcast::Receiver<TMessage>,
     output: mpsc::Sender<TMessage>,
     config: Config<TMessage>,
+    cache: CacheType<TMessage>,
     cancel: CancellationToken,
 ) -> Result<(), Errors>
 where
@@ -67,6 +70,7 @@ where
             output.clone(),
             config.clone(),
             stream_and_addr,
+            cache.clone(),
         );
         spawn(cancellable_task(future, cancel.clone()));
     }

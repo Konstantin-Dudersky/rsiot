@@ -2,13 +2,14 @@
 
 use tokio::task::JoinSet;
 
-use rsiot_component_core::{Component, ComponentInput, ComponentOutput};
+use rsiot_component_core::{CacheType, Component, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 async fn fn_process<TMessage>(
     mut input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
     mut config: Config<TMessage>,
+    _cache: CacheType<TMessage>,
 ) where
     TMessage: IMessage + 'static,
 {

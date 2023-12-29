@@ -10,7 +10,7 @@ use tracing::Level;
 use tracing_subscriber::filter::LevelFilter;
 
 use rsiot_component_core::ComponentCollection;
-use rsiot_extra_components::{cmp_cache, cmp_inject_periodic, cmp_logger};
+use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use rsiot_http_server::cmp_http_server;
 use rsiot_messages_core::IMessage;
 
@@ -34,7 +34,6 @@ async fn main() {
         .init();
 
     let mut counter = 0.0;
-    let cache = cmp_cache::create_cache();
 
     let mut chain = ComponentCollection::new(
         100,
@@ -48,16 +47,10 @@ async fn main() {
                     vec![msg1, msg2]
                 },
             }),
-            cmp_http_server::new(cmp_http_server::Config {
-                port: 8011,
-                cache: cache.clone(),
-            }),
+            cmp_http_server::new(cmp_http_server::Config { port: 8011 }),
             cmp_logger::new(cmp_logger::Config {
                 level: Level::INFO,
                 header: "".into(),
-            }),
-            cmp_cache::new(cmp_cache::Config {
-                cache: cache.clone(),
             }),
         ],
     );

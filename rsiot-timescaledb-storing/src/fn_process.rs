@@ -3,7 +3,7 @@ use tokio::time::{sleep, Duration};
 use tracing::{error, info, trace};
 use url::Url;
 
-use rsiot_component_core::{ComponentInput, ComponentOutput};
+use rsiot_component_core::{CacheType, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::Config, error::Error, model::Row};
@@ -12,6 +12,7 @@ pub async fn fn_process<TMessage>(
     mut input: ComponentInput<TMessage>,
     _output: ComponentOutput<TMessage>,
     config: Config,
+    _cache: CacheType<TMessage>,
 ) where
     TMessage: IMessage,
 {

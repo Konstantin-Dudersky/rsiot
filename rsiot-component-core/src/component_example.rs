@@ -2,12 +2,13 @@
 
 use rsiot_messages_core::IMessage;
 
-use crate::{Component, ComponentInput, ComponentOutput};
+use crate::{CacheType, Component, ComponentInput, ComponentOutput};
 
 async fn process<TMessage>(
     _input: ComponentInput<TMessage>,
     _output: ComponentOutput<TMessage>,
     _config: Config,
+    _cache: CacheType<TMessage>,
 ) where
     TMessage: IMessage,
 {

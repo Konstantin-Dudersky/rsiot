@@ -2,7 +2,7 @@ use redis::AsyncCommands;
 use tokio::time::{sleep, Duration};
 use tracing::{error, info};
 
-use rsiot_component_core::{ComponentInput, ComponentOutput};
+use rsiot_component_core::{CacheType, ComponentInput, ComponentOutput};
 use rsiot_messages_core::{IMessage, IMessageChannel};
 
 use crate::{config::Config, error::Error};
@@ -11,6 +11,7 @@ pub async fn fn_process<TMessage, TMessageChannel>(
     input: ComponentInput<TMessage>,
     _output: ComponentOutput<TMessage>,
     config: Config<TMessage, TMessageChannel>,
+    _cache: CacheType<TMessage>,
 ) where
     TMessage: IMessage + 'static,
     TMessageChannel: IMessageChannel + 'static,

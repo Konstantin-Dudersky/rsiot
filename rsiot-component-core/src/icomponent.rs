@@ -1,6 +1,9 @@
 use tokio::task::JoinHandle;
 
-use crate::types::{ComponentInput, ComponentOutput};
+use crate::{
+    types::{ComponentInput, ComponentOutput},
+    CacheType,
+};
 
 /// Трейт для работы с компонентом из построителя цепочки компонентов
 /// ComponentChainBuilder
@@ -10,6 +13,9 @@ pub trait IComponent<TMessage> {
 
     /// Задать выходной поток
     fn set_output(&mut self, output: ComponentOutput<TMessage>);
+
+    // Задать ссылку на кеш
+    fn set_cache(&mut self, cache: CacheType<TMessage>);
 
     /// Порождаем асинхронную задачу
     fn spawn(&mut self) -> JoinHandle<()>;

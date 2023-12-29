@@ -8,15 +8,16 @@ use tokio::{
 use tracing::{error, info};
 use url::Url;
 
-use rsiot_component_core::{ComponentInput, ComponentOutput};
+use rsiot_component_core::{CacheType, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::config, error::Error, types::Result_};
 
-pub async fn process<TMessage>(
+pub async fn fn_process<TMessage>(
     input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
     config: config::Config<TMessage>,
+    _cache: CacheType<TMessage>,
 ) where
     TMessage: IMessage + 'static,
 {

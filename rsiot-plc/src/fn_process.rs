@@ -3,8 +3,7 @@ use std::time::{Duration, Instant};
 use serde::Serialize;
 use tokio::{spawn, sync::mpsc, time::sleep};
 
-use rsiot_component_core::{ComponentInput, ComponentOutput};
-use rsiot_extra_components::cmpbase_cache;
+use rsiot_component_core::{CacheType, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{
@@ -16,6 +15,7 @@ pub async fn fn_process<TMessage, I, Q, S>(
     _input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
     config: Config<TMessage, I, Q, S>,
+    cache: CacheType<TMessage>,
 ) where
     TMessage: IMessage + 'static,
     I: Clone + Default + Send + Serialize + 'static + Sync,
@@ -23,12 +23,13 @@ pub async fn fn_process<TMessage, I, Q, S>(
     S: Clone + Default + Send + Serialize + 'static + Sync,
     FunctionBlockBase<I, Q, S>: IFunctionBlock<I, Q, S>,
 {
-    spawn(task_main_loop::<TMessage, I, Q, S>(output, config));
+    spawn(task_main_loop::<TMessage, I, Q, S>(output, config, cache));
 }
 
 async fn task_main_loop<TMessage, I, Q, S>(
     output: ComponentOutput<TMessage>,
     config: Config<TMessage, I, Q, S>,
+    cache: CacheType<TMessage>,
 ) where
     TMessage: IMessage + 'static,
     I: Clone + Default + Send + Serialize + Sync,
@@ -39,7 +40,7 @@ async fn task_main_loop<TMessage, I, Q, S>(
     let mut fb_main = config.fb_main.clone();
     loop {
         let begin = Instant::now();
-        task_main::<TMessage, I, Q, S>(&output, &config, &mut fb_main, config.cache.clone()).await;
+        task_main::<TMessage, I, Q, S>(&output, &config, &mut fb_main, cache.clone()).await;
         let elapsed = begin.elapsed();
         let sleep_time = if config.period <= elapsed {
             Duration::from_millis(10)
@@ -54,7 +55,7 @@ async fn task_main<TMessage, I, Q, S>(
     output: &mpsc::Sender<TMessage>,
     config: &Config<TMessage, I, Q, S>,
     fb_main: &mut FunctionBlockBase<I, Q, S>,
-    cache: cmpbase_cache::CacheType<TMessage>,
+    cache: CacheType<TMessage>,
 ) where
     TMessage: IMessage + 'static,
     I: Clone + Default + Send + Serialize,

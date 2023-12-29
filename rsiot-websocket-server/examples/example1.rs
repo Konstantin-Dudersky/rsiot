@@ -10,7 +10,7 @@ use tokio::{main, time::Duration};
 use tracing::Level;
 
 use rsiot_component_core::ComponentCollection;
-use rsiot_extra_components::{cmp_cache, cmp_inject_periodic, cmp_logger};
+use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use rsiot_messages_core::{msg_types::Value, ExampleMessage, IMessage};
 use rsiot_websocket_server::cmp_websocket_server;
 
@@ -18,7 +18,6 @@ use rsiot_websocket_server::cmp_websocket_server;
 async fn main() {
     tracing_subscriber::fmt().init();
 
-    let cache = cmp_cache::create_cache();
     let mut counter = 0.0;
 
     let mut chain = ComponentCollection::new(
@@ -36,14 +35,10 @@ async fn main() {
                 port: 8020,
                 fn_input: |msg: &ExampleMessage| msg.to_json().ok(),
                 fn_output: |data: &str| ExampleMessage::from_json(data).ok(),
-                cache: cache.clone(),
             }),
             cmp_logger::new(cmp_logger::Config {
                 level: Level::INFO,
                 header: "".into(),
-            }),
-            cmp_cache::new(cmp_cache::Config {
-                cache: cache.clone(),
             }),
         ],
     );

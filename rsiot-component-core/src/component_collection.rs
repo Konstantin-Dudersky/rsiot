@@ -6,7 +6,10 @@ use tokio::{
 
 use rsiot_messages_core::IMessage;
 
-use crate::{cmpbase_mpsc_to_broadcast, IComponent};
+use crate::{
+    cmpbase_cache::{self, cmpbase_cache},
+    cmpbase_mpsc_to_broadcast, IComponent,
+};
 
 /// Объединение компонентов в одну цепочку
 ///
@@ -14,7 +17,6 @@ use crate::{cmpbase_mpsc_to_broadcast, IComponent};
 /// ```
 #[doc = include_str!("../examples/example1.rs")]
 /// ```
-
 pub struct ComponentCollection<TMessage>
 where
     TMessage: IMessage,
@@ -42,9 +44,19 @@ where
         let (input_tx, _input_rx) = broadcast::channel(self.buffer_size);
         let (output_tx, output_rx) = mpsc::channel(self.buffer_size);
 
+        let cache = cmpbase_cache::create_cache();
+        let task_cache = cmpbase_cache(
+            input_tx.subscribe(),
+            cmpbase_cache::Config {
+                cache: cache.clone(),
+            },
+        );
+        spawn(task_cache);
+
         for component in self.components.iter_mut() {
             component.set_input(input_tx.subscribe());
             component.set_output(output_tx.clone());
+            component.set_cache(cache.clone());
         }
 
         let mut set = JoinSet::new();

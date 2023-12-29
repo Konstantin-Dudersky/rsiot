@@ -2,7 +2,6 @@ use std::time::Duration;
 
 use serde::Serialize;
 
-use rsiot_component_core::cache::CacheType;
 use rsiot_messages_core::IMessage;
 
 use crate::plc::function_block_base::{FunctionBlockBase, IFunctionBlock};
@@ -45,6 +44,4 @@ where
     /// period: Duration::from_millis(100)
     /// ```
     pub period: Duration,
-
-    pub cache: CacheType<TMessage>,
 }

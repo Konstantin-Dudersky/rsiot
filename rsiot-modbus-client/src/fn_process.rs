@@ -8,7 +8,7 @@ use tokio::{
 use tokio_modbus::{client::Context, prelude::*};
 use tracing::{debug, error, info, trace, warn};
 
-use rsiot_component_core::{ComponentInput, ComponentOutput};
+use rsiot_component_core::{CacheType, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{
@@ -21,6 +21,7 @@ pub async fn fn_process<TMessage>(
     input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
     config: Config<TMessage>,
+    _cache: CacheType<TMessage>,
 ) where
     TMessage: IMessage + 'static,
 {

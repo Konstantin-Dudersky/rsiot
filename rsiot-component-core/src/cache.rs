@@ -2,7 +2,7 @@ use std::{collections::HashMap, sync::Arc};
 
 use tokio::sync::RwLock;
 
-pub type CacheType<TMessage> = Arc<RwLock<HashMap<String, TMessage>>>;
+use crate::CacheType;
 
 /// Создать пустой кеш
 pub fn create_cache<TMessage>() -> CacheType<TMessage> {

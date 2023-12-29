@@ -7,29 +7,32 @@ use std::future::Future;
 
 use futures::future::BoxFuture;
 
-use crate::types::{ComponentInput, ComponentOutput};
+use crate::types::{CacheType, ComponentInput, ComponentOutput};
 
 /// Трейт для функции компонента
 pub trait IComponentFunction<TMessage, TConfig>: Send {
     fn call(
         &self,
-        stream_input: ComponentInput<TMessage>,
-        stream_output: ComponentOutput<TMessage>,
+        input: ComponentInput<TMessage>,
+        output: ComponentOutput<TMessage>,
         config: TConfig,
+        cache: CacheType<TMessage>,
     ) -> BoxFuture<'static, ()>;
 }
 
 impl<T, F, TMessage, TConfig> IComponentFunction<TMessage, TConfig> for T
 where
-    T: Fn(ComponentInput<TMessage>, ComponentOutput<TMessage>, TConfig) -> F + Send,
+    T: Fn(ComponentInput<TMessage>, ComponentOutput<TMessage>, TConfig, CacheType<TMessage>) -> F
+        + Send,
     F: Future<Output = ()> + 'static + Send,
 {
     fn call(
         &self,
-        stream_input: ComponentInput<TMessage>,
-        stream_output: ComponentOutput<TMessage>,
+        input: ComponentInput<TMessage>,
+        output: ComponentOutput<TMessage>,
         config: TConfig,
+        cache: CacheType<TMessage>,
     ) -> BoxFuture<'static, ()> {
-        Box::pin(self(stream_input, stream_output, config))
+        Box::pin(self(input, output, config, cache))
     }
 }

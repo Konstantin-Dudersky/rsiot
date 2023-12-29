@@ -2,13 +2,14 @@
 
 use tracing::{debug, error, info, trace, warn, Level};
 
-use rsiot_component_core::{Component, ComponentInput, ComponentOutput};
+use rsiot_component_core::{CacheType, Component, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
-async fn cmp_logger<TMessage>(
+async fn fn_process<TMessage>(
     mut input: ComponentInput<TMessage>,
     _output: ComponentOutput<TMessage>,
     config: Config,
+    _cache: CacheType<TMessage>,
 ) where
     TMessage: IMessage,
 {
@@ -41,6 +42,6 @@ pub fn new<TMessage>(config: Config) -> Box<Component<TMessage, Config>>
 where
     TMessage: IMessage + 'static,
 {
-    let cmp = Component::new(config, cmp_logger);
+    let cmp = Component::new(config, fn_process);
     Box::new(cmp)
 }

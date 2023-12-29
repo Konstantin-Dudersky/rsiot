@@ -6,6 +6,7 @@ use futures_util::{
     stream::{SplitSink, SplitStream},
     SinkExt, StreamExt,
 };
+use rsiot_component_core::CacheType;
 use tokio::{
     net::TcpStream,
     sync::{broadcast, mpsc},
@@ -14,7 +15,6 @@ use tokio::{
 use tokio_tungstenite::{accept_async, tungstenite::Message, WebSocketStream};
 use tracing::{info, warn};
 
-use rsiot_extra_components::cmp_cache::CacheType;
 use rsiot_messages_core::IMessage;
 
 use crate::{config::Config, errors::Errors};
@@ -25,11 +25,12 @@ pub async fn handle_ws_connection<TMessage>(
     output: mpsc::Sender<TMessage>,
     config: Config<TMessage>,
     stream_and_addr: (TcpStream, SocketAddr),
+    cache: CacheType<TMessage>,
 ) where
     TMessage: IMessage + 'static,
 {
     let addr = stream_and_addr.1;
-    let result = _handle_ws_connection(input, output, stream_and_addr, config).await;
+    let result = _handle_ws_connection(input, output, stream_and_addr, config, cache).await;
     match result {
         Ok(_) => (),
         Err(err) => {
@@ -43,6 +44,7 @@ async fn _handle_ws_connection<TMessage>(
     output: mpsc::Sender<TMessage>,
     stream_and_addr: (TcpStream, SocketAddr),
     config: Config<TMessage>,
+    cache: CacheType<TMessage>,
 ) -> Result<(), Errors>
 where
     TMessage: IMessage + 'static,
@@ -57,7 +59,7 @@ where
     let mut set = JoinSet::new();
 
     // Подготавливаем кеш для отправки
-    set.spawn(send_prepare_cache(prepare_tx.clone(), config.cache.clone()));
+    set.spawn(send_prepare_cache(prepare_tx.clone(), cache.clone()));
     // Подготавливаем новые сообщения для отправки
     set.spawn(send_prepare_new_msgs(input, prepare_tx.clone()));
     // Отправляем клиенту
