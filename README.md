@@ -1,6 +1,6 @@
 <!-- cargo-rdme start -->
 
- Компоненты для построения системы сбора данных
+Компоненты для построения системы сбора данных
 [Документация](https://docs.rs/rsiot/latest/rsiot)
 
 ## Компоненты
@@ -67,19 +67,15 @@ TODO **leptos**
 
 #### Вспомогательные крейты
 
-TODO [**plc**](https://docs.rs/rsiot-plc/latest)
+[**plc**](https://docs.rs/rsiot-plc/latest)
 
 Выполнение произвольной логики в "стиле PLC".
-
-TODO [**message-router**](https://docs.rs/rsiot-message-router/latest)
-
-Настройка маршрутизации сообщений.
 
 [**env-vars**](https://docs.rs/rsiot-env-vars/latest)
 
 Чтение конфигурации из файла `.env`.
 
-TODO [**logging**](https://docs.rs/rsiot-logging/latest)
+[**logging**](https://docs.rs/rsiot-logging/latest)
 
 Настройка логгирования
 
@@ -126,7 +122,8 @@ enum Message {
 impl IMessage for Message {}
 ```
 
-Трейт `IMessage` реализует основные методы - см. документацию по крейту [rsiot-messages-core](https://docs.rs/rsiot-messages-core/latest)
+Трейт `IMessage` реализует основные методы - см. документацию по крейту
+[rsiot-messages-core](https://docs.rs/rsiot-messages-core/latest)
 
 Для упрощения компоненты можно создавать и объединять в **цепочку компонентов**.
 
@@ -136,5 +133,6 @@ TODO - компонент для симуляции
 - может генерировать сообщения периодически
 
  ## Флаги `feature`:
+TODO Написать про роутинг сообщений
 
 <!-- cargo-rdme end -->
