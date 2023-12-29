@@ -2,6 +2,7 @@ use std::time::Duration;
 
 use serde::Serialize;
 
+use rsiot_component_core::cache::CacheType;
 use rsiot_messages_core::IMessage;
 
 use crate::plc::function_block_base::{FunctionBlockBase, IFunctionBlock};
@@ -45,6 +46,5 @@ where
     /// ```
     pub period: Duration,
 
-    /// Размер внутренней очереди сообщений. По-умолчанию можно задать 100.
-    pub buffer_size: usize,
+    pub cache: CacheType<TMessage>,
 }

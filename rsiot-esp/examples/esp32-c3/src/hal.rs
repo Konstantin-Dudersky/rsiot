@@ -12,9 +12,7 @@ use tokio::{
 };
 
 use rsiot::message::{msg_types::Value, IMessage};
-use rsiot_esp::hardware_tasks::{
-    gpio_input, gpio_output, wifi_setup_access_point, GpioOutputConfig,
-};
+use rsiot_esp::hardware_tasks::{gpio_input, gpio_output, wifi_setup, GpioOutputConfig};
 
 use super::message::Message;
 use super::ws2812rmt::WS2812RMT;
@@ -70,7 +68,7 @@ pub async fn hal(
 
     // настраиваем Wi-Fi
     let mut wifi = EspWifi::new(peripherals.modem, sys_loop.clone(), None).unwrap();
-    wifi_setup_access_point(
+    wifi_setup(
         &mut wifi,
         sys_loop.clone(),
         Configuration::Mixed(

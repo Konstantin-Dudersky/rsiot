@@ -1793,10 +1793,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rsiot-message-router"
-version = "0.0.21"
-
-[[package]]
 name = "rsiot-messages-core"
 version = "0.0.26"
 dependencies = [

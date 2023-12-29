@@ -1,5 +1,5 @@
 use esp_idf_svc::hal::gpio::{Output, OutputPin, PinDriver};
-use rsiot_component_core::{Input as ComponentInput, Output as ComponentOutput};
+use rsiot_component_core::{ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 pub struct GpioOutputConfig<'a, TPin, TMessage>
@@ -12,10 +12,10 @@ where
     pub is_low_triggered: bool,
 }
 
-pub async fn gpio_output<'a, TPin, TMessage>(
+pub async fn gpio_output<TPin, TMessage>(
     mut input: ComponentInput<TMessage>,
     _output: ComponentOutput<TMessage>,
-    mut config: GpioOutputConfig<'a, TPin, TMessage>,
+    mut config: GpioOutputConfig<'static, TPin, TMessage>,
 ) where
     TPin: OutputPin,
     TMessage: IMessage,

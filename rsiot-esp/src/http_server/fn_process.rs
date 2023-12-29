@@ -28,7 +28,7 @@ use esp_idf_svc::{
 };
 use tokio::time::sleep;
 
-use rsiot_component_core::{Input, Output};
+use rsiot_component_core::{ComponentInput, ComponentOutput};
 use rsiot_extra_components::cmp_cache::CacheType;
 use rsiot_messages_core::IMessage;
 use tracing::info;
@@ -36,8 +36,8 @@ use tracing::info;
 use super::config::Config;
 
 pub async fn fn_process<TMessage>(
-    input: Input<TMessage>,
-    output: Output<TMessage>,
+    input: ComponentInput<TMessage>,
+    output: ComponentOutput<TMessage>,
     config: Config<TMessage>,
 ) where
     TMessage: IMessage + 'static,
@@ -57,8 +57,8 @@ pub async fn fn_process<TMessage>(
 }
 
 fn create_server<TMessage>(
-    input: Input<TMessage>,
-    output: Output<TMessage>,
+    input: ComponentInput<TMessage>,
+    output: ComponentOutput<TMessage>,
     cache: CacheType<TMessage>,
 ) where
     TMessage: IMessage + 'static,
@@ -150,7 +150,6 @@ fn create_server<TMessage>(
                 EspHttpWsConnection::New(_, _) => info!("New WebSocket session ({})", ws.session()),
                 EspHttpWsConnection::Receiving(_, _, frame) => {
                     info!("Frame: {frame:?}");
-                    ()
                 }
                 EspHttpWsConnection::Closed(_) => {
                     info!("Closed WebSocket session ({})", ws.session());

@@ -13,7 +13,7 @@ use crate::{
 };
 
 pub async fn fn_process<TMessage, I, Q, S>(
-    input: ComponentInput<TMessage>,
+    _input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
     config: Config<TMessage, I, Q, S>,
 ) where
@@ -23,24 +23,12 @@ pub async fn fn_process<TMessage, I, Q, S>(
     S: Clone + Default + Send + Serialize + 'static + Sync,
     FunctionBlockBase<I, Q, S>: IFunctionBlock<I, Q, S>,
 {
-    // кэшируем данные
-    let cache = cmpbase_cache::create_cache::<TMessage>();
-    let task_cache_config = cmpbase_cache::Config {
-        cache: cache.clone(),
-    };
-    let _task_cache = spawn(cmpbase_cache::cmpbase_cache(input, task_cache_config));
-
-    spawn(task_main_loop::<TMessage, I, Q, S>(
-        output,
-        config,
-        cache.clone(),
-    ));
+    spawn(task_main_loop::<TMessage, I, Q, S>(output, config));
 }
 
 async fn task_main_loop<TMessage, I, Q, S>(
     output: ComponentOutput<TMessage>,
     config: Config<TMessage, I, Q, S>,
-    cache: cmpbase_cache::CacheType<TMessage>,
 ) where
     TMessage: IMessage + 'static,
     I: Clone + Default + Send + Serialize + Sync,
@@ -51,7 +39,7 @@ async fn task_main_loop<TMessage, I, Q, S>(
     let mut fb_main = config.fb_main.clone();
     loop {
         let begin = Instant::now();
-        task_main::<TMessage, I, Q, S>(&output, &config, &mut fb_main, cache.clone()).await;
+        task_main::<TMessage, I, Q, S>(&output, &config, &mut fb_main, config.cache.clone()).await;
         let elapsed = begin.elapsed();
         let sleep_time = if config.period <= elapsed {
             Duration::from_millis(10)

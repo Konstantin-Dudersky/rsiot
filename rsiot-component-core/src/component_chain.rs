@@ -51,8 +51,8 @@ where
         while let Some(mut cmp) = self.components.pop() {
             set.spawn(cmp.spawn());
         }
-        let _task = cmpbase_mpsc_to_broadcast::new(output_rx, input_tx);
-        spawn(_task);
+        let task = cmpbase_mpsc_to_broadcast::new(output_rx, input_tx);
+        spawn(task);
 
         while (set.join_next().await).is_some() {}
     }

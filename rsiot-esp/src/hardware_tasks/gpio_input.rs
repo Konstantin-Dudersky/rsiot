@@ -1,12 +1,12 @@
 use esp_idf_svc::hal::gpio::{Input, InputPin, Level, PinDriver};
 
-use rsiot_component_core::{Input as ComponentInput, Output as ComponentOutput};
+use rsiot_component_core::{ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
-pub async fn gpio_input<'a, TPin, TMessage>(
+pub async fn gpio_input<TPin, TMessage>(
     _input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
-    mut driver: PinDriver<'a, TPin, Input>,
+    mut driver: PinDriver<'static, TPin, Input>,
     fn_output: fn(&bool) -> TMessage,
 ) where
     TPin: InputPin,

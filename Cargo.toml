@@ -8,7 +8,6 @@ members = [
     "./rsiot-http-client",
     "./rsiot-http-server",
     "./rsiot-logging",
-    "./rsiot-message-router",
     "./rsiot-messages-core",
     "./rsiot-modbus-client",
     "./rsiot-plc",
@@ -90,7 +89,6 @@ rsiot-esp = { version = "0.0.0", path = "./rsiot-esp" }
 rsiot-http-client = { version = "0.0.27", path = "./rsiot-http-client" }
 rsiot-http-server = { version = "0.0.27", path = "./rsiot-http-server" }
 rsiot-logging = { version = "0.0.26", path = "./rsiot-logging" }
-rsiot-message-router = { version = "0.0.21", path = "./rsiot-message-router" }
 rsiot-messages-core = { version = "0.0.26", path = "./rsiot-messages-core" }
 rsiot-modbus-client = { version = "0.0.27", path = "./rsiot-modbus-client" }
 rsiot-plc = { version = "0.0.27", path = "./rsiot-plc" }

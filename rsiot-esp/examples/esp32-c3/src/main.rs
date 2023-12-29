@@ -5,7 +5,7 @@ use tokio::main;
 
 use rsiot::{
     cmp_plc,
-    component::{cmp_cache, cmp_external_fn_process, cmp_logger, ComponentChain},
+    component::{cmp_cache, cmp_external_fn_process, cmp_logger, ComponentCollection},
     message::msg_types::Value,
 };
 use rsiot_esp::cmp_http_server_esp;
@@ -54,7 +54,7 @@ async fn main() {
         cache: cache.clone(),
     };
 
-    let mut chain = ComponentChain::<Message>::new(
+    let mut chain = ComponentCollection::<Message>::new(
         10,
         vec![
             cmp_plc::new(plc_config),

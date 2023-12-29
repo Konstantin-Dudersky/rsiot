@@ -1222,7 +1222,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-component-core"
-version = "0.0.21"
+version = "0.0.27"
 dependencies = [
  "futures",
  "rsiot-messages-core",
@@ -1246,7 +1246,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-extra-components"
-version = "0.0.22"
+version = "0.0.27"
 dependencies = [
  "rsiot-component-core",
  "rsiot-messages-core",
@@ -1256,7 +1256,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-messages-core"
-version = "0.0.21"
+version = "0.0.26"
 dependencies = [
  "chrono",
  "serde",

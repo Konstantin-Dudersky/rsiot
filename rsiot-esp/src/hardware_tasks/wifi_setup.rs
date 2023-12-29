@@ -12,8 +12,8 @@ use tracing::info;
 /// Запустить Wi-Fi в комбинированном режиме.
 ///
 /// TODO - обработка ошибок, перезапуск
-pub fn wifi_setup<'a>(
-    wifi: &mut EspWifi<'a>,
+pub fn wifi_setup(
+    wifi: &mut EspWifi<'static>,
     sys_loop: EspEventLoop<System>,
     configuration: Configuration,
 ) {
