@@ -147,7 +147,8 @@ pub mod message {
 #[cfg(feature = "components")]
 pub mod component {
     pub use rsiot_component_core::{
-        Component, ComponentChain, IComponent, IComponentFunction, Input, Output,
+        Component, ComponentCollection, ComponentInput, ComponentOutput, IComponent,
+        IComponentFunction,
     };
     pub use rsiot_extra_components::*;
 }

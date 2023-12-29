@@ -9,7 +9,7 @@ use tokio::{main, time::Duration};
 use tracing::Level;
 use tracing_subscriber::filter::LevelFilter;
 
-use rsiot_component_core::ComponentChain;
+use rsiot_component_core::ComponentCollection;
 use rsiot_extra_components::{cmp_cache, cmp_inject_periodic, cmp_logger};
 use rsiot_http_server::cmp_http_server;
 use rsiot_messages_core::IMessage;
@@ -36,7 +36,7 @@ async fn main() {
     let mut counter = 0.0;
     let cache = cmp_cache::create_cache();
 
-    let mut chain = ComponentChain::new(
+    let mut chain = ComponentCollection::new(
         100,
         vec![
             cmp_inject_periodic::new(cmp_inject_periodic::Config {

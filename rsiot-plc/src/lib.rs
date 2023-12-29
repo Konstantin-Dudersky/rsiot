@@ -23,7 +23,7 @@ mod new;
 pub mod plc;
 mod template;
 
-pub use rsiot_component_core::ComponentChain;
+pub use rsiot_component_core::ComponentCollection;
 pub use rsiot_messages_core::IMessage;
 
 /// Компонент для исполнения логики наподобие PLC.

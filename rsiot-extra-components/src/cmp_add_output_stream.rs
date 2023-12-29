@@ -2,14 +2,14 @@
 
 use tokio::sync::mpsc;
 
-use rsiot_component_core::{Component, Input, Output};
+use rsiot_component_core::{Component, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use super::cmpbase_mpsc_to_many_mpsc;
 
 async fn fn_process<TMessage>(
-    input: Input<TMessage>,
-    output: Output<TMessage>,
+    input: ComponentInput<TMessage>,
+    output: ComponentOutput<TMessage>,
     config: Config<TMessage>,
 ) where
     TMessage: IMessage + 'static,

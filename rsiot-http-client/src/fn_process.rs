@@ -8,14 +8,14 @@ use tokio::{
 use tracing::{error, info};
 use url::Url;
 
-use rsiot_component_core::{Input, Output};
+use rsiot_component_core::{ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::config, error::Error, types::Result_};
 
 pub async fn process<TMessage>(
-    input: Input<TMessage>,
-    output: Output<TMessage>,
+    input: ComponentInput<TMessage>,
+    output: ComponentOutput<TMessage>,
     config: config::Config<TMessage>,
 ) where
     TMessage: IMessage + 'static,
@@ -37,8 +37,8 @@ pub async fn process<TMessage>(
 
 /// Основная задача
 async fn task_main<TMessage>(
-    input: Input<TMessage>,
-    output: Output<TMessage>,
+    input: ComponentInput<TMessage>,
+    output: ComponentOutput<TMessage>,
     config: config::Config<TMessage>,
 ) -> Result_<(), TMessage>
 where
@@ -72,7 +72,7 @@ where
 
 /// Задача обработки периодического запроса
 async fn task_periodic_request<TMessage>(
-    output: Output<TMessage>,
+    output: ComponentOutput<TMessage>,
     config: config::RequestPeriodic<TMessage>,
     url: Url,
 ) -> Result_<(), TMessage>
@@ -105,8 +105,8 @@ where
 
 /// Задача обработки запросов на основе входящего потока сообщений
 async fn task_input_request<TMessage>(
-    mut input: Input<TMessage>,
-    output: Output<TMessage>,
+    mut input: ComponentInput<TMessage>,
+    output: ComponentOutput<TMessage>,
     url: Url,
     config: config::RequestInput<TMessage>,
 ) -> Result_<(), TMessage>

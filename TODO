@@ -8,9 +8,3 @@ TODO - всплывающие окна как в SCADA
 TODO - leptos + plotlyjs?
 
 TODO - tauri push уведомления
-
-TODO - перенести CacheType в component-core
-
-TODO - переиманость Input в InputComponent, Output -> OutputComponent
-
-TODO - ComponentChain -> ComponentCollection ?

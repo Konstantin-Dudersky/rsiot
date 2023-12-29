@@ -12,7 +12,7 @@ use tokio::{
 use tokio_util::sync::CancellationToken;
 use tracing::{error, info};
 
-use rsiot_component_core::{Input, Output};
+use rsiot_component_core::{ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::Config, errors::Errors};
@@ -20,8 +20,8 @@ use crate::{config::Config, errors::Errors};
 use super::{async_task_utils::cancellable_task, handle_ws_connection::handle_ws_connection};
 
 pub async fn process<TMessage>(
-    input: Input<TMessage>,
-    output: Output<TMessage>,
+    input: ComponentInput<TMessage>,
+    output: ComponentOutput<TMessage>,
     config: Config<TMessage>,
 ) where
     TMessage: IMessage + 'static,

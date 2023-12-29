@@ -21,7 +21,7 @@ use tracing::Level;
 use tracing_subscriber::fmt;
 use url::Url;
 
-use rsiot_component_core::ComponentChain;
+use rsiot_component_core::ComponentCollection;
 use rsiot_extra_components::cmp_logger;
 use rsiot_messages_core::{ExampleMessage, ExampleMessageChannel};
 use rsiot_redis_subscriber::cmp_redis_subscriber;
@@ -30,7 +30,7 @@ use rsiot_redis_subscriber::cmp_redis_subscriber;
 async fn main() {
     fmt().init();
 
-    let mut chain = ComponentChain::<ExampleMessage>::new(
+    let mut chain = ComponentCollection::<ExampleMessage>::new(
         100,
         vec![
             cmp_redis_subscriber::new(cmp_redis_subscriber::Config {

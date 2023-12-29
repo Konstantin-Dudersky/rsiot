@@ -19,7 +19,7 @@ use tokio::{main, time::Duration};
 use tracing::Level;
 use tracing_subscriber::fmt;
 
-use rsiot_component_core::ComponentChain;
+use rsiot_component_core::ComponentCollection;
 use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use rsiot_messages_core::IMessage;
 use rsiot_modbus_client::cmp_modbus_client::{self, *};
@@ -69,7 +69,7 @@ async fn main() {
     });
 
     let mut counter = 0.0;
-    let mut chain = ComponentChain::new(
+    let mut chain = ComponentCollection::new(
         100,
         vec![
             // Периодическое генерирование сообщения для записи счетчика на сервер

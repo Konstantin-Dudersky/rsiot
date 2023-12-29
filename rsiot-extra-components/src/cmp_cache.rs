@@ -2,14 +2,15 @@
 //!
 //! Кеш представляет собой `HashMap`, а точнее `Arc<Mutex<HashMap<String, TMessage>>>`
 
-use rsiot_component_core::{Component, Input, Output};
+use rsiot_component_core::{cache, Component, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
-pub use super::cmpbase_cache::{cmpbase_cache, create_cache, CacheType, Config};
+pub use super::cmpbase_cache::{cmpbase_cache, Config};
+pub use cache::{create_cache, CacheType};
 
 async fn fn_process<TMessage>(
-    mut input: Input<TMessage>,
-    _output: Output<TMessage>,
+    mut input: ComponentInput<TMessage>,
+    _output: ComponentOutput<TMessage>,
     config: Config<TMessage>,
 ) where
     TMessage: IMessage,

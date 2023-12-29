@@ -6,7 +6,7 @@ use std::time::Duration;
 use tokio::main;
 use tracing::Level;
 
-use rsiot_component_core::ComponentChain;
+use rsiot_component_core::ComponentCollection;
 use rsiot_extra_components::cmp_logger;
 use rsiot_messages_core::msg_types;
 use rsiot_plc::cmp_plc;
@@ -34,7 +34,7 @@ async fn main() {
         level: Level::INFO,
         header: "Logger: ".into(),
     };
-    let mut chain = ComponentChain::<message::Message>::new(
+    let mut chain = ComponentCollection::<message::Message>::new(
         100,
         vec![cmp_plc::new(plc_config), cmp_logger::new(logger_config)],
     );

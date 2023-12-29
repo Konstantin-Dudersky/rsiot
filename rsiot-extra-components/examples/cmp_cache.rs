@@ -4,7 +4,7 @@ use tokio::{
 };
 use tracing::{info, Level};
 
-use rsiot_component_core::ComponentChain;
+use rsiot_component_core::ComponentCollection;
 use rsiot_extra_components::{cmp_cache, cmp_inject_periodic, cmp_logger};
 use rsiot_messages_core::{msg_types, ExampleMessage};
 
@@ -15,7 +15,7 @@ async fn main() {
     let cache = cmp_cache::create_cache();
     let mut counter = 0.0;
 
-    let mut chain = ComponentChain::new(
+    let mut chain = ComponentCollection::new(
         100,
         vec![
             cmp_inject_periodic::new(cmp_inject_periodic::Config {

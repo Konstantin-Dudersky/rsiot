@@ -1,10 +1,12 @@
-use rsiot_component_core::{Input, Output};
+use rsiot_component_core::{ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 use tracing::error;
 
 /// Компонент для разделение одного потока в несколько
-pub async fn new<TMessage>(mut input: Input<TMessage>, outputs: Vec<Output<TMessage>>)
-where
+pub async fn new<TMessage>(
+    mut input: ComponentInput<TMessage>,
+    outputs: Vec<ComponentOutput<TMessage>>,
+) where
     TMessage: IMessage + 'static,
 {
     while let Ok(msg) = input.recv().await {

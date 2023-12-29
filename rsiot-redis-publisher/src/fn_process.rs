@@ -2,14 +2,14 @@ use redis::AsyncCommands;
 use tokio::time::{sleep, Duration};
 use tracing::{error, info};
 
-use rsiot_component_core::{Input, Output};
+use rsiot_component_core::{ComponentInput, ComponentOutput};
 use rsiot_messages_core::{IMessage, IMessageChannel};
 
 use crate::{config::Config, error::Error};
 
 pub async fn fn_process<TMessage, TMessageChannel>(
-    input: Input<TMessage>,
-    _output: Output<TMessage>,
+    input: ComponentInput<TMessage>,
+    _output: ComponentOutput<TMessage>,
     config: Config<TMessage, TMessageChannel>,
 ) where
     TMessage: IMessage + 'static,
@@ -32,7 +32,7 @@ pub async fn fn_process<TMessage, TMessageChannel>(
 }
 
 async fn task_main<TMessage, TMessageChannel>(
-    mut input: Input<TMessage>,
+    mut input: ComponentInput<TMessage>,
     config: Config<TMessage, TMessageChannel>,
 ) -> Result<(), Error>
 where

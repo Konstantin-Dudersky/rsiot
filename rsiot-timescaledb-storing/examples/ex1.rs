@@ -7,7 +7,7 @@
 use tokio::{main, time::Duration};
 use url::Url;
 
-use rsiot_component_core::ComponentChain;
+use rsiot_component_core::ComponentCollection;
 use rsiot_extra_components::cmp_inject_periodic;
 use rsiot_messages_core::{msg_types, ExampleMessage};
 use rsiot_timescaledb_storing::cmp_timescaledb_storing;
@@ -20,7 +20,7 @@ async fn main() {
 
     let mut counter = 0.0;
 
-    let mut chain = ComponentChain::new(
+    let mut chain = ComponentCollection::new(
         100,
         vec![
             cmp_inject_periodic::new(cmp_inject_periodic::Config {

@@ -9,7 +9,7 @@ use tracing::Level;
 use tracing_subscriber::fmt;
 use url::Url;
 
-use rsiot_component_core::ComponentChain;
+use rsiot_component_core::ComponentCollection;
 use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use rsiot_messages_core::{msg_types, ExampleMessage, ExampleMessageChannel};
 use rsiot_redis_publisher::cmp_redis_publisher;
@@ -19,7 +19,7 @@ async fn main() {
     fmt().init();
 
     let mut counter = 0;
-    let mut chain = ComponentChain::new(
+    let mut chain = ComponentCollection::new(
         100,
         vec![
             cmp_inject_periodic::new(cmp_inject_periodic::Config {

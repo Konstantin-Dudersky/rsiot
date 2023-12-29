@@ -8,7 +8,7 @@ use tokio::{
 use tokio_modbus::{client::Context, prelude::*};
 use tracing::{debug, error, info, trace, warn};
 
-use rsiot_component_core::{Input, Output};
+use rsiot_component_core::{ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{
@@ -18,8 +18,8 @@ use crate::{
 };
 
 pub async fn fn_process<TMessage>(
-    input: Input<TMessage>,
-    output: Output<TMessage>,
+    input: ComponentInput<TMessage>,
+    output: ComponentOutput<TMessage>,
     config: Config<TMessage>,
 ) where
     TMessage: IMessage + 'static,
@@ -39,8 +39,8 @@ pub async fn fn_process<TMessage>(
 }
 
 async fn task_main<TMessage>(
-    input: Input<TMessage>,
-    output: Output<TMessage>,
+    input: ComponentInput<TMessage>,
+    output: ComponentOutput<TMessage>,
     client_config: Config<TMessage>,
 ) -> Result<(), Errors>
 where
@@ -88,7 +88,7 @@ where
 
 /// Задача обработки периодического запроса
 async fn task_periodic_request<TMessage>(
-    output: Output<TMessage>,
+    output: ComponentOutput<TMessage>,
     ctx: Arc<Mutex<Context>>,
     periodic_config: config::PeriodicConfig<TMessage>,
 ) -> Result_<()>
@@ -118,8 +118,8 @@ where
 
 /// Задача обработки запроса на основе входного потока сообщений
 async fn task_input_request<TMessage>(
-    mut input: Input<TMessage>,
-    output: Output<TMessage>,
+    mut input: ComponentInput<TMessage>,
+    output: ComponentOutput<TMessage>,
     ctx: Arc<Mutex<Context>>,
     input_config: config::InputConfig<TMessage>,
 ) -> Result_<()>
@@ -166,7 +166,7 @@ async fn modbus_request(
 
 /// Обратываем ответ modbus
 async fn modbus_response<TMessage>(
-    output: Output<TMessage>,
+    output: ComponentOutput<TMessage>,
     request: &config::Request,
     response: &Result<config::Response, Errors>,
     fn_on_success: config::FnOnSuccess<TMessage>,

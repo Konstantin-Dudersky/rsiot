@@ -9,7 +9,7 @@ use tokio::{main, time::Duration};
 use tracing::Level;
 use url::Url;
 
-use rsiot_component_core::ComponentChain;
+use rsiot_component_core::ComponentCollection;
 use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use rsiot_messages_core::IMessage;
 use rsiot_websocket_client::cmp_websocket_client;
@@ -33,7 +33,7 @@ async fn main() {
 
     let mut counter = 0.0;
 
-    let mut chain = ComponentChain::<Message>::new(
+    let mut chain = ComponentCollection::<Message>::new(
         100,
         vec![
             cmp_inject_periodic::new(cmp_inject_periodic::Config {

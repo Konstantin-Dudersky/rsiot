@@ -3,14 +3,14 @@ use tokio::time::{sleep, Duration};
 use tracing::{error, info, trace};
 use url::Url;
 
-use rsiot_component_core::{Input, Output};
+use rsiot_component_core::{ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::Config, error::Error, model::Row};
 
 pub async fn fn_process<TMessage>(
-    mut input: Input<TMessage>,
-    _output: Output<TMessage>,
+    mut input: ComponentInput<TMessage>,
+    _output: ComponentOutput<TMessage>,
     config: Config,
 ) where
     TMessage: IMessage,
@@ -29,7 +29,7 @@ pub async fn fn_process<TMessage>(
 }
 
 async fn task_main<TMessage>(
-    input: &mut Input<TMessage>,
+    input: &mut ComponentInput<TMessage>,
     connection_string: &Url,
 ) -> Result<(), Error>
 where

@@ -1,6 +1,6 @@
 use tokio::{main, time::Duration};
 
-use rsiot_component_core::ComponentChain;
+use rsiot_component_core::ComponentCollection;
 use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use rsiot_messages_core::{msg_types, ExampleMessage};
 use tracing::{level_filters::LevelFilter, Level};
@@ -12,7 +12,7 @@ async fn main() {
         .init();
 
     let mut counter = 0.0;
-    let mut chain = ComponentChain::<ExampleMessage>::new(
+    let mut chain = ComponentCollection::<ExampleMessage>::new(
         100,
         vec![
             cmp_inject_periodic::new(cmp_inject_periodic::Config {

@@ -1,9 +1,10 @@
-use rsiot_messages_core::IMessage;
 use tokio::{
     spawn,
     sync::{broadcast, mpsc},
     task::JoinSet,
 };
+
+use rsiot_messages_core::IMessage;
 
 use crate::{cmpbase_mpsc_to_broadcast, IComponent};
 
@@ -14,7 +15,7 @@ use crate::{cmpbase_mpsc_to_broadcast, IComponent};
 #[doc = include_str!("../examples/example1.rs")]
 /// ```
 
-pub struct ComponentChain<TMessage>
+pub struct ComponentCollection<TMessage>
 where
     TMessage: IMessage,
 {
@@ -24,7 +25,7 @@ where
     components: Vec<Box<dyn IComponent<TMessage>>>,
 }
 
-impl<TMessage> ComponentChain<TMessage>
+impl<TMessage> ComponentCollection<TMessage>
 where
     TMessage: IMessage + 'static,
 {

@@ -2,11 +2,14 @@
 
 use tracing::{debug, error, info, trace, warn, Level};
 
-use rsiot_component_core::{Component, Input, Output};
+use rsiot_component_core::{Component, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
-async fn cmp_logger<TMessage>(mut input: Input<TMessage>, _output: Output<TMessage>, config: Config)
-where
+async fn cmp_logger<TMessage>(
+    mut input: ComponentInput<TMessage>,
+    _output: ComponentOutput<TMessage>,
+    config: Config,
+) where
     TMessage: IMessage,
 {
     debug!("cmp_logger started");

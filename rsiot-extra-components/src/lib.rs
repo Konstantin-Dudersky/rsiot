@@ -15,5 +15,5 @@ mod component_filter_message;
 pub use component_combine_message::component_combine_message;
 pub use component_filter_message::component_filter_message;
 
-pub use rsiot_component_core::ComponentChain;
+pub use rsiot_component_core::ComponentCollection;
 pub use rsiot_messages_core::IMessage;

@@ -2,12 +2,12 @@
 
 use tokio::task::JoinSet;
 
-use rsiot_component_core::{Component, Input, Output};
+use rsiot_component_core::{Component, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 async fn fn_process<TMessage>(
-    mut input: Input<TMessage>,
-    output: Output<TMessage>,
+    mut input: ComponentInput<TMessage>,
+    output: ComponentOutput<TMessage>,
     mut config: Config<TMessage>,
 ) where
     TMessage: IMessage + 'static,
@@ -35,7 +35,7 @@ async fn fn_process<TMessage>(
 /// Настройки
 #[derive(Debug)]
 pub struct Config<TMessage> {
-    pub channel: Input<TMessage>,
+    pub channel: ComponentInput<TMessage>,
 }
 
 /// Компонент для добавления сообщений из побочного потока

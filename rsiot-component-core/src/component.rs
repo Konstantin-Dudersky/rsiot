@@ -2,14 +2,14 @@ use tokio::{spawn, task::JoinHandle};
 
 use crate::{
     icomponent_function::IComponentFunction,
-    types::{Input, Output},
+    types::{ComponentInput, ComponentOutput},
     IComponent,
 };
 
 /// Обобщенный компонент
 pub struct Component<TMessage, TConfig> {
-    pub input: Option<Input<TMessage>>,
-    pub output: Option<Output<TMessage>>,
+    pub input: Option<ComponentInput<TMessage>>,
+    pub output: Option<ComponentOutput<TMessage>>,
     pub config: Option<TConfig>,
     pub function: Box<dyn IComponentFunction<TMessage, TConfig>>,
 }
@@ -29,11 +29,11 @@ impl<TMessage, TConfig> Component<TMessage, TConfig> {
 }
 
 impl<TMessage, TConfig> IComponent<TMessage> for Component<TMessage, TConfig> {
-    fn set_input(&mut self, stream_input: Input<TMessage>) {
+    fn set_input(&mut self, stream_input: ComponentInput<TMessage>) {
         self.input = Some(stream_input);
     }
 
-    fn set_output(&mut self, stream_output: Output<TMessage>) {
+    fn set_output(&mut self, stream_output: ComponentOutput<TMessage>) {
         self.output = Some(stream_output);
     }
 

@@ -3,12 +3,12 @@
 use tokio::time::{sleep, Duration, Instant};
 use tracing::debug;
 
-use rsiot_component_core::{Component, Input, Output};
+use rsiot_component_core::{Component, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 async fn cmp_inject_periodic<TMessage, TFnPeriodic>(
-    _input: Input<TMessage>,
-    output: Output<TMessage>,
+    _input: ComponentInput<TMessage>,
+    output: ComponentOutput<TMessage>,
     mut config: Config<TMessage, TFnPeriodic>,
 ) where
     TMessage: IMessage,

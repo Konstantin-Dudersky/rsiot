@@ -12,14 +12,14 @@ use tokio::{
 use tokio_tungstenite::{connect_async, tungstenite::Message, MaybeTlsStream, WebSocketStream};
 use tracing::{error, info, warn};
 
-use rsiot_component_core::{Input, Output};
+use rsiot_component_core::{ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::Config, Error};
 
 pub async fn fn_process<TMessage>(
-    input: Input<TMessage>,
-    output: Output<TMessage>,
+    input: ComponentInput<TMessage>,
+    output: ComponentOutput<TMessage>,
     config: Config<TMessage>,
 ) where
     TMessage: IMessage + 'static,
@@ -39,8 +39,8 @@ pub async fn fn_process<TMessage>(
 
 /// Подключаемся к серверу и запускаем потоки получения и отправки
 async fn task_connect<TMessage>(
-    input: Input<TMessage>,
-    output: Output<TMessage>,
+    input: ComponentInput<TMessage>,
+    output: ComponentOutput<TMessage>,
     config: Config<TMessage>,
 ) -> Result<(), Error>
 where
@@ -55,7 +55,7 @@ where
 
 /// Задача отправки данных на сервер Websocket
 async fn task_send<TMessage>(
-    mut input: Input<TMessage>,
+    mut input: ComponentInput<TMessage>,
     mut write: SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>,
     fn_send: fn(TMessage) -> Option<String>,
 ) -> Result<(), Error>
@@ -74,7 +74,7 @@ where
 
 /// Задача приема данных с сервера Websocket
 async fn task_recv<TMessage>(
-    output: Output<TMessage>,
+    output: ComponentOutput<TMessage>,
     mut read: SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>,
     fn_recv: fn(String) -> Vec<TMessage>,
 ) -> Result<(), Error>
