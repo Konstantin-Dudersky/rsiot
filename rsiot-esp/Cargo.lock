@@ -1236,9 +1236,9 @@ dependencies = [
 
 [[package]]
 name = "rsiot-component-core"
-version = "0.0.28"
+version = "0.0.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9fd2aa71cd6a757c95ef90a019b3f1122d134c0a5990b8193cf716ad6fe167fb"
+checksum = "627bef460d25403b338d6164e5149700d3c9c7a4b387f2572bb9dfa8c4f8e7df"
 dependencies = [
  "futures",
  "rsiot-messages-core",
@@ -1248,7 +1248,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-esp"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "embedded-svc",
  "embuild",
@@ -1265,9 +1265,9 @@ dependencies = [
 
 [[package]]
 name = "rsiot-extra-components"
-version = "0.0.28"
+version = "0.0.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f52ba310869cd8631335982ab09e7a7d79aaa02b7583c3710954ed63fd0e1d71"
+checksum = "5da6e34831e33d83396334341f984372ce078d1c06e19a89f5df64b20e472bf7"
 dependencies = [
  "rsiot-component-core",
  "rsiot-messages-core",
@@ -1277,9 +1277,9 @@ dependencies = [
 
 [[package]]
 name = "rsiot-messages-core"
-version = "0.0.26"
+version = "0.0.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "efa470a251520db7d950ab082f387c2fb2f36b090a328ab6bc035b95cabe919b"
+checksum = "7029f15fe997fa68af8da4c2044dd146357825e53d6b10a19a11e0490fba7ea6"
 dependencies = [
  "chrono",
  "serde",

@@ -3,12 +3,12 @@
 description = "Чтение входов GPIO микроконтроллера ESP."
 edition = "2021"
 # keywords.workspace = true
-# license.workspace = true
+license = "MIT OR Apache-2.0"
 name = "rsiot-esp"
 readme = "README.md"
 # repository.workspace = true
 # rust-version.workspace = true
-version = "0.0.0"
+version = "0.0.1"
 
 [profile.release]
 opt-level = "s"
@@ -20,17 +20,17 @@ opt-level = "z"
 
 
 [dependencies]
-tokio = { version = "*" }
+tokio = { version = "1.35.1" }
 esp-idf-svc = { version = "0.47.3", features = ["std"] }
-embedded-svc = { version = "*" }
-tracing = { version = "*" }
+embedded-svc = { version = "0.26.4" }
+tracing = { version = "0.1.40" }
 postcard = { version = "1", features = ["use-std"] }
-serde = { version = "*" }
-thiserror = { version = "*" }
+serde = { version = "1.0.194" }
+thiserror = { version = "1.0.56" }
 
-rsiot-component-core = { version = "*" }
-rsiot-extra-components = { version = "*" }
-rsiot-messages-core = { version = "*" }
+rsiot-component-core = { version = "0.0.29" }
+rsiot-extra-components = { version = "0.0.29" }
+rsiot-messages-core = { version = "0.0.29" }
 
 [build-dependencies]
 embuild = "0.31.3"
