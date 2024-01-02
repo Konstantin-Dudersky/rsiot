@@ -4,7 +4,7 @@ use rsiot_messages_core::IMessage;
 
 use crate::{CacheType, Component, ComponentInput, ComponentOutput};
 
-async fn process<TMessage>(
+async fn fn_process<TMessage>(
     _input: ComponentInput<TMessage>,
     _output: ComponentOutput<TMessage>,
     _config: Config,
@@ -14,12 +14,12 @@ async fn process<TMessage>(
 {
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct Config {}
 
-pub fn new<TMessage>() -> Box<Component<TMessage, Config>>
+pub fn new<TMessage>(config: Config) -> Box<Component<TMessage, Config>>
 where
     TMessage: IMessage + 'static,
 {
-    Box::new(Component::new(Config {}, process))
+    Box::new(Component::new(config, fn_process))
 }

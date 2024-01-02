@@ -28,8 +28,7 @@ use esp_idf_svc::{
 };
 use tokio::time::sleep;
 
-use rsiot_component_core::{ComponentInput, ComponentOutput};
-use rsiot_extra_components::cmp_cache::CacheType;
+use rsiot_component_core::{CacheType, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 use tracing::info;
 
@@ -38,7 +37,8 @@ use super::config::Config;
 pub async fn fn_process<TMessage>(
     input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
-    config: Config<TMessage>,
+    _config: Config,
+    cache: CacheType<TMessage>,
 ) where
     TMessage: IMessage + 'static,
 {
@@ -48,7 +48,7 @@ pub async fn fn_process<TMessage>(
     // Запускаем в синхронном треде, поскольку EspHttpServer не поддерживает Send
     let input_clone = input.resubscribe();
     let output_clone = output.clone();
-    let cache_clone = config.cache.clone();
+    let cache_clone = cache.clone();
     let _thread = thread::spawn(|| create_server(input_clone, output_clone, cache_clone));
 
     loop {

@@ -1,6 +1,7 @@
 # Подготовка к публикации
 
-cargo clippy
+cargo update
+cargo clippy --all-targets
 cargo build
 
 do {

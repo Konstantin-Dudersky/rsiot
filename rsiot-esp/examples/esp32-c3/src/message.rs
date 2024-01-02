@@ -7,6 +7,8 @@ pub enum Message {
     SetLedColor(Value<RGB8>),
     TestFromHttpServer(u16),
     Relay2(Value<bool>),
+
+    StorageI32(Value<i32>),
 }
 
 impl IMessage for Message {

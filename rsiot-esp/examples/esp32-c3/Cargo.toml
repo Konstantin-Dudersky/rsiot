@@ -19,17 +19,17 @@ opt-level = "z"
 anyhow = { version = "*" }
 log = { version = "0.4", default-features = false }
 esp-idf-svc = { version = "0.47.3", features = ["std"] }
-serde = { version = "*" }
+serde = { version = "*", features = ["derive"] }
 tokio = { version = "*" }
 tracing = { version = "*", features = ["log"] }
 rgb = { version = "0.8.37", features = ["serde"] }
 
 rsiot-esp = { path = "../../" }
-# TODO - убрать path после новой версии
-rsiot = { version = "*", features = [
-    "components",
-    "plc",
-], path = "../../../rsiot" }
+rsiot = { version = "*", features = ["components", "plc"] }
+
+# TODO - удалить после новой версии
+rsiot-component-core = { path = "../../../rsiot-component-core" }
+# , path = "../../../rsiot" }
 
 [build-dependencies]
 embuild = "0.31.3"

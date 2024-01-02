@@ -7,5 +7,7 @@
 
 pub mod hardware_tasks;
 mod http_server;
+mod storage;
 
 pub use http_server::cmp_http_server_esp;
+pub use storage::cmp_storage_esp;

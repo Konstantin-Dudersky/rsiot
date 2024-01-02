@@ -3,7 +3,7 @@
 use esp_idf_svc::{
     eventloop::EspSystemEventLoop,
     hal::{gpio::PinDriver, peripherals::Peripherals},
-    wifi::{AccessPointConfiguration, AuthMethod, ClientConfiguration, Configuration, EspWifi},
+    wifi::{AccessPointConfiguration, Configuration, EspWifi},
 };
 use rgb::RGB8;
 use tokio::{
@@ -12,6 +12,7 @@ use tokio::{
 };
 
 use rsiot::message::{msg_types::Value, IMessage};
+use rsiot_component_core::CacheType;
 use rsiot_esp::hardware_tasks::{gpio_input, gpio_output, wifi_setup, GpioOutputConfig};
 
 use super::message::Message;
@@ -23,6 +24,7 @@ pub async fn hal(
     input: broadcast::Receiver<Message>,
     output: mpsc::Sender<Message>,
     _config: Config,
+    _cache: CacheType<Message>,
 ) {
     let mut set: JoinSet<()> = JoinSet::new();
 
@@ -71,18 +73,22 @@ pub async fn hal(
     wifi_setup(
         &mut wifi,
         sys_loop.clone(),
-        Configuration::Mixed(
-            ClientConfiguration {
-                ssid: "Fermenter".into(),
-                password: "k33n3+Ik".into(),
-                auth_method: AuthMethod::None,
-                ..Default::default()
-            },
-            AccessPointConfiguration {
-                ssid: "test_esp_ap".into(),
-                ..Default::default()
-            },
-        ),
+        // Configuration::Mixed(
+        //     ClientConfiguration {
+        //         ssid: "Fermenter".into(),
+        //         password: "k33n3+Ik".into(),
+        //         auth_method: AuthMethod::None,
+        //         ..Default::default()
+        //     },
+        //     AccessPointConfiguration {
+        //         ssid: "test_esp_ap".into(),
+        //         ..Default::default()
+        //     },
+        // ),
+        Configuration::AccessPoint(AccessPointConfiguration {
+            ssid: "test_esp_ap".into(),
+            ..Default::default()
+        }),
     );
 
     while (set.join_next().await).is_some() {}

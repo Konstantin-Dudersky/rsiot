@@ -262,6 +262,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "cobs"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "67ba02a97a2bd10f4b59b25c7973101c79642302776489e030cd13cdab09ed15"
+
+[[package]]
 name = "const_format"
 version = "0.2.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -461,6 +467,12 @@ dependencies = [
 
 [[package]]
 name = "embedded-io"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ef1a6892d9eef45c8fa6b9e0086428a2cca8491aca8f787c534a3d6d0bcb3ced"
+
+[[package]]
+name = "embedded-io"
 version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "edd0f118536f44f5ccd48bcb8b111bdc3de888b58c74639dfb034a357d0f206d"
@@ -471,7 +483,7 @@ version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3ff09972d4073aa8c299395be75161d582e7629cd663171d62af73c8d50dba3f"
 dependencies = [
- "embedded-io",
+ "embedded-io 0.6.1",
 ]
 
 [[package]]
@@ -482,7 +494,7 @@ checksum = "55feac55fb81e14c747d5475f05ead553855a133a36f979fa4e7883a240ee829"
 dependencies = [
  "atomic-waker",
  "defmt",
- "embedded-io",
+ "embedded-io 0.6.1",
  "embedded-io-async",
  "enumset",
  "heapless",
@@ -577,7 +589,7 @@ dependencies = [
  "embedded-hal 0.2.7",
  "embedded-hal 1.0.0-rc.1",
  "embedded-hal-nb",
- "embedded-io",
+ "embedded-io 0.6.1",
  "embuild",
  "enumset",
  "esp-idf-sys",
@@ -1115,6 +1127,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 
 [[package]]
+name = "postcard"
+version = "1.0.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a55c51ee6c0db07e68448e336cf8ea4131a620edefebf9893e759b2d793420f8"
+dependencies = [
+ "cobs",
+ "embedded-io 0.4.0",
+ "heapless",
+ "serde",
+]
+
+[[package]]
 name = "proc-macro-crate"
 version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1222,7 +1246,9 @@ dependencies = [
 
 [[package]]
 name = "rsiot-component-core"
-version = "0.0.27"
+version = "0.0.28"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9fd2aa71cd6a757c95ef90a019b3f1122d134c0a5990b8193cf716ad6fe167fb"
 dependencies = [
  "futures",
  "rsiot-messages-core",
@@ -1237,16 +1263,21 @@ dependencies = [
  "embedded-svc",
  "embuild",
  "esp-idf-svc",
+ "postcard",
  "rsiot-component-core",
  "rsiot-extra-components",
  "rsiot-messages-core",
+ "serde",
+ "thiserror",
  "tokio",
  "tracing",
 ]
 
 [[package]]
 name = "rsiot-extra-components"
-version = "0.0.27"
+version = "0.0.28"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f52ba310869cd8631335982ab09e7a7d79aaa02b7583c3710954ed63fd0e1d71"
 dependencies = [
  "rsiot-component-core",
  "rsiot-messages-core",
@@ -1257,6 +1288,8 @@ dependencies = [
 [[package]]
 name = "rsiot-messages-core"
 version = "0.0.26"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "efa470a251520db7d950ab082f387c2fb2f36b090a328ab6bc035b95cabe919b"
 dependencies = [
  "chrono",
  "serde",
