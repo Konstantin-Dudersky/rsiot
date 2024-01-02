@@ -1,8 +1,9 @@
 # Подготовка к публикации
 
 cargo update
-cargo clippy --all-targets
 cargo build
+cargo check --all-targets
+cargo clippy --all-targets
 
 do {
     cd rsiot
@@ -12,6 +13,10 @@ do {
 do {
     cd rsiot-esp
     cargo rdme --force
+    cargo update
+    cargo build
+    cargo check --all-targets
+    cargo clippy --all-targets
 }
 
 do {

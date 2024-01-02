@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use rsiot_messages_core::{msg_types, IMessage};
 
 #[allow(non_camel_case_types)]
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum Messages {
     wWordState1_Get(msg_types::Value<u16>),
     wWordState2(msg_types::Value<u16>),

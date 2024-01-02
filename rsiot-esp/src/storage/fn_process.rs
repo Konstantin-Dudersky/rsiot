@@ -92,9 +92,9 @@ fn load_data<TStorageData>(nvs: &mut EspNvs<NvsDefault>) -> Result<TStorageData>
 where
     TStorageData: Debug + Default + DeserializeOwned + Serialize,
 {
-    let mut data_bytes: &mut [u8] = &mut [0; 1024];
+    let data_bytes: &mut [u8] = &mut [0; 1024];
     let data = nvs
-        .get_raw("data", &mut data_bytes)
+        .get_raw("data", data_bytes)
         .map_err(Error::ReadFromEsp)?;
 
     match data {

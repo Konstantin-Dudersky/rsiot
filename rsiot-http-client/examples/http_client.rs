@@ -20,7 +20,7 @@ use rsiot_messages_core::IMessage;
 //------------------------------------------------------------------------------
 
 #[allow(clippy::enum_variant_names)]
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 enum Message {
     HttpMethodsGetPeriodicRespone(HttpMethodsGet),
     HttpMethodsGetOnEventResponse(HttpMethodsGet),
@@ -35,7 +35,7 @@ impl IMessage for Message {
 
 //------------------------------------------------------------------------------
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 struct HttpMethodsGet {
     args: HashMap<String, String>,
     headers: HashMap<String, String>,

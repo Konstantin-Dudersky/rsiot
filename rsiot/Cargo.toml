@@ -28,8 +28,7 @@ rsiot-logging = { workspace = true }
 rsiot-messages-core = { workspace = true }
 rsiot-modbus-client = { workspace = true, optional = true }
 rsiot-plc = { workspace = true, optional = true }
-rsiot-redis-publisher = { workspace = true, optional = true }
-rsiot-redis-subscriber = { workspace = true, optional = true }
+rsiot-redis-client = { workspace = true, optional = true }
 rsiot-websocket-client = { workspace = true, optional = true }
 rsiot-websocket-server = { workspace = true, optional = true }
 rsiot-timescaledb-storing = { workspace = true, optional = true }
@@ -54,10 +53,8 @@ http-server = ["components", "dep:rsiot-http-server"]
 modbus-client = ["components", "dep:rsiot-modbus-client"]
 # Компонент ПЛК
 plc = ["components", "dep:rsiot-plc"]
-## Компонент публикации сообщений в Redis
-redis-publisher = ["components", "dep:rsiot-redis-publisher"]
-## Компонент подписики на сообщения из Redis
-redis-subscriber = ["components", "dep:rsiot-redis-subscriber"]
+## Компонент клиента Redis
+redis-client = ["components", "dep:rsiot-redis-client"]
 ## Компонент сохранения в БД TimescaleDB
 timescaledb-storing = ["components", "dep:rsiot-timescaledb-storing"]
 ## Компонент websocket клиента

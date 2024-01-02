@@ -24,7 +24,7 @@ use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use rsiot_messages_core::IMessage;
 use rsiot_modbus_client::cmp_modbus_client::{self, *};
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum Messages {
     ValueWrite(f64),
     ValueRead(f64),

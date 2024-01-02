@@ -9,7 +9,7 @@ use rsiot_extra_components::component_filter_message;
 use rsiot_messages_core::IMessage;
 use tracing::info;
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 enum Message {
     Message0(f64),
     Message1(f64),

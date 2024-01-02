@@ -45,13 +45,9 @@ TODO **telegram**
 
 #### Брокеры сообщений
 
-[**redis-publisher**](https://docs.rs/rsiot-redis-publisher/latest/rsiot_redis_publisher/cmp_redis_publisher)
+[**redis-client**](https://docs.rs/rsiot-redis-client/latest/rsiot_redis_client/cmp_redis_client)
 
-Публикация сообщений в Redis.
-
-[**redis-subscriber**](https://docs.rs/rsiot-redis-subscriber/latest/rsiot_redis_subscriber/cmp_redis_subscriber)
-
-Подписка на сообщения из Redis.
+Подписка и публикация сообщения в Redis.
 
 TODO **mqtt**
 

@@ -11,8 +11,7 @@ members = [
     "./rsiot-messages-core",
     "./rsiot-modbus-client",
     "./rsiot-plc",
-    "./rsiot-redis-publisher",
-    "./rsiot-redis-subscriber",
+    "./rsiot-redis-client",
     "./rsiot-timescaledb-storing",
     "./rsiot-websocket-server",
     "./rsiot-websocket-client",
@@ -50,6 +49,7 @@ sqlx = { version = "0.7.3", features = [
     "postgres",
     "runtime-tokio",
 ] }
+thiserror = { version = "1.0.56" }
 tokio = { version = "1.35.0", features = [
     "macros",
     "rt",
@@ -92,8 +92,7 @@ rsiot-logging = { version = "0.0.26", path = "./rsiot-logging" }
 rsiot-messages-core = { version = "0.0.26", path = "./rsiot-messages-core" }
 rsiot-modbus-client = { version = "0.0.28", path = "./rsiot-modbus-client" }
 rsiot-plc = { version = "0.0.28", path = "./rsiot-plc" }
-rsiot-redis-publisher = { version = "0.0.28", path = "./rsiot-redis-publisher" }
-rsiot-redis-subscriber = { version = "0.0.28", path = "./rsiot-redis-subscriber" }
+rsiot-redis-client = { version = "0.0.28", path = "./rsiot-redis-client" }
 rsiot-timescaledb-storing = { version = "0.0.28", path = "./rsiot-timescaledb-storing" }
 rsiot-websocket-client = { version = "0.0.28", path = "./rsiot-websocket-client" }
 rsiot-websocket-server = { version = "0.0.28", path = "./rsiot-websocket-server" }

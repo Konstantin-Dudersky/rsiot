@@ -27,6 +27,6 @@ cargo ws version patch --no-git-push
 cargo ws publish --from-git --allow-dirty
 ```
 
-## Идеи для улучшения
+После этого публикуем связанные проекты:
 
-TODO - заменить указатели функций на трейты Fn
+- [rsiot-esp](../rsiot-esp/README.md)

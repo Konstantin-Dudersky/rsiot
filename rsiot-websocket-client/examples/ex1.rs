@@ -14,7 +14,7 @@ use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use rsiot_messages_core::IMessage;
 use rsiot_websocket_client::cmp_websocket_client;
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 enum Message {
     Send(f64),
     Recv(f64),

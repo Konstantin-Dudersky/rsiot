@@ -3,7 +3,7 @@
 use crate::{eav, eav_helpers, msg_types, Deserialize, IMessage, Serialize};
 
 /// Пример реализации сообщения. Можно использовать для тестирования компонентов
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum ExampleMessage {
     ValueInstantF64(msg_types::Value<f64>),
     ValueInstantBool(msg_types::Value<bool>),

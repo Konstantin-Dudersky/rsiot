@@ -1,6 +1,6 @@
 use rsiot_messages_core::{msg_types, Deserialize, IMessage, Serialize};
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum Message {
     OutputValue(msg_types::Value<u16>),
 }

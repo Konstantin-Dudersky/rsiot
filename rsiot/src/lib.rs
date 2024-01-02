@@ -43,13 +43,9 @@
 //!
 //! #### Брокеры сообщений
 //!
-//! [**redis-publisher**](https://docs.rs/rsiot-redis-publisher/latest/rsiot_redis_publisher/cmp_redis_publisher)
+//! [**redis-client**](https://docs.rs/rsiot-redis-client/latest/rsiot_redis_client/cmp_redis_client)
 //!
-//! Публикация сообщений в Redis.
-//!
-//! [**redis-subscriber**](https://docs.rs/rsiot-redis-subscriber/latest/rsiot_redis_subscriber/cmp_redis_subscriber)
-//!
-//! Подписка на сообщения из Redis.
+//! Подписка и публикация сообщения в Redis.
 //!
 //! TODO **mqtt**
 //!
@@ -180,11 +176,8 @@ pub use rsiot_modbus_client::cmp_modbus_client;
 #[cfg(feature = "plc")]
 pub use rsiot_plc::cmp_plc;
 
-#[cfg(feature = "redis-publisher")]
-pub use rsiot_redis_publisher::cmp_redis_publisher;
-
-#[cfg(feature = "redis-subscriber")]
-pub use rsiot_redis_subscriber::cmp_redis_subscriber;
+#[cfg(feature = "redis-client")]
+pub use rsiot_redis_client::cmp_redis_client;
 
 #[cfg(feature = "timescaledb-storing")]
 pub use rsiot_timescaledb_storing::cmp_timescaledb_storing;
