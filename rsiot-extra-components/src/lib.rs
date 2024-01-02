@@ -4,6 +4,7 @@ pub mod cmp_add_output_stream;
 pub mod cmp_external_fn_process;
 pub mod cmp_inject_periodic;
 pub mod cmp_logger;
+pub mod cmpbase_cache;
 pub mod cmpbase_many_mpsc_to_mpsc;
 pub mod cmpbase_mpsc_to_broadcast;
 pub mod cmpbase_mpsc_to_many_mpsc;
