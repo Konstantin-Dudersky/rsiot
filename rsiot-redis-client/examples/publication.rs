@@ -1,7 +1,7 @@
 //! Запуск:
 //!
 //! ```bash
-//! cargo run -p rsiot-redis-publisher --example ex1
+//! cargo run -p rsiot-redis-client --example publication
 //! ```
 
 use tokio::{main, time::Duration};
@@ -12,7 +12,7 @@ use url::Url;
 use rsiot_component_core::ComponentCollection;
 use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use rsiot_messages_core::{msg_types, ExampleMessage, ExampleMessageChannel};
-use rsiot_redis_publisher::cmp_redis_publisher;
+use rsiot_redis_client::cmp_redis_client;
 
 #[main]
 async fn main() {
@@ -36,9 +36,10 @@ async fn main() {
                 level: Level::INFO,
                 header: "".into(),
             }),
-            cmp_redis_publisher::new(cmp_redis_publisher::Config {
+            cmp_redis_client::new(cmp_redis_client::Config {
                 url: Url::parse("redis://127.0.0.1:6379").unwrap(),
                 fn_input: |_| vec![ExampleMessageChannel::Output],
+                subscription_channel: ExampleMessageChannel::Output,
             }),
         ],
     );

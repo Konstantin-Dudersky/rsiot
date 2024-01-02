@@ -1,5 +1,3 @@
-//! Компонент для публикации сообщений в Redis
-
 use rsiot_component_core::Component;
 use rsiot_messages_core::{IMessage, IMessageChannel};
 

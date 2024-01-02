@@ -3,18 +3,18 @@
 //! Запуск:
 //!
 //! ```bash
-//! cargo run -p rsiot-redis-subscriber --example ex1
+//! cargo run -p rsiot-redis-client --example subscription
 //! ```
 //!
 //! Проверки:
 //!
-//! - через веб-интрефейс, в Pub/Sub, в канал `rsiot-redis-subscriber` записать сообщение
+//! - через веб-интрефейс, в Pub/Sub, в канал `rsiot-redis-client` записать сообщение
 //! {"Message0": 123}. В консоли должно прочитаться это сообщение
 //!
 //! - через веб-интерфейс, перед запуском примера создать хеш с названием `rsiot-redis-subscriber`,
 //! задать ключ `Message0`. После запуска примера в консоли должно прочитаться это сообщение
 //!
-//! - корректный перезапуск. При отключении Redis, передачи неправильного сообщения в Pub/Sub
+//! - корректный перезапуск. При отключении Redis, или передачи неправильного сообщения в Pub/Sub
 
 use tokio::main;
 use tracing::Level;
@@ -24,7 +24,7 @@ use url::Url;
 use rsiot_component_core::ComponentCollection;
 use rsiot_extra_components::cmp_logger;
 use rsiot_messages_core::{ExampleMessage, ExampleMessageChannel};
-use rsiot_redis_subscriber::cmp_redis_subscriber;
+use rsiot_redis_client::cmp_redis_client;
 
 #[main]
 async fn main() {
@@ -33,9 +33,10 @@ async fn main() {
     let mut chain = ComponentCollection::<ExampleMessage>::new(
         100,
         vec![
-            cmp_redis_subscriber::new(cmp_redis_subscriber::Config {
+            cmp_redis_client::new(cmp_redis_client::Config {
                 url: Url::parse("redis://127.0.0.1:6379").unwrap(),
-                redis_channel: ExampleMessageChannel::Output,
+                subscription_channel: ExampleMessageChannel::Output,
+                fn_input: |_| vec![ExampleMessageChannel::Output],
             }),
             cmp_logger::new(cmp_logger::Config {
                 level: Level::INFO,

@@ -1,4 +1,4 @@
-Компонент публикации сообщений в Redis. Используется крейт [redis](https://crates.io/crates/redis).
+Компонент подписки на сообщения из Redis. Используется крейт [redis](https://crates.io/crates/redis).
 
 ## Конфигурация
 
