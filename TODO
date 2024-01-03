@@ -11,4 +11,4 @@ TODO - tauri push уведомления
 
 TODO - заменить указатели функций на трейты Fn
 
-TODO - объединить redis-publisher и redis-subscriber
+TODO - возможно, компоенты должны возвращать Result, а не (), для критических ошибок?

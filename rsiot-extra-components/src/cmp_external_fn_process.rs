@@ -7,6 +7,7 @@ pub fn new<TMessage, TConfig>(
 ) -> Box<Component<TMessage, TConfig>>
 where
     TMessage: IMessage + 'static,
+    TConfig: std::fmt::Debug,
 {
     let cmp = Component::new(config, fn_process);
     Box::new(cmp)

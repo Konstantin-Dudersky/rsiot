@@ -6,7 +6,7 @@ use tokio::{
 
 use rsiot_messages_core::IMessage;
 
-use crate::{cache::create_cache, types::CacheType, IComponent};
+use crate::{cache::create_cache, error::Error, types::CacheType, IComponent};
 
 /// Объединение компонентов в одну цепочку
 ///
@@ -37,21 +37,13 @@ where
     }
 
     /// Запустить на выполнение все компоненты. Поток ожидает выполения всех задач
-    pub async fn spawn(&mut self) {
+    pub async fn spawn(&mut self) -> Result<(), Error> {
         let (input_tx, _input_rx) = broadcast::channel(self.buffer_size);
         let (output_tx, output_rx) = mpsc::channel(self.buffer_size);
 
         let cache = create_cache();
 
-        spawn(task_cache(output_rx, input_tx.clone(), cache.clone()));
-
-        // let task_cache = cmpbase_cache(
-        //     input_tx.subscribe(),
-        //     cmpbase_cache::Config {
-        //         cache: cache.clone(),
-        //     },
-        // );
-        // spawn(task_cache);
+        spawn(task_internal(output_rx, input_tx.clone(), cache.clone()));
 
         for component in self.components.iter_mut() {
             component.set_input(input_tx.subscribe());
@@ -61,16 +53,16 @@ where
 
         let mut set = JoinSet::new();
         while let Some(mut cmp) = self.components.pop() {
-            set.spawn(cmp.spawn());
+            let handle = cmp.spawn()?;
+            set.spawn(handle);
         }
-        // let task = cmpbase_mpsc_to_broadcast::new(output_rx, input_tx);
-        // spawn(task);
 
         while (set.join_next().await).is_some() {}
+        Ok(())
     }
 }
 
-async fn task_cache<TMessage>(
+async fn task_internal<TMessage>(
     mut input: mpsc::Receiver<TMessage>,
     output: broadcast::Sender<TMessage>,
     cache: CacheType<TMessage>,

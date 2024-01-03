@@ -1,6 +1,7 @@
 use tokio::task::JoinHandle;
 
 use crate::{
+    error::Error,
     types::{ComponentInput, ComponentOutput},
     CacheType,
 };
@@ -18,14 +19,14 @@ pub trait IComponent<TMessage> {
     fn set_cache(&mut self, cache: CacheType<TMessage>);
 
     /// Порождаем асинхронную задачу
-    fn spawn(&mut self) -> JoinHandle<()>;
+    fn spawn(&mut self) -> Result<JoinHandle<()>, Error>;
 
     /// Задать входной и выходной потоки и запустить на выполнение
     fn set_and_spawn(
         &mut self,
         input: ComponentInput<TMessage>,
         output: ComponentOutput<TMessage>,
-    ) -> JoinHandle<()> {
+    ) -> Result<JoinHandle<()>, Error> {
         self.set_input(input);
         self.set_output(output);
         self.spawn()

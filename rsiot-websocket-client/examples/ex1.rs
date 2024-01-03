@@ -56,7 +56,7 @@ async fn main() {
         ],
     );
 
-    chain.spawn().await;
+    chain.spawn().await.unwrap();
 }
 
 fn fn_send(msg: Message) -> Option<String> {

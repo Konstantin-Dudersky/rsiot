@@ -38,5 +38,5 @@ async fn main() {
         vec![cmp_plc::new(plc_config), cmp_logger::new(logger_config)],
     );
 
-    chain.spawn().await;
+    chain.spawn().await.unwrap();
 }

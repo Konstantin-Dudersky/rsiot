@@ -1,11 +1,5 @@
-use tokio::sync::mpsc::error::SendError;
-
 #[derive(Debug, thiserror::Error)]
 pub enum Error<TMessage> {
-    /// Ошибка получения собщения из асинхронной подписки PubSub
-    #[error("Error redis subscription")]
-    GetMessage,
-
     #[error("Error in async task: {source}")]
     Join {
         #[from]
@@ -14,7 +8,7 @@ pub enum Error<TMessage> {
 
     /// Ошибка десериализации
     #[error("Error in message serialization / deserialization: {source:?}")]
-    MessageError {
+    Message {
         #[from]
         source: rsiot_messages_core::Error,
     },
@@ -30,7 +24,6 @@ pub enum Error<TMessage> {
     #[error("Error sending message to channel: {source}")]
     SendChannel {
         #[from]
-        source: SendError<TMessage>,
+        source: tokio::sync::mpsc::error::SendError<TMessage>,
     },
-    // SendChannel(String),
 }

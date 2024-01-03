@@ -2,6 +2,7 @@ pub mod cache;
 mod component;
 mod component_collection;
 pub mod component_example;
+mod error;
 mod icomponent;
 mod icomponent_function;
 mod types;

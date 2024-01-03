@@ -5,7 +5,7 @@ use tokio::{
     task::JoinSet,
     time::{sleep, Duration},
 };
-use tracing::{error, info, trace};
+use tracing::{error, info, trace, warn};
 use url::Url;
 
 use rsiot_component_core::{CacheType, ComponentInput, ComponentOutput};
@@ -104,12 +104,7 @@ where
     let mut pubsub = connection.into_pubsub();
     pubsub.subscribe(redis_channel.to_string()).await?;
     let mut stream = pubsub.on_message();
-    loop {
-        let redis_msg = stream.next().await;
-        let redis_msg = match redis_msg {
-            Some(value) => value,
-            None => return Err(Error::GetMessage),
-        };
+    while let Some(redis_msg) = stream.next().await {
         trace!("New message from Redis: {:?}", redis_msg);
         let payload: String = redis_msg.get_payload()?;
         let msg = TMessage::from_json(&payload);
@@ -121,6 +116,8 @@ where
             }
         }
     }
+    warn!("Stop redis subscription");
+    Ok(())
 }
 
 /// Чтение данных из хеша

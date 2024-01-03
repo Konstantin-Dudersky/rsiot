@@ -26,5 +26,5 @@ async fn main() {
         ],
     );
 
-    chain.spawn().await;
+    chain.spawn().await.unwrap();
 }
