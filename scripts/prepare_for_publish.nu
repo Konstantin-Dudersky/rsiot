@@ -22,6 +22,7 @@ do {
     cargo build
     cargo check --all-targets
     cargo clippy --all-targets
+    cargo +nightly udeps
 }
 
 do {
@@ -40,3 +41,6 @@ do {
 }
 
 cp rsiot/README.md .
+
+# проверяем ненужные зависимости
+cargo +nightly udeps
