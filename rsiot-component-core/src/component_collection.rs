@@ -6,7 +6,7 @@ use tokio::{
 
 use rsiot_messages_core::IMessage;
 
-use crate::{cache::create_cache, error::ComponentError, types::CacheType, IComponent};
+use crate::{error::ComponentError, Cache, IComponent};
 
 /// Объединение компонентов в одну цепочку
 ///
@@ -41,7 +41,7 @@ where
         let (input_tx, _input_rx) = broadcast::channel(self.buffer_size);
         let (output_tx, output_rx) = mpsc::channel(self.buffer_size);
 
-        let cache = create_cache();
+        let cache = Cache::new();
 
         spawn(task_internal(output_rx, input_tx.clone(), cache.clone()));
 
@@ -65,7 +65,7 @@ where
 async fn task_internal<TMessage>(
     mut input: mpsc::Receiver<TMessage>,
     output: broadcast::Sender<TMessage>,
-    cache: CacheType<TMessage>,
+    cache: Cache<TMessage>,
 ) where
     TMessage: IMessage,
 {

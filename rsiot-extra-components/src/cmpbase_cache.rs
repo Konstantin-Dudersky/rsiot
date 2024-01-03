@@ -2,14 +2,12 @@
 //!
 //! Кеш представляет собой `HashMap`, а точнее `Arc<Mutex<RwLock<String, TMessage>>>`
 
-use rsiot_component_core::{CacheType, ComponentInput};
+use rsiot_component_core::{Cache, ComponentInput};
 use rsiot_messages_core::IMessage;
-
-pub use rsiot_component_core::cache::create_cache;
 
 #[derive(Clone, Debug)]
 pub struct Config<TMessage> {
-    pub cache: CacheType<TMessage>,
+    pub cache: Cache<TMessage>,
 }
 
 pub async fn cmpbase_cache<TMessage>(mut input: ComponentInput<TMessage>, config: Config<TMessage>)

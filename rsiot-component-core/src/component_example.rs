@@ -2,13 +2,13 @@
 
 use rsiot_messages_core::IMessage;
 
-use crate::{error::ComponentError, CacheType, Component, ComponentInput, ComponentOutput};
+use crate::{error::ComponentError, Cache, Component, ComponentInput, ComponentOutput};
 
 async fn fn_process<TMessage>(
     _input: ComponentInput<TMessage>,
     _output: ComponentOutput<TMessage>,
     _config: Config,
-    _cache: CacheType<TMessage>,
+    _cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>
 where
     TMessage: IMessage,

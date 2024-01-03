@@ -3,14 +3,14 @@
 use tokio::time::{sleep, Duration, Instant};
 use tracing::debug;
 
-use rsiot_component_core::{CacheType, Component, ComponentError, ComponentInput, ComponentOutput};
+use rsiot_component_core::{Cache, Component, ComponentError, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 async fn fn_process<TMessage, TFnPeriodic>(
     _input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
     mut config: Config<TMessage, TFnPeriodic>,
-    _cache: CacheType<TMessage>,
+    _cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>
 where
     TMessage: IMessage,

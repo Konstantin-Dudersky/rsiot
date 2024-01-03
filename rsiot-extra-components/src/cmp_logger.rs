@@ -2,14 +2,14 @@
 
 use tracing::{debug, error, info, trace, warn, Level};
 
-use rsiot_component_core::{CacheType, Component, ComponentError, ComponentInput, ComponentOutput};
+use rsiot_component_core::{Cache, Component, ComponentError, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 async fn fn_process<TMessage>(
     mut input: ComponentInput<TMessage>,
     _output: ComponentOutput<TMessage>,
     config: Config,
-    _cache: CacheType<TMessage>,
+    _cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>
 where
     TMessage: IMessage,

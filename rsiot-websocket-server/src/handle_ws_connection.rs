@@ -6,7 +6,7 @@ use futures_util::{
     stream::{SplitSink, SplitStream},
     SinkExt, StreamExt,
 };
-use rsiot_component_core::CacheType;
+use rsiot_component_core::Cache;
 use tokio::{
     net::TcpStream,
     sync::{broadcast, mpsc},
@@ -25,7 +25,7 @@ pub async fn handle_ws_connection<TMessage>(
     output: mpsc::Sender<TMessage>,
     config: Config<TMessage>,
     stream_and_addr: (TcpStream, SocketAddr),
-    cache: CacheType<TMessage>,
+    cache: Cache<TMessage>,
 ) where
     TMessage: IMessage + 'static,
 {
@@ -44,7 +44,7 @@ async fn _handle_ws_connection<TMessage>(
     output: mpsc::Sender<TMessage>,
     stream_and_addr: (TcpStream, SocketAddr),
     config: Config<TMessage>,
-    cache: CacheType<TMessage>,
+    cache: Cache<TMessage>,
 ) -> Result<(), Errors>
 where
     TMessage: IMessage + 'static,
@@ -76,7 +76,7 @@ where
 /// При подключении нового клиента отправляем все данные из кеша
 async fn send_prepare_cache<TMessage>(
     output: mpsc::Sender<TMessage>,
-    cache: CacheType<TMessage>,
+    cache: Cache<TMessage>,
 ) -> Result<(), Errors>
 where
     TMessage: IMessage,

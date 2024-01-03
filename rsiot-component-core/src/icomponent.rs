@@ -1,9 +1,9 @@
 use tokio::task::JoinHandle;
 
 use crate::{
+    cache::Cache,
     error::ComponentError,
     types::{ComponentInput, ComponentOutput},
-    CacheType,
 };
 
 /// Трейт для работы с компонентом из построителя цепочки компонентов
@@ -16,7 +16,7 @@ pub trait IComponent<TMessage> {
     fn set_output(&mut self, output: ComponentOutput<TMessage>);
 
     // Задать ссылку на кеш
-    fn set_cache(&mut self, cache: CacheType<TMessage>);
+    fn set_cache(&mut self, cache: Cache<TMessage>);
 
     /// Порождаем асинхронную задачу
     fn spawn(&mut self) -> Result<JoinHandle<Result<(), ComponentError>>, ComponentError>;

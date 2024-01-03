@@ -12,7 +12,7 @@ use tokio::{
 use tokio_tungstenite::{connect_async, tungstenite::Message, MaybeTlsStream, WebSocketStream};
 use tracing::{error, info, warn};
 
-use rsiot_component_core::{CacheType, ComponentError, ComponentInput, ComponentOutput};
+use rsiot_component_core::{Cache, ComponentError, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::Config, Error};
@@ -21,7 +21,7 @@ pub async fn fn_process<TMessage>(
     input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
     config: Config<TMessage>,
-    _cache: CacheType<TMessage>,
+    _cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>
 where
     TMessage: IMessage + 'static,

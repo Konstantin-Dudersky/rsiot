@@ -12,7 +12,7 @@ use tokio::{
 use tokio_util::sync::CancellationToken;
 use tracing::{error, info};
 
-use rsiot_component_core::{CacheType, ComponentError, ComponentInput, ComponentOutput};
+use rsiot_component_core::{Cache, ComponentError, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::Config, errors::Errors};
@@ -23,7 +23,7 @@ pub async fn fn_process<TMessage>(
     input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
     config: Config<TMessage>,
-    cache: CacheType<TMessage>,
+    cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>
 where
     TMessage: IMessage + 'static,
@@ -54,7 +54,7 @@ async fn task_main<TMessage>(
     input: broadcast::Receiver<TMessage>,
     output: mpsc::Sender<TMessage>,
     config: Config<TMessage>,
-    cache: CacheType<TMessage>,
+    cache: Cache<TMessage>,
     cancel: CancellationToken,
 ) -> Result<(), Errors>
 where

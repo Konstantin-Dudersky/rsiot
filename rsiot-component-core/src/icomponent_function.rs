@@ -9,7 +9,8 @@ use futures::future::BoxFuture;
 
 use crate::{
     error::ComponentError,
-    types::{CacheType, ComponentInput, ComponentOutput},
+    types::{ComponentInput, ComponentOutput},
+    Cache,
 };
 
 /// Трейт для функции компонента
@@ -19,13 +20,13 @@ pub trait IComponentFunction<TMessage, TConfig>: Send {
         input: ComponentInput<TMessage>,
         output: ComponentOutput<TMessage>,
         config: TConfig,
-        cache: CacheType<TMessage>,
+        cache: Cache<TMessage>,
     ) -> BoxFuture<'static, Result<(), ComponentError>>;
 }
 
 impl<T, F, TMessage, TConfig> IComponentFunction<TMessage, TConfig> for T
 where
-    T: Fn(ComponentInput<TMessage>, ComponentOutput<TMessage>, TConfig, CacheType<TMessage>) -> F
+    T: Fn(ComponentInput<TMessage>, ComponentOutput<TMessage>, TConfig, Cache<TMessage>) -> F
         + Send,
     F: Future<Output = Result<(), ComponentError>> + 'static + Send,
 {
@@ -34,7 +35,7 @@ where
         input: ComponentInput<TMessage>,
         output: ComponentOutput<TMessage>,
         config: TConfig,
-        cache: CacheType<TMessage>,
+        cache: Cache<TMessage>,
     ) -> BoxFuture<'static, Result<(), ComponentError>> {
         Box::pin(self(input, output, config, cache))
     }

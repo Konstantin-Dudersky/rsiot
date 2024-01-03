@@ -2,7 +2,7 @@
 
 use tokio::sync::mpsc;
 
-use rsiot_component_core::{CacheType, Component, ComponentError, ComponentInput, ComponentOutput};
+use rsiot_component_core::{Cache, Component, ComponentError, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use super::cmpbase_mpsc_to_many_mpsc;
@@ -11,7 +11,7 @@ async fn fn_process<TMessage>(
     input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
     config: Config<TMessage>,
-    _cache: CacheType<TMessage>,
+    _cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>
 where
     TMessage: IMessage + 'static,

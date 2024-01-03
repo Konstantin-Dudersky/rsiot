@@ -5,7 +5,7 @@ use crate::{
     error::ComponentError,
     icomponent_function::IComponentFunction,
     types::{ComponentInput, ComponentOutput},
-    CacheType, IComponent,
+    Cache, IComponent,
 };
 
 /// Обобщенный компонент
@@ -14,7 +14,7 @@ pub struct Component<TMessage, TConfig> {
     pub output: Option<ComponentOutput<TMessage>>,
     pub config: Option<TConfig>,
     pub function: Option<Box<dyn IComponentFunction<TMessage, TConfig>>>,
-    cache: Option<CacheType<TMessage>>,
+    cache: Option<Cache<TMessage>>,
 }
 
 impl<TMessage, TConfig> Component<TMessage, TConfig> {
@@ -44,7 +44,7 @@ where
         self.output = Some(stream_output);
     }
 
-    fn set_cache(&mut self, cache: crate::CacheType<TMessage>) {
+    fn set_cache(&mut self, cache: crate::Cache<TMessage>) {
         self.cache = Some(cache);
     }
 

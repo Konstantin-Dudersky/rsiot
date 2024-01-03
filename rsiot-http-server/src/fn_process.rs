@@ -12,7 +12,7 @@ use tower_http::{
 };
 use tracing::{error, info, Level};
 
-use rsiot_component_core::{CacheType, ComponentError, ComponentInput, ComponentOutput};
+use rsiot_component_core::{Cache, ComponentError, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::Config, error::Error, routes, shared_state::SharedState};
@@ -22,7 +22,7 @@ pub async fn fn_process<TMessage>(
     _input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
     config: Config,
-    cache: CacheType<TMessage>,
+    cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>
 where
     TMessage: IMessage + 'static,
