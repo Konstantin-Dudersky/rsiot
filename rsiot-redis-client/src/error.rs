@@ -1,41 +1,36 @@
-use redis::RedisError;
-use tokio::{sync::mpsc::error::SendError, task::JoinError};
+use tokio::sync::mpsc::error::SendError;
 
-use rsiot_messages_core::Error as MessagesError;
-
-#[derive(Debug)]
-pub enum Error {
-    /// Ошибка десериализации
-    Deserialize(MessagesError),
-    /// Ошибка подключения к redis
-    RedisConnection(String),
-    /// Ошибка отправки соообщения в канал mpsc
-    SendChannel(String),
+#[derive(Debug, thiserror::Error)]
+pub enum Error<TMessage> {
     /// Ошибка получения собщения из асинхронной подписки PubSub
+    #[error("Error redis subscription")]
     GetMessage,
-    Join(JoinError),
-}
 
-impl From<MessagesError> for Error {
-    fn from(value: MessagesError) -> Self {
-        Self::Deserialize(value)
-    }
-}
+    #[error("Error in async task: {source}")]
+    Join {
+        #[from]
+        source: tokio::task::JoinError,
+    },
 
-impl From<RedisError> for Error {
-    fn from(value: RedisError) -> Self {
-        Error::RedisConnection(value.to_string())
-    }
-}
+    /// Ошибка десериализации
+    #[error("Error in message serialization / deserialization: {source:?}")]
+    MessageError {
+        #[from]
+        source: rsiot_messages_core::Error,
+    },
 
-impl<T> From<SendError<T>> for Error {
-    fn from(value: SendError<T>) -> Self {
-        Self::SendChannel(value.to_string())
-    }
-}
+    /// Ошибка подключения к redis
+    #[error("Redis connection error: {source}")]
+    RedisConnection {
+        #[from]
+        source: redis::RedisError,
+    },
 
-impl From<JoinError> for Error {
-    fn from(value: JoinError) -> Self {
-        Self::Join(value)
-    }
+    /// Ошибка отправки соообщения в канал mpsc
+    #[error("Error sending message to channel: {source}")]
+    SendChannel {
+        #[from]
+        source: SendError<TMessage>,
+    },
+    // SendChannel(String),
 }

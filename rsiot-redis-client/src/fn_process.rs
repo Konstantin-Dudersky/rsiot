@@ -13,7 +13,7 @@ use rsiot_messages_core::{IMessage, IMessageChannel};
 
 use crate::{config::Config, error::Error};
 
-type TaskResult = Result<(), Error>;
+type Result<TMessage> = std::result::Result<(), Error<TMessage>>;
 
 pub async fn fn_process<TMessage, TMessageChannel>(
     input: ComponentInput<TMessage>,
@@ -42,7 +42,7 @@ async fn task_main<TMessage, TMessageChannel>(
     input: ComponentInput<TMessage>,
     output: mpsc::Sender<TMessage>,
     config: Config<TMessage, TMessageChannel>,
-) -> TaskResult
+) -> Result<TMessage>
 where
     TMessage: IMessage + 'static,
     TMessageChannel: IMessageChannel + 'static,
@@ -69,7 +69,7 @@ where
 async fn task_publication<TMessage, TMessageChannel>(
     mut input: ComponentInput<TMessage>,
     config: Config<TMessage, TMessageChannel>,
-) -> Result<(), Error>
+) -> Result<TMessage>
 where
     TMessage: IMessage,
     TMessageChannel: IMessageChannel,
@@ -93,7 +93,7 @@ async fn task_subscription<TMessage, TMessageChannel>(
     output: mpsc::Sender<TMessage>,
     url: Url,
     redis_channel: TMessageChannel,
-) -> TaskResult
+) -> Result<TMessage>
 where
     TMessage: IMessage,
     TMessageChannel: IMessageChannel,
@@ -112,7 +112,7 @@ where
         };
         trace!("New message from Redis: {:?}", redis_msg);
         let payload: String = redis_msg.get_payload()?;
-        let msg: Result<TMessage, _> = TMessage::from_json(&payload);
+        let msg = TMessage::from_json(&payload);
         match msg {
             Ok(msg) => output.send(msg).await?,
             Err(err) => {
@@ -128,7 +128,7 @@ async fn task_read_hash<TMessage, TMessageChannel>(
     output: mpsc::Sender<TMessage>,
     url: Url,
     redis_channel: TMessageChannel,
-) -> TaskResult
+) -> Result<TMessage>
 where
     TMessage: IMessage,
     TMessageChannel: IMessageChannel,

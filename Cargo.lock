@@ -1800,6 +1800,7 @@ dependencies = [
  "chrono",
  "serde",
  "serde_json",
+ "thiserror",
 ]
 
 [[package]]
@@ -1842,6 +1843,7 @@ dependencies = [
  "rsiot-components-config",
  "rsiot-extra-components",
  "rsiot-messages-core",
+ "thiserror",
  "tokio",
  "tracing",
  "tracing-subscriber",
