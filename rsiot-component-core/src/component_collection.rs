@@ -5,6 +5,7 @@ use tokio::{
 };
 
 use rsiot_messages_core::IMessage;
+use tracing::error;
 
 use crate::{error::ComponentError, Cache, IComponent};
 
@@ -28,7 +29,7 @@ impl<TMessage> ComponentCollection<TMessage>
 where
     TMessage: IMessage + 'static,
 {
-    /// Создание цепочки
+    /// Создание коллекции компонентов
     pub fn new(buffer_size: usize, components: Vec<Box<dyn IComponent<TMessage>>>) -> Self {
         Self {
             buffer_size,
@@ -37,13 +38,17 @@ where
     }
 
     /// Запустить на выполнение все компоненты. Поток ожидает выполения всех задач
+    ///
+    /// TODO - если добавится функциональность добавления JoinHandle в JoinSet, переделать
+    /// https://github.com/tokio-rs/tokio/issues/5924
     pub async fn spawn(&mut self) -> Result<(), ComponentError> {
         let (input_tx, _input_rx) = broadcast::channel(self.buffer_size);
         let (output_tx, output_rx) = mpsc::channel(self.buffer_size);
-
         let cache = Cache::new();
+        let mut task_set = JoinSet::new();
 
-        spawn(task_internal(output_rx, input_tx.clone(), cache.clone()));
+        let task_internal_handle = spawn(task_internal(output_rx, input_tx.clone(), cache.clone()));
+        task_set.spawn(task_internal_handle);
 
         for component in self.components.iter_mut() {
             component.set_input(input_tx.subscribe());
@@ -51,13 +56,36 @@ where
             component.set_cache(cache.clone());
         }
 
-        let mut set = JoinSet::new();
         while let Some(mut cmp) = self.components.pop() {
-            let handle = cmp.spawn()?;
-            set.spawn(handle);
+            let task_component_handle = cmp.spawn()?;
+            task_set.spawn(task_component_handle);
         }
 
-        while (set.join_next().await).is_some() {}
+        // Компоненты не должны заканчивать выполнение. Если хоть один остановился (неважно по какой
+        // причине - по ошибке или нормально), это ошибка выполнения.
+        let msg;
+        if let Some(result) = task_set.join_next().await {
+            match result {
+                Ok(result) => match result {
+                    Ok(result) => match result {
+                        Ok(_) => {
+                            msg = "Component has finished executing".to_string();
+                        }
+                        Err(err) => {
+                            msg = format!("Component has finished executing with error: {:?}", err);
+                        }
+                    },
+                    Err(err) => {
+                        msg = format!("Component has finished executing with error: {:?}", err);
+                    }
+                },
+                Err(err) => {
+                    msg = format!("Component has finished executing with error: {:?}", err);
+                }
+            };
+            error!(msg);
+            return Err(ComponentError::Execution(msg));
+        }
         Ok(())
     }
 }
@@ -66,7 +94,8 @@ async fn task_internal<TMessage>(
     mut input: mpsc::Receiver<TMessage>,
     output: broadcast::Sender<TMessage>,
     cache: Cache<TMessage>,
-) where
+) -> Result<(), ComponentError>
+where
     TMessage: IMessage,
 {
     while let Some(msg) = input.recv().await {
@@ -84,6 +113,10 @@ async fn task_internal<TMessage>(
             }
             lock.insert(key, value);
         }
-        output.send(msg).unwrap();
+        output.send(msg).map_err(|err| {
+            let err = format!("internal component send to channel error, {:?}", err);
+            ComponentError::Initialization(err)
+        })?;
     }
+    Ok(())
 }
