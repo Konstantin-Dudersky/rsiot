@@ -11,6 +11,11 @@ do {
 }
 
 do {
+    cd rsiot-components-config
+    cargo rdme --force
+}
+
+do {
     cd rsiot-esp
     cargo rdme --force
     cargo update

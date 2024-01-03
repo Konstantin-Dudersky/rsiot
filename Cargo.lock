@@ -1719,7 +1719,6 @@ name = "rsiot-components-config"
 version = "0.0.29"
 dependencies = [
  "http 1.0.0",
- "rsiot-extra-components",
  "rsiot-messages-core",
  "url",
 ]

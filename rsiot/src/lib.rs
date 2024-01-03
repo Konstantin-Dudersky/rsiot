@@ -145,12 +145,41 @@ pub mod message {
 }
 
 #[cfg(feature = "components")]
-pub mod component {
+pub mod component_core {
     pub use rsiot_component_core::{
         Cache, Component, ComponentCollection, ComponentInput, ComponentOutput, IComponent,
         IComponentFunction,
     };
     pub use rsiot_extra_components::*;
+}
+
+pub mod components {
+    #[cfg(feature = "components")]
+    pub use rsiot_extra_components::*;
+
+    #[cfg(feature = "http-client")]
+    pub use rsiot_http_client::cmp_http_client;
+
+    #[cfg(feature = "http-server")]
+    pub use rsiot_http_server::cmp_http_server;
+
+    #[cfg(feature = "modbus-client")]
+    pub use rsiot_modbus_client::cmp_modbus_client;
+
+    #[cfg(feature = "plc")]
+    pub use rsiot_plc::cmp_plc;
+
+    #[cfg(feature = "redis-client")]
+    pub use rsiot_redis_client::cmp_redis_client;
+
+    #[cfg(feature = "timescaledb-storing")]
+    pub use rsiot_timescaledb_storing::cmp_timescaledb_storing;
+
+    #[cfg(feature = "websocket-client")]
+    pub use rsiot_websocket_client::cmp_websocket_client;
+
+    #[cfg(feature = "websocket-server")]
+    pub use rsiot_websocket_server::cmp_websocket_server;
 }
 
 #[cfg(feature = "env-vars")]
@@ -170,27 +199,3 @@ pub mod reexport {
     #[cfg(feature = "components")]
     pub use tokio;
 }
-
-#[cfg(feature = "http-client")]
-pub use rsiot_http_client::cmp_http_client;
-
-#[cfg(feature = "http-server")]
-pub use rsiot_http_server::cmp_http_server;
-
-#[cfg(feature = "modbus-client")]
-pub use rsiot_modbus_client::cmp_modbus_client;
-
-#[cfg(feature = "plc")]
-pub use rsiot_plc::cmp_plc;
-
-#[cfg(feature = "redis-client")]
-pub use rsiot_redis_client::cmp_redis_client;
-
-#[cfg(feature = "timescaledb-storing")]
-pub use rsiot_timescaledb_storing::cmp_timescaledb_storing;
-
-#[cfg(feature = "websocket-client")]
-pub use rsiot_websocket_client::cmp_websocket_client;
-
-#[cfg(feature = "websocket-server")]
-pub use rsiot_websocket_server::cmp_websocket_server;
