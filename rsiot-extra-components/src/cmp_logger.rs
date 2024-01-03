@@ -2,7 +2,7 @@
 
 use tracing::{debug, error, info, trace, warn, Level};
 
-use rsiot_component_core::{CacheType, Component, ComponentInput, ComponentOutput};
+use rsiot_component_core::{CacheType, Component, ComponentError, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 async fn fn_process<TMessage>(
@@ -10,7 +10,8 @@ async fn fn_process<TMessage>(
     _output: ComponentOutput<TMessage>,
     config: Config,
     _cache: CacheType<TMessage>,
-) where
+) -> Result<(), ComponentError>
+where
     TMessage: IMessage,
 {
     debug!("cmp_logger started");
@@ -27,6 +28,7 @@ async fn fn_process<TMessage>(
             Level::ERROR => error!("{}{:?}", header, msg),
         }
     }
+    Ok(())
 }
 
 /// Настройки компонента логгирования

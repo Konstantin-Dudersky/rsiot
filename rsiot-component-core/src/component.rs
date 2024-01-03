@@ -2,7 +2,7 @@ use rsiot_messages_core::IMessage;
 use tokio::{spawn, task::JoinHandle};
 
 use crate::{
-    error::Error,
+    error::ComponentError,
     icomponent_function::IComponentFunction,
     types::{ComponentInput, ComponentOutput},
     CacheType, IComponent,
@@ -48,12 +48,32 @@ where
         self.cache = Some(cache);
     }
 
-    fn spawn(&mut self) -> Result<JoinHandle<()>, Error> {
-        let input = self.input.take().ok_or(Error::InputNotSet)?;
-        let output = self.output.take().ok_or(Error::OutputNotSet)?;
-        let config = self.config.take().ok_or(Error::ConfigNotSet)?;
-        let cache = self.cache.take().ok_or(Error::CacheNotSet)?;
-        let func = self.function.take().ok_or(Error::FunctionNotSet)?;
+    fn spawn(&mut self) -> Result<JoinHandle<Result<(), ComponentError>>, ComponentError> {
+        let input = self
+            .input
+            .take()
+            .ok_or(ComponentError::Initialization("input not set".into()))?;
+
+        let output = self
+            .output
+            .take()
+            .ok_or(ComponentError::Initialization("output not set".into()))?;
+
+        let config = self
+            .config
+            .take()
+            .ok_or(ComponentError::Initialization("config not set".into()))?;
+
+        let cache = self
+            .cache
+            .take()
+            .ok_or(ComponentError::Initialization("cache not set".into()))?;
+
+        let func = self
+            .function
+            .take()
+            .ok_or(ComponentError::Initialization("function not set".into()))?;
+
         let handle = spawn(func.call(input, output, config, cache));
         Ok(handle)
     }

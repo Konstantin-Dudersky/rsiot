@@ -1,17 +1,8 @@
 #[derive(Debug, thiserror::Error)]
-pub enum Error {
-    #[error("Input not set for component")]
-    InputNotSet,
+pub enum ComponentError {
+    #[error("Component initialization error: {0}")]
+    Initialization(String),
 
-    #[error("Output not set for component")]
-    OutputNotSet,
-
-    #[error("Config not set for component")]
-    ConfigNotSet,
-
-    #[error("Cache not set for component")]
-    CacheNotSet,
-
-    #[error("Function not set for component")]
-    FunctionNotSet,
+    #[error("Component execution error")]
+    Execution(String),
 }

@@ -2,16 +2,18 @@
 
 use rsiot_messages_core::IMessage;
 
-use crate::{CacheType, Component, ComponentInput, ComponentOutput};
+use crate::{error::ComponentError, CacheType, Component, ComponentInput, ComponentOutput};
 
 async fn fn_process<TMessage>(
     _input: ComponentInput<TMessage>,
     _output: ComponentOutput<TMessage>,
     _config: Config,
     _cache: CacheType<TMessage>,
-) where
+) -> Result<(), ComponentError>
+where
     TMessage: IMessage,
 {
+    Ok(())
 }
 
 #[derive(Debug)]

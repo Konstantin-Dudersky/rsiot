@@ -3,7 +3,7 @@ use tokio::time::{sleep, Duration};
 use tracing::{error, info, trace};
 use url::Url;
 
-use rsiot_component_core::{CacheType, ComponentInput, ComponentOutput};
+use rsiot_component_core::{CacheType, ComponentError, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::Config, error::Error, model::Row};
@@ -13,7 +13,8 @@ pub async fn fn_process<TMessage>(
     _output: ComponentOutput<TMessage>,
     config: Config,
     _cache: CacheType<TMessage>,
-) where
+) -> Result<(), ComponentError>
+where
     TMessage: IMessage,
 {
     info!("Start timescaledb-storing");

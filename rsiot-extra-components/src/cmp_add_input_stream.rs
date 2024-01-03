@@ -2,7 +2,7 @@
 
 use tokio::task::JoinSet;
 
-use rsiot_component_core::{CacheType, Component, ComponentInput, ComponentOutput};
+use rsiot_component_core::{CacheType, Component, ComponentError, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 async fn fn_process<TMessage>(
@@ -10,7 +10,8 @@ async fn fn_process<TMessage>(
     output: ComponentOutput<TMessage>,
     mut config: Config<TMessage>,
     _cache: CacheType<TMessage>,
-) where
+) -> Result<(), ComponentError>
+where
     TMessage: IMessage + 'static,
 {
     let mut task_set = JoinSet::new();
@@ -31,6 +32,7 @@ async fn fn_process<TMessage>(
     while let Some(res) = task_set.join_next().await {
         res.unwrap();
     }
+    Ok(())
 }
 
 /// Настройки

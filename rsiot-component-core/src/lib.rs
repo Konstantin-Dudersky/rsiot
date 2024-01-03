@@ -9,6 +9,7 @@ mod types;
 
 pub use component::Component;
 pub use component_collection::ComponentCollection;
+pub use error::ComponentError;
 pub use icomponent::IComponent;
 pub use icomponent_function::IComponentFunction;
 pub use types::{CacheType, ComponentInput, ComponentOutput};

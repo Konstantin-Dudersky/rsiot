@@ -6,7 +6,7 @@ use tokio::{
 
 use rsiot_messages_core::IMessage;
 
-use crate::{cache::create_cache, error::Error, types::CacheType, IComponent};
+use crate::{cache::create_cache, error::ComponentError, types::CacheType, IComponent};
 
 /// Объединение компонентов в одну цепочку
 ///
@@ -37,7 +37,7 @@ where
     }
 
     /// Запустить на выполнение все компоненты. Поток ожидает выполения всех задач
-    pub async fn spawn(&mut self) -> Result<(), Error> {
+    pub async fn spawn(&mut self) -> Result<(), ComponentError> {
         let (input_tx, _input_rx) = broadcast::channel(self.buffer_size);
         let (output_tx, output_rx) = mpsc::channel(self.buffer_size);
 

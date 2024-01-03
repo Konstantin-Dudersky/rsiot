@@ -8,7 +8,7 @@ use tokio::{
 use tracing::{error, info};
 use url::Url;
 
-use rsiot_component_core::{CacheType, ComponentInput, ComponentOutput};
+use rsiot_component_core::{CacheType, ComponentError, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::config, error::Error, types::Result_};
@@ -18,7 +18,8 @@ pub async fn fn_process<TMessage>(
     output: ComponentOutput<TMessage>,
     config: config::Config<TMessage>,
     _cache: CacheType<TMessage>,
-) where
+) -> Result<(), ComponentError>
+where
     TMessage: IMessage + 'static,
 {
     info!("Starting http-client, configuration: {:?}", config);
