@@ -5,8 +5,8 @@ use serde::{Deserialize, Serialize};
 use tokio::main;
 
 use rsiot::{
-    cmp_plc,
-    component::{cmp_external_fn_process, cmp_logger, ComponentCollection},
+    component_core::ComponentCollection,
+    components::{cmp_external_fn_process, cmp_logger, cmp_plc},
     message::msg_types::Value,
 };
 use rsiot_esp::{cmp_http_server_esp, cmp_storage_esp};

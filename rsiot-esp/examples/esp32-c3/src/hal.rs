@@ -11,8 +11,10 @@ use tokio::{
     task::JoinSet,
 };
 
-use rsiot::message::{msg_types::Value, IMessage};
-use rsiot_component_core::CacheType;
+use rsiot::{
+    component_core::Cache,
+    message::{msg_types::Value, IMessage},
+};
 use rsiot_esp::hardware_tasks::{gpio_input, gpio_output, wifi_setup, GpioOutputConfig};
 
 use super::message::Message;
@@ -24,7 +26,7 @@ pub async fn hal(
     input: broadcast::Receiver<Message>,
     output: mpsc::Sender<Message>,
     _config: Config,
-    _cache: CacheType<Message>,
+    _cache: Cache<Message>,
 ) {
     let mut set: JoinSet<()> = JoinSet::new();
 

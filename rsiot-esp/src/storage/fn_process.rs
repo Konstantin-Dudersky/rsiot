@@ -3,9 +3,9 @@ use std::fmt::Debug;
 use esp_idf_svc::nvs::{EspDefaultNvsPartition, EspNvs, EspNvsPartition, NvsDefault};
 use postcard::{from_bytes, to_stdvec};
 use serde::{de::DeserializeOwned, Serialize};
-use tracing::{error, info, warn};
+use tracing::{info, warn};
 
-use rsiot_component_core::{CacheType, ComponentInput, ComponentOutput};
+use rsiot_component_core::{Cache, ComponentError, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use super::{config::Config, error::Error};
@@ -16,16 +16,17 @@ pub async fn fn_process<TMessage, TStorageData>(
     input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
     config: Config<TMessage, TStorageData>,
-    _cache: CacheType<TMessage>,
-) where
+    _cache: Cache<TMessage>,
+) -> std::result::Result<(), ComponentError>
+where
     TMessage: IMessage,
     TStorageData: Debug + Default + DeserializeOwned + PartialEq + Serialize,
 {
     info!("Starting cmp_storage_esp component");
-    let res = task_main(input, output, config).await;
-    if let Err(err) = res {
-        error!("Error in cmp_storage_esp component: {}", err);
-    }
+    task_main(input, output, config).await.map_err(|err| {
+        let err = err.to_string();
+        ComponentError::Execution(err)
+    })
 }
 
 async fn task_main<TMessage, TStorageData>(

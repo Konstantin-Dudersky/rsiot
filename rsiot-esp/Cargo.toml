@@ -8,7 +8,7 @@ name = "rsiot-esp"
 readme = "README.md"
 # repository.workspace = true
 # rust-version.workspace = true
-version = "0.0.1"
+version = "0.0.30"
 
 [profile.release]
 opt-level = "s"
@@ -28,9 +28,9 @@ postcard = { version = "1", features = ["use-std"] }
 serde = { version = "1.0.194" }
 thiserror = { version = "1.0.56" }
 
-rsiot-component-core = { version = "0.0.29" }
-rsiot-extra-components = { version = "0.0.29" }
-rsiot-messages-core = { version = "0.0.29" }
+rsiot-component-core = { version = "0.0.30" }
+rsiot-extra-components = { version = "0.0.30" }
+rsiot-messages-core = { version = "0.0.30" }
 
 [build-dependencies]
 embuild = "0.31.3"

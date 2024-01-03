@@ -28,7 +28,7 @@ use esp_idf_svc::{
 };
 use tokio::time::sleep;
 
-use rsiot_component_core::{CacheType, ComponentInput, ComponentOutput};
+use rsiot_component_core::{Cache, ComponentError, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 use tracing::info;
 
@@ -38,8 +38,9 @@ pub async fn fn_process<TMessage>(
     input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
     _config: Config,
-    cache: CacheType<TMessage>,
-) where
+    cache: Cache<TMessage>,
+) -> Result<(), ComponentError>
+where
     TMessage: IMessage + 'static,
 {
     // Необходимо подождать, пока поднимется Wi-Fi
@@ -59,7 +60,7 @@ pub async fn fn_process<TMessage>(
 fn create_server<TMessage>(
     input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
-    cache: CacheType<TMessage>,
+    cache: Cache<TMessage>,
 ) where
     TMessage: IMessage + 'static,
 {

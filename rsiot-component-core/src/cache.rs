@@ -1,7 +1,7 @@
 use std::{collections::HashMap, sync::Arc};
 
 use futures::Future;
-use tokio::sync::RwLock;
+use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 /// Кеширование сообщений
 #[derive(Debug)]
@@ -13,17 +13,18 @@ impl<TMessage> Cache<TMessage> {
         Self(Arc::new(RwLock::new(HashMap::new())))
     }
 
+    /// Блокировка кеша для чтения в синхронном коде
+    pub fn blocking_read(&self) -> RwLockReadGuard<'_, HashMap<String, TMessage>> {
+        self.0.blocking_read()
+    }
+
     /// Блокировка кеша для чтения
-    pub fn read(
-        &self,
-    ) -> impl Future<Output = tokio::sync::RwLockReadGuard<'_, HashMap<String, TMessage>>> {
+    pub fn read(&self) -> impl Future<Output = RwLockReadGuard<'_, HashMap<String, TMessage>>> {
         self.0.read()
     }
 
     /// Блокировка кеша для записи
-    pub fn write(
-        &self,
-    ) -> impl Future<Output = tokio::sync::RwLockWriteGuard<'_, HashMap<String, TMessage>>> {
+    pub fn write(&self) -> impl Future<Output = RwLockWriteGuard<'_, HashMap<String, TMessage>>> {
         self.0.write()
     }
 }

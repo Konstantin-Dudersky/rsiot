@@ -27,10 +27,6 @@ rgb = { version = "0.8.37", features = ["serde"] }
 rsiot-esp = { path = "../../" }
 rsiot = { version = "*", features = ["components", "plc"] }
 
-# TODO - удалить после новой версии
-rsiot-component-core = { path = "../../../rsiot-component-core" }
-# , path = "../../../rsiot" }
-
 [build-dependencies]
 embuild = "0.31.3"
 
