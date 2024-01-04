@@ -1,9 +1,11 @@
 # Подготовка к публикации
 
 cargo update
-cargo build
+cargo outdated
+cargo +nightly udeps
 cargo check --all-targets
 cargo clippy --all-targets
+cargo build
 
 do {
     cd rsiot
@@ -17,12 +19,13 @@ do {
 
 do {
     cd rsiot-esp
-    cargo rdme --force
     cargo update
-    cargo build
+    cargo outdated
+    cargo +nightly udeps
     cargo check --all-targets
     cargo clippy --all-targets
-    cargo +nightly udeps
+    cargo build
+    cargo rdme --force
 }
 
 do {
@@ -41,6 +44,3 @@ do {
 }
 
 cp rsiot/README.md .
-
-# проверяем ненужные зависимости
-cargo +nightly udeps

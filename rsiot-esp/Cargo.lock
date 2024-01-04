@@ -1236,9 +1236,9 @@ dependencies = [
 
 [[package]]
 name = "rsiot-component-core"
-version = "0.0.30"
+version = "0.0.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2fd2a1d2fa545f4b749f2cb97ac4f9fa1611b89c9d8659171de0ca6cf10c7352"
+checksum = "3ca99a114a8b43fa3995220f9b5b8abb64190753da0b65b662f84385d2d3b7d2"
 dependencies = [
  "futures",
  "rsiot-messages-core",
@@ -1249,29 +1249,16 @@ dependencies = [
 
 [[package]]
 name = "rsiot-esp"
-version = "0.0.30"
+version = "0.0.31"
 dependencies = [
  "embedded-svc",
  "embuild",
  "esp-idf-svc",
  "postcard",
  "rsiot-component-core",
- "rsiot-extra-components",
  "rsiot-messages-core",
  "serde",
  "thiserror",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "rsiot-extra-components"
-version = "0.0.30"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e9f50f58c5926ce91dc91d77a716bd01a1cbb5e9a90a3d0efd7b622632a20142"
-dependencies = [
- "rsiot-component-core",
- "rsiot-messages-core",
  "tokio",
  "tracing",
 ]
