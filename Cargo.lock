@@ -122,7 +122,7 @@ checksum = "c980ee35e870bd1a4d2c8294d4c04d0499e67bca1e4b5cefcc693c2fa00caea9"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.46",
+ "syn 2.0.47",
 ]
 
 [[package]]
@@ -335,7 +335,7 @@ dependencies = [
  "heck",
  "proc-macro2",
  "quote",
- "syn 2.0.46",
+ "syn 2.0.47",
 ]
 
 [[package]]
@@ -663,7 +663,7 @@ checksum = "87750cf4b7a4c0625b1529e4c543c2182106e4dedc60a2a6455e00d212c489ac"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.46",
+ "syn 2.0.47",
 ]
 
 [[package]]
@@ -913,7 +913,7 @@ dependencies = [
  "httpdate",
  "itoa",
  "pin-project-lite",
- "socket2 0.5.5",
+ "socket2 0.4.10",
  "tokio",
  "tower-service",
  "tracing",
@@ -1330,7 +1330,7 @@ checksum = "a948666b637a0f465e8564c73e89d4dde00d72d4d473cc972f390fc3dcee7d9c"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.46",
+ "syn 2.0.47",
 ]
 
 [[package]]
@@ -1418,7 +1418,7 @@ checksum = "4359fd9c9171ec6e8c62926d6faaf553a8dc3f64e1507e76da7911b4f6a04405"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.46",
+ "syn 2.0.47",
 ]
 
 [[package]]
@@ -1468,9 +1468,9 @@ checksum = "5b40af805b3121feab8a3c29f04d8ad262fa8e0561883e7653e024ae4479e6de"
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.74"
+version = "1.0.75"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2de98502f212cfcea8d0bb305bd0f49d7ebdd75b64ba0a68f937d888f4e0d6db"
+checksum = "907a61bd0f64c2f29cd1cf1dc34d05176426a3f504a78010f08416ddb7b13708"
 dependencies = [
  "unicode-ident",
 ]
@@ -1680,7 +1680,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot"
-version = "0.0.30"
+version = "0.0.31"
 dependencies = [
  "chrono",
  "document-features",
@@ -1703,7 +1703,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-component-core"
-version = "0.0.30"
+version = "0.0.31"
 dependencies = [
  "futures",
  "rsiot-messages-core",
@@ -1715,7 +1715,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-components-config"
-version = "0.0.30"
+version = "0.0.31"
 dependencies = [
  "anyhow",
  "http 1.0.0",
@@ -1727,7 +1727,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-env-vars"
-version = "0.0.21"
+version = "0.0.31"
 dependencies = [
  "anyhow",
  "clap",
@@ -1742,7 +1742,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-extra-components"
-version = "0.0.30"
+version = "0.0.31"
 dependencies = [
  "anyhow",
  "rsiot-component-core",
@@ -1756,7 +1756,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-http-client"
-version = "0.0.30"
+version = "0.0.31"
 dependencies = [
  "anyhow",
  "reqwest",
@@ -1775,7 +1775,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-http-server"
-version = "0.0.30"
+version = "0.0.31"
 dependencies = [
  "anyhow",
  "axum",
@@ -1814,7 +1814,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-modbus-client"
-version = "0.0.30"
+version = "0.0.31"
 dependencies = [
  "anyhow",
  "rsiot-component-core",
@@ -1831,7 +1831,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-plc"
-version = "0.0.30"
+version = "0.0.31"
 dependencies = [
  "anyhow",
  "rsiot-component-core",
@@ -1847,7 +1847,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-redis-client"
-version = "0.0.30"
+version = "0.0.31"
 dependencies = [
  "anyhow",
  "futures-util",
@@ -1865,7 +1865,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-timescaledb-storing"
-version = "0.0.30"
+version = "0.0.31"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1882,7 +1882,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-websocket-client"
-version = "0.0.30"
+version = "0.0.31"
 dependencies = [
  "anyhow",
  "futures-util",
@@ -1900,7 +1900,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-websocket-server"
-version = "0.0.30"
+version = "0.0.31"
 dependencies = [
  "anyhow",
  "futures-util",
@@ -2002,14 +2002,14 @@ checksum = "a3385e45322e8f9931410f01b3031ec534c3947d0e94c18049af4d9f9907d4e0"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.46",
+ "syn 2.0.47",
 ]
 
 [[package]]
 name = "serde_json"
-version = "1.0.110"
+version = "1.0.111"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6fbd975230bada99c8bb618e0c365c2eefa219158d5c6c29610fd09ff1833257"
+checksum = "176e46fa42316f18edd598015a5166857fc835ec732f5215eac6b7bdbf0a84f4"
 dependencies = [
  "itoa",
  "ryu",
@@ -2408,9 +2408,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "2.0.46"
+version = "2.0.47"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "89456b690ff72fddcecf231caedbe615c59480c93358a93dfae7fc29e3ebbf0e"
+checksum = "1726efe18f42ae774cc644f330953a5e7b3c3003d3edcecf18850fe9d4dd9afb"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2474,7 +2474,7 @@ checksum = "fa0faa943b50f3db30a20aa7e265dbc66076993efed8463e8de414e5d06d3471"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.46",
+ "syn 2.0.47",
 ]
 
 [[package]]
@@ -2527,7 +2527,7 @@ checksum = "5b8a1e28f2deaa14e508979454cb3a223b10b938b45af148bc0986de36f1923b"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.46",
+ "syn 2.0.47",
 ]
 
 [[package]]
@@ -2693,7 +2693,7 @@ checksum = "34704c8d6ebcbc939824180af020566b01a7c01f80641264eba0999f6c2b6be7"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.46",
+ "syn 2.0.47",
 ]
 
 [[package]]
@@ -2924,7 +2924,7 @@ dependencies = [
  "once_cell",
  "proc-macro2",
  "quote",
- "syn 2.0.46",
+ "syn 2.0.47",
  "wasm-bindgen-shared",
 ]
 
@@ -2958,7 +2958,7 @@ checksum = "f0eb82fcb7930ae6219a7ecfd55b217f5f0893484b7a13022ebb2b2bf20b5283"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.46",
+ "syn 2.0.47",
  "wasm-bindgen-backend",
  "wasm-bindgen-shared",
 ]
@@ -3150,9 +3150,9 @@ checksum = "dff9641d1cd4be8d1a070daf9e3773c5f67e78b4d9d42263020c057706765c04"
 
 [[package]]
 name = "winnow"
-version = "0.5.31"
+version = "0.5.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97a4882e6b134d6c28953a387571f1acdd3496830d5e36c5e3a1075580ea641c"
+checksum = "8434aeec7b290e8da5c3f0d628cb0eac6cabcb31d14bb74f779a08109a5914d6"
 dependencies = [
  "memchr",
 ]
@@ -3184,7 +3184,7 @@ checksum = "9ce1b18ccd8e73a9321186f97e46f9f04b778851177567b1975109d26a08d2a6"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.46",
+ "syn 2.0.47",
 ]
 
 [[package]]
