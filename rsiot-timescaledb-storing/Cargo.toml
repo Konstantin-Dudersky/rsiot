@@ -21,6 +21,7 @@ rsiot-components-config = { workspace = true }
 rsiot-messages-core = { workspace = true }
 
 [dev-dependencies]
+anyhow = { workspace = true }
 chrono = { workspace = true }
 tracing-subscriber = { workspace = true }
 

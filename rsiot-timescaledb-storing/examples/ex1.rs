@@ -13,10 +13,10 @@ use rsiot_messages_core::{msg_types, ExampleMessage};
 use rsiot_timescaledb_storing::cmp_timescaledb_storing;
 
 #[main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt().init();
 
-    let url = Url::parse("postgres://postgres:postgres@localhost:5432/db_data_test").unwrap();
+    let url = Url::parse("postgres://postgres:postgres@localhost:5432/db_data_test")?;
 
     let mut counter = 0.0;
 
@@ -37,5 +37,6 @@ async fn main() {
         ],
     );
 
-    chain.spawn().await.unwrap();
+    chain.spawn().await?;
+    Ok(())
 }

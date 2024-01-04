@@ -55,22 +55,24 @@ mod tests {
     use super::*;
 
     #[test]
-    fn line_to_upper_test() {
+    fn line_to_upper_test() -> anyhow::Result<()> {
         let input = "api_ws_port = api_ws_port";
         let expected = "API_WS_PORT = api_ws_port";
 
-        let output = line_to_upper(input).unwrap();
+        let output = line_to_upper(input)?;
         assert_eq!(expected, output);
+        Ok(())
     }
 
     #[test]
-    fn lines_to_upper_test() {
+    fn lines_to_upper_test() -> anyhow::Result<()> {
         let input = "api_ws_port = api_ws_port
 db_user = \"postgres\"";
         let expected = "API_WS_PORT = api_ws_port
 DB_USER = \"postgres\"";
 
-        let output = lines_to_upper(input).unwrap();
+        let output = lines_to_upper(input)?;
         assert_eq!(expected, output);
+        Ok(())
     }
 }

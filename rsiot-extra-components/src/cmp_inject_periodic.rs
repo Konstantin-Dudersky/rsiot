@@ -21,7 +21,10 @@ where
         let begin = Instant::now();
         let msgs = (config.fn_periodic)();
         for msg in msgs {
-            output.send(msg).await.unwrap();
+            output
+                .send(msg)
+                .await
+                .map_err(|err| ComponentError::Execution(err.to_string()))?;
         }
         let elapsed = begin.elapsed();
         let sleep_time = if config.period <= elapsed {

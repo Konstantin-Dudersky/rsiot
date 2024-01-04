@@ -14,7 +14,7 @@ use rsiot_plc::cmp_plc;
 use message::Message;
 
 #[main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt().init();
 
     let plc_config = cmp_plc::Config {
@@ -38,5 +38,6 @@ async fn main() {
         vec![cmp_plc::new(plc_config), cmp_logger::new(logger_config)],
     );
 
-    chain.spawn().await.unwrap();
+    chain.spawn().await?;
+    Ok(())
 }

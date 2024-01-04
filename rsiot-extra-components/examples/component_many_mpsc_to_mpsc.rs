@@ -23,7 +23,7 @@ impl IMessage for Message {
 }
 
 #[main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt().init();
 
     let (stream1_tx, steam1_rx) = mpsc::channel::<Message>(100);
@@ -31,23 +31,27 @@ async fn main() {
     let (stream_out_tx, mut stream_out_rx) = mpsc::channel::<Message>(100);
 
     let mut counter1 = 0.0;
+    #[allow(unreachable_code)]
     let _task1 = spawn(async move {
         loop {
             let msg = Message::Message0(counter1);
             counter1 += 1.0;
-            stream1_tx.send(msg).await.unwrap();
+            stream1_tx.send(msg).await?;
             sleep(Duration::from_secs(1)).await;
         }
+        Ok(()) as anyhow::Result<()>
     });
 
     let mut counter2 = 0.0;
+    #[allow(unreachable_code)]
     let _task2 = spawn(async move {
         loop {
             let msg = Message::Message1(counter2);
             counter2 += 1.0;
-            stream2_tx.send(msg).await.unwrap();
+            stream2_tx.send(msg).await?;
             sleep(Duration::from_secs(2)).await;
         }
+        Ok(()) as anyhow::Result<()>
     });
 
     let main_task = spawn(cmpbase_many_mpsc_to_mpsc::new::<Message>(
@@ -61,5 +65,6 @@ async fn main() {
         }
     });
 
-    main_task.await.unwrap();
+    main_task.await??;
+    Ok(())
 }

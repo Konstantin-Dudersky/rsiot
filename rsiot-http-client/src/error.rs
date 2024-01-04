@@ -1,29 +1,25 @@
-use reqwest::Error as ReqwestError;
-use tokio::{sync::mpsc::error::SendError, task::JoinError};
-
-#[derive(Debug)]
+#[derive(Debug, thiserror::Error)]
 pub enum Error<TMessage> {
     /// Ошибка конфигурации пользователя
     Configuration(String),
-    Reqwest(ReqwestError),
-    SendChannel(SendError<TMessage>),
-    TokioJoin(JoinError),
-}
 
-impl<TMessage> From<ReqwestError> for Error<TMessage> {
-    fn from(value: ReqwestError) -> Self {
-        Self::Reqwest(value)
-    }
-}
+    Reqwest {
+        #[from]
+        source: reqwest::Error,
+    },
 
-impl<TMessage> From<SendError<TMessage>> for Error<TMessage> {
-    fn from(value: SendError<TMessage>) -> Self {
-        Self::SendChannel(value)
-    }
-}
+    SendChannel {
+        #[from]
+        source: tokio::sync::mpsc::error::SendError<TMessage>,
+    },
 
-impl<TMessage> From<JoinError> for Error<TMessage> {
-    fn from(value: JoinError) -> Self {
-        Self::TokioJoin(value)
-    }
+    TokioJoin {
+        #[from]
+        source: tokio::task::JoinError,
+    },
+
+    ResponseCallback {
+        #[from]
+        source: anyhow::Error,
+    },
 }

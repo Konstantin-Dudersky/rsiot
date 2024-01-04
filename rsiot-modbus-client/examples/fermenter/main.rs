@@ -11,7 +11,7 @@ use rsiot_extra_components::cmp_logger;
 use rsiot_modbus_client::cmp_modbus_client;
 
 #[main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     // логгирование
     fmt().with_max_level(LevelFilter::INFO).init();
 
@@ -26,5 +26,6 @@ async fn main() {
         ],
     );
 
-    chain.spawn().await.unwrap();
+    chain.spawn().await?;
+    Ok(())
 }

@@ -1,38 +1,29 @@
-use dotenvy::Error as DotenvyError;
-use envy::Error as EnvyError;
-use std::io::Error as IoError;
-use toml::ser::Error as TomlError;
-
-#[derive(Debug)]
+#[derive(Debug, thiserror::Error)]
 pub enum Errors {
-    EnvFileLoadError(String),
-    DeserializeError(String),
-    SerializeError(String),
-    IoError(String),
-    /// Ошибка преобразования переменных в верхний регистр
+    #[error("{source}")]
+    EnvFileLoadError {
+        #[from]
+        source: dotenvy::Error,
+    },
+
+    #[error("{source}")]
+    DeserializeError {
+        #[from]
+        source: envy::Error,
+    },
+
+    #[error("{source}")]
+    SerializeError {
+        #[from]
+        source: toml::ser::Error,
+    },
+
+    #[error("{source}")]
+    IoError {
+        #[from]
+        source: std::io::Error,
+    },
+
+    #[error("Error converting to UPPER_CASE: {0}")]
     ToUppercase(String),
-}
-
-impl From<DotenvyError> for Errors {
-    fn from(value: DotenvyError) -> Self {
-        Self::EnvFileLoadError(value.to_string())
-    }
-}
-
-impl From<EnvyError> for Errors {
-    fn from(value: EnvyError) -> Self {
-        Self::DeserializeError(value.to_string())
-    }
-}
-
-impl From<TomlError> for Errors {
-    fn from(value: TomlError) -> Self {
-        Self::SerializeError(value.to_string())
-    }
-}
-
-impl From<IoError> for Errors {
-    fn from(value: IoError) -> Self {
-        Self::IoError(value.to_string())
-    }
 }

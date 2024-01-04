@@ -14,23 +14,31 @@ async fn fn_process<TMessage>(
 where
     TMessage: IMessage + 'static,
 {
-    let mut task_set = JoinSet::new();
+    let mut task_set: JoinSet<Result<(), ComponentError>> = JoinSet::new();
 
     let output_clone = output.clone();
     task_set.spawn(async move {
         while let Ok(msg) = input.recv().await {
-            output_clone.send(msg).await.unwrap();
+            output_clone
+                .send(msg)
+                .await
+                .map_err(|err| ComponentError::Execution(err.to_string()))?;
         }
+        Ok(())
     });
 
     task_set.spawn(async move {
         while let Ok(msg) = config.channel.recv().await {
-            output.send(msg).await.unwrap();
+            output
+                .send(msg)
+                .await
+                .map_err(|err| ComponentError::Execution(err.to_string()))?;
         }
+        Ok(())
     });
 
     while let Some(res) = task_set.join_next().await {
-        res.unwrap();
+        res.map_err(|err| ComponentError::Execution(err.to_string()))??;
     }
     Ok(())
 }

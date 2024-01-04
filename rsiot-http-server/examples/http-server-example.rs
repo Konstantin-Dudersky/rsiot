@@ -28,7 +28,7 @@ impl IMessage for Message {
 }
 
 #[main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
         .with_max_level(LevelFilter::DEBUG)
         .init();
@@ -54,5 +54,6 @@ async fn main() {
             }),
         ],
     );
-    chain.spawn().await.unwrap();
+    chain.spawn().await?;
+    Ok(())
 }

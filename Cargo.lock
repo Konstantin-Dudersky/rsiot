@@ -1717,8 +1717,11 @@ dependencies = [
 name = "rsiot-components-config"
 version = "0.0.30"
 dependencies = [
+ "anyhow",
  "http 1.0.0",
  "rsiot-messages-core",
+ "serde",
+ "thiserror",
  "url",
 ]
 
@@ -1726,10 +1729,12 @@ dependencies = [
 name = "rsiot-env-vars"
 version = "0.0.21"
 dependencies = [
+ "anyhow",
  "clap",
  "dotenvy",
  "envy",
  "serde",
+ "thiserror",
  "toml",
  "tracing",
  "url",
@@ -1739,9 +1744,11 @@ dependencies = [
 name = "rsiot-extra-components"
 version = "0.0.30"
 dependencies = [
+ "anyhow",
  "rsiot-component-core",
  "rsiot-messages-core",
  "serde",
+ "thiserror",
  "tokio",
  "tracing",
  "tracing-subscriber",
@@ -1751,6 +1758,7 @@ dependencies = [
 name = "rsiot-http-client"
 version = "0.0.30"
 dependencies = [
+ "anyhow",
  "reqwest",
  "rsiot-component-core",
  "rsiot-components-config",
@@ -1758,6 +1766,7 @@ dependencies = [
  "rsiot-messages-core",
  "serde",
  "serde_json",
+ "thiserror",
  "tokio",
  "tracing",
  "tracing-subscriber",
@@ -1768,6 +1777,7 @@ dependencies = [
 name = "rsiot-http-server"
 version = "0.0.30"
 dependencies = [
+ "anyhow",
  "axum",
  "rsiot-component-core",
  "rsiot-components-config",
@@ -1806,6 +1816,7 @@ dependencies = [
 name = "rsiot-modbus-client"
 version = "0.0.30"
 dependencies = [
+ "anyhow",
  "rsiot-component-core",
  "rsiot-components-config",
  "rsiot-extra-components",
@@ -1822,11 +1833,13 @@ dependencies = [
 name = "rsiot-plc"
 version = "0.0.30"
 dependencies = [
+ "anyhow",
  "rsiot-component-core",
  "rsiot-extra-components",
  "rsiot-messages-core",
  "serde",
  "serde_json",
+ "thiserror",
  "tokio",
  "tracing",
  "tracing-subscriber",
@@ -1836,6 +1849,7 @@ dependencies = [
 name = "rsiot-redis-client"
 version = "0.0.30"
 dependencies = [
+ "anyhow",
  "futures-util",
  "redis",
  "rsiot-component-core",
@@ -1853,6 +1867,7 @@ dependencies = [
 name = "rsiot-timescaledb-storing"
 version = "0.0.30"
 dependencies = [
+ "anyhow",
  "chrono",
  "rsiot-component-core",
  "rsiot-components-config",
@@ -1869,6 +1884,7 @@ dependencies = [
 name = "rsiot-websocket-client"
 version = "0.0.30"
 dependencies = [
+ "anyhow",
  "futures-util",
  "rsiot-component-core",
  "rsiot-components-config",
@@ -1886,6 +1902,7 @@ dependencies = [
 name = "rsiot-websocket-server"
 version = "0.0.30"
 dependencies = [
+ "anyhow",
  "futures-util",
  "rsiot-component-core",
  "rsiot-components-config",
@@ -2515,16 +2532,16 @@ dependencies = [
 
 [[package]]
 name = "tokio-modbus"
-version = "0.9.0"
+version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e0f38205d1e83e64947e0b07731cc05667952f5fb0986279573022305edfbf4e"
+checksum = "e4ca3f476b01dc06f6cf5c7f48751201e119d5683d618241cabae9c49d7f85b6"
 dependencies = [
  "async-trait",
  "byteorder",
  "bytes",
+ "futures-core",
  "futures-util",
  "log",
- "smallvec",
  "tokio",
  "tokio-util",
 ]

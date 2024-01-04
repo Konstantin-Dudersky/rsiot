@@ -15,7 +15,7 @@ use rsiot_messages_core::{msg_types::Value, ExampleMessage, IMessage};
 use rsiot_websocket_server::cmp_websocket_server;
 
 #[main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt().init();
 
     let mut counter = 0.0;
@@ -43,5 +43,6 @@ async fn main() {
         ],
     );
 
-    chain.spawn().await.unwrap();
+    chain.spawn().await?;
+    Ok(())
 }

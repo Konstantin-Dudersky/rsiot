@@ -37,7 +37,7 @@ impl IMessage for Messages {
 }
 
 #[main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     // логгирование
     fmt().init();
 
@@ -91,5 +91,6 @@ async fn main() {
         ],
     );
 
-    chain.spawn().await.unwrap();
+    chain.spawn().await?;
+    Ok(())
 }

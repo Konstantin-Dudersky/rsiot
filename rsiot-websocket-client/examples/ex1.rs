@@ -6,7 +6,7 @@
 
 use serde::{Deserialize, Serialize};
 use tokio::{main, time::Duration};
-use tracing::Level;
+use tracing::{error, Level};
 use url::Url;
 
 use rsiot_component_core::ComponentCollection;
@@ -28,7 +28,7 @@ impl IMessage for Message {
 }
 
 #[main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt().init();
 
     let mut counter = 0.0;
@@ -45,7 +45,7 @@ async fn main() {
                 },
             }),
             cmp_websocket_client::new(cmp_websocket_client::Config {
-                url: Url::parse("ws://localhost:9001").unwrap(),
+                url: Url::parse("ws://localhost:9001")?,
                 fn_send,
                 fn_recv,
             }),
@@ -56,12 +56,21 @@ async fn main() {
         ],
     );
 
-    chain.spawn().await.unwrap();
+    chain.spawn().await?;
+    Ok(())
 }
 
 fn fn_send(msg: Message) -> Option<String> {
+    let text = msg.to_json();
+    let text = match text {
+        Ok(val) => val,
+        Err(err) => {
+            error!("{}", err);
+            return None;
+        }
+    };
     match msg {
-        Message::Send(_) => Some(msg.to_json().unwrap()),
+        Message::Send(_) => Some(text),
         Message::Recv(_) => None,
         Message::Tick(_) => None,
     }

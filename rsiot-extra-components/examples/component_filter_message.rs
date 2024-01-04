@@ -23,26 +23,28 @@ impl IMessage for Message {
 }
 
 #[main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt().init();
 
     let (origin, filter_input) = mpsc::channel::<Message>(128);
     let (filter_output, mut end) = mpsc::channel::<Message>(128);
 
     let mut counter = 0.0;
+    #[allow(unreachable_code)]
     let _sim_task = spawn(async move {
         loop {
             let msg = Message::Message0(counter);
             counter += 1.0;
             info!("send msg: {:?}", msg);
-            origin.send(msg).await.unwrap();
+            origin.send(msg).await?;
 
             let msg = Message::Message1(counter);
             info!("send msg: {:?}", msg);
-            origin.send(msg).await.unwrap();
+            origin.send(msg).await?;
 
             sleep(Duration::from_secs(2)).await;
         }
+        Ok(()) as anyhow::Result<()>
     });
 
     let filter_task = spawn(component_filter_message(
@@ -60,5 +62,6 @@ async fn main() {
         }
     });
 
-    filter_task.await.unwrap();
+    filter_task.await?;
+    Ok(())
 }

@@ -15,8 +15,10 @@ clap = { workspace = true }
 dotenvy = { workspace = true }
 envy = { workspace = true }
 serde = { workspace = true }
+thiserror = { workspace = true }
 toml = { workspace = true }
 tracing = { workspace = true }
 
 [dev-dependencies]
 url = { workspace = true }
+anyhow = { workspace = true }

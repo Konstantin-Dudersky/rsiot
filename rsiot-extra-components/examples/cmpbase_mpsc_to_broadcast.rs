@@ -9,7 +9,7 @@ use rsiot_messages_core::{msg_types, ExampleMessage};
 use tracing::info;
 
 #[main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt().init();
 
     let (mpsc_send, mpsc_rcv) = mpsc::channel::<ExampleMessage>(128);
@@ -19,13 +19,16 @@ async fn main() {
     let mut broadcast_rcv_2 = broadcast_send.subscribe();
 
     let mut counter = 0.0;
+
+    #[allow(unreachable_code)]
     let _source_task = spawn(async move {
         loop {
             let msg = ExampleMessage::ValueInstantF64(msg_types::Value::new(counter));
             counter += 1.0;
-            mpsc_send.send(msg).await.unwrap();
+            mpsc_send.send(msg).await?;
             sleep(Duration::from_secs(2)).await;
         }
+        Ok(()) as anyhow::Result<()>
     });
 
     let main_task = spawn(cmpbase_mpsc_to_broadcast::new(mpsc_rcv, broadcast_send));
@@ -42,5 +45,6 @@ async fn main() {
         }
     });
 
-    main_task.await.unwrap();
+    main_task.await??;
+    Ok(())
 }

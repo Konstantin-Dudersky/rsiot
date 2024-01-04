@@ -6,14 +6,14 @@
 
 use std::collections::HashMap;
 
-use rsiot_component_core::ComponentCollection;
-use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 use tokio::{main, time::Duration};
 use tracing::{level_filters::LevelFilter, Level};
 use url::Url;
 
+use rsiot_component_core::ComponentCollection;
+use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use rsiot_http_client::cmp_http_client::{self, config};
 use rsiot_messages_core::IMessage;
 
@@ -46,14 +46,14 @@ struct HttpMethodsGet {
 //------------------------------------------------------------------------------
 
 #[main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
         .with_max_level(LevelFilter::INFO)
         .init();
 
     let http_config = config::Config::<Message> {
         connection_config: config::ConnectionConfig {
-            base_url: Url::parse("http://127.0.0.1:80").unwrap(),
+            base_url: Url::parse("http://127.0.0.1:80")?,
         },
         requests_input: vec![config::RequestInput {
             fn_input: |msg| match msg {
@@ -64,8 +64,8 @@ async fn main() {
                 _ => None,
             },
             on_success: |body| {
-                let res = from_str::<HttpMethodsGet>(body).unwrap();
-                vec![Message::HttpMethodsGetOnEventResponse(res)]
+                let res = from_str::<HttpMethodsGet>(body)?;
+                Ok(vec![Message::HttpMethodsGetOnEventResponse(res)])
             },
             on_failure: Vec::new,
         }],
@@ -73,8 +73,8 @@ async fn main() {
             period: Duration::from_secs(5),
             http_param: config::HttpParam::Get("get".to_string()),
             on_success: |body| {
-                let res = from_str::<HttpMethodsGet>(body).unwrap();
-                vec![Message::HttpMethodsGetPeriodicRespone(res)]
+                let res = from_str::<HttpMethodsGet>(body)?;
+                Ok(vec![Message::HttpMethodsGetPeriodicRespone(res)])
             },
             on_failure: Vec::new,
         }],
@@ -98,5 +98,6 @@ async fn main() {
         ],
     );
 
-    chain.spawn().await.unwrap();
+    chain.spawn().await?;
+    Ok(())
 }

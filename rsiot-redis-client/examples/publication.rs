@@ -15,7 +15,7 @@ use rsiot_messages_core::{msg_types, ExampleMessage, ExampleMessageChannel};
 use rsiot_redis_client::cmp_redis_client;
 
 #[main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     fmt().init();
 
     let mut counter = 0;
@@ -37,12 +37,13 @@ async fn main() {
                 header: "".into(),
             }),
             cmp_redis_client::new(cmp_redis_client::Config {
-                url: Url::parse("redis://127.0.0.1:6379").unwrap(),
+                url: Url::parse("redis://127.0.0.1:6379")?,
                 fn_input: |_| vec![ExampleMessageChannel::Output],
                 subscription_channel: ExampleMessageChannel::Output,
             }),
         ],
     );
 
-    chain.spawn().await.unwrap();
+    chain.spawn().await?;
+    Ok(())
 }

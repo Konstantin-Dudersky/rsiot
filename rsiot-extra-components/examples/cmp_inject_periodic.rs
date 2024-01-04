@@ -6,7 +6,7 @@ use rsiot_messages_core::{msg_types, ExampleMessage};
 use tracing::{level_filters::LevelFilter, Level};
 
 #[main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
         .with_max_level(LevelFilter::DEBUG)
         .init();
@@ -29,5 +29,6 @@ async fn main() {
             }),
         ],
     );
-    chain.spawn().await.unwrap();
+    chain.spawn().await?;
+    Ok(())
 }
