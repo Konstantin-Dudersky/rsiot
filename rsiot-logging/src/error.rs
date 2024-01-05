@@ -1,24 +1,18 @@
-#[cfg(target_arch = "x86_64")]
-use tracing_loki::{url::ParseError, Error as LokiError};
+use url::ParseError;
 
-#[derive(Debug)]
+#[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[cfg(target_arch = "x86_64")]
-    LokiError(String),
+    #[error("{source}")]
+    LokiError {
+        #[from]
+        source: tracing_loki::Error,
+    },
+
     #[cfg(target_arch = "x86_64")]
-    ParseError(String),
-}
-
-#[cfg(target_arch = "x86_64")]
-impl From<LokiError> for Error {
-    fn from(value: LokiError) -> Self {
-        Self::LokiError(value.to_string())
-    }
-}
-
-#[cfg(target_arch = "x86_64")]
-impl From<ParseError> for Error {
-    fn from(value: ParseError) -> Self {
-        Self::ParseError(value.to_string())
-    }
+    #[error("{source}")]
+    ParseError {
+        #[from]
+        source: url::ParseError,
+    },
 }
