@@ -34,9 +34,6 @@ mod fn_process;
 mod new;
 mod types;
 
-pub use rsiot_component_core::ComponentCollection;
-pub use rsiot_messages_core::IMessage;
-
 /// Обмен данными с устройством, поддерживающим Modbus TCP сервер.
 ///
 /// См. [документацию](https://docs.rs/rsiot-modbus-client/latest/)

@@ -1835,11 +1835,13 @@ name = "rsiot-modbus-client"
 version = "0.0.31"
 dependencies = [
  "anyhow",
- "rsiot-component-core",
+ "async-trait",
+ "rsiot-component-core2",
  "rsiot-components-config",
  "rsiot-extra-components",
  "rsiot-messages-core",
  "serde",
+ "thiserror",
  "tokio",
  "tokio-modbus",
  "tracing",
