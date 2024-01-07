@@ -1,13 +1,9 @@
 [package]
-# categories.workspace = true
-description = "Чтение входов GPIO микроконтроллера ESP."
+description = "Компоненты для работы с периферией микроконтроллеров ESP32"
 edition = "2021"
-# keywords.workspace = true
 license = "MIT OR Apache-2.0"
 name = "rsiot-esp"
 readme = "README.md"
-# repository.workspace = true
-# rust-version.workspace = true
 version = "0.0.31"
 
 [profile.release]

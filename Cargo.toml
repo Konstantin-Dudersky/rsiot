@@ -2,6 +2,7 @@
 members = [
     "./rsiot",
     "./rsiot-component-core",
+    "./rsiot-component-core2",
     "./rsiot-components-config",
     "./rsiot-env-vars",
     "./rsiot-extra-components",
@@ -15,7 +16,6 @@ members = [
     "./rsiot-timescaledb-storing",
     "./rsiot-websocket-server",
     "./rsiot-websocket-client",
-    "./rsiot-component-singlethread",
 ]
 exclude = ["./rsiot-esp"]
 resolver = "2"
@@ -38,8 +38,7 @@ clap = { version = "4.4", features = ["derive"] }
 dotenvy = { version = "0.15" }
 envy = { version = "0.4" }
 http = { version = "1.0.0" }
-futures = { version = "0.3.29" }
-futures-util = { version = "0.3.29" }
+
 redis = { version = "0.24.0", features = ["tokio-comp"] }
 reqwest = { version = "0.11.22", features = ["json"] }
 serde = { version = "1.0.193", features = ["derive"] }
@@ -50,24 +49,24 @@ sqlx = { version = "0.7.3", features = [
     "postgres",
     "runtime-tokio",
 ] }
-tokio = { version = "1.35.0", features = [
-    "macros",
-    "rt",
-    # "rt-multi-thread",
-    "sync",
-    "time",
-] }
+
 tokio-modbus = { version = "0.10.0", default-features = false, features = [
     "tcp",
 ] }
 tokio-tungstenite = { version = "0.21.0" }
-tokio-util = { version = "0.7.10" }
+
 toml = { version = "0.8" }
 tower-http = { version = "0.5.0", features = ["cors", "trace"] }
 url = { version = "2.5.0" }
-
 anyhow = { version = "1.0.79" }
 thiserror = { version = "1.0.56" }
+
+# асинхронщина
+async-trait = { version = "0.1.77" }
+futures = { version = "0.3.29" }
+futures-util = { version = "0.3.29" }
+tokio = { version = "1.35.1", features = ["macros", "sync", "time"] }
+tokio-util = { version = "0.7.10" }
 
 # документация
 document-features = { version = "0.2.7" }
@@ -86,6 +85,7 @@ syn = "2.0"
 
 
 rsiot-component-core = { version = "0.0.31", path = "./rsiot-component-core" }
+rsiot-component-core2 = { version = "0.0.31", path = "./rsiot-component-core2" }
 rsiot-components-config = { version = "0.0.31", path = "./rsiot-components-config" }
 rsiot-env-vars = { version = "0.0.31", path = "./rsiot-env-vars" }
 rsiot-extra-components = { version = "0.0.31", path = "./rsiot-extra-components" }

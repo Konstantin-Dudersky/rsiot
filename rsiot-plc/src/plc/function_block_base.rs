@@ -40,20 +40,3 @@ pub trait IFunctionBlock<I, Q, S> {
     /// Вызывать самому не нужно, вызывается функцией `call`
     fn logic(&mut self) -> Q;
 }
-
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-
-//     #[test]
-//     fn test1() {
-//         #[derive(Clone, Default, Serialize)]
-//         struct I;
-//         #[derive(Clone, Default, Serialize)]
-//         struct Q;
-//         #[derive(Clone, Default, Serialize)]
-//         struct S;
-
-//         let fb1 = FunctionBlockBase::<I, Q, S>::new();
-//     }
-// }

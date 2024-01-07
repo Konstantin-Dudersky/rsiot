@@ -1,10 +1,21 @@
 # Подготовка к публикации
 
+print $"\n\n(ansi magenta_bold) workspace - update (ansi reset)\n\n"
 cargo update
+
+print $"\n\n(ansi magenta_bold) workspace - outdated (ansi reset)\n\n"
 cargo outdated
+
+print $"\n\n(ansi magenta_bold) workspace - unused dependencies (ansi reset)\n\n"
 cargo +nightly udeps
+
+print $"\n\n(ansi magenta_bold) workspace - check (ansi reset)\n\n"
 cargo check --all-targets
+
+print $"\n\n(ansi magenta_bold) workspace - clippy (ansi reset)\n\n"
 cargo clippy --all-targets
+
+print $"\n\n(ansi magenta_bold) workspace - build (ansi reset)\n\n"
 cargo build
 
 do {
@@ -19,17 +30,18 @@ do {
     cargo rdme --force
 }
 
-do {
-    print $"\n\n(ansi magenta_bold) rsiot-esp (ansi reset)\n\n"
-    cd rsiot-esp
-    cargo update
-    cargo outdated
-    cargo +nightly udeps
-    cargo check --all-targets
-    cargo clippy --all-targets
-    cargo build
-    cargo rdme --force
-}
+# TODO - https://github.com/rust-lang/rust/pull/119632
+# do {
+#     print $"\n\n(ansi magenta_bold) rsiot-esp (ansi reset)\n\n"
+#     cd rsiot-esp
+#     cargo update
+#     cargo outdated
+#     cargo +nightly udeps
+#     cargo check --all-targets
+#     cargo clippy --all-targets
+#     cargo build
+#     cargo rdme --force
+# }
 
 do {
     print $"\n\n(ansi magenta_bold) rsiot-logging (ansi reset)\n\n"
