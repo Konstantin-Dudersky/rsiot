@@ -1892,7 +1892,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot"
-version = "0.0.32"
+version = "0.0.33"
 dependencies = [
  "chrono",
  "document-features",
@@ -2035,7 +2035,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-modbus-client"
-version = "0.0.32"
+version = "0.0.33"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2071,7 +2071,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-redis-client"
-version = "0.0.32"
+version = "0.0.33"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2128,7 +2128,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-websocket-client-wasm"
-version = "0.0.32"
+version = "0.0.33"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2144,7 +2144,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-websocket-server"
-version = "0.0.32"
+version = "0.0.33"
 dependencies = [
  "anyhow",
  "async-trait",

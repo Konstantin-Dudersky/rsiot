@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use tokio::main;
 
 use rsiot::{
-    component_core::ComponentCollection,
+    component_core::ComponentExecutor,
     components::{cmp_external_fn_process, cmp_logger, cmp_plc},
     message::msg_types::Value,
 };
@@ -66,7 +66,7 @@ async fn main() {
         fn_output: |data: &StorageData| vec![Message::StorageI32(Value::new(data.test_i32))],
     };
 
-    let mut chain = ComponentCollection::<Message>::new(
+    let mut chain = ComponentExecutor::<Message>::new(
         10,
         vec![
             cmp_plc::new(plc_config),

@@ -12,8 +12,11 @@ print $"\n\n(ansi magenta_bold) workspace - unused dependencies (ansi reset)\n\n
 print $"\n\n(ansi magenta_bold) workspace - check (ansi reset)\n\n"
 cargo check --all-targets
 
-print $"\n\n(ansi magenta_bold) workspace - clippy (ansi reset)\n\n"
-cargo clippy --all-targets
+print $"\n\n(ansi magenta_bold) workspace - clippy \(multi-thread\) (ansi reset)\n\n"
+cargo clippy --all-targets --features=""
+
+print $"\n\n(ansi magenta_bold) workspace - clippy \(single-thread\) (ansi reset)\n\n"
+cargo clippy --all-targets --features="single-thread"
 
 print $"\n\n(ansi magenta_bold) workspace - build \(multi-thread\) (ansi reset)\n\n"
 cargo build --all-targets --features=""

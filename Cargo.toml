@@ -94,10 +94,10 @@ rsiot-http-client = { version = "0.0.32", path = "./rsiot-http-client" }
 rsiot-http-server = { version = "0.0.32", path = "./rsiot-http-server" }
 rsiot-logging = { version = "0.0.32", path = "./rsiot-logging" }
 rsiot-messages-core = { version = "0.0.32", path = "./rsiot-messages-core" }
-rsiot-modbus-client = { version = "0.0.32", path = "./rsiot-modbus-client" }
+rsiot-modbus-client = { version = "0.0.33", path = "./rsiot-modbus-client" }
 rsiot-plc = { version = "0.0.32", path = "./rsiot-plc" }
-rsiot-redis-client = { version = "0.0.32", path = "./rsiot-redis-client" }
+rsiot-redis-client = { version = "0.0.33", path = "./rsiot-redis-client" }
 rsiot-timescaledb-storing = { version = "0.0.32", path = "./rsiot-timescaledb-storing" }
 rsiot-websocket-client = { version = "0.0.32", path = "./rsiot-websocket-client" }
-rsiot-websocket-client-wasm = { version = "0.0.32", path = "./rsiot-websocket-client-wasm" }
-rsiot-websocket-server = { version = "0.0.32", path = "./rsiot-websocket-server" }
+rsiot-websocket-client-wasm = { version = "0.0.33", path = "./rsiot-websocket-client-wasm" }
+rsiot-websocket-server = { version = "0.0.33", path = "./rsiot-websocket-server" }
