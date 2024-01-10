@@ -34,10 +34,7 @@ rsiot-extra-components = { workspace = true }
 
 
 [features]
-"single-thread" = [
-    "rsiot-component-core/single-thread",
-    "rsiot-extra-components/single-thread",
-]
+"single-thread" = ["rsiot-component-core/single-thread"]
 
 
 [[example]]
