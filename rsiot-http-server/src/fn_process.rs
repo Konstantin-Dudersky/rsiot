@@ -12,14 +12,13 @@ use tower_http::{
 };
 use tracing::{error, info, Level};
 
-use rsiot_component_core::{Cache, ComponentError, ComponentInput, ComponentOutput};
+use rsiot_component_core::{Cache, ComponentError, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::Config, error::Error, routes, shared_state::SharedState};
 
 /// Компонент для получения и ввода сообщений через HTTP Server
 pub async fn fn_process<TMessage>(
-    _input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
     config: Config,
     cache: Cache<TMessage>,

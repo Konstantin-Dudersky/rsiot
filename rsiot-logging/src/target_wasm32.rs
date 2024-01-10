@@ -1,5 +1,6 @@
 use tracing::info;
 
+/// Настройка логгирования для платформы WASM32
 #[cfg(target_arch = "wasm32")]
 pub fn configure_logging(level: &str) {
     use tracing_subscriber::{
@@ -23,3 +24,5 @@ pub fn configure_logging(level: &str) {
 
     info!("service started");
 }
+
+// TODO - переделать текстовый параметр в tracing::Level

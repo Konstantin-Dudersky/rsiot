@@ -6,26 +6,26 @@ use tokio::main;
 use tracing::{level_filters::LevelFilter, Level};
 use tracing_subscriber::fmt;
 
-use rsiot_component_core::ComponentCollection;
+use rsiot_component_core::ComponentExecutor;
 use rsiot_extra_components::cmp_logger;
 use rsiot_modbus_client::cmp_modbus_client;
 
+use message::Messages;
+
 #[main]
 async fn main() -> anyhow::Result<()> {
-    // логгирование
     fmt().with_max_level(LevelFilter::INFO).init();
 
-    let mut chain = ComponentCollection::new(
-        100,
-        vec![
-            cmp_modbus_client::new(config::config()),
-            cmp_logger::new(cmp_logger::Config {
-                level: Level::INFO,
-                header: "".into(),
-            }),
-        ],
-    );
+    let logger_config = cmp_logger::Config {
+        level: Level::INFO,
+        header: "".into(),
+    };
 
-    chain.spawn().await?;
+    ComponentExecutor::<Messages>::new(100)
+        .add_cmp(cmp_modbus_client::Cmp::new(config::config()))
+        .add_cmp(cmp_logger::Cmp::new(logger_config))
+        .wait_result()
+        .await?;
+
     Ok(())
 }

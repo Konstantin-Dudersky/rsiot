@@ -9,7 +9,7 @@ use tracing::Level;
 use tracing_subscriber::fmt;
 use url::Url;
 
-use rsiot_component_core::ComponentCollection;
+use rsiot_component_core::ComponentExecutor;
 use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use rsiot_messages_core::{msg_types, ExampleMessage, ExampleMessageChannel};
 use rsiot_redis_client::cmp_redis_client;
@@ -18,32 +18,34 @@ use rsiot_redis_client::cmp_redis_client;
 async fn main() -> anyhow::Result<()> {
     fmt().init();
 
+    let logger_config = cmp_logger::Config {
+        level: Level::INFO,
+        header: "".into(),
+    };
+
+    let redis_config = cmp_redis_client::Config {
+        url: Url::parse("redis://127.0.0.1:6379")?,
+        fn_input: |_| vec![ExampleMessageChannel::Output],
+        subscription_channel: ExampleMessageChannel::Output,
+    };
+
     let mut counter = 0;
-    let mut chain = ComponentCollection::new(
-        100,
-        vec![
-            cmp_inject_periodic::new(cmp_inject_periodic::Config {
-                period: Duration::from_secs(2),
-                fn_periodic: move || {
-                    let msg =
-                        ExampleMessage::ValueInstantF64(msg_types::Value::new(counter as f64));
+    let inject_config = cmp_inject_periodic::Config {
+        period: Duration::from_secs(2),
+        fn_periodic: move || {
+            let msg = ExampleMessage::ValueInstantF64(msg_types::Value::new(counter as f64));
 
-                    counter += 1;
-                    vec![msg]
-                },
-            }),
-            cmp_logger::new(cmp_logger::Config {
-                level: Level::INFO,
-                header: "".into(),
-            }),
-            cmp_redis_client::new(cmp_redis_client::Config {
-                url: Url::parse("redis://127.0.0.1:6379")?,
-                fn_input: |_| vec![ExampleMessageChannel::Output],
-                subscription_channel: ExampleMessageChannel::Output,
-            }),
-        ],
-    );
+            counter += 1;
+            vec![msg]
+        },
+    };
 
-    chain.spawn().await?;
+    ComponentExecutor::new(100)
+        .add_cmp(cmp_logger::Cmp::new(logger_config))
+        .add_cmp(cmp_redis_client::Cmp::new(redis_config))
+        .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
+        .wait_result()
+        .await?;
+
     Ok(())
 }

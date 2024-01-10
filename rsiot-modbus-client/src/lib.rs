@@ -26,19 +26,21 @@
 //! ```rust
 #![doc = include_str!("../examples/modbus_tcp_client.rs")]
 //! ```
+//!
+//! TODO - рестарт не работает
 
+mod component;
 mod config;
 pub mod conversion;
 mod errors;
 mod fn_process;
-mod new;
 mod types;
 
 /// Обмен данными с устройством, поддерживающим Modbus TCP сервер.
 ///
 /// См. [документацию](https://docs.rs/rsiot-modbus-client/latest/)
 pub mod cmp_modbus_client {
+    pub use crate::component::Cmp;
     pub use crate::config::*;
     pub use crate::conversion;
-    pub use crate::new::new;
 }

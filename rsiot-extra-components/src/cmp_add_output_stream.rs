@@ -1,36 +1,55 @@
 //! Компонент для отправки сообщений в побочный потока
 
+use async_trait::async_trait;
 use tokio::sync::mpsc;
 
-use rsiot_component_core::{Cache, Component, ComponentError, ComponentInput, ComponentOutput};
+use rsiot_component_core::{
+    Cache, Component, ComponentError, ComponentInput, ComponentOutput, IComponentProcess,
+};
 use rsiot_messages_core::IMessage;
 
 use super::cmpbase_mpsc_to_many_mpsc;
 
-async fn fn_process<TMessage>(
-    input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
-    config: Config<TMessage>,
-    _cache: Cache<TMessage>,
-) -> Result<(), ComponentError>
-where
-    TMessage: IMessage + 'static,
-{
-    cmpbase_mpsc_to_many_mpsc::new(input, vec![output, config.channel]).await;
-    Ok(())
-}
-
 /// Настройки
 #[derive(Debug)]
-pub struct Config<TMessage> {
+pub struct Cfg<TMessage> {
     pub channel: mpsc::Sender<TMessage>,
 }
 
-/// Компонент для отправки сообщений в побочный потока
-pub fn new<TMessage>(config: Config<TMessage>) -> Box<Component<TMessage, Config<TMessage>>>
+#[cfg(not(feature = "single-thread"))]
+#[async_trait]
+impl<TMsg> IComponentProcess<Cfg<TMsg>, TMsg> for Component<Cfg<TMsg>, TMsg>
 where
-    TMessage: IMessage + 'static,
+    TMsg: IMessage + 'static,
 {
-    let cmp = Component::new(config, fn_process);
-    Box::new(cmp)
+    async fn process(
+        &self,
+        config: Cfg<TMsg>,
+        input: ComponentInput<TMsg>,
+        output: ComponentOutput<TMsg>,
+        _cache: Cache<TMsg>,
+    ) -> Result<(), ComponentError> {
+        cmpbase_mpsc_to_many_mpsc::new(input, vec![output, config.channel]).await;
+        Ok(())
+    }
 }
+
+#[cfg(feature = "single-thread")]
+#[async_trait(?Send)]
+impl<TMsg> IComponentProcess<Cfg<TMsg>, TMsg> for Component<Cfg<TMsg>, TMsg>
+where
+    TMsg: IMessage + 'static,
+{
+    async fn process(
+        &self,
+        config: Cfg<TMsg>,
+        input: ComponentInput<TMsg>,
+        output: ComponentOutput<TMsg>,
+        _cache: Cache<TMsg>,
+    ) -> Result<(), ComponentError> {
+        cmpbase_mpsc_to_many_mpsc::new(input, vec![output, config.channel]).await;
+        Ok(())
+    }
+}
+
+pub type Cmp<TMsg> = Component<Cfg<TMsg>, TMsg>;

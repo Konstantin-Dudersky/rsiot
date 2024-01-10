@@ -1,14 +1,60 @@
 //! Компонент для логгирования сообщений
 
+use async_trait::async_trait;
 use tracing::{debug, error, info, trace, warn, Level};
 
-use rsiot_component_core::{Cache, Component, ComponentError, ComponentInput, ComponentOutput};
+use rsiot_component_core::{
+    Cache, Component, ComponentError, ComponentInput, ComponentOutput, IComponentProcess,
+};
 use rsiot_messages_core::IMessage;
 
-async fn fn_process<TMessage>(
+/// Настройки компонента логгирования
+#[derive(Clone, Debug)]
+pub struct Config {
+    /// Уровень логгирования
+    pub level: Level,
+    /// Добавляется в начале каждого сообщения
+    pub header: String,
+}
+
+#[cfg(not(feature = "single-thread"))]
+#[async_trait]
+impl<TMessage> IComponentProcess<Config, TMessage> for Component<Config, TMessage>
+where
+    TMessage: IMessage,
+{
+    async fn process(
+        &self,
+        config: Config,
+        input: ComponentInput<TMessage>,
+        output: ComponentOutput<TMessage>,
+        cache: Cache<TMessage>,
+    ) -> Result<(), ComponentError> {
+        process(config, input, output, cache).await
+    }
+}
+
+#[cfg(feature = "single-thread")]
+#[async_trait(?Send)]
+impl<TMessage> IComponentProcess<Config, TMessage> for Component<Config, TMessage>
+where
+    TMessage: IMessage,
+{
+    async fn process(
+        &self,
+        config: Config,
+        input: ComponentInput<TMessage>,
+        output: ComponentOutput<TMessage>,
+        cache: Cache<TMessage>,
+    ) -> Result<(), ComponentError> {
+        process(config, input, output, cache).await
+    }
+}
+
+async fn process<TMessage>(
+    config: Config,
     mut input: ComponentInput<TMessage>,
     _output: ComponentOutput<TMessage>,
-    config: Config,
     _cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>
 where
@@ -31,19 +77,4 @@ where
     Ok(())
 }
 
-/// Настройки компонента логгирования
-#[derive(Clone, Debug)]
-pub struct Config {
-    /// Уровень логгирования
-    pub level: Level,
-    /// Добавляется в начале каждого сообщения
-    pub header: String,
-}
-
-pub fn new<TMessage>(config: Config) -> Box<Component<TMessage, Config>>
-where
-    TMessage: IMessage + 'static,
-{
-    let cmp = Component::new(config, fn_process);
-    Box::new(cmp)
-}
+pub type Cmp<TMessage> = Component<Config, TMessage>;

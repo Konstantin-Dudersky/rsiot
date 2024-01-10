@@ -19,7 +19,7 @@ use tokio::{main, time::Duration};
 use tracing::Level;
 use tracing_subscriber::fmt;
 
-use rsiot_component_core::ComponentCollection;
+use rsiot_component_core::ComponentExecutor;
 use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use rsiot_messages_core::IMessage;
 use rsiot_modbus_client::cmp_modbus_client::{self, *};
@@ -69,28 +69,24 @@ async fn main() -> anyhow::Result<()> {
     });
 
     let mut counter = 0.0;
-    let mut chain = ComponentCollection::new(
-        100,
-        vec![
-            // Периодическое генерирование сообщения для записи счетчика на сервер
-            cmp_inject_periodic::new(cmp_inject_periodic::Config {
-                period: Duration::from_secs(2),
-                fn_periodic: move || {
-                    let msg = Messages::ValueWrite(counter);
-                    counter += 1.0;
-                    vec![msg]
-                },
-            }),
-            // Клиент modbus
-            cmp_modbus_client::new(modbus_client_config),
-            // Вывод сообщений в лог
-            cmp_logger::new(cmp_logger::Config {
-                level: Level::INFO,
-                header: "".into(),
-            }),
-        ],
-    );
-
-    chain.spawn().await?;
+    ComponentExecutor::new(100)
+        // Периодическое генерирование сообщения для записи счетчика на сервер
+        .add_cmp(cmp_inject_periodic::Cmp::new(cmp_inject_periodic::Config {
+            period: Duration::from_secs(2),
+            fn_periodic: move || {
+                let msg = Messages::ValueWrite(counter);
+                counter += 1.0;
+                vec![msg]
+            },
+        }))
+        // Клиент modbus
+        .add_cmp(cmp_modbus_client::Cmp::new(modbus_client_config))
+        // Вывод сообщений в лог
+        .add_cmp(cmp_logger::Cmp::new(cmp_logger::Config {
+            level: Level::INFO,
+            header: "".into(),
+        }))
+        .wait_result()
+        .await?;
     Ok(())
 }

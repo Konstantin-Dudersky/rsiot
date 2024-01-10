@@ -30,8 +30,10 @@ rsiot-modbus-client = { workspace = true, optional = true }
 rsiot-plc = { workspace = true, optional = true }
 rsiot-redis-client = { workspace = true, optional = true }
 rsiot-websocket-client = { workspace = true, optional = true }
+rsiot-websocket-client-wasm = { workspace = true, optional = true }
 rsiot-websocket-server = { workspace = true, optional = true }
 rsiot-timescaledb-storing = { workspace = true, optional = true }
+
 
 [dev-dependencies]
 
@@ -40,8 +42,8 @@ rsiot-timescaledb-storing = { workspace = true, optional = true }
 ## Базовые компоненты
 components = [
     "dep:tokio",
-    "dep:rsiot-component-core",
     "dep:rsiot-extra-components",
+    "dep:rsiot-component-core",
 ]
 ## Конфигурирование через переменные
 env-vars = ["dep:rsiot-env-vars"]
@@ -59,8 +61,24 @@ redis-client = ["components", "dep:rsiot-redis-client"]
 timescaledb-storing = ["components", "dep:rsiot-timescaledb-storing"]
 ## Компонент websocket клиента
 websocket-client = ["components", "dep:rsiot-websocket-client"]
+## Компонент websocket клиента
+websocket-client-wasm = ["components", "dep:rsiot-websocket-client-wasm"]
 ## Компонент websocket сервера
 websocket-server = ["components", "dep:rsiot-websocket-server"]
+## Работа в одном потоке, в LocalSet
+single-thread = [
+    "rsiot-component-core?/single-thread",
+    "rsiot-extra-components?/single-thread",
+    "rsiot-http-client?/single-thread",
+    "rsiot-http-server?/single-thread",
+    "rsiot-modbus-client?/single-thread",
+    "rsiot-plc?/single-thread",
+    "rsiot-redis-client?/single-thread",
+    "rsiot-timescaledb-storing?/single-thread",
+    "rsiot-websocket-client?/single-thread",
+    "rsiot-websocket-client-wasm?/single-thread",
+    "rsiot-websocket-server?/single-thread",
+]
 
 
 [package.metadata.docs.rs]

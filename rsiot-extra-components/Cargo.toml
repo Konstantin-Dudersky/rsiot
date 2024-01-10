@@ -11,13 +11,14 @@ rust-version.workspace = true
 
 [dependencies]
 async-trait = { workspace = true }
+futures = { workspace = true }
 thiserror = { workspace = true }
-tokio = { workspace = true }
+tokio = { workspace = true, features = ["time"] }
 tracing = { workspace = true }
 
 rsiot-component-core = { workspace = true }
-rsiot-component-core2 = { workspace = true }
 rsiot-messages-core = { workspace = true }
+
 
 [dev-dependencies]
 anyhow = { workspace = true }
@@ -25,5 +26,6 @@ serde = { workspace = true }
 tokio = { workspace = true, features = ["rt-multi-thread"] }
 tracing-subscriber = { workspace = true }
 
+
 [features]
-single-thread = ["rsiot-component-core2/single-thread"]
+single-thread = ["rsiot-component-core/single-thread"]

@@ -26,7 +26,7 @@ use tracing::Level;
 use tracing_subscriber::fmt;
 use url::Url;
 
-use rsiot_component_core::ComponentCollection;
+use rsiot_component_core::ComponentExecutor;
 use rsiot_extra_components::cmp_logger;
 use rsiot_messages_core::{ExampleMessage, ExampleMessageChannel};
 use rsiot_redis_client::cmp_redis_client;
@@ -35,20 +35,22 @@ use rsiot_redis_client::cmp_redis_client;
 async fn main() -> anyhow::Result<()> {
     fmt().init();
 
-    let mut chain = ComponentCollection::<ExampleMessage>::new(
-        100,
-        vec![
-            cmp_redis_client::new(cmp_redis_client::Config {
-                url: Url::parse("redis://127.0.0.1:6379")?,
-                subscription_channel: ExampleMessageChannel::Output,
-                fn_input: |_| vec![ExampleMessageChannel::Output],
-            }),
-            cmp_logger::new(cmp_logger::Config {
-                level: Level::INFO,
-                header: "".into(),
-            }),
-        ],
-    );
-    chain.spawn().await?;
+    let logger_config = cmp_logger::Config {
+        level: Level::INFO,
+        header: "".into(),
+    };
+
+    let redis_config = cmp_redis_client::Config {
+        url: Url::parse("redis://127.0.0.1:6379")?,
+        fn_input: |_| vec![ExampleMessageChannel::Output],
+        subscription_channel: ExampleMessageChannel::Output,
+    };
+
+    ComponentExecutor::<ExampleMessage>::new(100)
+        .add_cmp(cmp_logger::Cmp::new(logger_config))
+        .add_cmp(cmp_redis_client::Cmp::new(redis_config))
+        .wait_result()
+        .await?;
+
     Ok(())
 }

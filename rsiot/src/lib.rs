@@ -147,8 +147,8 @@ pub mod message {
 #[cfg(feature = "components")]
 pub mod component_core {
     pub use rsiot_component_core::{
-        Cache, Component, ComponentCollection, ComponentInput, ComponentOutput, IComponent,
-        IComponentFunction,
+        Cache, Component, ComponentCollection, ComponentError, ComponentInput, ComponentOutput,
+        IComponent, IComponentProcess,
     };
     pub use rsiot_extra_components::*;
 }
@@ -177,6 +177,9 @@ pub mod components {
 
     #[cfg(feature = "websocket-client")]
     pub use rsiot_websocket_client::cmp_websocket_client;
+
+    #[cfg(feature = "websocket-client-wasm")]
+    pub use rsiot_websocket_client_wasm::cmp_websocket_client_wasm;
 
     #[cfg(feature = "websocket-server")]
     pub use rsiot_websocket_server::cmp_websocket_server;

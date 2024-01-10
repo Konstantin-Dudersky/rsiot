@@ -1,6 +1,5 @@
-use std::{net::SocketAddr, ops::Deref, sync::Arc, time::Instant};
+use std::{net::SocketAddr, sync::Arc, time::Instant};
 
-use async_trait::async_trait;
 use tokio::{
     sync::Mutex,
     task::JoinSet,
@@ -9,48 +8,14 @@ use tokio::{
 use tokio_modbus::{client::Context, prelude::*};
 use tracing::{debug, error, info, trace, warn};
 
-use rsiot_component_core2::{
-    Cache, Component, ComponentError, ComponentInput, ComponentOutput, IComponentProcess,
-};
+use rsiot_component_core::{Cache, ComponentError, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{
-    config::{self},
+    config::{self, Config},
     errors::Errors,
     types::Result_,
 };
-
-struct Config<TMessage>(crate::config::Config<TMessage>);
-
-impl<TMessage> Deref for Config<TMessage> {
-    type Target = crate::config::Config<TMessage>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-#[async_trait]
-impl<TMessage> IComponentProcess<Config<TMessage>, TMessage>
-    for Component<Config<TMessage>, TMessage>
-where
-    TMessage: IMessage,
-{
-    async fn process(
-        &self,
-        config: Config<TMessage>,
-        input: ComponentInput<TMessage>,
-        output: ComponentOutput<TMessage>,
-        cache: Cache<TMessage>,
-    ) -> Result<(), ComponentError> {
-        match &config {
-            rsiot_components_config::modbus_client::Config::Tcp(_) => (),
-            rsiot_components_config::modbus_client::Config::Rtu => (),
-        }
-
-        Ok(())
-    }
-}
 
 pub async fn fn_process<TMessage>(
     input: ComponentInput<TMessage>,

@@ -9,7 +9,9 @@ license.workspace = true
 readme = "README.md"
 rust-version.workspace = true
 
+
 [dependencies]
+async-trait = { workspace = true }
 chrono = { workspace = true }
 sqlx = { workspace = true }
 tokio = { workspace = true }
@@ -20,9 +22,15 @@ rsiot-component-core = { workspace = true }
 rsiot-components-config = { workspace = true }
 rsiot-messages-core = { workspace = true }
 
+
 [dev-dependencies]
 anyhow = { workspace = true }
 chrono = { workspace = true }
+tokio = { workspace = true, features = ["rt-multi-thread"] }
 tracing-subscriber = { workspace = true }
 
 rsiot-extra-components = { workspace = true }
+
+
+[features]
+"single-thread" = ["rsiot-component-core/single-thread"]

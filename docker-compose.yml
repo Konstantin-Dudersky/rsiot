@@ -3,7 +3,7 @@ name: rsiot-dev
 
 services:
   timescaledb:
-    container_name: timescaledb
+    container_name: rsiot-timescaledb
     hostname: timescaledb
     image: timescale/timescaledb:2.12.2-pg15
     command: postgres
@@ -21,7 +21,7 @@ services:
 
   # для тестирования http-client
   httpbin:
-    container_name: httpbin
+    container_name: rsiot-httpbin
     hostname: httpbin
     image: kennethreitz/httpbin
     ports:
@@ -29,8 +29,8 @@ services:
 
   # для тестирования websocket
   websocket-client-testing:
-    container_name: websocket-client-testing
-    hostname: websocket-client-testing
+    container_name: rsiot-websocket-server
+    hostname: websocket-server
     image: crossbario/autobahn-testsuite
     ports:
       - "9001:9001"
@@ -38,7 +38,7 @@ services:
 
   # для тестирования modbus-client
   modbus-server:
-    container_name: modbus-server
+    container_name: rsiot-modbus-server
     hostname: modbus-server
     image: oitc/modbus-server
     ports:
@@ -48,7 +48,7 @@ services:
 
   # redis
   redis:
-    container_name: redis
+    container_name: rsiot-redis
     hostname: redis
     image: redis/redis-stack:latest
     ports:

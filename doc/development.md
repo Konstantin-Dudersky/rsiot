@@ -12,6 +12,17 @@ docker compose up -d
 cargo doc --open
 ```
 
+## Отладка разных фич
+
+Активировать фичи для помощи rust-analyzera - в корне в папке .vscode:
+
+```json
+{
+  //   "rust-analyzer.cargo.features": []
+  "rust-analyzer.cargo.features": ["single-thread"]
+}
+```
+
 ## Публикация версии на crates.io
 
 Проверяем, что все компилируется без ошибок:

@@ -2,7 +2,6 @@
 members = [
     "./rsiot",
     "./rsiot-component-core",
-    "./rsiot-component-core2",
     "./rsiot-components-config",
     "./rsiot-env-vars",
     "./rsiot-extra-components",
@@ -16,6 +15,7 @@ members = [
     "./rsiot-timescaledb-storing",
     "./rsiot-websocket-server",
     "./rsiot-websocket-client",
+    "rsiot-websocket-client-wasm",
 ]
 exclude = ["./rsiot-esp"]
 resolver = "2"
@@ -38,7 +38,6 @@ clap = { version = "4.4", features = ["derive"] }
 dotenvy = { version = "0.15" }
 envy = { version = "0.4" }
 http = { version = "1.0.0" }
-
 redis = { version = "0.24.0", features = ["tokio-comp"] }
 reqwest = { version = "0.11.22", features = ["json"] }
 serde = { version = "1.0.193", features = ["derive"] }
@@ -49,7 +48,6 @@ sqlx = { version = "0.7.3", features = [
     "postgres",
     "runtime-tokio",
 ] }
-
 tokio-modbus = { version = "0.10.0", default-features = false, features = [
     "tcp",
 ] }
@@ -65,7 +63,8 @@ thiserror = { version = "1.0.56" }
 async-trait = { version = "0.1.77" }
 futures = { version = "0.3.29" }
 futures-util = { version = "0.3.29" }
-tokio = { version = "1.35.1", features = ["macros", "sync", "time"] }
+# TODO - tokio/time не компилируется в WASM
+tokio = { version = "1.35.1", features = ["macros", "sync", "rt", "time"] }
 tokio-util = { version = "0.7.10" }
 
 # документация
@@ -77,15 +76,17 @@ tracing-subscriber = { version = "0.3.18", features = ["env-filter", "chrono"] }
 tracing-loki = { version = "0.2.4" }
 tracing-web = { version = "0.1.3" }
 
-# для макросов
+# макросы
 proc-macro2 = "1.0"
 proc-macro-error = "1.0"
 quote = "1.0"
 syn = "2.0"
 
+# WASM
+gloo = { version = "0.11.0", features = ["net", "futures", "timers", "utils"] }
+
 
 rsiot-component-core = { version = "0.0.31", path = "./rsiot-component-core" }
-rsiot-component-core2 = { version = "0.0.31", path = "./rsiot-component-core2" }
 rsiot-components-config = { version = "0.0.31", path = "./rsiot-components-config" }
 rsiot-env-vars = { version = "0.0.31", path = "./rsiot-env-vars" }
 rsiot-extra-components = { version = "0.0.31", path = "./rsiot-extra-components" }
@@ -98,4 +99,5 @@ rsiot-plc = { version = "0.0.31", path = "./rsiot-plc" }
 rsiot-redis-client = { version = "0.0.31", path = "./rsiot-redis-client" }
 rsiot-timescaledb-storing = { version = "0.0.31", path = "./rsiot-timescaledb-storing" }
 rsiot-websocket-client = { version = "0.0.31", path = "./rsiot-websocket-client" }
+rsiot-websocket-client-wasm = { version = "0.0.0", path = "./rsiot-websocket-client-wasm" }
 rsiot-websocket-server = { version = "0.0.31", path = "./rsiot-websocket-server" }

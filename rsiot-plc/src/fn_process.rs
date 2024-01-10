@@ -3,7 +3,7 @@ use std::time::{Duration, Instant};
 use serde::Serialize;
 use tokio::{spawn, sync::mpsc, time::sleep};
 
-use rsiot_component_core::{Cache, ComponentError, ComponentInput, ComponentOutput};
+use rsiot_component_core::{Cache, ComponentError, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{
@@ -14,7 +14,6 @@ use crate::{
 type Result<TMessage> = std::result::Result<(), Error<TMessage>>;
 
 pub async fn fn_process<TMessage, I, Q, S>(
-    _input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
     config: Config<TMessage, I, Q, S>,
     cache: Cache<TMessage>,

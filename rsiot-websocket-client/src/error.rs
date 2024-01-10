@@ -1,27 +1,23 @@
-use tokio::{sync::mpsc::error::SendError, task::JoinError};
-use tokio_tungstenite::tungstenite::Error as TungsteniteError;
+#[derive(Debug, thiserror::Error)]
+pub enum Error<TMessage> {
+    #[error("Error from tunstenite: {source}")]
+    Tungstenite {
+        #[from]
+        source: tokio_tungstenite::tungstenite::Error,
+    },
 
-#[derive(Debug)]
-pub enum Error {
-    Tungstenite(TungsteniteError),
-    JoinError(JoinError),
-    SendError(String),
-}
+    #[error("{source}")]
+    TokioTaskJoin {
+        #[from]
+        source: tokio::task::JoinError,
+    },
 
-impl From<TungsteniteError> for Error {
-    fn from(value: TungsteniteError) -> Self {
-        Self::Tungstenite(value)
-    }
-}
+    #[error("{source}")]
+    TokioMpscSend {
+        #[from]
+        source: tokio::sync::mpsc::error::SendError<TMessage>,
+    },
 
-impl From<JoinError> for Error {
-    fn from(value: JoinError) -> Self {
-        Self::JoinError(value)
-    }
-}
-
-impl<TMessage> From<SendError<TMessage>> for Error {
-    fn from(value: SendError<TMessage>) -> Self {
-        Self::SendError(value.to_string())
-    }
+    #[error("fn_output error: {0}")]
+    FnOutput(anyhow::Error),
 }

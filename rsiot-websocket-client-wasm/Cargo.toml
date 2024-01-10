@@ -1,0 +1,29 @@
+[package]
+categories.workspace = true
+description = "Websocket-клиент для платформы WASM"
+edition.workspace = true
+keywords.workspace = true
+license.workspace = true
+name = "rsiot-websocket-client-wasm"
+readme = "README.md"
+repository.workspace = true
+rust-version.workspace = true
+version = "0.0.0"
+
+
+[dependencies]
+anyhow = { workspace = true }
+async-trait = { workspace = true }
+futures-util = { workspace = true }
+gloo = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+
+rsiot-component-core = { workspace = true }
+rsiot-components-config = { workspace = true }
+rsiot-messages-core = { workspace = true }
+
+
+[features]
+single-thread = ["rsiot-component-core/single-thread"]

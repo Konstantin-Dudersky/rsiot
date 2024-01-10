@@ -10,12 +10,31 @@ rust-version.workspace = true
 version = "0.0.31"
 
 [dependencies]
+async-trait = { workspace = true }
 futures = { workspace = true }
 thiserror = { workspace = true }
-tokio = { workspace = true }
+tokio = { version = "1", features = ["macros", "sync", "rt"] }
 tracing = { workspace = true }
 
 rsiot-messages-core = { workspace = true }
 
 [dev-dependencies]
 serde = { workspace = true }
+tokio = { version = "1", features = [
+    "macros",
+    "rt",
+    "sync",
+    "time",
+    "rt-multi-thread",
+] }
+tracing-subscriber = { workspace = true }
+
+
+[features]
+default = []
+single-thread = []
+
+
+[[example]]
+name = "single-thread"
+required-features = ["single-thread"]

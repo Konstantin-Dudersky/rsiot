@@ -12,15 +12,13 @@
 //! ```
 
 mod async_task_utils;
+mod component;
 mod config;
 mod errors;
 mod fn_process;
 mod handle_ws_connection;
-mod new;
 
 /// Компонент для подключения через websocket server.
 pub mod cmp_websocket_server {
-    pub use crate::{config::Config, new::new};
+    pub use crate::{component::Cmp, config::Config};
 }
-pub use rsiot_component_core::ComponentCollection;
-pub use rsiot_messages_core::IMessage;

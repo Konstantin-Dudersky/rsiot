@@ -1,7 +1,7 @@
 //! Запуск:
 //!
 //! ```bash
-//! cargo run -p rsiot-http-client --example http_client
+//! cargo run -p rsiot-http-client --example http_client_multi_thread
 //! ```
 
 use std::collections::HashMap;
@@ -12,7 +12,7 @@ use tokio::{main, time::Duration};
 use tracing::{level_filters::LevelFilter, Level};
 use url::Url;
 
-use rsiot_component_core::ComponentCollection;
+use rsiot_component_core::ComponentExecutor;
 use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use rsiot_http_client::cmp_http_client::{self, config};
 use rsiot_messages_core::IMessage;
@@ -51,6 +51,19 @@ async fn main() -> anyhow::Result<()> {
         .with_max_level(LevelFilter::INFO)
         .init();
 
+    let inject_config = cmp_inject_periodic::Config {
+        period: Duration::from_secs(2),
+        fn_periodic: move || {
+            let msg = Message::HttpMethodsGetOnEventRequest;
+            vec![msg]
+        },
+    };
+
+    let logger_config = cmp_logger::Config {
+        level: Level::INFO,
+        header: "HTTP response".into(),
+    };
+
     let http_config = config::Config::<Message> {
         connection_config: config::ConnectionConfig {
             base_url: Url::parse("http://127.0.0.1:80")?,
@@ -80,24 +93,12 @@ async fn main() -> anyhow::Result<()> {
         }],
     };
 
-    let mut chain = ComponentCollection::new(
-        100,
-        vec![
-            cmp_inject_periodic::new(cmp_inject_periodic::Config {
-                period: Duration::from_secs(2),
-                fn_periodic: move || {
-                    let msg = Message::HttpMethodsGetOnEventRequest;
-                    vec![msg]
-                },
-            }),
-            cmp_http_client::new(http_config),
-            cmp_logger::new(cmp_logger::Config {
-                level: Level::INFO,
-                header: "HTTP response".into(),
-            }),
-        ],
-    );
+    ComponentExecutor::new(100)
+        .add_cmp(cmp_http_client::Cmp::new(http_config))
+        .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
+        .add_cmp(cmp_logger::Cmp::new(logger_config))
+        .wait_result()
+        .await?;
 
-    chain.spawn().await?;
     Ok(())
 }
