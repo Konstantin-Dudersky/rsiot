@@ -1892,7 +1892,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot"
-version = "0.0.33"
+version = "0.0.34"
 dependencies = [
  "chrono",
  "document-features",
@@ -1931,7 +1931,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-components-config"
-version = "0.0.32"
+version = "0.0.34"
 dependencies = [
  "anyhow",
  "http 1.0.0",
@@ -1974,7 +1974,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-http-client"
-version = "0.0.32"
+version = "0.0.34"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1994,7 +1994,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-http-client-wasm"
-version = "0.0.0"
+version = "0.0.34"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2011,7 +2011,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-http-server"
-version = "0.0.32"
+version = "0.0.34"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2053,7 +2053,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-modbus-client"
-version = "0.0.33"
+version = "0.0.34"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2089,7 +2089,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-redis-client"
-version = "0.0.33"
+version = "0.0.34"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2108,7 +2108,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-timescaledb-storing"
-version = "0.0.32"
+version = "0.0.34"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2126,7 +2126,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-websocket-client"
-version = "0.0.32"
+version = "0.0.34"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2146,7 +2146,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-websocket-client-wasm"
-version = "0.0.33"
+version = "0.0.34"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2162,7 +2162,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-websocket-server"
-version = "0.0.33"
+version = "0.0.34"
 dependencies = [
  "anyhow",
  "async-trait",
