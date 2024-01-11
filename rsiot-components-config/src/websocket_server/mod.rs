@@ -13,7 +13,7 @@ where
     ///
     /// Если нужно просто переделать в json:
     /// ```
-    /// |msg: &ExampleMessage| {
+    /// |msg: &TMessage| {
     ///     let text = msg.to_json()?;
     ///     Ok(Some(text))
     /// }
@@ -25,7 +25,7 @@ where
     /// Если нужно просто переделать из json:
     /// ```
     /// |data: &str| {
-    ///     let msg = ExampleMessage::from_json(data)?;
+    ///     let msg = TMessage::from_json(data)?;
     ///     Ok(Some(msg))
     /// }
     /// ```
