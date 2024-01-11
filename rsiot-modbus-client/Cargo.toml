@@ -1,6 +1,6 @@
 [package]
 name = "rsiot-modbus-client"
-version = "0.0.34"
+version = "0.0.35"
 description = "Опрос устройств Modbus, используя библиотеку tokio-modbus"
 categories.workspace = true
 edition.workspace = true

@@ -916,9 +916,9 @@ dependencies = [
 
 [[package]]
 name = "h2"
-version = "0.3.22"
+version = "0.3.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4d6250322ef6e60f93f9a2162799302cd6f68f79f6e5d85c8c16f14d1d958178"
+checksum = "b553656127a00601c8ae5590fcfdc118e4083a7924b6cf4ffc1ea4b99dc429d7"
 dependencies = [
  "bytes",
  "fnv",
@@ -1097,7 +1097,7 @@ dependencies = [
  "futures-channel",
  "futures-core",
  "futures-util",
- "h2 0.3.22",
+ "h2 0.3.23",
  "http 0.2.11",
  "http-body 0.4.6",
  "httparse",
@@ -1843,7 +1843,7 @@ dependencies = [
  "encoding_rs",
  "futures-core",
  "futures-util",
- "h2 0.3.22",
+ "h2 0.3.23",
  "http 0.2.11",
  "http-body 0.4.6",
  "hyper 0.14.28",
@@ -1892,7 +1892,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot"
-version = "0.0.34"
+version = "0.0.35"
 dependencies = [
  "chrono",
  "document-features",
@@ -1931,7 +1931,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-components-config"
-version = "0.0.34"
+version = "0.0.35"
 dependencies = [
  "anyhow",
  "http 1.0.0",
@@ -1974,7 +1974,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-http-client"
-version = "0.0.34"
+version = "0.0.35"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1994,7 +1994,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-http-client-wasm"
-version = "0.0.34"
+version = "0.0.35"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2011,7 +2011,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-http-server"
-version = "0.0.34"
+version = "0.0.35"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2030,7 +2030,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-logging"
-version = "0.0.32"
+version = "0.0.35"
 dependencies = [
  "thiserror",
  "tokio",
@@ -2053,7 +2053,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-modbus-client"
-version = "0.0.34"
+version = "0.0.35"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2089,7 +2089,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-redis-client"
-version = "0.0.34"
+version = "0.0.35"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2108,7 +2108,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-timescaledb-storing"
-version = "0.0.34"
+version = "0.0.35"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2126,7 +2126,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-websocket-client"
-version = "0.0.34"
+version = "0.0.35"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2146,7 +2146,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-websocket-client-wasm"
-version = "0.0.34"
+version = "0.0.35"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2162,7 +2162,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-websocket-server"
-version = "0.0.34"
+version = "0.0.35"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3451,9 +3451,9 @@ checksum = "dff9641d1cd4be8d1a070daf9e3773c5f67e78b4d9d42263020c057706765c04"
 
 [[package]]
 name = "winnow"
-version = "0.5.33"
+version = "0.5.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b7520bbdec7211caa7c4e682eb1fbe07abe20cee6756b6e00f537c82c11816aa"
+checksum = "b7cf47b659b318dccbd69cc4797a39ae128f533dce7902a1096044d1967b9c16"
 dependencies = [
  "memchr",
 ]
