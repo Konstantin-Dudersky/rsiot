@@ -2,7 +2,6 @@ mod component;
 mod config;
 mod error;
 mod fn_process;
-mod types;
 
 #[doc = include_str!("../README.md")]
 ///
@@ -19,3 +18,5 @@ pub mod cmp_http_client {
     pub use crate::component::Cmp;
     pub use crate::config::config;
 }
+
+type Result<T, TMessage> = std::result::Result<T, error::Error<TMessage>>;

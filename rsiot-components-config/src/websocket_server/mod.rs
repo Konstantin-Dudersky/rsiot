@@ -13,15 +13,21 @@ where
     ///
     /// Если нужно просто переделать в json:
     /// ```
-    /// |msg: &TMessage| msg.to_json().ok()
+    /// |msg: &ExampleMessage| {
+    ///     let text = msg.to_json()?;
+    ///     Ok(Some(text))
+    /// }
     /// ```
-    pub fn_input: fn(&TMessage) -> Option<String>,
+    pub fn_input: fn(&TMessage) -> anyhow::Result<Option<String>>,
 
     /// Функция преобразования данных, полученных от клиента
     ///
-    /// Если нужно просто переделать в json:
+    /// Если нужно просто переделать из json:
     /// ```
-    /// |data: &str| TMessage::from_json(data).ok()
+    /// |data: &str| {
+    ///     let msg = ExampleMessage::from_json(data)?;
+    ///     Ok(Some(msg))
+    /// }
     /// ```
-    pub fn_output: fn(&str) -> Option<TMessage>,
+    pub fn_output: fn(&str) -> anyhow::Result<Option<TMessage>>,
 }

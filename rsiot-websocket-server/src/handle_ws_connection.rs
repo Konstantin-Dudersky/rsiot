@@ -17,7 +17,7 @@ use tracing::{info, warn};
 
 use rsiot_messages_core::IMessage;
 
-use crate::{config::Config, errors::Errors};
+use crate::{config::Config, errors::Error};
 
 /// Создание и управление подключением между сервером и клиентом
 pub async fn handle_ws_connection<TMessage>(
@@ -45,7 +45,7 @@ async fn _handle_ws_connection<TMessage>(
     stream_and_addr: (TcpStream, SocketAddr),
     config: Config<TMessage>,
     cache: Cache<TMessage>,
-) -> Result<(), Errors>
+) -> crate::Result<(), TMessage>
 where
     TMessage: IMessage + 'static,
 {
@@ -77,7 +77,7 @@ where
 async fn send_prepare_cache<TMessage>(
     output: mpsc::Sender<TMessage>,
     cache: Cache<TMessage>,
-) -> Result<(), Errors>
+) -> crate::Result<(), TMessage>
 where
     TMessage: IMessage,
 {
@@ -96,7 +96,7 @@ where
 async fn send_prepare_new_msgs<TMessage>(
     mut input: broadcast::Receiver<TMessage>,
     output: mpsc::Sender<TMessage>,
-) -> Result<(), Errors>
+) -> crate::Result<(), TMessage>
 where
     TMessage: IMessage,
 {
@@ -110,10 +110,10 @@ where
 async fn send_to_client<TMessage>(
     mut input: mpsc::Receiver<TMessage>,
     mut ws_stream_output: SplitSink<WebSocketStream<TcpStream>, Message>,
-    fn_send_to_client: fn(&TMessage) -> Option<String>,
-) -> Result<(), Errors> {
+    fn_input: fn(&TMessage) -> anyhow::Result<Option<String>>,
+) -> crate::Result<(), TMessage> {
     while let Some(msg) = input.recv().await {
-        let msg = (fn_send_to_client)(&msg);
+        let msg = (fn_input)(&msg).map_err(Error::FnInput)?;
         let data = match msg {
             Some(val) => val,
             None => continue,
@@ -127,14 +127,14 @@ async fn send_to_client<TMessage>(
 async fn recv<TMessage>(
     mut ws_stream_input: SplitStream<WebSocketStream<TcpStream>>,
     output: mpsc::Sender<TMessage>,
-    fn_recv_from_client: fn(&str) -> Option<TMessage>,
-) -> Result<(), Errors>
+    fn_output: fn(&str) -> anyhow::Result<Option<TMessage>>,
+) -> crate::Result<(), TMessage>
 where
     TMessage: IMessage,
 {
     while let Some(data) = ws_stream_input.next().await {
         let data = data?.into_text()?;
-        let msg = (fn_recv_from_client)(&data);
+        let msg = (fn_output)(&data).map_err(Error::FnOutput)?;
         let msg = match msg {
             Some(val) => val,
             None => continue,

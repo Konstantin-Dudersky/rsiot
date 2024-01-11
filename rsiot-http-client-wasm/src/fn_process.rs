@@ -1,14 +1,15 @@
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
-use reqwest::{Client, Response, StatusCode};
-use tokio::{
-    task::JoinSet,
-    time::{sleep, Instant},
+use gloo::{
+    net::http::{Request, Response},
+    timers::future::sleep,
 };
+use http::StatusCode;
+use tokio::task::JoinSet;
 use tracing::{error, info};
 use url::Url;
 
-use rsiot_component_core::{ComponentError, ComponentInput, ComponentOutput};
+use rsiot_component_core::{ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::config, error::Error};
@@ -17,11 +18,11 @@ pub async fn fn_process<TMessage>(
     input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
     config: config::Config<TMessage>,
-) -> Result<(), ComponentError>
+) -> crate::Result<(), TMessage>
 where
     TMessage: IMessage + 'static,
 {
-    info!("Starting http-client, configuration: {:?}", config);
+    info!("Starting http-client-wasm, configuration: {:?}", config);
 
     loop {
         let res = task_main::<TMessage>(input.resubscribe(), output.clone(), config.clone()).await;
@@ -36,16 +37,15 @@ where
     }
 }
 
-/// Основная задача
 async fn task_main<TMessage>(
-    input: ComponentInput<TMessage>,
+    _input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
     config: config::Config<TMessage>,
 ) -> crate::Result<(), TMessage>
 where
     TMessage: IMessage + 'static,
 {
-    let mut set = JoinSet::<crate::Result<(), TMessage>>::new();
+    let mut task_set = JoinSet::<crate::Result<(), TMessage>>::new();
     // запускаем периодические запросы
     for req in config.requests_periodic {
         let future = task_periodic_request::<TMessage>(
@@ -53,19 +53,13 @@ where
             req,
             config.connection_config.base_url.clone(),
         );
-        set.spawn(future);
+        task_set.spawn_local(future);
     }
-    // Запускаем задачи запросов на основе входного потока сообщений
-    for item in config.requests_input {
-        let future = task_input_request(
-            input.resubscribe(),
-            output.clone(),
-            config.connection_config.base_url.clone(),
-            item,
-        );
-        set.spawn(future);
-    }
-    while let Some(res) = set.join_next().await {
+    // TODO - запросы на основе входящих сообщений
+    //
+    // TODO - пересмотреть http-client. Может объединить код по-максимуму? NewType на основе
+    // JoineSet - с возможностью выбора spawn или spawn_local
+    while let Some(res) = task_set.join_next().await {
         res??
     }
     Ok(())
@@ -104,32 +98,6 @@ where
     }
 }
 
-/// Задача обработки запросов на основе входящего потока сообщений
-async fn task_input_request<TMessage>(
-    mut input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
-    url: Url,
-    config: config::RequestInput<TMessage>,
-) -> crate::Result<(), TMessage>
-where
-    TMessage: IMessage,
-{
-    while let Ok(msg) = input.recv().await {
-        let http_param = (config.fn_input)(&msg);
-        let http_param = match http_param {
-            Some(val) => val,
-            None => continue,
-        };
-        let msgs =
-            process_request_and_response(&url, &http_param, config.on_success, config.on_failure)
-                .await?;
-        for msg in msgs {
-            output.send(msg).await?;
-        }
-    }
-    Ok(())
-}
-
 /// Выполнение запроса и вызов коллбеков при ответе
 async fn process_request_and_response<TMessage>(
     url: &Url,
@@ -144,7 +112,7 @@ where
     let response = match response {
         Ok(val) => val,
         Err(err) => match err {
-            Error::Reqwest { source } => {
+            Error::GlooNet { source } => {
                 error!("{:?}", source);
                 let msgs = (on_failure)();
                 return Ok(msgs);
@@ -162,7 +130,7 @@ where
         );
         return Ok(msgs);
     }
-    let msgs = (on_success)(&text)?;
+    let msgs = (on_success)(&text).map_err(|err| Error::OnSuccess(err))?;
     Ok(msgs)
 }
 
@@ -176,13 +144,11 @@ async fn send_request<TMessage>(
         config::HttpParam::Put(_) => todo!(),
         config::HttpParam::Post(_) => todo!(),
     };
-    let url = url.join(endpoint).map_err(|err| {
-        let err = err.to_string();
-        Error::Configuration(err)
-    })?;
-    let client = Client::new();
+    let url = url
+        .join(endpoint)
+        .map_err(|err| Error::Configuration(err.to_string()))?;
     let response = match req {
-        config::HttpParam::Get(_) => client.get(url).send().await?,
+        config::HttpParam::Get(_) => Request::get(url.as_ref()).send().await?,
         config::HttpParam::Put(_) => todo!(),
         config::HttpParam::Post(_) => todo!(),
     };

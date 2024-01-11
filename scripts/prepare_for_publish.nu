@@ -44,6 +44,13 @@ do {
 }
 
 do {
+    print $"\n\n(ansi magenta_bold) rsiot-http-client-wasm (ansi reset)\n\n"
+    cd rsiot-logging
+    cargo clippy -p rsiot-http-client-wasm --features single-thread --target wasm32-unknown-unknown
+    cargo rdme --force
+}
+
+do {
     print $"\n\n(ansi magenta_bold) rsiot-modbus-client (ansi reset)\n\n"
     cd rsiot-modbus-client
     cargo rdme --force

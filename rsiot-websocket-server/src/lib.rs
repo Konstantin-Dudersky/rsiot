@@ -22,3 +22,5 @@ mod handle_ws_connection;
 pub mod cmp_websocket_server {
     pub use crate::{component::Cmp, config::Config};
 }
+
+type Result<TOk, TMsg> = std::result::Result<TOk, errors::Error<TMsg>>;

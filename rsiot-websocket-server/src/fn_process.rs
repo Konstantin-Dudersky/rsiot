@@ -15,7 +15,7 @@ use tracing::{error, info};
 use rsiot_component_core::{Cache, ComponentError, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
-use crate::{config::Config, errors::Errors};
+use crate::{config::Config, errors::Error};
 
 use super::{async_task_utils::cancellable_task, handle_ws_connection::handle_ws_connection};
 
@@ -56,7 +56,7 @@ async fn task_main<TMessage>(
     config: Config<TMessage>,
     cache: Cache<TMessage>,
     cancel: CancellationToken,
-) -> Result<(), Errors>
+) -> crate::Result<(), TMessage>
 where
     TMessage: IMessage + 'static,
 {
@@ -79,12 +79,12 @@ where
     Ok(())
 }
 
-async fn create_tcp_listener(addr: String) -> Result<TcpListener, Errors> {
+async fn create_tcp_listener<TMessage>(addr: String) -> crate::Result<TcpListener, TMessage> {
     let listener = TcpListener::bind(&addr).await;
     let listener = match listener {
         Ok(value) => value,
         Err(error) => {
-            return Err(Errors::BindToPort(error));
+            return Err(Error::BindToPort(error));
         }
     };
     info!("Listening on: {}", addr);

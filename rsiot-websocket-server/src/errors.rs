@@ -1,30 +1,29 @@
-use std::io::Error as StdIoError;
+#[derive(Debug, thiserror::Error)]
+pub enum Error<TMsg> {
+    #[error("{source}")]
+    Tungstenite {
+        #[from]
+        source: tokio_tungstenite::tungstenite::Error,
+    },
 
-use tokio::{sync::mpsc::error::SendError, task::JoinError};
-use tokio_tungstenite::tungstenite::Error as WsError;
+    #[error("Error bind to port: {0}")]
+    BindToPort(std::io::Error),
 
-#[derive(Debug)]
-pub enum Errors {
-    Websocket(WsError),
-    BindToPort(StdIoError),
-    Join(JoinError),
-    SendToChannel(String),
-}
+    #[error("{source}")]
+    TokioTaskJoin {
+        #[from]
+        source: tokio::task::JoinError,
+    },
 
-impl From<WsError> for Errors {
-    fn from(value: WsError) -> Self {
-        Self::Websocket(value)
-    }
-}
+    #[error("{source}")]
+    TokioSyncMpscSend {
+        #[from]
+        source: tokio::sync::mpsc::error::SendError<TMsg>,
+    },
 
-impl From<JoinError> for Errors {
-    fn from(value: JoinError) -> Self {
-        Self::Join(value)
-    }
-}
+    #[error("{0}")]
+    FnInput(anyhow::Error),
 
-impl<TMessage> From<SendError<TMessage>> for Errors {
-    fn from(value: SendError<TMessage>) -> Self {
-        Self::SendToChannel(value.to_string())
-    }
+    #[error("{0}")]
+    FnOutput(anyhow::Error),
 }

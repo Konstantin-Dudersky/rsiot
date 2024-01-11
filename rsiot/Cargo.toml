@@ -23,6 +23,7 @@ rsiot-component-core = { workspace = true, optional = true }
 rsiot-env-vars = { workspace = true, optional = true }
 rsiot-extra-components = { workspace = true, optional = true }
 rsiot-http-client = { workspace = true, optional = true }
+rsiot-http-client-wasm = { workspace = true, optional = true }
 rsiot-http-server = { workspace = true, optional = true }
 rsiot-logging = { workspace = true }
 rsiot-messages-core = { workspace = true }
@@ -49,6 +50,8 @@ components = [
 env-vars = ["dep:rsiot-env-vars"]
 ## Компонент http-клиент
 http-client = ["components", "dep:rsiot-http-client"]
+## Компонент http-клиент для платформы WASM
+http-client-wasm = ["components", "dep:rsiot-http-client-wasm"]
 ## Компонент http-сервер
 http-server = ["components", "dep:rsiot-http-server"]
 ## Компонент Modbus клиент
@@ -70,6 +73,7 @@ single-thread = [
     "rsiot-component-core?/single-thread",
     "rsiot-extra-components?/single-thread",
     "rsiot-http-client?/single-thread",
+    "rsiot-http-client-wasm?/single-thread",
     "rsiot-http-server?/single-thread",
     "rsiot-modbus-client?/single-thread",
     "rsiot-plc?/single-thread",

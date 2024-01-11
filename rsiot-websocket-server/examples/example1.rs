@@ -25,8 +25,14 @@ async fn main() -> anyhow::Result<()> {
 
     let ws_server_config = cmp_websocket_server::Config {
         port: 8020,
-        fn_input: |msg: &ExampleMessage| msg.to_json().ok(),
-        fn_output: |data: &str| ExampleMessage::from_json(data).ok(),
+        fn_input: |msg: &ExampleMessage| {
+            let text = msg.to_json()?;
+            Ok(Some(text))
+        },
+        fn_output: |data: &str| {
+            let msg = ExampleMessage::from_json(data)?;
+            Ok(Some(msg))
+        },
     };
 
     let mut counter = 0.0;
