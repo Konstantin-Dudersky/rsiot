@@ -1,46 +1,19 @@
+use std::env;
+
+use tokio::spawn;
+use tracing::info;
+use tracing_subscriber::{
+    fmt::Layer, layer::SubscriberExt, registry, util::SubscriberInitExt, EnvFilter,
+};
+
 /// Настройка логгирования
 ///
-/// Логгирование настраивается через входной переменную окружения `rust_log`.
+/// Логгирование настраивается через входной параметр `rust_log`.
 ///
 /// Логи выводятся в:
 /// - stdout
 /// - Grafana Loki
-///
-/// # Способы задания RUST_LOG
-///
-/// ## Запуск в контейнере
-///
-/// В файле `docker-compose.yaml` для сервиса указать:
-///
-/// ```yaml
-/// services:
-///   rust_service:
-///     environment:
-///       - RUST_LOG=info
-/// ```
-///
-/// Значение переменной можно задавать для каждого сервиса оданиково.
-///
-/// ## Запуск в контейнере, сохранение в файле `.env`
-///
-/// В файле `docker-compose.yaml` для сервиса указать:
-///
-/// ```yaml
-/// services:
-///   rust_service:
-///     env_file: .env
-/// ```
-///
-/// Значение переменной будет одинаково для всех сервисов
-pub async fn configure_logging(loki_url: &url::Url) -> Result<(), crate::Error> {
-    use std::env;
-
-    use tokio::spawn;
-    use tracing::info;
-    use tracing_subscriber::{
-        fmt::Layer, layer::SubscriberExt, registry, util::SubscriberInitExt, EnvFilter,
-    };
-
+pub async fn configure_logging(rust_log: &str, loki_url: &url::Url) -> Result<(), crate::Error> {
     let service = env::args().collect::<Vec<String>>()[0].clone();
     let service = service_cleanup(&service);
 
@@ -53,7 +26,7 @@ pub async fn configure_logging(loki_url: &url::Url) -> Result<(), crate::Error> 
     let layer_stdout = Layer::new().pretty();
 
     // фильтруем на основе значения переменной RUST_LOG
-    let filter = EnvFilter::from_default_env();
+    let filter = EnvFilter::new(rust_log);
 
     registry()
         .with(layer_loki)

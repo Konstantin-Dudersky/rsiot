@@ -1904,7 +1904,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot"
-version = "0.0.36"
+version = "0.0.37"
 dependencies = [
  "chrono",
  "document-features",
@@ -2042,7 +2042,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-logging"
-version = "0.0.36"
+version = "0.0.37"
 dependencies = [
  "dotenvy_macro",
  "thiserror",
