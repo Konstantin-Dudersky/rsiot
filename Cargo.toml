@@ -32,61 +32,81 @@ rust-version = "1.75.0"
 
 
 [workspace.dependencies]
-axum = { version = "0.7.2" }
-axum-test = { version = "14.0.0" }
-chrono = { version = "0.4.31", features = ["serde"] }
+
+# async
+async-trait = { version = "0.1.77" }
+futures = { version = "0.3.29" }
+futures-util = { version = "0.3.29" }
+tokio = { version = "1.35.1", features = ["macros", "sync", "rt", "time"] }
+tokio-util = { version = "0.7.10" }
+
+# CLI
 clap = { version = "4.4", features = ["derive"] }
-dotenvy = { version = "0.15" }
-envy = { version = "0.4" }
+
+# datatypes
+chrono = { version = "0.4.31", features = ["serde"] }
 http = { version = "1.0.0" }
+url = { version = "2.5.0" }
+
+# documentation
+document-features = { version = "0.2.7" }
+
+# database
 redis = { version = "0.24.0", features = ["tokio-comp"] }
-reqwest = { version = "0.11.22", features = ["json"] }
-serde = { version = "1.0.193", features = ["derive"] }
-serde_json = { version = "1.0.108" }
 sqlx = { version = "0.7.3", features = [
     "chrono",
     "macros",
     "postgres",
     "runtime-tokio",
 ] }
-tokio-modbus = { version = "0.10.0", default-features = false, features = [
-    "tcp",
-] }
-tokio-tungstenite = { version = "0.21.0" }
 
-toml = { version = "0.8" }
-tower-http = { version = "0.5.0", features = ["cors", "trace"] }
-url = { version = "2.5.0" }
+# env vars
+dotenvy = { version = "0.15" }
+dotenvy_macro = { version = "0.15.7" }
+envy = { version = "0.4" }
+
+# errors
 anyhow = { version = "1.0.79" }
 thiserror = { version = "1.0.56" }
 
-# асинхронщина
-async-trait = { version = "0.1.77" }
-futures = { version = "0.3.29" }
-futures-util = { version = "0.3.29" }
-# TODO - tokio/time не компилируется в WASM
-tokio = { version = "1.35.1", features = ["macros", "sync", "rt", "time"] }
-tokio-util = { version = "0.7.10" }
+# HTTP-client
+reqwest = { version = "0.11.22", features = ["json"] }
 
-# документация
-document-features = { version = "0.2.7" }
+# HTTP-server
+axum = { version = "0.7.2" }
+axum-test = { version = "14.0.0" }
+tower-http = { version = "0.5.0", features = ["cors", "trace"] }
 
-# логгирование
+# logging
 tracing = { version = "0.1.40", features = ["log"] }
 tracing-subscriber = { version = "0.3.18", features = ["env-filter", "chrono"] }
 tracing-loki = { version = "0.2.4" }
 tracing-web = { version = "0.1.3" }
 
-# макросы
+# macro
 proc-macro2 = "1.0"
 proc-macro-error = "1.0"
 quote = "1.0"
 syn = "2.0"
 
+# Modbus
+tokio-modbus = { version = "0.10.0", default-features = false, features = [
+    "tcp",
+] }
+
+# serialization / deserialization
+serde = { version = "1.0.193", features = ["derive"] }
+serde_json = { version = "1.0.108" }
+toml = { version = "0.8" }
+
 # WASM
 gloo = { version = "0.11.0", features = ["net", "futures", "timers", "utils"] }
 
+# Websocket
+tokio-tungstenite = { version = "0.21.0" }
 
+
+# workspace packages
 rsiot-component-core = { version = "0.0.32", path = "./rsiot-component-core" }
 rsiot-components-config = { version = "0.0.35", path = "./rsiot-components-config" }
 rsiot-env-vars = { version = "0.0.32", path = "./rsiot-env-vars" }

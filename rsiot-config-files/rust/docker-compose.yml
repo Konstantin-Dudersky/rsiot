@@ -1,0 +1,25 @@
+services:
+  backend:
+    command: ./backend
+    container_name: backend
+    depends_on:
+      redis:
+        condition: service_healthy
+        restart: true
+      loki:
+        condition: service_healthy
+        restart: true
+    hostname: backend
+    image: ubuntu:jammy
+    networks:
+      - network_internal
+    environment:
+      - RUST_LOG=info
+    profiles:
+      - target
+    volumes:
+      - ./backend:/backend
+
+networks:
+  network_internal:
+    driver: bridge

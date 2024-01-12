@@ -17,8 +17,8 @@ tracing-subscriber = { workspace = true }
 url = { workspace = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
+dotenvy_macro = { workspace = true }
 tracing-web = { workspace = true }
-dotenvy_macro = { version = "*" }  # TODO
 
 [target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dependencies]
 tracing-loki = { workspace = true }
