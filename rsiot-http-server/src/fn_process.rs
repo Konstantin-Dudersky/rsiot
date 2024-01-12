@@ -26,11 +26,10 @@ pub async fn fn_process<TMessage>(
 where
     TMessage: IMessage + 'static,
 {
+    info!("Component started, configuration: {:?}", config);
     // общее состояние
     let shared_state = Arc::new(SharedState { cache, output });
-
     loop {
-        info!("Component started");
         let result = task_main(shared_state.clone(), config.port).await;
         if let Err(err) = result {
             error!("{:?}", err);
