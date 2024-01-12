@@ -26,6 +26,12 @@ pub async fn fn_process<TMessage>(
 where
     TMessage: IMessage + 'static,
 {
+    if config.enabled {
+        loop {
+            sleep(Duration::from_secs(100)).await
+        }
+    }
+
     loop {
         info!("Starting modbus client, configuration: {:?}", config);
         let res = task_main::<TMessage>(input.resubscribe(), output.clone(), config.clone()).await;
@@ -43,22 +49,22 @@ where
 async fn task_main<TMessage>(
     input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
-    client_config: Config<TMessage>,
+    config: Config<TMessage>,
 ) -> Result<(), Errors>
 where
     TMessage: IMessage + 'static,
 {
-    let (ctx, periodic_config, input_config) = match client_config {
-        Config::Tcp(config) => {
-            let socket_addr = SocketAddr::new(config.host, config.port);
+    let ctx = match config.client_type {
+        config::ClientType::Tcp(tcp_config) => {
+            let socket_addr = SocketAddr::new(tcp_config.host, tcp_config.port);
             debug!("Try to establish connection to socket: {:?}", socket_addr);
             let slave = Slave(config.unit_id);
             let ctx = tcp::connect_slave(socket_addr, slave).await?;
             debug!("Connection established: {:?}", ctx);
-            (ctx, config.periodic_config, config.input_config)
+            ctx
         }
-        Config::Rtu => {
-            todo!();
+        config::ClientType::Rtu => {
+            unimplemented!()
         }
     };
     let ctx = Arc::new(Mutex::new(ctx));
@@ -66,7 +72,7 @@ where
     let mut set = JoinSet::<Result_<()>>::new();
 
     // Запускаем задачи периодических запросов
-    for item in periodic_config {
+    for item in config.periodic_config {
         set.spawn(task_periodic_request::<TMessage>(
             output.clone(),
             ctx.clone(),
@@ -74,7 +80,7 @@ where
         ));
     }
     // Запускаем задачи запросов на основе входного потока сообщений
-    for item in input_config {
+    for item in config.input_config {
         set.spawn(task_input_request(
             input.resubscribe(),
             output.clone(),

@@ -6,7 +6,7 @@ mod response;
 mod types;
 
 pub use {
-    config::{Config, TcpClientConfig},
+    config::{ClientType, Config, TcpClientType},
     input_config::InputConfig,
     periodic_config::PeriodicConfig,
     request::Request,

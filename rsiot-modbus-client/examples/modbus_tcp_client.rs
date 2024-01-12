@@ -42,9 +42,8 @@ async fn main() -> anyhow::Result<()> {
     fmt().init();
 
     // Конфигурация modbus клиента
-    let modbus_client_config = Config::<Messages>::Tcp(TcpClientConfig {
-        host: IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)),
-        port: 5020,
+    let modbus_client_config = Config {
+        enabled: true,
         unit_id: 1,
         input_config: vec![InputConfig {
             fn_input: |msg| match msg {
@@ -66,7 +65,11 @@ async fn main() -> anyhow::Result<()> {
             },
             fn_on_failure: Vec::new,
         }],
-    });
+        client_type: ClientType::Tcp(TcpClientType {
+            host: IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)),
+            port: 5020,
+        }),
+    };
 
     let mut counter = 0.0;
     ComponentExecutor::new(100)

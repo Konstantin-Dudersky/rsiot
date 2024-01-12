@@ -13,9 +13,8 @@ const TO_U32: fn(&[u16]) -> u32 = conversion::to_u32::little_endian_swap;
 
 /// Конфигурация modbus клиента
 pub fn config() -> Config<Messages> {
-    cmp_modbus_client::Config::Tcp(TcpClientConfig::<Messages> {
-        host: IpAddr::V4(Ipv4Addr::new(10, 0, 6, 10)),
-        port: 502,
+    cmp_modbus_client::Config {
+        enabled: true,
         unit_id: 1,
         input_config: vec![InputConfig {
             fn_input: |_| None,
@@ -32,7 +31,11 @@ pub fn config() -> Config<Messages> {
                 ))]
             },
         }],
-    })
+        client_type: ClientType::Tcp(TcpClientType {
+            host: IpAddr::V4(Ipv4Addr::new(10, 0, 6, 10)),
+            port: 502,
+        }),
+    }
 }
 
 #[allow(non_snake_case)]
