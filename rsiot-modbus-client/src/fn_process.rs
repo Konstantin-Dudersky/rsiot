@@ -6,15 +6,14 @@ use tokio::{
     time::{sleep, Duration},
 };
 use tokio_modbus::{client::Context, prelude::*};
-use tracing::{debug, error, info, trace, warn};
+use tracing::{debug, error, info, trace};
 
 use rsiot_component_core::{Cache, ComponentError, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{
     config::{self, Config},
-    errors::Errors,
-    types::Result_,
+    error::Error,
 };
 
 pub async fn fn_process<TMessage>(
@@ -50,7 +49,7 @@ async fn task_main<TMessage>(
     input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
     config: Config<TMessage>,
-) -> Result<(), Errors>
+) -> crate::Result<(), TMessage>
 where
     TMessage: IMessage + 'static,
 {
@@ -69,7 +68,7 @@ where
     };
     let ctx = Arc::new(Mutex::new(ctx));
 
-    let mut set = JoinSet::<Result_<()>>::new();
+    let mut set: JoinSet<crate::Result<(), TMessage>> = JoinSet::new();
 
     // Запускаем задачи периодических запросов
     for item in config.periodic_config {
@@ -99,7 +98,7 @@ async fn task_periodic_request<TMessage>(
     output: ComponentOutput<TMessage>,
     ctx: Arc<Mutex<Context>>,
     periodic_config: config::PeriodicConfig<TMessage>,
-) -> Result_<()>
+) -> crate::Result<(), TMessage>
 where
     TMessage: IMessage,
 {
@@ -130,7 +129,7 @@ async fn task_input_request<TMessage>(
     output: ComponentOutput<TMessage>,
     ctx: Arc<Mutex<Context>>,
     input_config: config::InputConfig<TMessage>,
-) -> Result_<()>
+) -> crate::Result<(), TMessage>
 where
     TMessage: IMessage,
 {
@@ -154,10 +153,10 @@ where
 }
 
 /// Выполняем запрос modbus
-async fn modbus_request(
+async fn modbus_request<TMessage>(
     ctx: Arc<Mutex<Context>>,
     request: &config::Request,
-) -> Result_<config::Response> {
+) -> crate::Result<config::Response, TMessage> {
     let mut lock = ctx.lock().await;
     match request {
         config::Request::ReadCoils(_, _) => todo!(),
@@ -176,20 +175,23 @@ async fn modbus_request(
 async fn modbus_response<TMessage>(
     output: ComponentOutput<TMessage>,
     request: &config::Request,
-    response: &Result<config::Response, Errors>,
+    response: &crate::Result<config::Response, TMessage>,
     fn_on_success: config::FnOnSuccess<TMessage>,
     fn_on_failure: config::FnOnFailure<TMessage>,
-) -> Result_<()> {
+) -> crate::Result<(), TMessage>
+where
+    TMessage: IMessage,
+{
     trace!("Modbus response: {:?}", response);
     let msgs = match response {
         Ok(val) => (fn_on_success)(val),
         Err(err) => {
-            let err = format!(
-                "Modbus request error. Request: {:?}. Error: {:?}",
-                request, err
-            );
-            warn!(err);
-            (fn_on_failure)()
+            (fn_on_failure)();
+            let err = Error::Request {
+                request: request.clone(),
+                error: err.to_string(),
+            };
+            return Err(err);
         }
     };
     for msg in msgs {

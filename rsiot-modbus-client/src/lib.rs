@@ -32,9 +32,8 @@
 mod component;
 mod config;
 pub mod conversion;
-mod errors;
+mod error;
 mod fn_process;
-mod types;
 
 /// Обмен данными с устройством, поддерживающим Modbus TCP сервер.
 ///
@@ -44,3 +43,5 @@ pub mod cmp_modbus_client {
     pub use crate::config::*;
     pub use crate::conversion;
 }
+
+type Result<T, TMessage> = std::result::Result<T, error::Error<TMessage>>;
