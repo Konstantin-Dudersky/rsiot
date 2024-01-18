@@ -18,6 +18,8 @@ services:
       - target
     volumes:
       - loki_data:/loki
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
 
 volumes:
   loki_data:

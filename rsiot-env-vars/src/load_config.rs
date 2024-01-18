@@ -1,35 +1,59 @@
 use dotenvy::dotenv;
 use envy::from_env;
-use tracing::{error, info};
 
 use crate::{Errors, IEnvVars};
 
 /// Загрузить настройки:
 /// - из переменных среды
 /// - из файла .env в корне проекта
+///
+/// Для вывода сообщений используются println, поскольку загрузка переменных выполняется до
+/// инициализации tracing-subscriber
 pub fn load_config<TEnvVars>() -> Result<TEnvVars, Errors>
 where
     TEnvVars: IEnvVars,
 {
-    let vars = _load_config();
-    match &vars {
-        Ok(value) => {
-            info!("Загружен файл с переменными: {:?}", value);
+    println!("Пробуем загрузить переменные из окружения");
+    let vars = load_from_env();
+    match vars {
+        Ok(vars) => {
+            println!("Переменные из окружения загружены");
+            return Ok(vars);
         }
         Err(err) => {
-            error!("Ошибка загрузки переменных среды: {:?}", err);
+            println!("Ошибка загрузки переменных из окружения: {err}");
         }
-    };
-    vars
+    }
+
+    println!("Пробуем загрузить переменные из файла .env");
+    let vars = load_from_file();
+    match vars {
+        Ok(vars) => {
+            println!("Переменные из файла успешно загружены");
+            return Ok(vars);
+        }
+        Err(err) => {
+            println!("Ошибка загрузки переменных из файла .env: {err}");
+            return Err(err);
+        }
+    }
 }
 
-fn _load_config<TEnvVars>() -> Result<TEnvVars, Errors>
+/// Загружаем переменные из окружения
+fn load_from_env<TEnvVars>() -> Result<TEnvVars, Errors>
 where
     TEnvVars: IEnvVars,
 {
-    // загружаем из файла .env
+    let vars = from_env::<TEnvVars>()?;
+    Ok(vars)
+}
+
+/// Загружаем переменные из файла .env
+fn load_from_file<TEnvVars>() -> Result<TEnvVars, Errors>
+where
+    TEnvVars: IEnvVars,
+{
     dotenv()?;
-    // десериализуем в структуру
     let vars = from_env::<TEnvVars>()?;
     Ok(vars)
 }

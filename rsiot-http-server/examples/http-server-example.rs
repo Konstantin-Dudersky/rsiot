@@ -6,7 +6,7 @@
 //! ```
 
 use serde::{Deserialize, Serialize};
-use tokio::{runtime, time::Duration};
+use tokio::{runtime, task::LocalSet, time::Duration};
 use tracing::Level;
 use tracing_subscriber::filter::LevelFilter;
 
@@ -67,5 +67,29 @@ fn main() -> anyhow::Result<()> {
 
             Ok(()) as anyhow::Result<()>
         })?;
+
+    #[cfg(feature = "single-thread")]
+    runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .unwrap()
+        .block_on(async move {
+            let local_set = LocalSet::new();
+
+            local_set.spawn_local(async move {
+                ComponentExecutor::new(100)
+                    .add_cmp(cmp_logger::Cmp::new(logger_config))
+                    .add_cmp(cmp_inject_periodic::Cmp::new(inject_periodic_config))
+                    .add_cmp(cmp_http_server::Cmp::new(http_server_config))
+                    .wait_result()
+                    .await?;
+                Ok(()) as anyhow::Result<()>
+            });
+
+            local_set.await;
+
+            Ok(()) as anyhow::Result<()>
+        })?;
+
     Ok(())
 }

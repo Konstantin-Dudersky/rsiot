@@ -1,4 +1,3 @@
-use chrono::Utc;
 use serde::{Deserialize, Serialize};
 
 use super::Timestamp;
@@ -6,7 +5,7 @@ use super::Timestamp;
 /// Тип "Значение"
 ///
 /// Содержит значение типа обобщенного типа `T`, с меткой времени
-#[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct Value<T> {
     pub value: T,
     pub ts: Timestamp,
@@ -17,7 +16,7 @@ impl<T> Value<T> {
     pub fn new(value: T) -> Self {
         Self {
             value,
-            ts: Utc::now().into(),
+            ts: Timestamp::default(),
         }
     }
 

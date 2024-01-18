@@ -29,12 +29,12 @@ impl From<eav::EavModel> for Row {
         };
 
         let row = Row {
-            ts: eav_model.ts,
+            ts: eav_model.ts.0,
             entity: eav_model.entity,
             attr: eav_model.attr,
             value: Some(value),
             agg: eav_model.agg.into(),
-            aggts: eav_model.aggts,
+            aggts: eav_model.aggts.map(|v| v.0),
             aggnext: eav_model.aggnext.iter().map(|a| a.clone().into()).collect(),
         };
 

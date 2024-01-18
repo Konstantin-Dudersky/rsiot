@@ -1,10 +1,8 @@
-use chrono::{DateTime, FixedOffset};
-
-use crate::eav;
+use crate::{eav, msg_types::Timestamp};
 
 /// Команда или событие
 pub struct Command {
-    pub ts: DateTime<FixedOffset>,
+    pub ts: Timestamp,
     pub entity: String,
     pub attr: String,
 }

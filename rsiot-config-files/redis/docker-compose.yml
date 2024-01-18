@@ -16,6 +16,8 @@ services:
     volumes:
       - redis_data:/data # для сохранения данных
       - ./services/redis/redis.conf:/redis-stack.conf # путь к файлу конфигурации
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
 
 networks:
   network_internal:

@@ -1,10 +1,8 @@
-use chrono::{DateTime, FixedOffset};
-
-use crate::eav;
+use crate::{eav, msg_types::Timestamp};
 
 /// Счетчик с нарастающим итогом
 pub struct ValueCounter {
-    pub ts: DateTime<FixedOffset>,
+    pub ts: Timestamp,
     pub entity: String,
     pub attr: String,
     pub value: eav::ValueType,

@@ -19,6 +19,9 @@ services:
       - target
     volumes:
       - ./backend:/backend
+      - ./.env:/.env
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
 
 networks:
   network_internal:

@@ -1,10 +1,8 @@
-use chrono::{DateTime, FixedOffset};
-
-use crate::eav;
+use crate::{eav, msg_types::Timestamp};
 
 /// Мгновенное значение
 pub struct ValueInstant {
-    pub ts: DateTime<FixedOffset>,
+    pub ts: Timestamp,
     pub entity: String,
     pub attr: String,
     pub value: eav::ValueType,

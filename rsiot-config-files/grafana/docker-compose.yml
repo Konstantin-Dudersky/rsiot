@@ -7,6 +7,7 @@ services:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_SECURITY_ALLOW_EMBEDDING=true
         # настройки источника - база данных
       - TIMESCALEDB_HOST=timescaledb
       - TIMESCALEDB_PORT=5432
@@ -22,6 +23,8 @@ services:
     volumes:
       - ./services/grafana/datasources:/etc/grafana/provisioning/datasources
       - ./services/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
     networks:
       - network_internal
 

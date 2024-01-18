@@ -1,4 +1,4 @@
-use chrono::{DateTime, FixedOffset};
+use crate::msg_types::Timestamp;
 
 use super::{AggType, ValueType};
 
@@ -6,7 +6,7 @@ use super::{AggType, ValueType};
 #[derive(Debug, Clone, Default)]
 pub struct EavModel {
     /// Метка времени
-    pub ts: DateTime<FixedOffset>,
+    pub ts: Timestamp,
     /// `Entity`
     pub entity: String,
     /// `Attribute`
@@ -16,7 +16,7 @@ pub struct EavModel {
     /// Значение `Value` было получено с помощью данного типа аггрегации
     pub agg: AggType,
     /// Метка времени, к которой относится данная аггрегация
-    pub aggts: Option<DateTime<FixedOffset>>,
+    pub aggts: Option<Timestamp>,
     /// Типы аггрегации, которые должны применяться на следующем этапе
     pub aggnext: Vec<AggType>,
 }

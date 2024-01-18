@@ -1,29 +1,21 @@
 use serde::{Deserialize, Serialize};
 
-use chrono::{DateTime, FixedOffset, Utc};
+use super::Timestamp;
 
 /// Тип "Команда"
 ///
 /// Содержит только метку времени
-#[derive(Serialize, Clone, Deserialize, Debug, Copy, PartialEq)]
+#[derive(Serialize, Clone, Default, Deserialize, Debug, PartialEq)]
 pub struct Command {
-    pub ts: DateTime<FixedOffset>,
+    pub ts: Timestamp,
 }
 
 impl Command {
-    pub fn new(ts: Option<DateTime<FixedOffset>>) -> Self {
+    pub fn new(ts: Option<Timestamp>) -> Self {
         let ts = match ts {
             Some(value) => value,
-            None => Utc::now().into(),
+            None => Timestamp::default(),
         };
         Self { ts }
-    }
-}
-
-impl Default for Command {
-    fn default() -> Self {
-        Self {
-            ts: Utc::now().into(),
-        }
     }
 }

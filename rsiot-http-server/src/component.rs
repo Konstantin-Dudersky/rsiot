@@ -25,4 +25,22 @@ where
     }
 }
 
+#[cfg(feature = "single-thread")]
+#[async_trait(?Send)]
+impl<TMsg> IComponentProcess<ConfigAlias, TMsg> for Component<ConfigAlias, TMsg>
+where
+    TMsg: IMessage + 'static,
+{
+    async fn process(
+        &self,
+        config: ConfigAlias,
+        _input: ComponentInput<TMsg>,
+        output: ComponentOutput<TMsg>,
+        cache: Cache<TMsg>,
+    ) -> Result<(), ComponentError> {
+        let config = config.0;
+        fn_process(output, config, cache).await
+    }
+}
+
 pub type Cmp<TMsg> = Component<ConfigAlias, TMsg>;
