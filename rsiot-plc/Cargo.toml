@@ -8,7 +8,7 @@ name = "rsiot-plc"
 readme = "README.md"
 repository.workspace = true
 rust-version.workspace = true
-version = "0.0.32"
+version = "0.0.38"
 
 
 [dependencies]
