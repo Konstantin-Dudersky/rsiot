@@ -14,7 +14,7 @@ cargo doc --open
 
 ## Отладка разных фич
 
-Активировать фичи для помощи rust-analyzera - в корне в папке .vscode:
+Активировать фичи для помощи rust-analyzer - в корне в папке .vscode:
 
 ```json
 {

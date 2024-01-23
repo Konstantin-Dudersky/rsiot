@@ -2,6 +2,7 @@ use std::time::{Duration, Instant};
 
 use serde::Serialize;
 use tokio::{spawn, sync::mpsc, time::sleep};
+use tracing::trace;
 
 use rsiot_component_core::{Cache, ComponentError, ComponentOutput};
 use rsiot_messages_core::IMessage;
@@ -46,9 +47,11 @@ where
 {
     let mut fb_main = config.fb_main.clone();
     loop {
+        trace!("Start PLC cycle");
         let begin = Instant::now();
         task_main::<TMessage, I, Q, S>(&output, &config, &mut fb_main, cache.clone()).await?;
         let elapsed = begin.elapsed();
+        trace!("End PLC cycle, elapsed: {:?}", elapsed);
         let sleep_time = if config.period <= elapsed {
             Duration::from_millis(10)
         } else {
