@@ -1,14 +1,13 @@
 //! Пример реализации сообщения. Можно использовать для тестирования компонентов
 
-use crate::{eav, eav_helpers, msg_types, Deserialize, IMessage, Serialize};
+use crate::{eav, eav_helpers, msg_meta, Deserialize, IMessage, MsgContent, MsgMeta, Serialize};
 
 /// Пример реализации сообщения. Можно использовать для тестирования компонентов
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, MsgMeta, PartialEq, Serialize)]
 pub enum ExampleMessage {
-    ValueInstantF64(msg_types::Value<f64>),
-    ValueInstantBool(msg_types::Value<bool>),
-    ValueInstantString(msg_types::Value<String>),
-    Command(msg_types::Command),
+    ValueInstantF64(MsgContent<f64>),
+    ValueInstantBool(MsgContent<bool>),
+    ValueInstantString(MsgContent<String>),
 }
 
 impl IMessage for ExampleMessage {
@@ -37,12 +36,6 @@ impl IMessage for ExampleMessage {
                 value: msg_content.value.clone().into(),
             }
             .into(),
-            ExampleMessage::Command(msg_content) => eav_helpers::Command {
-                ts: msg_content.ts,
-                entity: "Command".into(),
-                attr: "".into(),
-            }
-            .into(),
         }
     }
 }
@@ -53,7 +46,7 @@ mod tests {
 
     #[test]
     fn test1() {
-        let msg = ExampleMessage::ValueInstantF64(msg_types::Value::new(12.3));
+        let msg = ExampleMessage::ValueInstantF64(MsgContent::new(12.3));
         let eav = msg.into_eav();
         println!("{:?}", eav);
     }

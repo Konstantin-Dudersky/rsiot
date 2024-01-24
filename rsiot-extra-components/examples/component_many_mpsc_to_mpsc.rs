@@ -6,14 +6,14 @@ use tokio::{
 };
 
 use rsiot_extra_components::cmpbase_many_mpsc_to_mpsc;
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::{msg_meta, IMessage, MsgContent, MsgMeta};
 use tracing::info;
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
 enum Message {
-    Message0(f64),
-    Message1(f64),
-    Combine(f64, f64),
+    Message0(MsgContent<f64>),
+    Message1(MsgContent<f64>),
+    Combine(MsgContent<(f64, f64)>),
 }
 
 impl IMessage for Message {
@@ -34,7 +34,7 @@ async fn main() -> anyhow::Result<()> {
     #[allow(unreachable_code)]
     let _task1 = spawn(async move {
         loop {
-            let msg = Message::Message0(counter1);
+            let msg = Message::Message0(MsgContent::new(counter1));
             counter1 += 1.0;
             stream1_tx.send(msg).await?;
             sleep(Duration::from_secs(1)).await;
@@ -46,7 +46,7 @@ async fn main() -> anyhow::Result<()> {
     #[allow(unreachable_code)]
     let _task2 = spawn(async move {
         loop {
-            let msg = Message::Message1(counter2);
+            let msg = Message::Message1(MsgContent::new(counter2));
             counter2 += 1.0;
             stream2_tx.send(msg).await?;
             sleep(Duration::from_secs(2)).await;

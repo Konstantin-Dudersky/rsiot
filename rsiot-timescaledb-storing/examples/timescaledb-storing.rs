@@ -9,7 +9,7 @@ use url::Url;
 
 use rsiot_component_core::ComponentExecutor;
 use rsiot_extra_components::cmp_inject_periodic;
-use rsiot_messages_core::{msg_types, ExampleMessage};
+use rsiot_messages_core::{ExampleMessage, MsgContent};
 use rsiot_timescaledb_storing::cmp_timescaledb_storing;
 
 #[main]
@@ -20,7 +20,7 @@ async fn main() -> anyhow::Result<()> {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg = ExampleMessage::ValueInstantF64(msg_types::Value::new(counter));
+            let msg = ExampleMessage::ValueInstantF64(MsgContent::new(counter));
             counter += 1.0;
             vec![msg]
         },

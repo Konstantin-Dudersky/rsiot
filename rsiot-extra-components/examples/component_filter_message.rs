@@ -6,14 +6,14 @@ use tokio::{
 };
 
 use rsiot_extra_components::component_filter_message;
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::{msg_meta, IMessage, MsgContent, MsgMeta};
 use tracing::info;
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
 enum Message {
-    Message0(f64),
-    Message1(f64),
-    Combine(f64, f64),
+    Message0(MsgContent<f64>),
+    Message1(MsgContent<f64>),
+    Combine(MsgContent<(f64, f64)>),
 }
 
 impl IMessage for Message {
@@ -33,12 +33,12 @@ async fn main() -> anyhow::Result<()> {
     #[allow(unreachable_code)]
     let _sim_task = spawn(async move {
         loop {
-            let msg = Message::Message0(counter);
+            let msg = Message::Message0(MsgContent::new(counter));
             counter += 1.0;
             info!("send msg: {:?}", msg);
             origin.send(msg).await?;
 
-            let msg = Message::Message1(counter);
+            let msg = Message::Message1(MsgContent::new(counter));
             info!("send msg: {:?}", msg);
             origin.send(msg).await?;
 

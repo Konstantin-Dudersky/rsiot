@@ -21,13 +21,13 @@ use tracing_subscriber::fmt;
 
 use rsiot_component_core::ComponentExecutor;
 use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::{msg_meta, IMessage, MsgContent, MsgMeta};
 use rsiot_modbus_client::cmp_modbus_client::{self, *};
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
 pub enum Messages {
-    ValueWrite(f64),
-    ValueRead(f64),
+    ValueWrite(MsgContent<f64>),
+    ValueRead(MsgContent<f64>),
 }
 
 impl IMessage for Messages {
@@ -47,7 +47,9 @@ async fn main() -> anyhow::Result<()> {
         unit_id: 1,
         input_config: vec![InputConfig {
             fn_input: |msg| match msg {
-                Messages::ValueWrite(val) => Some(Request::WriteSingleRegister(0, *val as u16)),
+                Messages::ValueWrite(val) => {
+                    Some(Request::WriteSingleRegister(0, val.value as u16))
+                }
                 Messages::ValueRead(_) => None,
             },
             fn_on_success: |_data| vec![],
@@ -59,7 +61,7 @@ async fn main() -> anyhow::Result<()> {
             fn_on_success: |data| {
                 let mut msgs = vec![];
                 if let Response::U16(data) = data {
-                    msgs.push(Messages::ValueRead(data[0] as f64));
+                    msgs.push(Messages::ValueRead(MsgContent::new(data[0] as f64)));
                 }
                 msgs
             },
@@ -77,7 +79,7 @@ async fn main() -> anyhow::Result<()> {
         .add_cmp(cmp_inject_periodic::Cmp::new(cmp_inject_periodic::Config {
             period: Duration::from_secs(2),
             fn_periodic: move || {
-                let msg = Messages::ValueWrite(counter);
+                let msg = Messages::ValueWrite(MsgContent::new(counter));
                 counter += 1.0;
                 vec![msg]
             },

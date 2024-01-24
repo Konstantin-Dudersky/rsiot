@@ -39,4 +39,4 @@ rsiot-extra-components = { workspace = true }
 
 [[example]]
 name = "publication"
-required-features = ["single-thread"]
+# required-features = ["single-thread"]

@@ -11,14 +11,14 @@ use url::Url;
 
 use rsiot_component_core::ComponentExecutor;
 use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::{msg_meta, IMessage, MsgContent, MsgMeta};
 use rsiot_websocket_client::cmp_websocket_client;
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
 enum Message {
-    Send(f64),
-    Recv(f64),
-    Tick(u64),
+    Send(MsgContent<f64>),
+    Recv(MsgContent<f64>),
+    Tick(MsgContent<u64>),
 }
 
 impl IMessage for Message {
@@ -40,7 +40,7 @@ async fn main() -> anyhow::Result<()> {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg = Message::Send(counter);
+            let msg = Message::Send(MsgContent::new(counter));
             counter += 1.0;
             vec![msg]
         },
@@ -106,5 +106,5 @@ fn parse_tick(data: &str) -> Option<Message> {
         Some(val) => val,
         None => return None,
     };
-    Some(Message::Tick(num))
+    Some(Message::Tick(MsgContent::new(num)))
 }

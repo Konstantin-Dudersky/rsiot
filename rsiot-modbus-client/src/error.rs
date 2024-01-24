@@ -10,7 +10,7 @@ pub enum Error<TMessage> {
     },
 
     #[error("{0}")]
-    SendError(#[from] tokio::sync::mpsc::error::SendError<TMessage>),
+    TokioSyncMpsc(#[from] tokio::sync::mpsc::error::SendError<TMessage>),
 
     #[error("{0}")]
     TokioTaskJoin(#[from] tokio::task::JoinError),

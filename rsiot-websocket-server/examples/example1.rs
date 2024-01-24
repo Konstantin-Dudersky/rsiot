@@ -11,7 +11,7 @@ use tracing::Level;
 
 use rsiot_component_core::ComponentExecutor;
 use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-use rsiot_messages_core::{msg_types::Value, ExampleMessage, IMessage};
+use rsiot_messages_core::{ExampleMessage, IMessage, MsgContent};
 use rsiot_websocket_server::cmp_websocket_server;
 
 #[main]
@@ -39,7 +39,7 @@ async fn main() -> anyhow::Result<()> {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(10),
         fn_periodic: move || {
-            let msg = ExampleMessage::ValueInstantF64(Value::new(counter));
+            let msg = ExampleMessage::ValueInstantF64(MsgContent::new(counter));
             counter += 1.0;
             vec![msg]
         },

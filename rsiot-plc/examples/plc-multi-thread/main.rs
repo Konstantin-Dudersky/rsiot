@@ -8,7 +8,7 @@ use tracing::Level;
 
 use rsiot_component_core::ComponentExecutor;
 use rsiot_extra_components::cmp_logger;
-use rsiot_messages_core::msg_types;
+use rsiot_messages_core::MsgContent;
 use rsiot_plc::cmp_plc;
 
 use message::Message;
@@ -22,7 +22,7 @@ async fn main() -> anyhow::Result<()> {
             Message::OutputValue(_) => (),
         },
         fn_output: |data: &fb1_example::Q| {
-            let msg = Message::OutputValue(msg_types::Value::new(data.out_counter));
+            let msg = Message::OutputValue(MsgContent::new(data.out_counter));
             vec![msg]
         },
         fb_main: fb1_example::FB::new(),

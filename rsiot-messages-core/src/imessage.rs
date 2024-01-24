@@ -3,12 +3,12 @@ use std::fmt::Debug;
 use serde::{de::DeserializeOwned, Serialize};
 use serde_json::{from_str as from_json, to_string as to_json};
 
-use crate::{eav, Error};
+use crate::{eav, Error, MsgMeta};
 
 /// Трейт, который необходимо реализовать на конкретном типе сообщения
 pub trait IMessage
 where
-    Self: Clone + Debug + DeserializeOwned + PartialEq + Send + Serialize + Sync,
+    Self: Clone + Debug + DeserializeOwned + MsgMeta + PartialEq + Send + Serialize + Sync,
 {
     /// Ключ для сохранения в базе данных
     fn key(&self) -> String {

@@ -11,7 +11,7 @@
 //! - через веб-интрефейс, в Pub/Sub, в канал `Output` записать сообщение
 //!
 //! ```json
-//! {"ValueInstantF64":{"value":123.0,"ts":"2000-01-01T00:00:00.000000000Z"}}
+//! {"ValueInstantF64":{"value":123.0,"ts":"2000-01-01T00:00:00.000000000Z","source":"c13064d3-9460-4e82-b96c-c4d889f706c6"}}
 //! ```
 //!
 //! В консолидолжно прочитаться это сообщение
@@ -28,12 +28,14 @@ use url::Url;
 
 use rsiot_component_core::ComponentExecutor;
 use rsiot_extra_components::cmp_logger;
-use rsiot_messages_core::{ExampleMessage, ExampleMessageChannel};
+use rsiot_messages_core::{msg_meta::ServiceId, ExampleMessage, ExampleMessageChannel};
 use rsiot_redis_client::cmp_redis_client;
 
 #[main]
 async fn main() -> anyhow::Result<()> {
     fmt().init();
+
+    let service_id = ServiceId::parse_str("c13064d3-9460-4e82-b96c-c4d889f706c6").unwrap();
 
     let logger_config = cmp_logger::Config {
         level: Level::INFO,
@@ -41,6 +43,7 @@ async fn main() -> anyhow::Result<()> {
     };
 
     let redis_config = cmp_redis_client::Config {
+        service_id,
         url: Url::parse("redis://127.0.0.1:6379")?,
         fn_input: |_| vec![ExampleMessageChannel::Output],
         subscription_channel: ExampleMessageChannel::Output,

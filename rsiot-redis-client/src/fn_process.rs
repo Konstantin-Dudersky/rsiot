@@ -5,7 +5,7 @@ use tokio::{
     task::JoinSet,
     time::{sleep, Duration},
 };
-use tracing::{error, info, trace, warn};
+use tracing::{error, info, trace};
 use url::Url;
 
 use rsiot_component_core::{Cache, ComponentError, ComponentInput, ComponentOutput};
@@ -32,7 +32,7 @@ where
         let result = task_main(input.resubscribe(), output.clone(), config.clone()).await;
         match result {
             Ok(_) => (),
-            Err(err) => error!("{:?}", err),
+            Err(err) => error!("{}", err),
         }
         sleep(Duration::from_secs(2)).await;
         info!("Restarting...")
@@ -49,11 +49,7 @@ where
     TMessageChannel: IMessageChannel + 'static,
 {
     let mut set = JoinSet::new();
-    set.spawn(task_subscription(
-        output.clone(),
-        config.url.clone(),
-        config.subscription_channel.clone(),
-    ));
+    set.spawn(task_subscription(output.clone(), config.clone()));
     set.spawn(task_read_hash(
         output.clone(),
         config.url.clone(),
@@ -77,7 +73,8 @@ where
 {
     let client = redis::Client::open(config.url.to_string())?;
     let mut connection = client.get_async_connection().await?;
-    while let Ok(msg) = input.recv().await {
+    while let Ok(mut msg) = input.recv().await {
+        msg.source_set(config.service_id);
         let channels = (config.fn_input)(&msg);
         for channel in channels {
             let json = msg.to_json()?;
@@ -92,33 +89,39 @@ where
 /// Подписка на канал Pub/Sub
 async fn task_subscription<TMessage, TMessageChannel>(
     output: mpsc::Sender<TMessage>,
-    url: Url,
-    redis_channel: TMessageChannel,
+    config: Config<TMessage, TMessageChannel>,
 ) -> Result<TMessage>
 where
     TMessage: IMessage,
     TMessageChannel: IMessageChannel,
 {
     info!("Start redis subscription");
-    let client = Client::open(url.to_string())?;
+    let client = Client::open(config.url.to_string())?;
     let connection = client.get_async_connection().await?;
     let mut pubsub = connection.into_pubsub();
-    pubsub.subscribe(redis_channel.to_string()).await?;
+    pubsub
+        .subscribe(config.subscription_channel.to_string())
+        .await?;
     let mut stream = pubsub.on_message();
     while let Some(redis_msg) = stream.next().await {
         trace!("New message from Redis: {:?}", redis_msg);
         let payload: String = redis_msg.get_payload()?;
         let msg = TMessage::from_json(&payload);
-        match msg {
-            Ok(msg) => output.send(msg).await?,
+        let msg = match msg {
+            Ok(msg) => msg,
             Err(err) => {
                 let err = format!("Wrong message: {:?}; error: {:?}", payload, err);
                 error!(err);
+                continue;
             }
+        };
+        // Фильтруем сообщения, которые были порождены данным сервисом
+        if msg.source() == config.service_id {
+            continue;
         }
+        output.send(msg).await?
     }
-    warn!("Stop redis subscription");
-    Ok(())
+    Err(Error::EndRedisSubscription)
 }
 
 /// Чтение данных из хеша

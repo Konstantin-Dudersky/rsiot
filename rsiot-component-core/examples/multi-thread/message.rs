@@ -1,9 +1,9 @@
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::{msg_meta, IMessage, MsgContent, MsgMeta};
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
 pub enum Message {
-    TestMessage(i32),
+    TestMessage(MsgContent<i32>),
 }
 
 impl IMessage for Message {

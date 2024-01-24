@@ -15,16 +15,16 @@ use url::Url;
 use rsiot_component_core::ComponentExecutor;
 use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use rsiot_http_client::cmp_http_client::{self, config};
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::{msg_meta, IMessage, MsgContent, MsgMeta};
 
 //------------------------------------------------------------------------------
 
 #[allow(clippy::enum_variant_names)]
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
 enum Message {
-    HttpMethodsGetPeriodicRespone(HttpMethodsGet),
-    HttpMethodsGetOnEventResponse(HttpMethodsGet),
-    HttpMethodsGetOnEventRequest,
+    HttpMethodsGetPeriodicRespone(MsgContent<HttpMethodsGet>),
+    HttpMethodsGetOnEventResponse(MsgContent<HttpMethodsGet>),
+    HttpMethodsGetOnEventRequest(MsgContent<()>),
 }
 
 impl IMessage for Message {
@@ -54,7 +54,7 @@ async fn main() -> anyhow::Result<()> {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg = Message::HttpMethodsGetOnEventRequest;
+            let msg = Message::HttpMethodsGetOnEventRequest(MsgContent::new(()));
             vec![msg]
         },
     };
@@ -70,7 +70,7 @@ async fn main() -> anyhow::Result<()> {
         },
         requests_input: vec![config::RequestInput {
             fn_input: |msg| match msg {
-                Message::HttpMethodsGetOnEventRequest => {
+                Message::HttpMethodsGetOnEventRequest(_) => {
                     let param = config::HttpParam::Get("get".to_string());
                     Some(param)
                 }
@@ -78,7 +78,9 @@ async fn main() -> anyhow::Result<()> {
             },
             on_success: |body| {
                 let res = from_str::<HttpMethodsGet>(body)?;
-                Ok(vec![Message::HttpMethodsGetOnEventResponse(res)])
+                Ok(vec![Message::HttpMethodsGetOnEventResponse(
+                    MsgContent::new(res),
+                )])
             },
             on_failure: Vec::new,
         }],
@@ -87,7 +89,9 @@ async fn main() -> anyhow::Result<()> {
             http_param: config::HttpParam::Get("get".to_string()),
             on_success: |body| {
                 let res = from_str::<HttpMethodsGet>(body)?;
-                Ok(vec![Message::HttpMethodsGetPeriodicRespone(res)])
+                Ok(vec![Message::HttpMethodsGetPeriodicRespone(
+                    MsgContent::new(res),
+                )])
             },
             on_failure: Vec::new,
         }],

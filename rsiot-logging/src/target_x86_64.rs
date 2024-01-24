@@ -42,7 +42,7 @@ pub async fn configure_logging(rust_log: &str, loki_url: &url::Url) -> Result<()
 
 /// Удалить путь из названия файла
 fn service_cleanup(input: &str) -> String {
-    input.split("/").last().unwrap().to_owned()
+    input.split('/').last().unwrap().to_owned()
 }
 
 #[cfg(test)]

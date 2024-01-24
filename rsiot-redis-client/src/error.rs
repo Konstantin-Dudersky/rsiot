@@ -6,6 +6,9 @@ pub enum Error<TMessage> {
         source: tokio::task::JoinError,
     },
 
+    #[error("End redis subscription")]
+    EndRedisSubscription,
+
     /// Ошибка десериализации
     #[error("Error in message serialization / deserialization: {source:?}")]
     Message {

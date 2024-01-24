@@ -6,14 +6,14 @@ use tokio::{
 };
 
 use rsiot_extra_components::component_combine_message;
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::{msg_meta, IMessage, MsgContent, MsgMeta};
 use tracing::info;
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
 enum Message {
-    Message0(f64),
-    Message1(f64),
-    Combine(f64, f64),
+    Message0(MsgContent<f64>),
+    Message1(MsgContent<f64>),
+    Combine(MsgContent<(f64, f64)>),
 }
 
 impl IMessage for Message {
@@ -33,11 +33,11 @@ async fn main() -> anyhow::Result<()> {
     #[allow(unreachable_code)]
     let _task_sim = spawn(async move {
         loop {
-            let msg = Message::Message0(counter);
+            let msg = Message::Message0(MsgContent::new(counter));
             in_channel_send.send(msg).await?;
             counter += 1.0;
             if counter as u32 % 3 == 0 {
-                let msg = Message::Message1(counter * 2.0);
+                let msg = Message::Message1(MsgContent::new(counter * 2.0));
                 in_channel_send.send(msg).await?;
             }
             sleep(Duration::from_secs(2)).await;
@@ -70,7 +70,10 @@ async fn main() -> anyhow::Result<()> {
                 Some(val) => val,
                 None => return None,
             };
-            Some(Message::Combine(value1, value2))
+            Some(Message::Combine(MsgContent::new((
+                value1.value,
+                value2.value,
+            ))))
         },
     ));
 

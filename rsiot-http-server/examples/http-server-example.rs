@@ -6,20 +6,21 @@
 //! ```
 
 use serde::{Deserialize, Serialize};
-use tokio::{runtime, task::LocalSet, time::Duration};
+#[cfg(feature = "single-thread")]
+use tokio::task::LocalSet;
+use tokio::{runtime, time::Duration};
 use tracing::Level;
 use tracing_subscriber::filter::LevelFilter;
 
 use rsiot_component_core::ComponentExecutor;
 use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use rsiot_http_server::cmp_http_server;
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::{msg_meta, IMessage, MsgContent, MsgMeta};
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
 enum Message {
-    Message0(f64),
-    Message1(f64),
-    Combine(f64, f64),
+    Message0(MsgContent<f64>),
+    Message1(MsgContent<f64>),
 }
 
 impl IMessage for Message {
@@ -45,8 +46,8 @@ fn main() -> anyhow::Result<()> {
     let inject_periodic_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg1 = Message::Message0(counter);
-            let msg2 = Message::Message1(counter * 2.0);
+            let msg1 = Message::Message0(MsgContent::new(counter));
+            let msg2 = Message::Message1(MsgContent::new(counter * 2.0));
             counter += 1.0;
             vec![msg1, msg2]
         },

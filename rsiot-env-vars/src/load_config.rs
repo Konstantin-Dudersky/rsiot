@@ -31,11 +31,11 @@ where
     match vars {
         Ok(vars) => {
             println!("Переменные из файла успешно загружены");
-            return Ok(vars);
+            Ok(vars)
         }
         Err(err) => {
             println!("Ошибка загрузки переменных из файла .env: {err}");
-            return Err(err);
+            Err(err)
         }
     }
 }

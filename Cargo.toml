@@ -9,6 +9,7 @@ members = [
     "./rsiot-http-client-wasm",
     "./rsiot-http-server",
     "./rsiot-logging",
+    "./rsiot-macros",
     "./rsiot-messages-core",
     "./rsiot-modbus-client",
     "./rsiot-plc",
@@ -115,6 +116,7 @@ rsiot-http-client = { version = "0.0.39", path = "./rsiot-http-client" }
 rsiot-http-client-wasm = { version = "0.0.39", path = "./rsiot-http-client-wasm" }
 rsiot-http-server = { version = "0.0.39", path = "./rsiot-http-server" }
 rsiot-logging = { version = "0.0.38", path = "./rsiot-logging" }
+rsiot-macros = { version = "0.0.13", path = "./rsiot-macros" }
 rsiot-messages-core = { version = "0.0.39", path = "./rsiot-messages-core" }
 rsiot-modbus-client = { version = "0.0.39", path = "./rsiot-modbus-client" }
 rsiot-plc = { version = "0.0.39", path = "./rsiot-plc" }

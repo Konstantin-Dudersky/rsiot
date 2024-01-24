@@ -5,8 +5,11 @@ use rsiot_component_core::{
 };
 use rsiot_messages_core::IMessage;
 
-use crate::{config::ConfigAlias, fn_process::fn_process};
+use crate::config::ConfigAlias;
+// #[cfg(feature = "single-thread")]
+use crate::fn_process::fn_process;
 
+#[allow(unreachable_code)]
 #[cfg(not(feature = "single-thread"))]
 #[async_trait]
 impl<TMsg> IComponentProcess<ConfigAlias<TMsg>, TMsg> for Component<ConfigAlias<TMsg>, TMsg>
@@ -15,12 +18,16 @@ where
 {
     async fn process(
         &self,
-        config: ConfigAlias<TMsg>,
-        input: ComponentInput<TMsg>,
-        output: ComponentOutput<TMsg>,
+        _config: ConfigAlias<TMsg>,
+        _input: ComponentInput<TMsg>,
+        _output: ComponentOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
-        unimplemented!()
+        unimplemented!();
+        let config = _config.0;
+        fn_process(_input, _output, config)
+            .await
+            .map_err(|err| ComponentError::Execution(err.to_string()))
     }
 }
 

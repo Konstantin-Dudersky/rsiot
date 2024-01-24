@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::ServiceId;
+use crate::msg_meta::ServiceId;
 
 /// Ответ на запрос на регистрацию
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
