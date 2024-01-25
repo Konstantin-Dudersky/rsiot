@@ -2411,7 +2411,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot"
-version = "0.0.41"
+version = "0.0.42"
 dependencies = [
  "chrono",
  "document-features",
@@ -2550,7 +2550,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-leptos"
-version = "0.0.41"
+version = "0.0.42"
 dependencies = [
  "anyhow",
  "async-trait",

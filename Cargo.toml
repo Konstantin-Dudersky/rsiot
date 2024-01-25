@@ -120,7 +120,7 @@ rsiot-extra-components = { version = "0.0.41", path = "./rsiot-extra-components"
 rsiot-http-client = { version = "0.0.41", path = "./rsiot-http-client" }
 rsiot-http-client-wasm = { version = "0.0.41", path = "./rsiot-http-client-wasm" }
 rsiot-http-server = { version = "0.0.41", path = "./rsiot-http-server" }
-rsiot-leptos = { version = "0.0.41", path = "./rsiot-leptos" }
+rsiot-leptos = { version = "0.0.42", path = "./rsiot-leptos" }
 rsiot-logging = { version = "0.0.40", path = "./rsiot-logging" }
 rsiot-macros = { version = "0.0.40", path = "./rsiot-macros" }
 rsiot-messages-core = { version = "0.0.40", path = "./rsiot-messages-core" }
