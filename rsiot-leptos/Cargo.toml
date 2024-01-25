@@ -16,6 +16,7 @@ leptos = { workspace = true }
 leptos_router = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
+tracing = { workspace = true }
 
 rsiot-component-core = { workspace = true }
 rsiot-messages-core = { workspace = true }

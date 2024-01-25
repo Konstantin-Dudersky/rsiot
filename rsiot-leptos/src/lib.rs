@@ -1,6 +1,7 @@
 mod cmp_leptos;
 mod error;
 mod global_state;
+pub mod msg_to_signals;
 
 pub use cmp_leptos::{Cmp, Config};
 pub use error::Error;
