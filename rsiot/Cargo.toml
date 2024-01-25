@@ -25,6 +25,7 @@ rsiot-extra-components = { workspace = true, optional = true }
 rsiot-http-client = { workspace = true, optional = true }
 rsiot-http-client-wasm = { workspace = true, optional = true }
 rsiot-http-server = { workspace = true, optional = true }
+rsiot-leptos = { workspace = true, optional = true }
 rsiot-logging = { workspace = true }
 rsiot-messages-core = { workspace = true }
 rsiot-modbus-client = { workspace = true, optional = true }
@@ -54,6 +55,8 @@ http-client = ["components", "dep:rsiot-http-client"]
 http-client-wasm = ["components", "dep:rsiot-http-client-wasm"]
 ## Компонент http-сервер
 http-server = ["components", "dep:rsiot-http-server"]
+## Компонент для создания интерфейсов на базе Leptos
+leptos = ["components", "dep:rsiot-leptos"]
 ## Компонент Modbus клиент
 modbus-client = ["components", "dep:rsiot-modbus-client"]
 # Компонент ПЛК
@@ -75,6 +78,7 @@ single-thread = [
     "rsiot-http-client?/single-thread",
     "rsiot-http-client-wasm?/single-thread",
     "rsiot-http-server?/single-thread",
+    "rsiot-leptos?/single-thread",
     "rsiot-modbus-client?/single-thread",
     "rsiot-plc?/single-thread",
     "rsiot-redis-client?/single-thread",

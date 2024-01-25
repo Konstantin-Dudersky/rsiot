@@ -8,6 +8,7 @@ members = [
     "./rsiot-http-client",
     "./rsiot-http-client-wasm",
     "./rsiot-http-server",
+    "./rsiot-leptos",
     "./rsiot-logging",
     "./rsiot-macros",
     "./rsiot-messages-core",
@@ -78,6 +79,10 @@ axum = { version = "0.7.2" }
 axum-test = { version = "14.0.0" }
 tower-http = { version = "0.5.0", features = ["cors", "trace"] }
 
+# Leptos
+leptos = { version = "0.6.0-rc1", features = ["csr"] }
+leptos_router = { version = "0.6.0-rc1", features = ["csr"] }
+
 # logging
 tracing = { version = "0.1.40", features = ["log"] }
 tracing-subscriber = { version = "0.3.18", features = ["env-filter", "chrono"] }
@@ -115,6 +120,7 @@ rsiot-extra-components = { version = "0.0.40", path = "./rsiot-extra-components"
 rsiot-http-client = { version = "0.0.40", path = "./rsiot-http-client" }
 rsiot-http-client-wasm = { version = "0.0.40", path = "./rsiot-http-client-wasm" }
 rsiot-http-server = { version = "0.0.40", path = "./rsiot-http-server" }
+rsiot-leptos = { version = "0.0.0", path = "./rsiot-leptos" }
 rsiot-logging = { version = "0.0.40", path = "./rsiot-logging" }
 rsiot-macros = { version = "0.0.40", path = "./rsiot-macros" }
 rsiot-messages-core = { version = "0.0.40", path = "./rsiot-messages-core" }

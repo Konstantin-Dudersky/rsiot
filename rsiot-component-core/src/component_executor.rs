@@ -117,7 +117,7 @@ async fn task_internal<TMessage>(
 where
     TMessage: IMessage,
 {
-    debug!("Internal task: starting");
+    debug!("Internal task of ComponentExecutor: starting");
     while let Some(msg) = input.recv().await {
         trace!("Internal task: new message: {:?}", msg);
         let key = msg.key().clone();
