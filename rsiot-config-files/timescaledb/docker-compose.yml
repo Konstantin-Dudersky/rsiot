@@ -1,0 +1,33 @@
+services:
+  timescaledb:
+    command: postgres
+      -c config_file=/etc/postgresql/postgresql.conf
+      -c hba_file=/etc/postgresql/pg_hba.conf
+    container_name: timescaledb
+    healthcheck:
+      test: pg_isready -d db_prod
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
+    hostname: timescaledb
+    image: timescale/timescaledb:2.12.2-pg15
+    networks:
+      - network_internal
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    profiles:
+      - dev
+      - target
+    volumes:
+      - ./timescaledb/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./timescaledb/pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - ./timescaledb/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
+networks:
+  network_internal:

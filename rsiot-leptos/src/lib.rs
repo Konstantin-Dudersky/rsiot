@@ -1,3 +1,5 @@
+#![cfg(target_arch = "wasm32")]
+
 mod cmp_leptos;
 mod error;
 mod global_state;

@@ -1,0 +1,21 @@
+services:
+  surrealdb:
+    command: start --user root --pass root file:/data/database.db
+    container_name: surrealdb
+    hostname: surrealdb
+    image: surrealdb/surrealdb:latest
+    networks:
+      - network_internal
+    ports:
+      - "${SURREALDB_PORT}:8000"
+    user: root
+    volumes:
+      - surrealdb_data:/data
+
+networks:
+  network_internal:
+
+volumes:
+  surrealdb_data:
+    name: surrealdb_data
+# TODO - healtcheck

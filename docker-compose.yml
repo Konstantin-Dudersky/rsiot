@@ -58,6 +58,25 @@ services:
       - redis_data:/data
       - ./services/redis/redis.conf:/redis-stack.conf
 
+  # surrealdb
+  surrealdb:
+    command: start --user root --pass root file:/data/database.db
+    container_name: surrealdb
+    healthcheck:
+      test: surreal isready --conn http://localhost:8000
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    hostname: surrealdb
+    image: surrealdb/surrealdb:latest
+    ports:
+      - "8003:8000"
+    user: root
+    volumes:
+      - surrealdb_data:/data/
+
 volumes:
   redis_data:
     name: redis_data
+  surrealdb_data:
+    name: surrealdb_data

@@ -11,6 +11,11 @@ impl Timestamp {
     pub fn format(&self, fmt: &str) -> String {
         self.0.format(fmt).to_string()
     }
+
+    /// Returns an RFC 3339 and ISO 8601 date and time string such as `1996-12-19T16:39:57-08:00`.
+    pub fn to_rfc3339(&self) -> String {
+        self.0.to_rfc3339()
+    }
 }
 
 /// TODO - вместо Utc использовать местный часовой пояс?

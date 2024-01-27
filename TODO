@@ -10,5 +10,6 @@ TODO - заменить указатели функций на трейты Fn
 
 TODO - избавиться от unwrap()
 
-TODO - tauri вывод с камеры (WebRTC?)
+TODO - tauri вывод с камеры (WebRTC?) - ошибка RtcPeerConnection
+
 

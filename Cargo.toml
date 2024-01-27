@@ -19,6 +19,7 @@ members = [
     "./rsiot-websocket-client",
     "./rsiot-websocket-client-wasm",
     "./rsiot-websocket-server",
+    "rsiot-surrealdb",
 ]
 exclude = ["./rsiot-esp"]
 resolver = "2"
@@ -62,6 +63,7 @@ sqlx = { version = "0.7.3", features = [
     "postgres",
     "runtime-tokio",
 ] }
+surrealdb = { version = "1.1.1" }
 
 # env vars
 dotenvy = { version = "0.15" }
