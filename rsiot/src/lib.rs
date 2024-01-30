@@ -163,6 +163,9 @@ pub mod components {
     #[cfg(feature = "http-server")]
     pub use rsiot_http_server::cmp_http_server;
 
+    #[cfg(feature = "influxdb")]
+    pub use rsiot_influxdb as cmp_influxdb;
+
     #[cfg(feature = "leptos")]
     pub use rsiot_leptos as cmp_leptos;
 

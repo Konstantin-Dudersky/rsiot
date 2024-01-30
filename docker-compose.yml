@@ -75,8 +75,19 @@ services:
     volumes:
       - surrealdb_data:/data/
 
+  influxdb:
+    container_name: influxdb
+    hostname: influxdb
+    image: influxdb:2.7.5
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+
 volumes:
   redis_data:
     name: redis_data
   surrealdb_data:
     name: surrealdb_data
+  influxdb_data:
+    name: influxdb_data

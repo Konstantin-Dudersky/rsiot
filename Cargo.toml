@@ -5,6 +5,7 @@ members = [
     "./rsiot-components-config",
     "./rsiot-env-vars",
     "./rsiot-extra-components",
+    "./rsiot-influxdb",
     "./rsiot-http-client",
     "./rsiot-http-client-wasm",
     "./rsiot-http-server",
@@ -15,11 +16,11 @@ members = [
     "./rsiot-modbus-client",
     "./rsiot-plc",
     "./rsiot-redis-client",
+    "./rsiot-surrealdb",
     "./rsiot-timescaledb-storing",
     "./rsiot-websocket-client",
     "./rsiot-websocket-client-wasm",
     "./rsiot-websocket-server",
-    "rsiot-surrealdb",
 ]
 exclude = ["./rsiot-esp"]
 resolver = "2"
@@ -115,21 +116,22 @@ tokio-tungstenite = { version = "0.21.0" }
 
 
 # workspace packages
-rsiot-component-core = { version = "0.0.41", path = "./rsiot-component-core" }
-rsiot-components-config = { version = "0.0.40", path = "./rsiot-components-config" }
+rsiot-component-core = { version = "0.0.43", path = "./rsiot-component-core" }
+rsiot-components-config = { version = "0.0.43", path = "./rsiot-components-config" }
 rsiot-env-vars = { version = "0.0.40", path = "./rsiot-env-vars" }
-rsiot-extra-components = { version = "0.0.41", path = "./rsiot-extra-components" }
-rsiot-http-client = { version = "0.0.41", path = "./rsiot-http-client" }
-rsiot-http-client-wasm = { version = "0.0.41", path = "./rsiot-http-client-wasm" }
-rsiot-http-server = { version = "0.0.41", path = "./rsiot-http-server" }
-rsiot-leptos = { version = "0.0.42", path = "./rsiot-leptos" }
+rsiot-extra-components = { version = "0.0.43", path = "./rsiot-extra-components" }
+rsiot-http-client = { version = "0.0.43", path = "./rsiot-http-client" }
+rsiot-http-client-wasm = { version = "0.0.43", path = "./rsiot-http-client-wasm" }
+rsiot-http-server = { version = "0.0.43", path = "./rsiot-http-server" }
+rsiot-influxdb = { version = "0.0.43", path = "./rsiot-influxdb" }
+rsiot-leptos = { version = "0.0.43", path = "./rsiot-leptos" }
 rsiot-logging = { version = "0.0.40", path = "./rsiot-logging" }
 rsiot-macros = { version = "0.0.40", path = "./rsiot-macros" }
-rsiot-messages-core = { version = "0.0.40", path = "./rsiot-messages-core" }
-rsiot-modbus-client = { version = "0.0.41", path = "./rsiot-modbus-client" }
-rsiot-plc = { version = "0.0.41", path = "./rsiot-plc" }
-rsiot-redis-client = { version = "0.0.41", path = "./rsiot-redis-client" }
-rsiot-timescaledb-storing = { version = "0.0.41", path = "./rsiot-timescaledb-storing" }
-rsiot-websocket-client = { version = "0.0.41", path = "./rsiot-websocket-client" }
-rsiot-websocket-client-wasm = { version = "0.0.41", path = "./rsiot-websocket-client-wasm" }
-rsiot-websocket-server = { version = "0.0.41", path = "./rsiot-websocket-server" }
+rsiot-messages-core = { version = "0.0.43", path = "./rsiot-messages-core" }
+rsiot-modbus-client = { version = "0.0.43", path = "./rsiot-modbus-client" }
+rsiot-plc = { version = "0.0.43", path = "./rsiot-plc" }
+rsiot-redis-client = { version = "0.0.43", path = "./rsiot-redis-client" }
+rsiot-timescaledb-storing = { version = "0.0.43", path = "./rsiot-timescaledb-storing" }
+rsiot-websocket-client = { version = "0.0.43", path = "./rsiot-websocket-client" }
+rsiot-websocket-client-wasm = { version = "0.0.43", path = "./rsiot-websocket-client-wasm" }
+rsiot-websocket-server = { version = "0.0.43", path = "./rsiot-websocket-server" }

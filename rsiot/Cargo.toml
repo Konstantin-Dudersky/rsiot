@@ -8,7 +8,7 @@ name = "rsiot"
 readme = "README.md"
 repository.workspace = true
 rust-version.workspace = true
-version = "0.0.42"
+version = "0.0.43"
 
 
 [dependencies]
@@ -25,6 +25,7 @@ rsiot-extra-components = { workspace = true, optional = true }
 rsiot-http-client = { workspace = true, optional = true }
 rsiot-http-client-wasm = { workspace = true, optional = true }
 rsiot-http-server = { workspace = true, optional = true }
+rsiot-influxdb = { workspace = true, optional = true }
 rsiot-leptos = { workspace = true, optional = true }
 rsiot-logging = { workspace = true }
 rsiot-messages-core = { workspace = true }
@@ -55,6 +56,8 @@ http-client = ["components", "dep:rsiot-http-client"]
 http-client-wasm = ["components", "dep:rsiot-http-client-wasm"]
 ## Компонент http-сервер
 http-server = ["components", "dep:rsiot-http-server"]
+## Компонент сохранения в БД InfluxDB
+influxdb = ["components", "dep:rsiot-influxdb"]
 ## Компонент для создания интерфейсов на базе Leptos
 leptos = ["components", "dep:rsiot-leptos"]
 ## Компонент Modbus клиент
@@ -78,6 +81,7 @@ single-thread = [
     "rsiot-http-client?/single-thread",
     "rsiot-http-client-wasm?/single-thread",
     "rsiot-http-server?/single-thread",
+    "rsiot-influxdb?/single-thread",
     "rsiot-leptos?/single-thread",
     "rsiot-modbus-client?/single-thread",
     "rsiot-plc?/single-thread",

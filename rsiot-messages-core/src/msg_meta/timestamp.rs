@@ -16,6 +16,10 @@ impl Timestamp {
     pub fn to_rfc3339(&self) -> String {
         self.0.to_rfc3339()
     }
+
+    pub fn timestamp_nanos_opt(&self) -> Option<i64> {
+        self.0.timestamp_nanos_opt()
+    }
 }
 
 /// TODO - вместо Utc использовать местный часовой пояс?

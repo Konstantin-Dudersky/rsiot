@@ -1,6 +1,8 @@
-DEFINE TABLE newtable1;
+DEFINE TABLE raw;
 
-DEFINE FIELD value_int ON TABLE newtable1 TYPE int;
-DEFINE FIELD value_float ON TABLE newtable1 TYPE float;
-DEFINE FIELD value_bool ON TABLE newtable1 TYPE bool;
-DEFINE FIELD value_string ON TABLE newtable1 TYPE string;
+DEFINE FIELD entity ON TABLE raw TYPE string;
+DEFINE FIELD attribute ON TABLE raw TYPE option<string>;
+DEFINE FIELD value_int ON TABLE raw TYPE option<int>;
+DEFINE FIELD value_float ON TABLE raw TYPE option<float>;
+DEFINE FIELD value_bool ON TABLE raw TYPE option<bool>;
+DEFINE FIELD value_string ON TABLE raw TYPE option<string>;

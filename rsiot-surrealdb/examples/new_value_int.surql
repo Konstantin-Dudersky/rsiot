@@ -1,3 +1,4 @@
-CREATE newtable1:{ts: '$ts'} CONTENT {
-    value_int: $value_int
+CREATE raw:{ts: '$ts'} CONTENT {
+    entity: $entity,
+    value_float: $value_float,
 }

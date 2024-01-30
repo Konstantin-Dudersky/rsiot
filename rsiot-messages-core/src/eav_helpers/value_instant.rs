@@ -4,7 +4,7 @@ use crate::{eav, msg_meta::Timestamp};
 pub struct ValueInstant {
     pub ts: Timestamp,
     pub entity: String,
-    pub attr: String,
+    pub attr: Option<String>,
     pub value: eav::ValueType,
 }
 

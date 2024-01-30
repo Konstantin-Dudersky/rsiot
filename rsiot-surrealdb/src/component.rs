@@ -27,21 +27,18 @@ where
 
 #[cfg(feature = "single-thread")]
 #[async_trait(?Send)]
-impl<TMsg> IComponentProcess<crate::Config, TMsg> for Component<crate::Config, TMsg>
+impl<TMsg> IComponentProcess<crate::Config<TMsg>, TMsg> for Component<crate::Config<TMsg>, TMsg>
 where
     TMsg: IMessage,
 {
     async fn process(
         &self,
-        _config: crate::Config,
+        _config: crate::Config<TMsg>,
         _input: ComponentInput<TMsg>,
         _output: ComponentOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
-        loop {
-            info!("Component 1");
-            sleep(Duration::from_secs(2)).await;
-        }
+        todo!()
     }
 }
 

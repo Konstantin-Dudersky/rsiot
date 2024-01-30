@@ -4,7 +4,7 @@ use crate::{eav, msg_meta::Timestamp};
 pub struct Command {
     pub ts: Timestamp,
     pub entity: String,
-    pub attr: String,
+    pub attr: Option<String>,
 }
 
 impl From<Command> for Vec<eav::EavModel> {

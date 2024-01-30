@@ -10,7 +10,7 @@ pub struct EavModel {
     /// `Entity`
     pub entity: String,
     /// `Attribute`
-    pub attr: String,
+    pub attr: Option<String>,
     /// `Value`
     pub value: ValueType,
     /// Значение `Value` было получено с помощью данного типа аггрегации

@@ -31,7 +31,7 @@ impl From<eav::EavModel> for Row {
         let row = Row {
             ts: eav_model.ts.0,
             entity: eav_model.entity,
-            attr: eav_model.attr,
+            attr: eav_model.attr.unwrap_or_default(),
             value: Some(value),
             agg: eav_model.agg.into(),
             aggts: eav_model.aggts.map(|v| v.0),

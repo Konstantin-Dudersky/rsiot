@@ -43,9 +43,8 @@ async fn main() -> anyhow::Result<()> {
                     let query = include_str!("./new_value_int.surql");
                     let query = query
                         .replace("$ts", &content.ts.to_rfc3339())
-                        .replace("$value_int", &format!("{}", value));
-                    info!(query);
-                    Some(query.into())
+                        .replace("$value_float", &format!("{:.2}", value));
+                    Some(query)
                 }
             },
             fn_on_success: |response| {

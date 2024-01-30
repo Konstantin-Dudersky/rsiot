@@ -12,27 +12,28 @@ pub enum ExampleMessage {
 
 impl IMessage for ExampleMessage {
     fn into_eav(self) -> Vec<eav::EavModel> {
+        let entity = self.key();
         match self {
             ExampleMessage::ValueInstantF64(msg_content) => eav_helpers::ValueInstant {
                 ts: msg_content.ts,
-                entity: "ValueInstantF64".into(),
-                attr: "".into(),
+                entity,
+                attr: None,
                 value: msg_content.value.into(),
             }
             .into(),
 
             ExampleMessage::ValueInstantBool(msg_content) => eav_helpers::ValueInstant {
                 ts: msg_content.ts,
-                entity: "ValueInstantBool".into(),
-                attr: "".into(),
+                entity,
+                attr: None,
                 value: msg_content.value.into(),
             }
             .into(),
 
             ExampleMessage::ValueInstantString(msg_content) => eav_helpers::ValueInstant {
                 ts: msg_content.ts,
-                entity: "ValueInstantString".into(),
-                attr: "".into(),
+                entity,
+                attr: None,
                 value: msg_content.value.clone().into(),
             }
             .into(),
