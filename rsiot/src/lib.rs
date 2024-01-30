@@ -178,6 +178,9 @@ pub mod components {
     #[cfg(feature = "redis-client")]
     pub use rsiot_redis_client::cmp_redis_client;
 
+    #[cfg(feature = "surrealdb")]
+    pub use rsiot_surrealdb as cmp_surrealdb;
+
     #[cfg(feature = "timescaledb-storing")]
     pub use rsiot_timescaledb_storing::cmp_timescaledb_storing;
 

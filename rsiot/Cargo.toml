@@ -32,6 +32,7 @@ rsiot-messages-core = { workspace = true }
 rsiot-modbus-client = { workspace = true, optional = true }
 rsiot-plc = { workspace = true, optional = true }
 rsiot-redis-client = { workspace = true, optional = true }
+rsiot-surrealdb = { workspace = true, optional = true }
 rsiot-websocket-client = { workspace = true, optional = true }
 rsiot-websocket-client-wasm = { workspace = true, optional = true }
 rsiot-websocket-server = { workspace = true, optional = true }
@@ -66,6 +67,8 @@ modbus-client = ["components", "dep:rsiot-modbus-client"]
 plc = ["components", "dep:rsiot-plc"]
 ## Компонент клиента Redis
 redis-client = ["components", "dep:rsiot-redis-client"]
+## Компонент доступа к БД SurrealDB
+surrealdb = ["components", "dep:rsiot-surrealdb"]
 ## Компонент сохранения в БД TimescaleDB
 timescaledb-storing = ["components", "dep:rsiot-timescaledb-storing"]
 ## Компонент websocket клиента
@@ -86,6 +89,7 @@ single-thread = [
     "rsiot-modbus-client?/single-thread",
     "rsiot-plc?/single-thread",
     "rsiot-redis-client?/single-thread",
+    "rsiot-surrealdb?/single-thread",
     "rsiot-timescaledb-storing?/single-thread",
     "rsiot-websocket-client?/single-thread",
     "rsiot-websocket-client-wasm?/single-thread",

@@ -1,0 +1,31 @@
+meta {
+  name: influx
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8086/api/v2/write?org=test&bucket=test1&precision=s
+  body: text
+  auth: none
+}
+
+query {
+  org: test
+  bucket: test1
+  precision: s
+}
+
+headers {
+  Authorization: Token 6ux3LH1s0wOf4z2vIec6cmYYk03GgTksvxD3OnaM71xfOfyj9NQTvKq8TZRb5iInEl_PpoVFHFQB43CyaoJMhg==
+  Accept: application/json
+  Content-Type: text/plain; charset=utf-8
+}
+
+auth:bearer {
+  token: 6ux3LH1s0wOf4z2vIec6cmYYk03GgTksvxD3OnaM71xfOfyj9NQTvKq8TZRb5iInEl_PpoVFHFQB43CyaoJMhg==
+}
+
+body:text {
+  home,room=Living temp=21.1 1706519990
+}
