@@ -29,7 +29,7 @@ resolver = "2"
 [workspace.package]
 categories = ["api-bindings", "gui", "network-programming"]
 edition = "2021"
-keywords = ["iot"]
+keywords = ["iot", "scada"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/Konstantin-Dudersky/rsiot"
 rust-version = "1.75.0"
@@ -39,8 +39,7 @@ rust-version = "1.75.0"
 
 # async
 async-trait = { version = "0.1.77" }
-futures = { version = "0.3.29" }
-futures-util = { version = "0.3.29" }
+futures = { version = "0.3.30" }
 tokio = { version = "1.35.1", features = ["macros", "sync", "rt", "time"] }
 tokio-util = { version = "0.7.10" }
 
@@ -51,10 +50,10 @@ clap = { version = "4.4", features = ["derive"] }
 chrono = { version = "0.4.31", features = ["serde"] }
 http = { version = "1.0.0" }
 url = { version = "2.5.0" }
-uuid = { version = "1.6.1", features = ["serde", "v4"] }
+uuid = { version = "1.7.0", features = ["serde", "v4"] }
 
 # documentation
-document-features = { version = "0.2.7" }
+document-features = { version = "0.2.8" }
 
 # database
 redis = { version = "0.24.0", features = ["tokio-comp"] }
@@ -67,24 +66,24 @@ sqlx = { version = "0.7.3", features = [
 surrealdb = { version = "1.1.1" }
 
 # env vars
-dotenvy = { version = "0.15" }
-envy = { version = "0.4" }
+dotenvy = { version = "0.15.7" }
+envy = { version = "0.4.2" }
 
 # errors
 anyhow = { version = "1.0.79" }
 thiserror = { version = "1.0.56" }
 
 # HTTP-client
-reqwest = { version = "0.11.22", features = ["json"] }
+reqwest = { version = "0.11.23", features = ["json"] }
 
 # HTTP-server
-axum = { version = "0.7.2" }
-axum-test = { version = "14.0.0" }
-tower-http = { version = "0.5.0", features = ["cors", "trace"] }
+axum = { version = "0.7.4" }
+axum-test = { version = "14.2.2" }
+tower-http = { version = "0.5.1", features = ["cors", "trace"] }
 
 # Leptos
-leptos = { version = "0.6.0-rc1", features = ["csr"] }
-leptos_router = { version = "0.6.0-rc1", features = ["csr"] }
+leptos = { version = "0.6.4", features = ["csr"] }
+leptos_router = { version = "0.6.4", features = ["csr"] }
 
 # logging
 tracing = { version = "0.1.40", features = ["log"] }
@@ -93,20 +92,20 @@ tracing-loki = { version = "0.2.4" }
 tracing-web = { version = "0.1.3" }
 
 # macro
-proc-macro2 = "1.0"
-proc-macro-error = "1.0"
-quote = "1.0"
-syn = "2.0"
+proc-macro2 = { version = "1.0.78" }
+proc-macro-error = { version = "1.0.4" }
+quote = { version = "1.0.35" }
+syn = { version = "2.0.48" }
 
 # Modbus
-tokio-modbus = { version = "0.10.0", default-features = false, features = [
+tokio-modbus = { version = "0.11.0", default-features = false, features = [
     "tcp",
 ] }
 
 # serialization / deserialization
-serde = { version = "1.0.193", features = ["derive"] }
-serde_json = { version = "1.0.108" }
-toml = { version = "0.8" }
+serde = { version = "1.0.196", features = ["derive"] }
+serde_json = { version = "1.0.113" }
+toml = { version = "0.8.8" }
 
 # WASM
 gloo = { version = "0.11.0", features = ["net", "futures", "timers", "utils"] }
@@ -130,6 +129,7 @@ rsiot-macros = { version = "0.0.40", path = "./rsiot-macros" }
 rsiot-messages-core = { version = "0.0.43", path = "./rsiot-messages-core" }
 rsiot-modbus-client = { version = "0.0.43", path = "./rsiot-modbus-client" }
 rsiot-plc = { version = "0.0.43", path = "./rsiot-plc" }
+rsiot-surrealdb = { version = "0.0.43", path = "./rsiot-surrealdb" }
 rsiot-redis-client = { version = "0.0.43", path = "./rsiot-redis-client" }
 rsiot-timescaledb-storing = { version = "0.0.43", path = "./rsiot-timescaledb-storing" }
 rsiot-websocket-client = { version = "0.0.43", path = "./rsiot-websocket-client" }

@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use futures_util::{stream::SplitStream, StreamExt};
+use futures::{stream::SplitStream, StreamExt};
 use gloo::{
     net::websocket::{futures::WebSocket, Message},
     timers::future::sleep,

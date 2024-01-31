@@ -2,7 +2,7 @@
 
 use std::net::SocketAddr;
 
-use futures_util::{
+use futures::{
     stream::{SplitSink, SplitStream},
     SinkExt, StreamExt,
 };

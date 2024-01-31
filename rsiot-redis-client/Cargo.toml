@@ -13,7 +13,7 @@ rust-version.workspace = true
 
 [dependencies]
 async-trait = { workspace = true }
-futures-util = { workspace = true }
+futures = { workspace = true }
 redis = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }

@@ -10,12 +10,17 @@ services:
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=token
     hostname: influxdb
     image: influxdb:2.7.5
+    networks:
+      - network_internal
     ports:
       - "8086:8086"
     volumes:
       - influxdb_data:/var/lib/influxdb2
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
+
+networks:
+  network_internal:
 
 volumes:
   influxdb_data:

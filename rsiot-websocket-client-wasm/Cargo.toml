@@ -14,7 +14,7 @@ version = "0.0.43"
 [dependencies]
 anyhow = { workspace = true }
 async-trait = { workspace = true }
-futures-util = { workspace = true }
+futures = { workspace = true }
 gloo = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }

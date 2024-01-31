@@ -8,13 +8,19 @@ services:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_SECURITY_ALLOW_EMBEDDING=true
-        # настройки источника - база данных
+        # настройки источника - TimescaleDB
       - TIMESCALEDB_HOST=timescaledb
       - TIMESCALEDB_PORT=5432
       - TIMESCALEDB_DB_DATA=db_data
         # настройки источника - логгер loki
       - LOKI_HOST=loki
       - LOKI_PORT=3100
+        # настройки источника - InfluxDB
+      - INFLUXDB_HOST=influxdb
+      - INFLUXDB_PORT=8086
+      - INFLUXDB_ORG=org
+      - INFLUXDB_BUCKET=bucket
+      - INFLUXDB_TOKEN=token
     ports:
       - "3000:3000"
     profiles:

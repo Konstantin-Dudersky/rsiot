@@ -1,4 +1,4 @@
-use futures_util::StreamExt as _;
+use futures::StreamExt;
 use redis::{AsyncCommands, Client};
 use tokio::{
     sync::mpsc,
