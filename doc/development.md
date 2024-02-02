@@ -31,6 +31,8 @@ cargo doc --open
 nu scripts/prepare_for_publish.nu
 ```
 
+Коммитим все изменения в git.
+
 Изменяем номер версии проекта:
 
 ```bash

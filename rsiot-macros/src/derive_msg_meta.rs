@@ -13,6 +13,7 @@ pub fn derive_msg_meta(ast: &DeriveInput) -> TokenStream {
     let mut enum_variants_ts = TokenStream2::new();
     let mut enum_variants_source = TokenStream2::new();
     let mut enum_variants_source_set = TokenStream2::new();
+    let mut enum_variants_rt_msg = TokenStream2::new();
     for variant in &data.variants {
         let variant_name = &variant.ident;
         enum_variants_ts.extend(quote! {
@@ -23,6 +24,9 @@ pub fn derive_msg_meta(ast: &DeriveInput) -> TokenStream {
         });
         enum_variants_source_set.extend(quote! {
             #name::#variant_name(msg_content) => msg_content.source = service_id,
+        });
+        enum_variants_rt_msg.extend(quote! {
+            #name::#variant_name(msg_content) => msg_content.value.fmt_value(template),
         });
     }
 
@@ -43,6 +47,12 @@ pub fn derive_msg_meta(ast: &DeriveInput) -> TokenStream {
             fn source_set(&mut self, service_id: msg_meta::ServiceId) {
                 match self {
                     #enum_variants_source_set
+                }
+            }
+
+            fn fmt_value(&self, template: &str) -> String {
+                match self {
+                    #enum_variants_rt_msg
                 }
             }
         }

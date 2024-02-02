@@ -1,6 +1,9 @@
 //! Пример реализации сообщения. Можно использовать для тестирования компонентов
 
-use crate::{eav, eav_helpers, msg_meta, Deserialize, IMessage, MsgContent, MsgMeta, Serialize};
+use crate::{
+    eav, eav_helpers, msg_meta, Deserialize, IMessage, IMsgContentValue, MsgContent, MsgMeta,
+    Serialize,
+};
 
 /// Пример реализации сообщения. Можно использовать для тестирования компонентов
 #[derive(Clone, Debug, Deserialize, MsgMeta, PartialEq, Serialize)]
@@ -47,8 +50,10 @@ mod tests {
 
     #[test]
     fn test1() {
-        let msg = ExampleMessage::ValueInstantF64(MsgContent::new(12.3));
-        let eav = msg.into_eav();
-        println!("{:?}", eav);
+        let msg = ExampleMessage::ValueInstantF64(MsgContent::new(12.3456));
+        let eav = msg.clone().into_eav();
+        println!("eav: {:?}", eav);
+
+        println!("fmt: {}", msg.fmt_value("{:08.2}"));
     }
 }

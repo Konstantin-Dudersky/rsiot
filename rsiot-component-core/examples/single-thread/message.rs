@@ -1,4 +1,4 @@
-use rsiot_messages_core::{msg_meta, IMessage, MsgContent, MsgMeta};
+use rsiot_messages_core::{msg_meta, IMessage, IMsgContentValue, MsgContent, MsgMeta};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]

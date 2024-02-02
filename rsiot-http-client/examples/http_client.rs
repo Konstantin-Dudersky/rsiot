@@ -15,7 +15,7 @@ use url::Url;
 use rsiot_component_core::ComponentExecutor;
 use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use rsiot_http_client::cmp_http_client::{self, config};
-use rsiot_messages_core::{msg_meta, IMessage, MsgContent, MsgMeta};
+use rsiot_messages_core::{msg_meta, IMessage, IMsgContentValue, MsgContent, MsgMeta};
 
 //------------------------------------------------------------------------------
 
@@ -41,6 +41,12 @@ struct HttpMethodsGet {
     headers: HashMap<String, String>,
     origin: String,
     url: String,
+}
+
+impl IMsgContentValue for HttpMethodsGet {
+    fn fmt_value(&self, _template: &str) -> String {
+        todo!()
+    }
 }
 
 //------------------------------------------------------------------------------

@@ -11,7 +11,7 @@ use url::Url;
 
 use rsiot_component_core::ComponentExecutor;
 use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-use rsiot_messages_core::{msg_meta, IMessage, MsgContent, MsgMeta};
+use rsiot_messages_core::{msg_meta, IMessage, IMsgContentValue, MsgContent, MsgMeta};
 use rsiot_websocket_client::cmp_websocket_client;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]

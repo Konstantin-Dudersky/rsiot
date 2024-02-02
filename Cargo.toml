@@ -36,6 +36,7 @@ rust-version = "1.75.0"
 
 
 [workspace.dependencies]
+formatx = { version = "0.2.2" }
 
 # async
 async-trait = { version = "0.1.77" }

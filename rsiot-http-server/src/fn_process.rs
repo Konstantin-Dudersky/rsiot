@@ -61,6 +61,7 @@ where
         );
 
     let app = routing::Router::new()
+        .route("/", routing::get(routes::root))
         .route("/messages", routing::get(routes::list::<TMessage>))
         .route("/messages/:id", routing::get(routes::get::<TMessage>))
         .route("/messages", routing::put(routes::replace::<TMessage>))

@@ -9,7 +9,9 @@ use std::time::Duration;
 use cmp_surrealdb::InputConfig;
 use rsiot_component_core::ComponentExecutor;
 use rsiot_extra_components::cmp_inject_periodic;
-use rsiot_messages_core::{msg_meta, Deserialize, IMessage, MsgContent, MsgMeta, Serialize};
+use rsiot_messages_core::{
+    msg_meta, Deserialize, IMessage, IMsgContentValue, MsgContent, MsgMeta, Serialize,
+};
 use rsiot_surrealdb as cmp_surrealdb;
 use tracing::info;
 

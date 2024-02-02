@@ -15,7 +15,7 @@ use tracing_subscriber::filter::LevelFilter;
 use rsiot_component_core::ComponentExecutor;
 use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
 use rsiot_http_server::cmp_http_server;
-use rsiot_messages_core::{msg_meta, IMessage, MsgContent, MsgMeta};
+use rsiot_messages_core::{msg_meta, IMessage, IMsgContentValue, MsgContent, MsgMeta};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
 enum Message {

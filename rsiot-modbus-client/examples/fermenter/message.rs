@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use rsiot_messages_core::{msg_meta, IMessage, MsgContent, MsgMeta};
+use rsiot_messages_core::{msg_meta, IMessage, IMsgContentValue, MsgContent, MsgMeta};
 
 #[allow(non_camel_case_types)]
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]

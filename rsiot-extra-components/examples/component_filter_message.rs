@@ -6,14 +6,13 @@ use tokio::{
 };
 
 use rsiot_extra_components::component_filter_message;
-use rsiot_messages_core::{msg_meta, IMessage, MsgContent, MsgMeta};
+use rsiot_messages_core::{msg_meta, IMessage, IMsgContentValue, MsgContent, MsgMeta};
 use tracing::info;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
 enum Message {
     Message0(MsgContent<f64>),
     Message1(MsgContent<f64>),
-    Combine(MsgContent<(f64, f64)>),
 }
 
 impl IMessage for Message {

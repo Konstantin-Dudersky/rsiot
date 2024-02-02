@@ -6,14 +6,23 @@ use tokio::{
 };
 
 use rsiot_extra_components::component_combine_message;
-use rsiot_messages_core::{msg_meta, IMessage, MsgContent, MsgMeta};
+use rsiot_messages_core::{msg_meta, IMessage, IMsgContentValue, MsgContent, MsgMeta};
 use tracing::info;
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+struct CombinedMessage(pub (f64, f64));
+
+impl IMsgContentValue for CombinedMessage {
+    fn fmt_value(&self, _template: &str) -> String {
+        todo!()
+    }
+}
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
 enum Message {
     Message0(MsgContent<f64>),
     Message1(MsgContent<f64>),
-    Combine(MsgContent<(f64, f64)>),
+    Combine(MsgContent<CombinedMessage>),
 }
 
 impl IMessage for Message {
@@ -70,10 +79,10 @@ async fn main() -> anyhow::Result<()> {
                 Some(val) => val,
                 None => return None,
             };
-            Some(Message::Combine(MsgContent::new((
+            Some(Message::Combine(MsgContent::new(CombinedMessage((
                 value1.value,
                 value2.value,
-            ))))
+            )))))
         },
     ));
 
