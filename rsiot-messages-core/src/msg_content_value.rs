@@ -30,6 +30,12 @@ impl IMsgContentValue for bool {
     }
 }
 
+impl IMsgContentValue for std::time::Duration {
+    fn fmt_value(&self, _template: &str) -> String {
+        format!("{:?}", self)
+    }
+}
+
 impl IMsgContentValue for f32 {
     fn fmt_value(&self, template: &str) -> String {
         format_with_formatx(self, template)
