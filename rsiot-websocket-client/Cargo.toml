@@ -1,6 +1,6 @@
 [package]
 name = "rsiot-websocket-client"
-version = "0.0.44"
+version = "0.0.45"
 description = "Websocket-клиент"
 categories.workspace = true
 edition.workspace = true
