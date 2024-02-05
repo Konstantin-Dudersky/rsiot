@@ -1,5 +1,5 @@
 use leptos::*;
-use rsiot_messages_core::{IMessage, MsgContent};
+use rsiot_messages_core::{IMessage, IMsgContentValue, MsgContent};
 
 use crate::GlobalState;
 
@@ -12,7 +12,7 @@ pub fn create<TMsg, TValue>(
     WriteSignal<MsgContent<TValue>>,
 )
 where
-    TValue: Clone + Default + 'static,
+    TValue: Clone + Default + IMsgContentValue + 'static,
     TMsg: IMessage + 'static,
 {
     let gs = use_context::<GlobalState<TMsg>>().unwrap();

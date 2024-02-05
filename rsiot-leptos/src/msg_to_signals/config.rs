@@ -1,8 +1,9 @@
-use rsiot_messages_core::{IMessage, MsgContent};
+use rsiot_messages_core::{IMessage, IMsgContentValue, MsgContent};
 
 pub struct Config<TMsg, TValue>
 where
     TMsg: IMessage + 'static,
+    TValue: IMsgContentValue,
 {
     /// Значение по-умолчанию
     ///
