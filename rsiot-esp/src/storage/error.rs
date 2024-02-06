@@ -2,11 +2,8 @@ use esp_idf_svc::sys::EspError;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error("Deserialization error: {source}")]
-    Deserialization {
-        #[from]
-        source: postcard::Error,
-    },
+    #[error("Deserialization error: {0}")]
+    Deserialization(#[from] postcard::Error),
 
     #[error("Read from ESP: {0}")]
     ReadFromEsp(EspError),
