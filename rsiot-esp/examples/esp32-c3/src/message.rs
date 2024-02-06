@@ -1,14 +1,16 @@
 use rgb::RGB8;
-use rsiot::message::{msg_types::Value, Deserialize, IMessage, Serialize};
+use rsiot::message::{
+    msg_meta, Deserialize, IMessage, IMsgContentValue, MsgContent, MsgMeta, Serialize,
+};
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, MsgMeta, PartialEq, Serialize)]
 pub enum Message {
-    Button(Value<bool>),
-    SetLedColor(Value<RGB8>),
-    TestFromHttpServer(u16),
-    Relay2(Value<bool>),
+    Button(MsgContent<bool>),
+    // SetLedColor(MsgContent<RGB8>), TODO - update rsiot
+    TestFromHttpServer(MsgContent<u16>),
+    Relay2(MsgContent<bool>),
 
-    StorageI32(Value<i32>),
+    StorageI32(MsgContent<i32>),
 }
 
 impl IMessage for Message {

@@ -1,8 +1,7 @@
 use rgb::RGB8;
 use serde::{Deserialize, Serialize};
 
-use rsiot::cmp_plc::plc::function_block_base::{FunctionBlockBase, IFunctionBlock};
-
+use rsiot::components::cmp_plc::plc::function_block_base::{FunctionBlockBase, IFunctionBlock};
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct I {}
 

@@ -6,7 +6,7 @@
 //! считывание по подписке.
 
 pub mod hardware_tasks;
-mod http_server;
+// mod http_server;
 mod storage;
 
 // pub use http_server::cmp_http_server_esp;

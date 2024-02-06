@@ -3486,6 +3486,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "rgb"
+version = "0.8.37"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "05aaa8004b64fd573fc9d002f4e632d51ad4f026c2b5ba95fcb6c2f32c2c47d8"
+dependencies = [
+ "bytemuck",
+ "serde",
+]
+
+[[package]]
 name = "ring"
 version = "0.16.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3789,6 +3799,7 @@ version = "0.0.45"
 dependencies = [
  "chrono",
  "formatx",
+ "rgb",
  "rsiot-macros",
  "serde",
  "serde_json",

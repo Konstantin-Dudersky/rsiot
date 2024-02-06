@@ -5,7 +5,7 @@ use postcard::{from_bytes, to_stdvec};
 use serde::{de::DeserializeOwned, Serialize};
 use tracing::{info, warn};
 
-use rsiot_component_core::{Cache, ComponentError, ComponentInput, ComponentOutput};
+use rsiot_component_core::{ComponentError, ComponentInput, ComponentOutput};
 use rsiot_messages_core::IMessage;
 
 use super::{config::Config, error::Error};
@@ -16,7 +16,6 @@ pub async fn fn_process<TMessage, TStorageData>(
     input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
     config: Config<TMessage, TStorageData>,
-    _cache: Cache<TMessage>,
 ) -> std::result::Result<(), ComponentError>
 where
     TMessage: IMessage,

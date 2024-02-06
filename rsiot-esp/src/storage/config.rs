@@ -3,7 +3,7 @@ use serde::{de::DeserializeOwned, Serialize};
 #[derive(Debug)]
 pub struct Config<TMessage, TStorageData>
 where
-    TStorageData: Default + DeserializeOwned + Serialize,
+    TStorageData: std::fmt::Debug + Default + DeserializeOwned + PartialEq + Serialize,
 {
     /// Функция для сохранения информации из входных сообщений в памяти ESP.
     pub fn_input: fn(&TStorageData, &TMessage) -> Option<TStorageData>,

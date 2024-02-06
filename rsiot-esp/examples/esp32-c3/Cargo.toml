@@ -24,8 +24,8 @@ tokio = { version = "*" }
 tracing = { version = "*", features = ["log"] }
 rgb = { version = "0.8.37", features = ["serde"] }
 
-rsiot-esp = { path = "../../" }
-rsiot = { version = "*", features = ["components", "plc"] }
+rsiot-esp = { path = "../../", features = ["single-thread"] }
+rsiot = { version = "*", features = ["components", "plc", "single-thread"] }
 
 [build-dependencies]
 embuild = "0.31.3"

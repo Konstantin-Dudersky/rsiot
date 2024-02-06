@@ -84,6 +84,12 @@ impl IMsgContentValue for isize {
     }
 }
 
+impl IMsgContentValue for rgb::RGB8 {
+    fn fmt_value(&self, _template: &str) -> String {
+        format!("{}", self)
+    }
+}
+
 impl IMsgContentValue for String {
     fn fmt_value(&self, template: &str) -> String {
         format_with_formatx(self, template)
