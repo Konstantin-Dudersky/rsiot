@@ -25,7 +25,7 @@ where
 {
     /// Создание коллекции компонентов
     pub fn new(buffer_size: usize) -> Self {
-        info!("Component collection start cration");
+        info!("ComponentExecutor start creation");
         let (component_input_send, component_input) = broadcast::channel::<TMessage>(buffer_size);
         let (component_output, component_output_recv) = mpsc::channel::<TMessage>(buffer_size);
         let cache: Cache<TMessage> = Cache::new();
@@ -119,7 +119,7 @@ where
 {
     debug!("Internal task of ComponentExecutor: starting");
     while let Some(msg) = input.recv().await {
-        trace!("Internal task: new message: {:?}", msg);
+        trace!("Internal task of ComponentExecutor: new message: {:?}", msg);
         let key = msg.key().clone();
         let value = msg.clone();
         {
@@ -135,7 +135,10 @@ where
             lock.insert(key, value);
         }
         output.send(msg).map_err(|err| {
-            let err = format!("internal component send to channel error, {:?}", err);
+            let err = format!(
+                "Internal task of ComponentExecutor: send to channel error, {:?}",
+                err
+            );
             ComponentError::Initialization(err)
         })?;
     }
