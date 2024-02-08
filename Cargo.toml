@@ -125,7 +125,7 @@ rsiot-http-client = { version = "0.0.47", path = "./rsiot-http-client" }
 rsiot-http-client-wasm = { version = "0.0.47", path = "./rsiot-http-client-wasm" }
 rsiot-http-server = { version = "0.0.47", path = "./rsiot-http-server" }
 rsiot-influxdb = { version = "0.0.47", path = "./rsiot-influxdb" }
-rsiot-leptos = { version = "0.0.47", path = "./rsiot-leptos" }
+rsiot-leptos = { version = "0.0.48", path = "./rsiot-leptos" }
 rsiot-logging = { version = "0.0.47", path = "./rsiot-logging" }
 rsiot-macros = { version = "0.0.47", path = "./rsiot-macros" }
 rsiot-messages-core = { version = "0.0.47", path = "./rsiot-messages-core" }
