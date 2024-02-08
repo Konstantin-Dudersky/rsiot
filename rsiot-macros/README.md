@@ -2,6 +2,8 @@
 
 ```bash
 cargo expand -p rsiot-messages-core example_message
+
+cargo expand -p rsiot-leptos --example create_signal_from_msg --target wasm32-unknown-unknown
 ```
 
 https://stackoverflow.com/questions/65182338/how-to-create-a-macro-that-matches-enum-variants-without-knowing-its-structure

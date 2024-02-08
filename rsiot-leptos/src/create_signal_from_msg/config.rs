@@ -30,5 +30,5 @@ where
     /// ```rust
     /// |_| None
     /// ```
-    pub fn_output: fn(MsgContent<TValue>) -> Option<TMsg>,
+    pub fn_output: fn(TValue) -> Option<TMsg>,
 }

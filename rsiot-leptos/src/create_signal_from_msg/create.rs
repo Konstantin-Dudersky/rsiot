@@ -7,10 +7,7 @@ use super::Config;
 
 pub fn create<TMsg, TValue>(
     config: Config<TMsg, TValue>,
-) -> (
-    ReadSignal<MsgContent<TValue>>,
-    WriteSignal<MsgContent<TValue>>,
-)
+) -> (ReadSignal<MsgContent<TValue>>, WriteSignal<TValue>)
 where
     TValue: Clone + Default + IMsgContentValue + 'static,
     TMsg: IMessage + 'static,
@@ -19,7 +16,7 @@ where
 
     let default_content = (config.fn_input)(&config.default).unwrap();
     let (input, input_set) = create_signal(default_content.clone());
-    let (output, output_set) = create_signal(default_content);
+    let (output, output_set) = create_signal(TValue::default());
 
     let cache = gs.cache.clone();
     {

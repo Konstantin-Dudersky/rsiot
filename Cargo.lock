@@ -3762,6 +3762,7 @@ dependencies = [
  "leptos_router",
  "rsiot-component-core",
  "rsiot-extra-components",
+ "rsiot-macros",
  "rsiot-messages-core",
  "serde",
  "thiserror",
