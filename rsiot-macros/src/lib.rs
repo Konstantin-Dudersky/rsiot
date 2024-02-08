@@ -34,7 +34,7 @@ pub fn create_signal_from_msg(msg: TokenStream) -> TokenStream {
     })
 "#;
     let code = code.replace("&msg", &msg.to_string());
-    let code = code.replace("\"", "");
+    let code = code.replace('\"', "");
     let code = parse_str::<syn::Expr>(&code).unwrap();
 
     TokenStream::from(quote! {
