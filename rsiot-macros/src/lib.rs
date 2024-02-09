@@ -19,7 +19,7 @@ pub fn derive_into_eav(input: TokenStream) -> TokenStream {
 /// # Пример
 ///
 /// ```rust
-/// let (signal, signal_set) = create_signal_from_msg!("ExampleMessage::ValueInstantF64");
+/// let (signal, signal_set) = create_signal_from_msg!(ExampleMessage::ValueInstantF64);
 /// ```
 #[proc_macro]
 pub fn create_signal_from_msg(msg: TokenStream) -> TokenStream {

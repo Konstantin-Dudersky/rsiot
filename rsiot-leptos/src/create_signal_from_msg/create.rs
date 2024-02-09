@@ -7,7 +7,7 @@ use super::Config;
 
 pub fn create<TMsg, TValue>(
     config: Config<TMsg, TValue>,
-) -> (ReadSignal<MsgContent<TValue>>, WriteSignal<Option<TValue>>)
+) -> (ReadSignal<MsgContent<TValue>>, WriteSignal<TValue>)
 where
     TValue: Clone + std::fmt::Debug + Default + IMsgContentValue + 'static,
     TMsg: IMessage + 'static,
@@ -16,7 +16,7 @@ where
 
     let default_content = (config.fn_input)(&config.default).unwrap();
     let (input, input_set) = create_signal(default_content.clone());
-    let (output, output_set) = create_signal(Option::<TValue>::None);
+    let (output, output_set) = create_signal(TValue::default());
 
     let cache = gs.cache.clone();
     {
@@ -41,18 +41,19 @@ where
         }
     });
 
-    create_effect(move |_| {
+    let gs_clone = gs.clone();
+    create_effect(move |prev_value| {
         let output = output.get();
-        let output = match output {
-            Some(val) => val,
-            None => return,
-        };
+        if prev_value.is_none() {
+            return output;
+        }
         let msg = (config.fn_output)(output);
         let msg = match msg {
             Some(msg) => msg,
-            None => return,
+            None => return output,
         };
-        gs.clone().output.set(Some(msg))
+        gs_clone.output.set(Some(msg));
+        output
     });
 
     (input, output_set)
