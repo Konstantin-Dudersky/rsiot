@@ -45,15 +45,15 @@ where
     create_effect(move |prev_value| {
         let output = output.get();
         if prev_value.is_none() {
-            return output;
+            return ();
         }
         let msg = (config.fn_output)(output);
         let msg = match msg {
             Some(msg) => msg,
-            None => return output,
+            None => return (),
         };
         gs_clone.output.set(Some(msg));
-        output
+        ()
     });
 
     (input, output_set)
