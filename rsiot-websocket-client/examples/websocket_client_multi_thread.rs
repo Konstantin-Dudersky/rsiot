@@ -6,7 +6,7 @@
 
 use serde::{Deserialize, Serialize};
 use tokio::{main, time::Duration};
-use tracing::{error, Level};
+use tracing::Level;
 use url::Url;
 
 use rsiot_component_core::ComponentExecutor;
@@ -62,19 +62,12 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn fn_input(msg: &Message) -> Option<String> {
-    let text = msg.to_json();
-    let text = match text {
-        Ok(val) => val,
-        Err(err) => {
-            error!("{}", err);
-            return None;
-        }
-    };
+fn fn_input(msg: &Message) -> anyhow::Result<Option<String>> {
+    let text = msg.to_json()?;
     match msg {
-        Message::Send(_) => Some(text),
-        Message::Recv(_) => None,
-        Message::Tick(_) => None,
+        Message::Send(_) => Ok(Some(text)),
+        Message::Recv(_) => Ok(None),
+        Message::Tick(_) => Ok(None),
     }
 }
 

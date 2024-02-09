@@ -4,37 +4,50 @@ use rsiot_messages_core::IMessage;
 
 /// Настройки Websocket-клиента
 #[derive(Clone, Debug)]
-pub struct Config<TMessage>
+pub struct Config<TMsg>
 where
-    TMessage: IMessage,
+    TMsg: IMessage,
 {
     /// Адрес Websocket-сервера
     pub url: Url,
 
     /// Преобразование входящих сообщений в текст для отправки на сервер
     ///
-    /// По-умолчанию можно задать:
+    /// # Примеры
+    ///
+    /// ## Пустой коллбек
     ///
     /// ```rust
-    /// |_: &TMessage| None
+    /// |_: &TMsg| Ok(None)
     /// ```
-    pub fn_input: fn(&TMessage) -> Option<String>,
+    ///
+    /// ## Преобразование в json
+    ///
+    /// ```rust
+    /// |msg: &TMsg| {
+    ///     let text = msg.to_json()?;
+    ///     Ok(Some(text))
+    /// }
+    /// ```
+    pub fn_input: fn(&TMsg) -> anyhow::Result<Option<String>>,
 
     /// Преобразование полученного от сервера текста в исходящие сообщения
     ///
-    /// Пустой коллбек:
+    /// # Примеры
+    ///
+    /// ## Пустой коллбек
     ///
     /// ```rust
     /// |_: &str| Ok(vec![])
     /// ```
-    /// 
-    /// Для преобразования из json:
-    /// 
+    ///
+    /// ## Преобразование из json:
+    ///
     /// ```rust
     /// |text: &str| {
-    ///     let msg = TMessage::from_json(text)?;
+    ///     let msg = TMsg::from_json(text)?;
     ///     Ok(vec![msg])
     /// }
     /// ```
-    pub fn_output: fn(&str) -> anyhow::Result<Vec<TMessage>>,
+    pub fn_output: fn(&str) -> anyhow::Result<Vec<TMsg>>,
 }

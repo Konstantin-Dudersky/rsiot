@@ -62,13 +62,13 @@ where
 async fn task_send<TMessage>(
     mut input: ComponentInput<TMessage>,
     mut write: SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>,
-    fn_send: fn(&TMessage) -> Option<String>,
+    fn_send: fn(&TMessage) -> anyhow::Result<Option<String>>,
 ) -> Result<(), Error<TMessage>>
 where
     TMessage: IMessage,
 {
     while let Ok(msg) = input.recv().await {
-        let text = (fn_send)(&msg);
+        let text = (fn_send)(&msg).map_err(Error::FnInput)?;
         if let Some(text) = text {
             let text = Message::Text(text);
             write.send(text).await?;

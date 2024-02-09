@@ -28,5 +28,3 @@ where
 }
 
 pub type Cmp<TMessage> = Component<ConfigAlias<TMessage>, TMessage>;
-
-// TODO - отправка сообщений

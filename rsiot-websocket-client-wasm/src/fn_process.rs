@@ -1,6 +1,9 @@
 use std::time::Duration;
 
-use futures::{stream::SplitStream, StreamExt};
+use futures::{
+    stream::{SplitSink, SplitStream},
+    SinkExt, StreamExt,
+};
 use gloo::{
     net::websocket::{futures::WebSocket, Message},
     timers::future::sleep,
@@ -35,7 +38,7 @@ where
 
 async fn task_main<TMessage>(
     config: Config<TMessage>,
-    _input: ComponentInput<TMessage>,
+    input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
 ) -> Result<TMessage>
 where
@@ -44,10 +47,11 @@ where
     let url = config.url.to_string();
     let ws = WebSocket::open(&url).map_err(|err| Error::Connect(err))?;
     info!("Connection to websocket server established");
-    let (_write, read) = ws.split();
+    let (write_stream, read_stream) = ws.split();
 
     let mut task_set: JoinSet<Result<TMessage>> = JoinSet::new();
-    task_set.spawn_local(task_output(config, output, read));
+    task_set.spawn_local(task_input(config.clone(), input, write_stream));
+    task_set.spawn_local(task_output(config, output, read_stream));
 
     while let Some(task_result) = task_set.join_next().await {
         task_result??
@@ -55,6 +59,29 @@ where
     Ok(())
 }
 
+/// Задача отправки входящего потока сообщений на Websocker сервер
+async fn task_input<TMsg>(
+    config: Config<TMsg>,
+    mut input: ComponentInput<TMsg>,
+    mut write_stream: SplitSink<WebSocket, Message>,
+) -> Result<TMsg>
+where
+    TMsg: IMessage,
+{
+    while let Ok(msg) = input.recv().await {
+        let ws_msg = (config.fn_input)(&msg).map_err(Error::FnInput)?;
+        let ws_msg = match ws_msg {
+            Some(val) => val,
+            None => continue,
+        };
+        let ws_msg = Message::Text(ws_msg);
+        trace!("New message send to Websocker server: {:?}", ws_msg);
+        write_stream.send(ws_msg).await?;
+    }
+    Ok(())
+}
+
+/// Задача получения текста из Websoket сервера и преобразование в исходящий поток сообщений
 async fn task_output<TMessage>(
     config: Config<TMessage>,
     output: ComponentOutput<TMessage>,
@@ -70,7 +97,7 @@ where
                 Message::Text(value) => value,
                 Message::Bytes(_) => todo!(),
             };
-            let msgs = (config.fn_output)(&msg).map_err(|err| Error::FnOutput(err))?;
+            let msgs = (config.fn_output)(&msg).map_err(Error::FnOutput)?;
             for msg in msgs {
                 output.send(msg).await?;
             }
