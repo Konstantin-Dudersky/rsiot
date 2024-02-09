@@ -118,22 +118,22 @@ tokio-tungstenite = { version = "0.21.0" }
 
 # workspace packages
 rsiot-component-core = { version = "0.0.49", path = "./rsiot-component-core" }
-rsiot-components-config = { version = "0.0.49", path = "./rsiot-components-config" }
+rsiot-components-config = { version = "0.0.50", path = "./rsiot-components-config" }
 rsiot-env-vars = { version = "0.0.47", path = "./rsiot-env-vars" }
 rsiot-extra-components = { version = "0.0.49", path = "./rsiot-extra-components" }
-rsiot-http-client = { version = "0.0.49", path = "./rsiot-http-client" }
-rsiot-http-client-wasm = { version = "0.0.49", path = "./rsiot-http-client-wasm" }
-rsiot-http-server = { version = "0.0.49", path = "./rsiot-http-server" }
-rsiot-influxdb = { version = "0.0.49", path = "./rsiot-influxdb" }
+rsiot-http-client = { version = "0.0.50", path = "./rsiot-http-client" }
+rsiot-http-client-wasm = { version = "0.0.50", path = "./rsiot-http-client-wasm" }
+rsiot-http-server = { version = "0.0.50", path = "./rsiot-http-server" }
+rsiot-influxdb = { version = "0.0.50", path = "./rsiot-influxdb" }
 rsiot-leptos = { version = "0.0.50", path = "./rsiot-leptos" }
 rsiot-logging = { version = "0.0.47", path = "./rsiot-logging" }
 rsiot-macros = { version = "0.0.49", path = "./rsiot-macros" }
 rsiot-messages-core = { version = "0.0.49", path = "./rsiot-messages-core" }
-rsiot-modbus-client = { version = "0.0.49", path = "./rsiot-modbus-client" }
+rsiot-modbus-client = { version = "0.0.50", path = "./rsiot-modbus-client" }
 rsiot-plc = { version = "0.0.49", path = "./rsiot-plc" }
 rsiot-surrealdb = { version = "0.0.49", path = "./rsiot-surrealdb" }
-rsiot-redis-client = { version = "0.0.49", path = "./rsiot-redis-client" }
-rsiot-timescaledb-storing = { version = "0.0.49", path = "./rsiot-timescaledb-storing" }
-rsiot-websocket-client = { version = "0.0.49", path = "./rsiot-websocket-client" }
-rsiot-websocket-client-wasm = { version = "0.0.49", path = "./rsiot-websocket-client-wasm" }
-rsiot-websocket-server = { version = "0.0.49", path = "./rsiot-websocket-server" }
+rsiot-redis-client = { version = "0.0.50", path = "./rsiot-redis-client" }
+rsiot-timescaledb-storing = { version = "0.0.50", path = "./rsiot-timescaledb-storing" }
+rsiot-websocket-client = { version = "0.0.50", path = "./rsiot-websocket-client" }
+rsiot-websocket-client-wasm = { version = "0.0.50", path = "./rsiot-websocket-client-wasm" }
+rsiot-websocket-server = { version = "0.0.50", path = "./rsiot-websocket-server" }
