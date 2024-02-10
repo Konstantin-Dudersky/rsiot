@@ -17,13 +17,11 @@ use rsiot_messages_core::IMessage;
 
 use crate::error::Error;
 
-type Result<TMessage> = std::result::Result<(), Error<TMessage>>;
-
 pub async fn fn_process<TMessage>(
     config: Config<TMessage>,
     input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
-) -> Result<TMessage>
+) -> crate::Result<TMessage>
 where
     TMessage: IMessage + 'static,
 {
@@ -40,16 +38,16 @@ async fn task_main<TMessage>(
     config: Config<TMessage>,
     input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
-) -> Result<TMessage>
+) -> crate::Result<TMessage>
 where
     TMessage: IMessage + 'static,
 {
     let url = config.url.to_string();
-    let ws = WebSocket::open(&url).map_err(|err| Error::Connect(err))?;
+    let ws = WebSocket::open(&url).map_err(Error::Connect)?;
     info!("Connection to websocket server established");
     let (write_stream, read_stream) = ws.split();
 
-    let mut task_set: JoinSet<Result<TMessage>> = JoinSet::new();
+    let mut task_set: JoinSet<crate::Result<TMessage>> = JoinSet::new();
     task_set.spawn_local(task_input(config.clone(), input, write_stream));
     task_set.spawn_local(task_output(config, output, read_stream));
 
@@ -64,7 +62,7 @@ async fn task_input<TMsg>(
     config: Config<TMsg>,
     mut input: ComponentInput<TMsg>,
     mut write_stream: SplitSink<WebSocket, Message>,
-) -> Result<TMsg>
+) -> crate::Result<TMsg>
 where
     TMsg: IMessage,
 {
@@ -86,7 +84,7 @@ async fn task_output<TMessage>(
     config: Config<TMessage>,
     output: ComponentOutput<TMessage>,
     mut read_stream: SplitStream<WebSocket>,
-) -> Result<TMessage>
+) -> crate::Result<TMessage>
 where
     TMessage: IMessage,
 {

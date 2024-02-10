@@ -28,7 +28,10 @@ pub async fn fn_process<TMessage>(
 where
     TMessage: IMessage + 'static,
 {
-    info!("Component component_websocket_server started");
+    info!(
+        "Component cmp_websocket_server started. Config: {:?}",
+        config
+    );
 
     let cancel = CancellationToken::new();
 
