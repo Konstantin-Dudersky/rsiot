@@ -1,8 +1,19 @@
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
+use instant::Instant;
 use serde::Serialize;
-use tokio::{spawn, sync::mpsc, time::sleep};
+use tokio::sync::mpsc;
 use tracing::trace;
+
+#[cfg(not(feature = "single-thread"))]
+use tokio::task::spawn;
+#[cfg(feature = "single-thread")]
+use tokio::task::spawn_local;
+
+#[cfg(target_arch = "wasm32")]
+use gloo::timers::future::sleep;
+#[cfg(not(target_arch = "wasm32"))]
+use tokio::time::sleep;
 
 use rsiot_component_core::{Cache, ComponentError, ComponentOutput};
 use rsiot_messages_core::IMessage;
@@ -26,7 +37,12 @@ where
     S: Clone + Default + Send + Serialize + 'static + Sync,
     FunctionBlockBase<I, Q, S>: IFunctionBlock<I, Q, S>,
 {
+    #[cfg(feature = "single-thread")]
+    let handle = spawn_local(task_main_loop::<TMessage, I, Q, S>(output, config, cache));
+
+    #[cfg(not(feature = "single-thread"))]
     let handle = spawn(task_main_loop::<TMessage, I, Q, S>(output, config, cache));
+
     handle
         .await
         .map_err(|err| ComponentError::Execution(err.to_string()))??;

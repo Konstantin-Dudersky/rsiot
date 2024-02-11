@@ -13,6 +13,7 @@ version = "0.0.49"
 
 [dependencies]
 async-trait = { workspace = true }
+instant = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
@@ -22,6 +23,9 @@ tracing = { workspace = true }
 rsiot-component-core = { workspace = true }
 rsiot-messages-core = { workspace = true }
 
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+gloo = { workspace = true }
 
 [dev-dependencies]
 anyhow = { workspace = true }
