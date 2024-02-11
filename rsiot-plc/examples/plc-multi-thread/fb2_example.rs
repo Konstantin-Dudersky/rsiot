@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::function_block::{FunctionBlockBase, IFunctionBlock};
+use rsiot_plc::plc::function_block_base::{FunctionBlockBase, IFunctionBlock};
 
 use super::fb1_example;
 
@@ -21,14 +21,13 @@ pub struct S {
 }
 
 impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
-    fn logic(&mut self) -> Q {
+    fn logic(input: &I, stat: &mut S) -> Q {
         println!("in fb2");
-        let mut internal_counter = self.stat.internal_counter;
 
-        self.stat.fb1_inst.call(fb1_example::I { counter: 1 });
+        stat.fb1_inst.call(fb1_example::I { counter: 1 });
 
         Q {
-            out_counter: self.input.counter * 2,
+            out_counter: input.counter * 2,
         }
     }
 }

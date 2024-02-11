@@ -12,11 +12,15 @@ rust-version.workspace = true
 
 [dependencies]
 async-trait = { workspace = true }
-leptos = { workspace = true }
-leptos_router = { workspace = true }
+palette = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }
+url = { workspace = true }
+
+leptos = { workspace = true }
+leptos_router = { workspace = true }
+web-sys = { workspace = true }
 
 rsiot-component-core = { workspace = true }
 rsiot-macros = { workspace = true }

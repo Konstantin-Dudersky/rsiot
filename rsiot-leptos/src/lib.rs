@@ -1,9 +1,11 @@
-#![cfg(target_arch = "wasm32")]
+// #![cfg(target_arch = "wasm32")]
 
 mod cmp_leptos;
+pub mod components;
 pub mod create_signal_from_msg;
 mod error;
 mod global_state;
+pub mod utils;
 
 pub use cmp_leptos::{Cmp, Config};
 pub use error::Error;

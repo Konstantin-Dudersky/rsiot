@@ -28,7 +28,7 @@ where
 
     pub fn call(&mut self, input: I) -> Q {
         self.input = input;
-        self.output = self.logic();
+        self.output = FunctionBlockBase::logic(&self.input, &mut self.stat);
         self.output.clone()
     }
 }
@@ -38,5 +38,5 @@ pub trait IFunctionBlock<I, Q, S> {
     ///
     /// Нужно переопределить для своего функционального блока.
     /// Вызывать самому не нужно, вызывается функцией `call`
-    fn logic(&mut self) -> Q;
+    fn logic(input: &I, stat: &mut S) -> Q;
 }

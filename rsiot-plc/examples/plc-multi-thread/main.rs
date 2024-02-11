@@ -1,4 +1,11 @@
+//! Запуск:
+//!
+//! ```bash
+//! cargo run -p rsiot-plc --example plc-multi-thread
+//! ```
+
 mod fb1_example;
+mod fb2_example;
 mod message;
 
 use std::time::Duration;

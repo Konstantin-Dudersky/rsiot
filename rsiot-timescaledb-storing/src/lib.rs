@@ -1,3 +1,8 @@
+#![cfg(any(
+    target = "x86_64-unknown-linux-gnu",
+    target = "aarch64-unknown-linux-gnu"
+))]
+
 mod component;
 mod config;
 mod error;

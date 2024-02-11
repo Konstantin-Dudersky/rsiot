@@ -14,7 +14,7 @@ pub struct Q {}
 pub struct S {}
 
 impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
-    fn logic(&mut self) -> Q {
+    fn logic(_input: &I, _stat: &mut S) -> Q {
         Q {}
     }
 }

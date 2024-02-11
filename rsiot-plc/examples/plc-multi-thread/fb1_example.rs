@@ -22,8 +22,8 @@ pub struct S {
 }
 
 impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
-    fn logic(&mut self) -> Q {
-        let ton_res = self.stat.timer.call(ton::I {
+    fn logic(input: &I, stat: &mut S) -> Q {
+        let ton_res = stat.timer.call(ton::I {
             input: true,
             preset_time: types::TimeDuration::from_secs(10),
         });
@@ -34,7 +34,7 @@ impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
         );
 
         Q {
-            out_counter: self.input.counter,
+            out_counter: input.counter,
         }
     }
 }

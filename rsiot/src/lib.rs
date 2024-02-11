@@ -1,5 +1,13 @@
-//! Компоненты для построения системы сбора данных
+//! Компоненты для построения системы сбора и обработки данных
+//!
 //! [Документация](https://docs.rs/rsiot/latest/rsiot)
+//!
+//! Поддерживаемые архитектуры ([подробнее](https://doc.rust-lang.org/rustc/platform-support.html)):
+//!
+//! - x86_64-unknown-linux-gnu - 64-bit Linux - использование в бекенд
+//! - aarch64-unknown-linux-gnu - ARM64 Linux - использование в бекенд
+//! - wasm32-unknown-unknown - WebAssembly - для создания веб-интерфейсов
+//! - riscv32imc-esp-espidf - RISC-V ESP-IDF - микроконтроллеры ESP32 на базе процессора RISC-V
 //!
 //! ## Зачем это надо
 //!
@@ -113,6 +121,7 @@
 //! **Сообщения** представляют собой тип enum, например:
 //!
 //! ```rust
+//! use rsiot_messages_core::eav::EavModel;
 //! use rsiot_messages_core::IMessage;
 //! use serde::{Deserialize, Serialize};
 //!
@@ -124,7 +133,10 @@
 //!     ChangeSetpoint(f64),
 //! }
 //!
-//! impl IMessage for Message {}
+//! impl IMessage for Message {
+//!     fn into_eav(self) -> Vec<EavModel> {
+//!         vec![]
+//!     }}
 //! ```
 //!
 //! Трейт `IMessage` реализует основные методы - см. документацию по крейту
@@ -158,40 +170,28 @@ pub mod component_core {
 pub mod components {
     #[cfg(feature = "components")]
     pub use rsiot_extra_components::*;
-
     #[cfg(feature = "http-client")]
     pub use rsiot_http_client::cmp_http_client;
-
     #[cfg(feature = "http-server")]
     pub use rsiot_http_server::cmp_http_server;
-
     #[cfg(feature = "influxdb")]
     pub use rsiot_influxdb as cmp_influxdb;
-
     #[cfg(feature = "leptos")]
     pub use rsiot_leptos as cmp_leptos;
-
     #[cfg(feature = "modbus-client")]
     pub use rsiot_modbus_client::cmp_modbus_client;
-
     #[cfg(feature = "plc")]
     pub use rsiot_plc::cmp_plc;
-
     #[cfg(feature = "redis-client")]
     pub use rsiot_redis_client::cmp_redis_client;
-
     #[cfg(feature = "surrealdb")]
     pub use rsiot_surrealdb as cmp_surrealdb;
-
     #[cfg(feature = "timescaledb-storing")]
     pub use rsiot_timescaledb_storing::cmp_timescaledb_storing;
-
     #[cfg(feature = "websocket-client")]
     pub use rsiot_websocket_client::cmp_websocket_client;
-
     #[cfg(feature = "websocket-client-wasm")]
     pub use rsiot_websocket_client_wasm::cmp_websocket_client_wasm;
-
     #[cfg(feature = "websocket-server")]
     pub use rsiot_websocket_server::cmp_websocket_server;
 }
@@ -208,8 +208,7 @@ pub mod logging {
 /// Реэкспорт необходимых модулей
 pub mod reexport {
     pub use chrono;
-    pub use url;
-
     #[cfg(feature = "components")]
     pub use tokio;
+    pub use url;
 }

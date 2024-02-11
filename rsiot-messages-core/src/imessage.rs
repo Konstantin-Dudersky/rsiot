@@ -6,6 +6,12 @@ use serde_json::{from_str as from_json, to_string as to_json};
 use crate::{eav, Error, MsgMeta};
 
 /// Трейт, который необходимо реализовать на конкретном типе сообщения
+///
+/// На типе сообщения также нужно реализовать трейты:
+///
+/// ```rust
+/// #[derive(Clone, Debug, Deserialize, MsgMeta, PartialEq, Serialize)]
+/// ```
 pub trait IMessage
 where
     Self: Clone + Debug + DeserializeOwned + MsgMeta + PartialEq + Send + Serialize + Sync,

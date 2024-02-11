@@ -1,0 +1,8 @@
+{
+  "emmet.includeLanguages": {
+    "rust": "html"
+  },
+  // "rust-analyzer.cargo.features": ["single-thread"],
+
+  // "rust-analyzer.cargo.target": "wasm32-unknown-unknown"
+}

@@ -22,21 +22,18 @@ pub struct S {
 }
 
 impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
-    fn logic(&mut self) -> Q {
-        if self
-            .stat
+    fn logic(input: &I, stat: &mut S) -> Q {
+        if stat
             .input_rising_edge
-            .call(rising_edge::VarInput {
-                i: self.input.input,
-            })
+            .call(rising_edge::I { i: input.input })
             .q
         {
-            self.stat.delay = types::TimeInstant::now();
+            stat.delay = types::TimeInstant::now();
         }
 
         Q {
-            output: self.stat.delay.elapsed() >= self.input.preset_time,
-            elapsed_time: self.stat.delay.elapsed(),
+            output: stat.delay.elapsed() >= input.preset_time,
+            elapsed_time: stat.delay.elapsed(),
         }
     }
 }

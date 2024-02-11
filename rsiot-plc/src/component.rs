@@ -12,30 +12,8 @@ use crate::{
     plc::function_block_base::{FunctionBlockBase, IFunctionBlock},
 };
 
-#[cfg(not(feature = "single-thread"))]
-#[async_trait]
-impl<TMsg, I, Q, S> IComponentProcess<Config<TMsg, I, Q, S>, TMsg>
-    for Component<Config<TMsg, I, Q, S>, TMsg>
-where
-    TMsg: IMessage + 'static,
-    I: Clone + Default + Send + Serialize + 'static + Sync,
-    Q: Clone + Default + Send + Serialize + 'static + Sync,
-    S: Clone + Default + Send + Serialize + 'static + Sync,
-    FunctionBlockBase<I, Q, S>: IFunctionBlock<I, Q, S>,
-{
-    async fn process(
-        &self,
-        config: Config<TMsg, I, Q, S>,
-        _input: ComponentInput<TMsg>,
-        output: ComponentOutput<TMsg>,
-        cache: Cache<TMsg>,
-    ) -> Result<(), ComponentError> {
-        fn_process(output, config, cache).await
-    }
-}
-
-#[cfg(feature = "single-thread")]
-#[async_trait(?Send)]
+#[cfg_attr(not(feature = "single-thread"), async_trait)]
+#[cfg_attr(feature = "single-thread", async_trait(? Send))]
 impl<TMsg, I, Q, S> IComponentProcess<Config<TMsg, I, Q, S>, TMsg>
     for Component<Config<TMsg, I, Q, S>, TMsg>
 where

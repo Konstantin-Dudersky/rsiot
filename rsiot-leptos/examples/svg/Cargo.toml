@@ -1,0 +1,19 @@
+[package]
+name = "svg-ui"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+anyhow = { version = "*" }
+leptos = { version = "0.6.5", features = ["csr"] }
+serde = { version = "*", features = ["derive"] }
+tokio = { version = "*" }
+
+rsiot = { path = "../../../rsiot", features = [
+    "leptos",
+    "single-thread",
+    "plc",
+] }
+
+[workspace]
+members = ["src-tauri"]

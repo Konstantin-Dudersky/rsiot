@@ -8,7 +8,35 @@ use tracing::{debug, error, info, trace, warn};
 
 use crate::{error::ComponentError, Cache, ComponentInput, ComponentOutput, IComponent};
 
-/// Объединение компонентов в одну коллекцию
+/// Запуск коллекции компонентов в работу
+///
+/// # Примеры
+///
+/// ## Многопоточное окружение
+///
+/// TODO
+///
+/// ## Однопоточное окружение
+///
+/// TODO
+///
+/// ## Однопоточное окружение - WASM (Leptos)
+///
+/// ```rust
+/// use leptos::*;
+///
+/// let context = LocalSet::new();
+/// context.spawn_local(async move {
+///     ComponentExecutor::<Message>::new(100)
+///         .add_cmp(cmp_websocket_client_wasm::Cmp::new(ws_client_config))
+///         .add_cmp(cmp_leptos::Cmp::new(leptos_config))
+///         .wait_result()
+///         .await?;
+///     Ok(()) as anyhow::Result<()>
+/// });
+/// spawn_local(context);
+/// Ok(())
+/// ```
 pub struct ComponentExecutor<TMessage>
 where
     TMessage: IMessage,
