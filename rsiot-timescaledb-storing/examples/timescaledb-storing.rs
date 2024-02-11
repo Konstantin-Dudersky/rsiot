@@ -4,16 +4,17 @@
 //! cargo run -p rsiot-timescaledb-storing --example timescaledb-storing
 //! ```
 
-use tokio::{main, time::Duration};
-use url::Url;
-
-use rsiot_component_core::ComponentExecutor;
-use rsiot_extra_components::cmp_inject_periodic;
-use rsiot_messages_core::{ExampleMessage, MsgContent};
-use rsiot_timescaledb_storing::cmp_timescaledb_storing;
-
-#[main]
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    use tokio::time::Duration;
+    use url::Url;
+
+    use rsiot_component_core::ComponentExecutor;
+    use rsiot_extra_components::cmp_inject_periodic;
+    use rsiot_messages_core::{ExampleMessage, MsgContent};
+    use rsiot_timescaledb_storing::cmp_timescaledb_storing;
+
     tracing_subscriber::fmt().init();
 
     let mut counter = 0.0;

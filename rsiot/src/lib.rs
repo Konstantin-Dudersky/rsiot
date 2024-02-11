@@ -8,6 +8,15 @@
 //! - aarch64-unknown-linux-gnu - ARM64 Linux - использование в бекенд
 //! - wasm32-unknown-unknown - WebAssembly - для создания веб-интерфейсов
 //! - riscv32imc-esp-espidf - RISC-V ESP-IDF - микроконтроллеры ESP32 на базе процессора RISC-V
+//! - android:
+//!   - aarch64-linux-android
+//!   - armv7-linux-androideabi
+//!   - i686-linux-android
+//!   - x86_64-linux-android
+//! - ios:
+//!   - aarch64-apple-ios
+//!   - x86_64-apple-ios
+//!   - aarch64-apple-ios-sim
 //!
 //! ## Зачем это надо
 //!

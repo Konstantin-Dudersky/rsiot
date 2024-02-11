@@ -11,6 +11,8 @@
 #![doc = include_str!("../examples/example1.rs")]
 //! ```
 
+#![cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+
 mod async_task_utils;
 mod component;
 mod config;

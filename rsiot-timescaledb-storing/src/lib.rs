@@ -1,7 +1,4 @@
-#![cfg(any(
-    target = "x86_64-unknown-linux-gnu",
-    target = "aarch64-unknown-linux-gnu"
-))]
+#![cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 
 mod component;
 mod config;
