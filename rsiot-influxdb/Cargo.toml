@@ -10,7 +10,7 @@ repository.workspace = true
 rust-version.workspace = true
 
 
-[dependencies]
+[target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dependencies]
 anyhow = { workspace = true }
 async-trait = { workspace = true }
 reqwest = { workspace = true }
@@ -24,7 +24,7 @@ rsiot-components-config = { workspace = true }
 rsiot-messages-core = { workspace = true }
 
 
-[dev-dependencies]
+[target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dev-dependencies]
 anyhow = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }

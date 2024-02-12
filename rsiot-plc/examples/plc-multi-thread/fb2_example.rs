@@ -32,4 +32,4 @@ impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
     }
 }
 
-pub type FunctionBlock = FunctionBlockBase<I, Q, S>;
+pub type _FunctionBlock = FunctionBlockBase<I, Q, S>;

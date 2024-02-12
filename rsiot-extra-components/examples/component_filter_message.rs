@@ -21,7 +21,7 @@ impl IMessage for Message {
     }
 }
 
-#[main]
+#[main(flavor = "current_thread")]
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt().init();
 

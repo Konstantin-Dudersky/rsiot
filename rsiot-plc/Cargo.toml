@@ -31,6 +31,8 @@ gloo = { workspace = true }
 anyhow = { workspace = true }
 rsiot-extra-components = { workspace = true }
 tracing-subscriber = { workspace = true }
+
+[target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dev-dependencies]
 tokio = { workspace = true, features = ["rt-multi-thread"] }
 
 

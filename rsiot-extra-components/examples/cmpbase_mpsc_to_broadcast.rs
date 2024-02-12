@@ -8,7 +8,7 @@ use rsiot_extra_components::cmpbase_mpsc_to_broadcast;
 use rsiot_messages_core::{ExampleMessage, MsgContent};
 use tracing::info;
 
-#[main]
+#[main(flavor = "current_thread")]
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt().init();
 

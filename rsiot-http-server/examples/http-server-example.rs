@@ -5,31 +5,32 @@
 //! cargo run -p rsiot-http-server --example http-server-example --features single-thread
 //! ```
 
-use serde::{Deserialize, Serialize};
-#[cfg(feature = "single-thread")]
-use tokio::task::LocalSet;
-use tokio::{runtime, time::Duration};
-use tracing::Level;
-use tracing_subscriber::filter::LevelFilter;
-
-use rsiot_component_core::ComponentExecutor;
-use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-use rsiot_http_server::cmp_http_server;
-use rsiot_messages_core::{msg_meta, IMessage, IMsgContentValue, MsgContent, MsgMeta};
-
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
-enum Message {
-    Message0(MsgContent<f64>),
-    Message1(MsgContent<f64>),
-}
-
-impl IMessage for Message {
-    fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
-        vec![]
-    }
-}
-
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 fn main() -> anyhow::Result<()> {
+    use serde::{Deserialize, Serialize};
+    #[cfg(feature = "single-thread")]
+    use tokio::task::LocalSet;
+    use tokio::{runtime, time::Duration};
+    use tracing::Level;
+    use tracing_subscriber::filter::LevelFilter;
+
+    use rsiot_component_core::ComponentExecutor;
+    use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
+    use rsiot_http_server::cmp_http_server;
+    use rsiot_messages_core::{msg_meta, IMessage, IMsgContentValue, MsgContent, MsgMeta};
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
+    enum Message {
+        Message0(MsgContent<f64>),
+        Message1(MsgContent<f64>),
+    }
+
+    impl IMessage for Message {
+        fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
+            vec![]
+        }
+    }
+
     tracing_subscriber::fmt()
         .with_max_level(LevelFilter::DEBUG)
         .init();
@@ -94,3 +95,6 @@ fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
+
+#[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+fn main() {}

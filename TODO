@@ -1,11 +1,5 @@
-TODO - всплывающие окна как в SCADA
-
-TODO - tauri push уведомления
-
-TODO - заменить указатели функций на трейты Fn
-
 TODO - избавиться от unwrap()
 
 TODO - tauri вывод с камеры (WebRTC?) - ошибка RtcPeerConnection
 
-
+TODO - добавить в пакеты условия компиляции по архитектурам. Проверить сначала на Modbus TCP

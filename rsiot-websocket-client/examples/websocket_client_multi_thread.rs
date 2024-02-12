@@ -4,31 +4,72 @@
 //! cargo run -p rsiot-websocket-client --example websocket_client_multi_thread
 //! ```
 
-use serde::{Deserialize, Serialize};
-use tokio::{main, time::Duration};
-use tracing::Level;
-use url::Url;
-
-use rsiot_component_core::ComponentExecutor;
-use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-use rsiot_messages_core::{msg_meta, IMessage, IMsgContentValue, MsgContent, MsgMeta};
-use rsiot_websocket_client::cmp_websocket_client;
-
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
-enum Message {
-    Send(MsgContent<f64>),
-    Recv(MsgContent<f64>),
-    Tick(MsgContent<u64>),
-}
-
-impl IMessage for Message {
-    fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
-        vec![]
-    }
-}
-
-#[main]
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    use serde::{Deserialize, Serialize};
+    use tokio::time::Duration;
+    use tracing::Level;
+    use url::Url;
+
+    use rsiot_component_core::ComponentExecutor;
+    use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
+    use rsiot_messages_core::{msg_meta, IMessage, IMsgContentValue, MsgContent, MsgMeta};
+    use rsiot_websocket_client::cmp_websocket_client;
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
+    enum Message {
+        Send(MsgContent<f64>),
+        Recv(MsgContent<f64>),
+        Tick(MsgContent<u64>),
+    }
+
+    impl IMessage for Message {
+        fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
+            vec![]
+        }
+    }
+
+    fn fn_input(msg: &Message) -> anyhow::Result<Option<String>> {
+        let text = msg.to_json()?;
+        match msg {
+            Message::Send(_) => Ok(Some(text)),
+            Message::Recv(_) => Ok(None),
+            Message::Tick(_) => Ok(None),
+        }
+    }
+
+    fn fn_output(data: &str) -> Result<Vec<Message>, anyhow::Error> {
+        // сообщение tick ...
+        if let Some(val) = parse_tick(data) {
+            return Ok(vec![val]);
+        }
+        if let Ok(msg) = Message::from_json(data) {
+            match msg {
+                Message::Send(val) => return Ok(vec![Message::Recv(val)]),
+                Message::Recv(_) => return Ok(vec![]),
+                Message::Tick(_) => return Ok(vec![]),
+            }
+        }
+        Ok(vec![])
+    }
+
+    fn parse_tick(data: &str) -> Option<Message> {
+        let parts: Vec<&str> = data.split(' ').collect();
+        if parts.len() != 2 {
+            return None;
+        }
+        if parts[0] != "tick" {
+            return None;
+        }
+        let num: Option<u64> = parts[1].parse().ok();
+        let num = match num {
+            Some(val) => val,
+            None => return None,
+        };
+        Some(Message::Tick(MsgContent::new(num)))
+    }
+
     tracing_subscriber::fmt().init();
 
     let logger_config = cmp_logger::Config {
@@ -62,42 +103,5 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn fn_input(msg: &Message) -> anyhow::Result<Option<String>> {
-    let text = msg.to_json()?;
-    match msg {
-        Message::Send(_) => Ok(Some(text)),
-        Message::Recv(_) => Ok(None),
-        Message::Tick(_) => Ok(None),
-    }
-}
-
-fn fn_output(data: &str) -> Result<Vec<Message>, anyhow::Error> {
-    // сообщение tick ...
-    if let Some(val) = parse_tick(data) {
-        return Ok(vec![val]);
-    }
-    if let Ok(msg) = Message::from_json(data) {
-        match msg {
-            Message::Send(val) => return Ok(vec![Message::Recv(val)]),
-            Message::Recv(_) => return Ok(vec![]),
-            Message::Tick(_) => return Ok(vec![]),
-        }
-    }
-    Ok(vec![])
-}
-
-fn parse_tick(data: &str) -> Option<Message> {
-    let parts: Vec<&str> = data.split(' ').collect();
-    if parts.len() != 2 {
-        return None;
-    }
-    if parts[0] != "tick" {
-        return None;
-    }
-    let num: Option<u64> = parts[1].parse().ok();
-    let num = match num {
-        Some(val) => val,
-        None => return None,
-    };
-    Some(Message::Tick(MsgContent::new(num)))
-}
+#[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+fn main() {}

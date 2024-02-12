@@ -13,7 +13,7 @@ use rsiot_component_core::ComponentExecutor;
 use message::Message;
 use tokio::task::LocalSet;
 
-#[tokio::main]
+#[tokio::main(flavor = "current_thread")]
 async fn main() {
     tracing_subscriber::fmt().init();
 

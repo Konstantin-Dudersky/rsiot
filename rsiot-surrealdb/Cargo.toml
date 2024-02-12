@@ -10,7 +10,7 @@ rust-version.workspace = true
 description = "Взаимодействие с БД SurrealDB"
 
 
-[dependencies]
+[target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dependencies]
 async-trait = { workspace = true }
 serde = { workspace = true }
 surrealdb = { workspace = true }
@@ -23,7 +23,7 @@ rsiot-extra-components = { workspace = true }
 rsiot-messages-core = { workspace = true }
 
 
-[dev-dependencies]
+[target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dev-dependencies]
 anyhow = { workspace = true }
 tracing-subscriber = { workspace = true }
 

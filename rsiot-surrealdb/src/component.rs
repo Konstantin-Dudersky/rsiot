@@ -7,8 +7,8 @@ use rsiot_messages_core::IMessage;
 
 use crate::fn_process::fn_process;
 
-#[cfg(not(feature = "single-thread"))]
-#[async_trait]
+#[cfg_attr(feature = "single-thread", async_trait(?Send))]
+#[cfg_attr(not(feature = "single-thread"), async_trait)]
 impl<TMsg> IComponentProcess<crate::Config<TMsg>, TMsg> for Component<crate::Config<TMsg>, TMsg>
 where
     TMsg: IMessage + 'static,
@@ -22,23 +22,6 @@ where
     ) -> Result<(), ComponentError> {
         fn_process(input.resubscribe(), output.clone(), config.clone()).await?;
         Ok(())
-    }
-}
-
-#[cfg(feature = "single-thread")]
-#[async_trait(?Send)]
-impl<TMsg> IComponentProcess<crate::Config<TMsg>, TMsg> for Component<crate::Config<TMsg>, TMsg>
-where
-    TMsg: IMessage,
-{
-    async fn process(
-        &self,
-        _config: crate::Config<TMsg>,
-        _input: ComponentInput<TMsg>,
-        _output: ComponentOutput<TMsg>,
-        _cache: Cache<TMsg>,
-    ) -> Result<(), ComponentError> {
-        todo!()
     }
 }
 

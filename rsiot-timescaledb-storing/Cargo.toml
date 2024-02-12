@@ -10,7 +10,6 @@ readme = "README.md"
 rust-version.workspace = true
 
 
-# [dependencies]
 [target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dependencies]
 async-trait = { workspace = true }
 chrono = { workspace = true }
@@ -24,8 +23,8 @@ rsiot-messages-core = { workspace = true }
 
 sqlx = { workspace = true }
 
+
 [target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dev-dependencies]
-# [dev-dependencies]
 anyhow = { workspace = true }
 chrono = { workspace = true }
 tokio = { workspace = true, features = ["rt-multi-thread"] }

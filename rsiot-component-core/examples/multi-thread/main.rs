@@ -4,7 +4,10 @@
 //! cargo run -p rsiot-component-core --example multi-thread
 //! ```
 
-#[cfg(feature = "single-thread")]
+#[cfg(any(
+    feature = "single-thread",
+    not(any(target_arch = "x86_64", target_arch = "aarch64"))
+))]
 fn main() {
     unimplemented!()
 }
@@ -16,6 +19,7 @@ mod example_component2;
 #[cfg(not(feature = "single-thread"))]
 mod message;
 
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 #[cfg(not(feature = "single-thread"))]
 #[tokio::main(flavor = "multi_thread")]
 async fn main() {

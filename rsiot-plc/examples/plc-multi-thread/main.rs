@@ -8,20 +8,20 @@ mod fb1_example;
 mod fb2_example;
 mod message;
 
-use std::time::Duration;
-
-use tokio::main;
-use tracing::Level;
-
-use rsiot_component_core::ComponentExecutor;
-use rsiot_extra_components::cmp_logger;
-use rsiot_messages_core::MsgContent;
-use rsiot_plc::cmp_plc;
-
-use message::Message;
-
-#[main]
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    use std::time::Duration;
+
+    use tracing::Level;
+
+    use rsiot_component_core::ComponentExecutor;
+    use rsiot_extra_components::cmp_logger;
+    use rsiot_messages_core::MsgContent;
+    use rsiot_plc::cmp_plc;
+
+    use message::Message;
+
     tracing_subscriber::fmt().init();
 
     let plc_config = cmp_plc::Config {
@@ -49,3 +49,6 @@ async fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
+
+#[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+fn main() {}

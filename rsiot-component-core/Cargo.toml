@@ -20,6 +20,9 @@ rsiot-messages-core = { workspace = true }
 
 [dev-dependencies]
 serde = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+[target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dev-dependencies]
 tokio = { version = "1", features = [
     "macros",
     "rt",
@@ -27,8 +30,6 @@ tokio = { version = "1", features = [
     "time",
     "rt-multi-thread",
 ] }
-tracing-subscriber = { workspace = true }
-
 
 [features]
 default = []

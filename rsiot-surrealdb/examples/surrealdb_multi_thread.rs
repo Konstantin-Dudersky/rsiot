@@ -4,30 +4,31 @@
 //! cargo run -p rsiot-surrealdb --example surrealdb_multi_thread
 //! ```
 
-use std::time::Duration;
-
-use cmp_surrealdb::InputConfig;
-use rsiot_component_core::ComponentExecutor;
-use rsiot_extra_components::cmp_inject_periodic;
-use rsiot_messages_core::{
-    msg_meta, Deserialize, IMessage, IMsgContentValue, MsgContent, MsgMeta, Serialize,
-};
-use rsiot_surrealdb as cmp_surrealdb;
-use tracing::info;
-
-#[derive(Clone, Debug, Deserialize, MsgMeta, PartialEq, Serialize)]
-enum Message {
-    Request(MsgContent<u16>),
-}
-
-impl IMessage for Message {
-    fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
-        vec![]
-    }
-}
-
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    use std::time::Duration;
+
+    use cmp_surrealdb::InputConfig;
+    use rsiot_component_core::ComponentExecutor;
+    use rsiot_extra_components::cmp_inject_periodic;
+    use rsiot_messages_core::{
+        msg_meta, Deserialize, IMessage, IMsgContentValue, MsgContent, MsgMeta, Serialize,
+    };
+    use rsiot_surrealdb as cmp_surrealdb;
+    use tracing::info;
+
+    #[derive(Clone, Debug, Deserialize, MsgMeta, PartialEq, Serialize)]
+    enum Message {
+        Request(MsgContent<u16>),
+    }
+
+    impl IMessage for Message {
+        fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
+            vec![]
+        }
+    }
+
     tracing_subscriber::fmt().init();
 
     let surrealdb_config = cmp_surrealdb::Config {
@@ -75,3 +76,6 @@ async fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
+
+#[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+fn main() {}

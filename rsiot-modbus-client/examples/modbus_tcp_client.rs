@@ -12,32 +12,33 @@
 //! cargo run -p rsiot-modbus-client --example modbus_tcp_client
 //! ```
 
-use std::net::{IpAddr, Ipv4Addr};
-
-use serde::{Deserialize, Serialize};
-use tokio::{main, time::Duration};
-use tracing::Level;
-use tracing_subscriber::fmt;
-
-use rsiot_component_core::ComponentExecutor;
-use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-use rsiot_messages_core::{msg_meta, IMessage, IMsgContentValue, MsgContent, MsgMeta};
-use rsiot_modbus_client::cmp_modbus_client::{self, *};
-
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
-pub enum Messages {
-    ValueWrite(MsgContent<f64>),
-    ValueRead(MsgContent<f64>),
-}
-
-impl IMessage for Messages {
-    fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
-        vec![]
-    }
-}
-
-#[main]
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    use std::net::{IpAddr, Ipv4Addr};
+
+    use serde::{Deserialize, Serialize};
+    use tokio::time::Duration;
+    use tracing::Level;
+    use tracing_subscriber::fmt;
+
+    use rsiot_component_core::ComponentExecutor;
+    use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
+    use rsiot_messages_core::{msg_meta, IMessage, IMsgContentValue, MsgContent, MsgMeta};
+    use rsiot_modbus_client::cmp_modbus_client::{self, *};
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
+    pub enum Messages {
+        ValueWrite(MsgContent<f64>),
+        ValueRead(MsgContent<f64>),
+    }
+
+    impl IMessage for Messages {
+        fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
+            vec![]
+        }
+    }
+
     // логгирование
     fmt().init();
 
@@ -95,3 +96,6 @@ async fn main() -> anyhow::Result<()> {
         .await?;
     Ok(())
 }
+
+#[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+fn main() {}

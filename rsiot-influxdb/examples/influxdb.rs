@@ -1,18 +1,17 @@
-use std::time::Duration;
-
-use tokio::main;
-
-use rsiot_component_core::ComponentExecutor;
-use rsiot_extra_components::cmp_inject_periodic;
-use rsiot_influxdb as cmp_influxdb;
-use rsiot_messages_core::{ExampleMessage, MsgContent};
-use tracing::level_filters::LevelFilter;
-
-const TOKEN: &str =
-    "6ux3LH1s0wOf4z2vIec6cmYYk03GgTksvxD3OnaM71xfOfyj9NQTvKq8TZRb5iInEl_PpoVFHFQB43CyaoJMhg==";
-
-#[main]
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[tokio::main]
 async fn main() {
+    use std::time::Duration;
+
+    use rsiot_component_core::ComponentExecutor;
+    use rsiot_extra_components::cmp_inject_periodic;
+    use rsiot_influxdb as cmp_influxdb;
+    use rsiot_messages_core::{ExampleMessage, MsgContent};
+    use tracing::level_filters::LevelFilter;
+
+    const TOKEN: &str =
+        "6ux3LH1s0wOf4z2vIec6cmYYk03GgTksvxD3OnaM71xfOfyj9NQTvKq8TZRb5iInEl_PpoVFHFQB43CyaoJMhg==";
+
     tracing_subscriber::fmt()
         .with_max_level(LevelFilter::INFO)
         .init();
@@ -43,3 +42,6 @@ async fn main() {
         .await
         .unwrap();
 }
+
+#[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+fn main() {}
