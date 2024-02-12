@@ -1,7 +1,8 @@
+Ограничение зависимостей 
+
 ```toml
-[target.'cfg(any(target_arch = "wasm32"))'.dependencies]
 [target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dependencies]
-[target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dev-dependencies]
+[target.'cfg(any(target_arch = "wasm32"))'.dependencies]
 ```
 
 ```rust
