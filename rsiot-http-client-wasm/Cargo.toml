@@ -1,6 +1,6 @@
 [package]
 name = "rsiot-http-client-wasm"
-version = "0.0.52"
+version = "0.0.53"
 description = "HTTP-клиент для платформы WASM"
 categories.workspace = true
 edition.workspace = true
