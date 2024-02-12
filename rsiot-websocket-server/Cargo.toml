@@ -1,6 +1,6 @@
 [package]
 name = "rsiot-websocket-server"
-version = "0.0.51"
+version = "0.0.52"
 description = "Websocket-сервер"
 categories.workspace = true
 edition.workspace = true

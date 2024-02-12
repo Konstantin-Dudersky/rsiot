@@ -1,6 +1,6 @@
 [package]
 name = "rsiot-http-client"
-version = "0.0.51"
+version = "0.0.52"
 description = "HTTP-клиент"
 categories.workspace = true
 edition.workspace = true
