@@ -1,12 +1,16 @@
 # Подготовка к публикации
 
-print $"\n\n(ansi magenta_bold) workspace - update (ansi reset)\n\n"
+def print_header [header: string] {
+    print $"\n\n(ansi magenta_bold) ($header) (ansi reset)\n\n"
+}
+
+print_header "workspace - update"
 cargo update
 
-print $"\n\n(ansi magenta_bold) workspace - outdated (ansi reset)\n\n"
+print_header "workspace - outdated"
 cargo outdated
 
-print $"\n\n(ansi magenta_bold) workspace - unused dependencies (ansi reset)\n\n"
+print_header "workspace - unused dependencies"
 # cargo +nightly udeps
 
 print $"\n\n(ansi magenta_bold) workspace - check (ansi reset)\n\n"
@@ -25,52 +29,57 @@ print $"\n\n(ansi magenta_bold) workspace - build \(single-thread\) (ansi reset)
 cargo build --all-targets --features="single-thread"
 
 do {
-    print $"\n\n(ansi magenta_bold) rsiot (ansi reset)\n\n"
+    print_header "rsiot"
     cd rsiot
     cargo rdme --force
 }
 
 do {
-    print $"\n\n(ansi magenta_bold) rsiot-components-config (ansi reset)\n\n"
+    print_header "rsiot-components-config"
     cd rsiot-components-config
     cargo rdme --force
 }
 
 do {
-    print $"\n\n(ansi magenta_bold) rsiot-logging (ansi reset)\n\n"
+    print_header "rsiot-logging"
     cd rsiot-logging
     cargo clippy --target="wasm32-unknown-unknown" -p rsiot-logging
     cargo rdme --force
 }
 
 do {
-    print $"\n\n(ansi magenta_bold) rsiot-http-client-wasm (ansi reset)\n\n"
+    print_header "rsiot-http-client-wasm"
     cd rsiot-logging
     cargo clippy -p rsiot-http-client-wasm --features single-thread --target wasm32-unknown-unknown
     cargo rdme --force
 }
 
 do {
-    print $"\n\n(ansi magenta_bold) rsiot-modbus-client (ansi reset)\n\n"
+    print_header "rsiot-modbus-client"
     cd rsiot-modbus-client
     cargo rdme --force
 }
 
 do {
-    print $"\n\n(ansi magenta_bold) rsiot-plc (ansi reset)\n\n"
+    print_header "rsiot-http-server"
+    cd rsiot-http-server
+    cargo rdme --force
+}
+
+do {
+    print_header "rsiot-plc"
     cd rsiot-plc
     cargo rdme --force
 }
 
 do {
-    print $"\n\n(ansi magenta_bold) rsiot-websocket-server (ansi reset)\n\n"
+    print_header "rsiot-websocket-server"
     cd rsiot-websocket-server
     cargo rdme --force
 }
 
 do {
-    # TODO - https://github.com/rust-lang/rust/pull/119632
-    print $"\n\n(ansi magenta_bold) rsiot-esp (ansi reset)\n\n"
+    print_header "rsiot-esp"
     cd rsiot-esp
     cargo update
     cargo outdated

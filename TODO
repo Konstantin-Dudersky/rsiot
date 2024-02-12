@@ -2,4 +2,3 @@ TODO - избавиться от unwrap()
 
 TODO - tauri вывод с камеры (WebRTC?) - ошибка RtcPeerConnection
 
-TODO - добавить в пакеты условия компиляции по архитектурам. Проверить сначала на Modbus TCP

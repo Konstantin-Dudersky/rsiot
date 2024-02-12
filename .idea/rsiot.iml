@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="EMPTY_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-component-core/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-component-core/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-components-config/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-env-vars/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-env-vars/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-extra-components/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-extra-components/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-http-client-wasm/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-http-client/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-http-client/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-http-server/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-http-server/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-influxdb/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-influxdb/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-leptos/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-leptos/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-logging/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-macros/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-messages-core/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-modbus-client/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-modbus-client/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-plc/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-plc/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-redis-client/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-redis-client/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-surrealdb/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-surrealdb/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-timescaledb-storing/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-timescaledb-storing/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-websocket-client-wasm/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-websocket-client/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-websocket-client/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-websocket-server/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot-websocket-server/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsiot/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

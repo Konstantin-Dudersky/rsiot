@@ -7,15 +7,15 @@ use rsiot_messages_core::IMessage;
 
 use crate::{config::ConfigAlias, fn_process::fn_process};
 
-#[cfg(not(feature = "single-thread"))]
-#[async_trait]
-impl<TMsg> IComponentProcess<ConfigAlias, TMsg> for Component<ConfigAlias, TMsg>
+#[cfg_attr(not(feature = "single-thread"), async_trait)]
+#[cfg_attr(feature = "single-thread", async_trait(?Send))]
+impl<TMsg> IComponentProcess<ConfigAlias<TMsg>, TMsg> for Component<ConfigAlias<TMsg>, TMsg>
 where
     TMsg: IMessage + 'static,
 {
     async fn process(
         &self,
-        config: ConfigAlias,
+        config: ConfigAlias<TMsg>,
         _input: ComponentInput<TMsg>,
         output: ComponentOutput<TMsg>,
         cache: Cache<TMsg>,
@@ -25,22 +25,4 @@ where
     }
 }
 
-#[cfg(feature = "single-thread")]
-#[async_trait(?Send)]
-impl<TMsg> IComponentProcess<ConfigAlias, TMsg> for Component<ConfigAlias, TMsg>
-where
-    TMsg: IMessage + 'static,
-{
-    async fn process(
-        &self,
-        config: ConfigAlias,
-        _input: ComponentInput<TMsg>,
-        output: ComponentOutput<TMsg>,
-        cache: Cache<TMsg>,
-    ) -> Result<(), ComponentError> {
-        let config = config.0;
-        fn_process(output, config, cache).await
-    }
-}
-
-pub type Cmp<TMsg> = Component<ConfigAlias, TMsg>;
+pub type Cmp<TMsg> = Component<ConfigAlias<TMsg>, TMsg>;

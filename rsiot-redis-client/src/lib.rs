@@ -9,3 +9,5 @@ pub mod cmp_redis_client {
     pub use crate::component::Cmp;
     pub use crate::config::{Config, ConfigAlias};
 }
+
+// TODO - вынести сериализацию / десериализацию сообщений в функции fn_input | fn_output

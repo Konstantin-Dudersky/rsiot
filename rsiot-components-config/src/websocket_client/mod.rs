@@ -35,19 +35,21 @@ where
     ///
     /// # Примеры
     ///
-    /// ## Пустой коллбек
+    /// ## Заглушка
     ///
     /// ```rust
     /// |_: &str| Ok(vec![])
     /// ```
     ///
-    /// ## Преобразование из json:
+    /// ## Десериализация из json:
     ///
     /// ```rust
+    /// # use rsiot_messages::ExampleMessage as Message;
     /// |text: &str| {
-    ///     let msg = TMsg::from_json(text)?;
+    ///     let msg = Message::from_json(text)?;
     ///     Ok(vec![msg])
     /// }
+    /// # ;
     /// ```
     pub fn_output: fn(&str) -> anyhow::Result<Vec<TMsg>>,
 }

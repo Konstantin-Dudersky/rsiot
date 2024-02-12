@@ -20,7 +20,7 @@ use crate::{config::Config, error::Error, routes, shared_state::SharedState};
 /// Компонент для получения и ввода сообщений через HTTP Server
 pub async fn fn_process<TMessage>(
     output: ComponentOutput<TMessage>,
-    config: Config,
+    config: Config<TMessage>,
     cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>
 where

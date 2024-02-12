@@ -1,0 +1,21 @@
+meta {
+  name: messages put
+  type: http
+  seq: 3
+}
+
+put {
+  url: http://localhost:8011/messages
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "MessageSet": {
+      "value": 24,
+      "ts": "2024-02-12T18:57:16.717277474Z",
+      "source": null
+    }
+  }
+}

@@ -1,3 +1,26 @@
+//! Компонент для получения данных через HTTP server.
+//!
+//! Ссылки:
+//!
+//! - [Документация docs.rs](https://docs.rs/rsiot-http-server/latest/)
+//!
+//! - [Репозиторий GitHub](https://github.com/Konstantin-Dudersky/rsiot/tree/main/rsiot-http-server)
+//!
+//! - [Примеры](https://github.com/Konstantin-Dudersky/rsiot/tree/main/rsiot-http-server/examples)
+//!
+#![doc = include_str!("../doc/api_description.md")]
+//!
+//! ## Пример
+//!
+//! ```rust
+#![doc = include_str!("../examples/http-server-example.rs")]
+//! ```
+//!
+//! ## Тестирование
+//!
+//! См. папку .bruno
+//!
+
 #![cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 
 mod component;
@@ -7,21 +30,7 @@ mod fn_process;
 mod routes;
 mod shared_state;
 
-#[doc = include_str!("../README.md")]
-///
-/// # Диаграмма
-///
-#[doc = include_str!("../doc/component-http-server.svg")]
-///
-/// # Пример
-///
-/// ```rust
-#[doc = include_str!("../examples/http-server-example.rs")]
-/// ```
-pub mod cmp_http_server {
-    pub use crate::{component::Cmp, config::Config};
-}
+pub use component::Cmp;
+pub use config::Config;
 
-// TODO - добавить функцию преобразования выходных сообщений
-
-// TODO - маршрут "/", куда вывести простой текст с информацией по маршрутам
+// TODO - задействовать функции fn_input | fn_output
