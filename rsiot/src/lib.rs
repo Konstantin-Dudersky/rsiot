@@ -4,19 +4,11 @@
 //!
 //! Поддерживаемые архитектуры ([подробнее](https://doc.rust-lang.org/rustc/platform-support.html)):
 //!
-//! - x86_64-unknown-linux-gnu - 64-bit Linux - использование в бекенд
-//! - aarch64-unknown-linux-gnu - ARM64 Linux - использование в бекенд
-//! - wasm32-unknown-unknown - WebAssembly - для создания веб-интерфейсов
+//! - x86_64-unknown-linux-gnu - 64-bit Linux - использование в бекенд (target_arch = "x86_64")
+//! - aarch64-unknown-linux-gnu - ARM64 Linux - использование в бекенд (target_arch = "aarch64")
+//! - wasm32-unknown-unknown - WebAssembly - для создания веб-интерфейсов (target_arch = "wasm32")
 //! - riscv32imc-esp-espidf - RISC-V ESP-IDF - микроконтроллеры ESP32 на базе процессора RISC-V
-//! - android:
-//!   - aarch64-linux-android
-//!   - armv7-linux-androideabi
-//!   - i686-linux-android
-//!   - x86_64-linux-android
-//! - ios:
-//!   - aarch64-apple-ios
-//!   - x86_64-apple-ios
-//!   - aarch64-apple-ios-sim
+//!   (target_arch = "riscv32")
 //!
 //! ## Зачем это надо
 //!
