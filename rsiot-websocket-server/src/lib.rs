@@ -8,7 +8,7 @@
 //! # Пример
 //!
 //! ```
-#![doc = include_str!("../examples/example1.rs")]
+#![doc = include_str!("../examples/ws_server_example.rs")]
 //! ```
 
 #![cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]

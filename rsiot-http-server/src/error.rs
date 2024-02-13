@@ -5,7 +5,7 @@ use tokio::sync::mpsc::error::SendError;
 
 use rsiot_messages_core::Error as MessageError;
 
-#[derive(Debug)]
+#[derive(Debug, thiserror::Error)]
 pub enum Error<TMessage> {
     /// Ошибка Axum
     AxumServe(StdIoError),
@@ -14,6 +14,9 @@ pub enum Error<TMessage> {
     UnknownMessageKey(String),
     Message(MessageError),
     ChannelSend(SendError<TMessage>),
+
+    FnInput(anyhow::Error),
+    FnOutput(anyhow::Error),
 }
 
 impl<TMessage> From<MessageError> for Error<TMessage> {
@@ -39,6 +42,8 @@ impl<TMessage> IntoResponse for Error<TMessage> {
             Error::UnknownMessageKey(key) => {
                 format!("Unknown message key: {}", key)
             }
+            Error::FnInput(err) => format!("{}", err),
+            Error::FnOutput(err) => format!("{}", err),
         };
         (StatusCode::INTERNAL_SERVER_ERROR, body).into_response()
     }

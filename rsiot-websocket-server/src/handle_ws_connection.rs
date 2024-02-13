@@ -6,14 +6,10 @@ use futures::{
     stream::{SplitSink, SplitStream},
     SinkExt, StreamExt,
 };
-use rsiot_component_core::Cache;
-use tokio::{
-    net::TcpStream,
-    sync::{broadcast, mpsc},
-    task::JoinSet,
-};
+use rsiot_component_core::{Cache, ComponentInput, ComponentOutput};
+use tokio::{net::TcpStream, sync::mpsc, task::JoinSet};
 use tokio_tungstenite::{accept_async, tungstenite::Message, WebSocketStream};
-use tracing::{info, warn};
+use tracing::{debug, info, trace, warn};
 
 use rsiot_messages_core::IMessage;
 
@@ -21,8 +17,8 @@ use crate::{config::Config, errors::Error};
 
 /// Создание и управление подключением между сервером и клиентом
 pub async fn handle_ws_connection<TMessage>(
-    input: broadcast::Receiver<TMessage>,
-    output: mpsc::Sender<TMessage>,
+    input: ComponentInput<TMessage>,
+    output: ComponentOutput<TMessage>,
     config: Config<TMessage>,
     stream_and_addr: (TcpStream, SocketAddr),
     cache: Cache<TMessage>,
@@ -34,14 +30,14 @@ pub async fn handle_ws_connection<TMessage>(
     match result {
         Ok(_) => (),
         Err(err) => {
-            warn!("Websocket client from address: {}, error: {:?}", addr, err)
+            warn!("Websocket client from address: {}, error: {}", addr, err)
         }
     }
 }
 
 async fn _handle_ws_connection<TMessage>(
-    input: broadcast::Receiver<TMessage>,
-    output: mpsc::Sender<TMessage>,
+    input: ComponentInput<TMessage>,
+    output: ComponentOutput<TMessage>,
     stream_and_addr: (TcpStream, SocketAddr),
     config: Config<TMessage>,
     cache: Cache<TMessage>,
@@ -65,7 +61,7 @@ where
     // Отправляем клиенту
     set.spawn(send_to_client(prepare_rx, write, config.fn_input));
     // Получаем данные от клиента
-    set.spawn(recv(read, output, config.fn_output));
+    set.spawn(recv_from_client(read, output, config.fn_output));
 
     while let Some(res) = set.join_next().await {
         res??;
@@ -94,7 +90,7 @@ where
 
 /// При получении новых сообщений, отправляем клиенту
 async fn send_prepare_new_msgs<TMessage>(
-    mut input: broadcast::Receiver<TMessage>,
+    mut input: ComponentInput<TMessage>,
     output: mpsc::Sender<TMessage>,
 ) -> crate::Result<(), TMessage>
 where
@@ -118,13 +114,15 @@ async fn send_to_client<TMessage>(
             Some(val) => val,
             None => continue,
         };
+        trace!("Send to client: {:?}", data);
         ws_stream_output.send(Message::Text(data)).await?;
     }
+    debug!("Internal channel for sending to client closed");
     Ok(())
 }
 
 /// Получение данных от клиента
-async fn recv<TMessage>(
+async fn recv_from_client<TMessage>(
     mut ws_stream_input: SplitStream<WebSocketStream<TcpStream>>,
     output: mpsc::Sender<TMessage>,
     fn_output: fn(&str) -> anyhow::Result<Option<TMessage>>,
@@ -134,12 +132,16 @@ where
 {
     while let Some(data) = ws_stream_input.next().await {
         let data = data?.into_text()?;
-        let msg = (fn_output)(&data).map_err(Error::FnOutput)?;
+        if data.is_empty() {
+            return Err(Error::ClientDisconnected);
+        }
+        let msg = (fn_output)(&data).map_err(|err| Error::FnOutput { err, data })?;
         let msg = match msg {
             Some(val) => val,
             None => continue,
         };
         output.send(msg).await?;
     }
+    debug!("Input stream from client closed");
     Ok(())
 }

@@ -3,7 +3,7 @@
 //! Запуск:
 //!
 //! ```bash
-//! cargo run -p rsiot-websocket-server --example example1
+//! cargo run -p rsiot-websocket-server --example ws_server_example
 //! ```
 
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
@@ -17,7 +17,9 @@ async fn main() -> anyhow::Result<()> {
     use rsiot_messages_core::{ExampleMessage, IMessage, MsgContent};
     use rsiot_websocket_server::cmp_websocket_server;
 
-    tracing_subscriber::fmt().init();
+    tracing_subscriber::fmt()
+        .with_env_filter("trace,tokio_tungstenite=debug,tungstenite=debug")
+        .init();
 
     let logger_config = cmp_logger::Config {
         level: Level::INFO,
@@ -25,7 +27,7 @@ async fn main() -> anyhow::Result<()> {
     };
 
     let ws_server_config = cmp_websocket_server::Config {
-        port: 8020,
+        port: 8021,
         fn_input: |msg: &ExampleMessage| {
             let text = msg.to_json()?;
             Ok(Some(text))

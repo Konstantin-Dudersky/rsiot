@@ -11,8 +11,10 @@ rust-version.workspace = true
 
 
 [target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dependencies]
+anyhow = { workspace = true }
 async-trait = { workspace = true }
 axum = { workspace = true }
+thiserror = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }
 tower-http = { workspace = true }

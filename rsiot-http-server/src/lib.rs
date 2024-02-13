@@ -32,5 +32,3 @@ mod shared_state;
 
 pub use component::Cmp;
 pub use config::Config;
-
-// TODO - задействовать функции fn_input | fn_output

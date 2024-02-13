@@ -28,7 +28,11 @@ where
 {
     info!("Component started, configuration: {:?}", config);
     // общее состояние
-    let shared_state = Arc::new(SharedState { cache, output });
+    let shared_state = Arc::new(SharedState {
+        cache,
+        output,
+        config: config.clone(),
+    });
     loop {
         let result = task_main(shared_state.clone(), config.port).await;
         if let Err(err) = result {
