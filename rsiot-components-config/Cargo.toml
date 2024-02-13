@@ -1,6 +1,6 @@
 [package]
 name = "rsiot-components-config"
-version = "0.0.52"
+version = "0.0.54"
 description = "Конфигурация компонентов"
 categories.workspace = true
 edition.workspace = true

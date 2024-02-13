@@ -8,7 +8,7 @@ name = "rsiot-websocket-client-wasm"
 readme = "README.md"
 repository.workspace = true
 rust-version.workspace = true
-version = "0.0.53"
+version = "0.0.54"
 
 
 [target.'cfg(any(target_arch = "wasm32"))'.dependencies]
