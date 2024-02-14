@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
 use rsiot_component_core::{
-    Cache, Component, ComponentError, ComponentInput, ComponentOutput, IComponentProcess,
+    Cache, CmpOutput, Component, ComponentError, ComponentInput, IComponentProcess,
 };
 use rsiot_messages_core::IMessage;
 use tracing::error;
@@ -19,7 +19,7 @@ where
         &self,
         config: ConfigAlias<TMessage>,
         input: ComponentInput<TMessage>,
-        output: ComponentOutput<TMessage>,
+        output: CmpOutput<TMessage>,
         _cache: Cache<TMessage>,
     ) -> Result<(), ComponentError> {
         error!("Websocket client component begin execution");

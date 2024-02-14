@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
 use rsiot_component_core::{
-    Cache, Component, ComponentError, ComponentInput, ComponentOutput, IComponentProcess,
+    Cache, CmpOutput, Component, ComponentError, ComponentInput, IComponentProcess,
 };
 use rsiot_messages_core::{IMessage, IMessageChannel};
 
@@ -20,7 +20,7 @@ where
         &self,
         config: ConfigAlias<TMessage, TMessageChannel>,
         input: ComponentInput<TMessage>,
-        output: ComponentOutput<TMessage>,
+        output: CmpOutput<TMessage>,
         cache: Cache<TMessage>,
     ) -> Result<(), ComponentError> {
         let config = config.0;
@@ -41,7 +41,7 @@ where
         &self,
         config: ConfigAlias<TMessage, TMessageChannel>,
         input: ComponentInput<TMessage>,
-        output: ComponentOutput<TMessage>,
+        output: CmpOutput<TMessage>,
         cache: Cache<TMessage>,
     ) -> Result<(), ComponentError> {
         let config = config.0;

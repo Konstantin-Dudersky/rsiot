@@ -10,14 +10,14 @@ use tokio::{
 use tokio_tungstenite::{connect_async, tungstenite::Message, MaybeTlsStream, WebSocketStream};
 use tracing::{error, info, warn};
 
-use rsiot_component_core::{ComponentError, ComponentInput, ComponentOutput};
+use rsiot_component_core::{CmpOutput, ComponentError, ComponentInput};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::Config, error::Error};
 
 pub async fn fn_process<TMessage>(
     input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     config: Config<TMessage>,
 ) -> Result<(), ComponentError>
 where
@@ -39,7 +39,7 @@ where
 /// Подключаемся к серверу и запускаем потоки получения и отправки
 async fn task_connect<TMessage>(
     input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     config: Config<TMessage>,
 ) -> Result<(), Error<TMessage>>
 where
@@ -79,7 +79,7 @@ where
 
 /// Задача приема данных с сервера Websocket
 async fn task_recv<TMessage>(
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     mut read: SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>,
     fn_recv: fn(&str) -> anyhow::Result<Vec<TMessage>>,
 ) -> Result<(), Error<TMessage>>

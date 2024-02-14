@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
 use rsiot_component_core::{
-    Cache, Component, ComponentError, ComponentInput, ComponentOutput, IComponentProcess,
+    Cache, CmpOutput, Component, ComponentError, ComponentInput, IComponentProcess,
 };
 use rsiot_messages_core::IMessage;
 use tracing::error;
@@ -18,7 +18,7 @@ where
         &self,
         config: Config<TMsg>,
         input: ComponentInput<TMsg>,
-        output: ComponentOutput<TMsg>,
+        output: CmpOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         error!("Influxdb client component start execution");

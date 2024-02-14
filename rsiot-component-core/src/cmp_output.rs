@@ -1,25 +1,21 @@
 use tokio::sync::mpsc::{self, error::SendError};
 
-use rsiot_messages_core::{msg_meta::ServiceId, IMessage};
+use rsiot_messages_core::IMessage;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct CmpOutput<TMsg>
 where
     TMsg: IMessage,
 {
     channel: mpsc::Sender<TMsg>,
-    service_id: ServiceId,
 }
 
 impl<TMsg> CmpOutput<TMsg>
 where
     TMsg: IMessage,
 {
-    pub fn new(channel: mpsc::Sender<TMsg>, service_id: ServiceId) -> Self {
-        Self {
-            channel,
-            service_id,
-        }
+    pub fn new(channel: mpsc::Sender<TMsg>) -> Self {
+        Self { channel }
     }
 
     pub async fn send(&self, msg: TMsg) -> Result<(), SendError<TMsg>> {

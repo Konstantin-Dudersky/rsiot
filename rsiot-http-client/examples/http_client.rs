@@ -1,7 +1,7 @@
 //! Запуск:
 //!
 //! ```bash
-//! cargo run -p rsiot-http-client --example http_client_multi_thread
+//! cargo run -p rsiot-http-client --example http_client
 //! ```
 
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]

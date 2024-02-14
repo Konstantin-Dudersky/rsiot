@@ -6,7 +6,7 @@ use futures::{
     stream::{SplitSink, SplitStream},
     SinkExt, StreamExt,
 };
-use rsiot_component_core::{Cache, ComponentInput, ComponentOutput};
+use rsiot_component_core::{Cache, CmpOutput, ComponentInput};
 use tokio::{net::TcpStream, sync::mpsc, task::JoinSet};
 use tokio_tungstenite::{accept_async, tungstenite::Message, WebSocketStream};
 use tracing::{debug, info, trace, warn};
@@ -18,7 +18,7 @@ use crate::{config::Config, errors::Error};
 /// Создание и управление подключением между сервером и клиентом
 pub async fn handle_ws_connection<TMessage>(
     input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     config: Config<TMessage>,
     stream_and_addr: (TcpStream, SocketAddr),
     cache: Cache<TMessage>,
@@ -38,7 +38,7 @@ pub async fn handle_ws_connection<TMessage>(
 
 async fn _handle_ws_connection<TMessage>(
     input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     stream_and_addr: (TcpStream, SocketAddr),
     config: Config<TMessage>,
     cache: Cache<TMessage>,
@@ -138,7 +138,7 @@ async fn send_to_client<TMessage>(
 /// Получение данных от клиента
 async fn recv_from_client<TMessage>(
     mut ws_stream_input: SplitStream<WebSocketStream<TcpStream>>,
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     fn_output: fn(&str) -> anyhow::Result<Option<TMessage>>,
 ) -> crate::Result<(), TMessage>
 where

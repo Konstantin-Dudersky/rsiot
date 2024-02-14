@@ -35,7 +35,7 @@ async fn main() -> anyhow::Result<()> {
 
     fmt().init();
 
-    let service_id = ServiceId::parse_str("c13064d3-9460-4e82-b96c-c4d889f706c6").unwrap();
+    let service_id = ServiceId::new("");
 
     let logger_config = cmp_logger::Config {
         level: Level::INFO,

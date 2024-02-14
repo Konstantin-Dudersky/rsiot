@@ -1,10 +1,9 @@
 //! Компонент для отправки сообщений в побочный потока
 
 use async_trait::async_trait;
-use tokio::sync::mpsc;
 
 use rsiot_component_core::{
-    Cache, Component, ComponentError, ComponentInput, ComponentOutput, IComponentProcess,
+    Cache, CmpOutput, Component, ComponentError, ComponentInput, IComponentProcess,
 };
 use rsiot_messages_core::IMessage;
 
@@ -12,8 +11,11 @@ use super::cmpbase_mpsc_to_many_mpsc;
 
 /// Настройки
 #[derive(Debug)]
-pub struct Cfg<TMessage> {
-    pub channel: mpsc::Sender<TMessage>,
+pub struct Cfg<TMessage>
+where
+    TMessage: IMessage,
+{
+    pub channel: CmpOutput<TMessage>,
 }
 
 #[cfg(not(feature = "single-thread"))]
@@ -26,7 +28,7 @@ where
         &self,
         config: Cfg<TMsg>,
         input: ComponentInput<TMsg>,
-        output: ComponentOutput<TMsg>,
+        output: CmpOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         cmpbase_mpsc_to_many_mpsc::new(input, vec![output, config.channel]).await;
@@ -44,7 +46,7 @@ where
         &self,
         config: Cfg<TMsg>,
         input: ComponentInput<TMsg>,
-        output: ComponentOutput<TMsg>,
+        output: CmpOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         cmpbase_mpsc_to_many_mpsc::new(input, vec![output, config.channel]).await;

@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use leptos::*;
 use rsiot_component_core::{
-    Cache, Component, ComponentError, ComponentInput, ComponentOutput, IComponentProcess,
+    Cache, CmpOutput, Component, ComponentError, ComponentInput, IComponentProcess,
 };
 use rsiot_messages_core::IMessage;
 use tracing::info;
@@ -21,7 +21,7 @@ where
         &self,
         config: Config<TView, TIntoView>,
         input: ComponentInput<TMsg>,
-        output: ComponentOutput<TMsg>,
+        output: CmpOutput<TMsg>,
         cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         info!("Starting cmp_leptos");

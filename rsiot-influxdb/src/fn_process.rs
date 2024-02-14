@@ -4,7 +4,7 @@ use reqwest::{Client, StatusCode};
 use tokio::time::sleep;
 use tracing::{error, info, trace, warn};
 
-use rsiot_component_core::{ComponentError, ComponentInput, ComponentOutput};
+use rsiot_component_core::{CmpOutput, ComponentError, ComponentInput};
 use rsiot_messages_core::IMessage;
 
 use crate::{
@@ -14,7 +14,7 @@ use crate::{
 
 pub async fn fn_process<TMsg>(
     input: ComponentInput<TMsg>,
-    _output: ComponentOutput<TMsg>,
+    _output: CmpOutput<TMsg>,
     config: Config<TMsg>,
 ) -> Result<(), ComponentError>
 where

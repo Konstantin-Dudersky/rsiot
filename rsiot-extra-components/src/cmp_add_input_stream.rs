@@ -4,13 +4,13 @@ use async_trait::async_trait;
 use tokio::task::JoinSet;
 
 use rsiot_component_core::{
-    Cache, Component, ComponentError, ComponentInput, ComponentOutput, IComponentProcess,
+    Cache, CmpOutput, Component, ComponentError, ComponentInput, IComponentProcess,
 };
 use rsiot_messages_core::IMessage;
 
 async fn task_subscription<TMessage>(
     mut input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
 ) -> Result<(), ComponentError>
 where
     TMessage: IMessage,
@@ -41,7 +41,7 @@ where
         &self,
         config: Cfg<TMsg>,
         input: ComponentInput<TMsg>,
-        output: ComponentOutput<TMsg>,
+        output: CmpOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         let mut task_set: JoinSet<Result<(), ComponentError>> = JoinSet::new();
@@ -67,7 +67,7 @@ where
         &self,
         config: Cfg<TMsg>,
         input: ComponentInput<TMsg>,
-        output: ComponentOutput<TMsg>,
+        output: CmpOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         let mut task_set: JoinSet<Result<(), ComponentError>> = JoinSet::new();

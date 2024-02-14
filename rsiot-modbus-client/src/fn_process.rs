@@ -8,7 +8,7 @@ use tokio::{
 use tokio_modbus::{client::Context, prelude::*};
 use tracing::{debug, error, info, trace};
 
-use rsiot_component_core::{Cache, ComponentError, ComponentInput, ComponentOutput};
+use rsiot_component_core::{Cache, CmpOutput, ComponentError, ComponentInput};
 use rsiot_messages_core::IMessage;
 
 use crate::{
@@ -18,7 +18,7 @@ use crate::{
 
 pub async fn fn_process<TMessage>(
     input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     config: Config<TMessage>,
     _cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>
@@ -47,7 +47,7 @@ where
 
 async fn task_main<TMessage>(
     input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     config: Config<TMessage>,
 ) -> crate::Result<(), TMessage>
 where
@@ -95,7 +95,7 @@ where
 
 /// Задача обработки периодического запроса
 async fn task_periodic_request<TMessage>(
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     ctx: Arc<Mutex<Context>>,
     periodic_config: config::PeriodicConfig<TMessage>,
 ) -> crate::Result<(), TMessage>
@@ -126,7 +126,7 @@ where
 /// Задача обработки запроса на основе входного потока сообщений
 async fn task_input_request<TMessage>(
     mut input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     ctx: Arc<Mutex<Context>>,
     input_config: config::InputConfig<TMessage>,
 ) -> crate::Result<(), TMessage>
@@ -173,7 +173,7 @@ async fn modbus_request<TMessage>(
 
 /// Обратываем ответ modbus
 async fn modbus_response<TMessage>(
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     request: &config::Request,
     response: &crate::Result<config::Response, TMessage>,
     fn_on_success: config::FnOnSuccess<TMessage>,

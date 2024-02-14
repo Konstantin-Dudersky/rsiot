@@ -8,14 +8,14 @@ use tokio::{
 use tracing::{error, info};
 use url::Url;
 
-use rsiot_component_core::{ComponentError, ComponentInput, ComponentOutput};
+use rsiot_component_core::{CmpOutput, ComponentError, ComponentInput};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::config, error::Error};
 
 pub async fn fn_process<TMessage>(
     input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     config: config::Config<TMessage>,
 ) -> Result<(), ComponentError>
 where
@@ -39,7 +39,7 @@ where
 /// Основная задача
 async fn task_main<TMessage>(
     input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     config: config::Config<TMessage>,
 ) -> crate::Result<(), TMessage>
 where
@@ -73,7 +73,7 @@ where
 
 /// Задача обработки периодического запроса
 async fn task_periodic_request<TMessage>(
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     config: config::RequestPeriodic<TMessage>,
     url: Url,
 ) -> crate::Result<(), TMessage>
@@ -107,7 +107,7 @@ where
 /// Задача обработки запросов на основе входящего потока сообщений
 async fn task_input_request<TMessage>(
     mut input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     url: Url,
     config: config::RequestInput<TMessage>,
 ) -> crate::Result<(), TMessage>

@@ -5,7 +5,7 @@ use tokio::time::{sleep, Duration, Instant};
 use tracing::debug;
 
 use rsiot_component_core::{
-    Cache, Component, ComponentError, ComponentInput, ComponentOutput, IComponentProcess,
+    Cache, CmpOutput, Component, ComponentError, ComponentInput, IComponentProcess,
 };
 use rsiot_messages_core::IMessage;
 
@@ -21,8 +21,8 @@ where
     pub fn_periodic: TFnPeriodic,
 }
 
-#[cfg(not(feature = "single-thread"))]
-#[async_trait]
+#[cfg_attr(not(feature = "single-thread"), async_trait)]
+#[cfg_attr(feature = "single-thread", async_trait(?Send))]
 impl<TMessage, TFnPeriodic> IComponentProcess<Config<TMessage, TFnPeriodic>, TMessage>
     for Component<Config<TMessage, TFnPeriodic>, TMessage>
 where
@@ -33,26 +33,7 @@ where
         &self,
         config: Config<TMessage, TFnPeriodic>,
         input: ComponentInput<TMessage>,
-        output: ComponentOutput<TMessage>,
-        cache: Cache<TMessage>,
-    ) -> Result<(), ComponentError> {
-        process(config, input, output, cache).await
-    }
-}
-
-#[cfg(feature = "single-thread")]
-#[async_trait(?Send)]
-impl<TMessage, TFnPeriodic> IComponentProcess<Config<TMessage, TFnPeriodic>, TMessage>
-    for Component<Config<TMessage, TFnPeriodic>, TMessage>
-where
-    TMessage: IMessage,
-    TFnPeriodic: FnMut() -> Vec<TMessage> + Send + Sync,
-{
-    async fn process(
-        &self,
-        config: Config<TMessage, TFnPeriodic>,
-        input: ComponentInput<TMessage>,
-        output: ComponentOutput<TMessage>,
+        output: CmpOutput<TMessage>,
         cache: Cache<TMessage>,
     ) -> Result<(), ComponentError> {
         process(config, input, output, cache).await
@@ -62,7 +43,7 @@ where
 async fn process<TMessage, TFnPeriodic>(
     mut config: Config<TMessage, TFnPeriodic>,
     _input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     _cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>
 where

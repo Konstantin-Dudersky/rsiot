@@ -8,7 +8,7 @@ use tokio::{
 use tracing::{error, info, trace};
 use url::Url;
 
-use rsiot_component_core::{Cache, ComponentError, ComponentInput, ComponentOutput};
+use rsiot_component_core::{Cache, CmpOutput, ComponentError, ComponentInput};
 use rsiot_messages_core::{msg_meta::ComponentId, IMessage, IMessageChannel};
 
 use crate::{config::Config, error::Error};
@@ -17,7 +17,7 @@ type Result<TMessage> = std::result::Result<(), Error<TMessage>>;
 
 pub async fn fn_process<TMessage, TMessageChannel>(
     input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     config: Config<TMessage, TMessageChannel>,
     _cache: Cache<TMessage>,
 ) -> std::result::Result<(), ComponentError>
@@ -33,7 +33,13 @@ where
 
     loop {
         info!("Starting");
-        let result = task_main(input.resubscribe(), output.clone(), config.clone()).await;
+        let result = task_main(
+            input.resubscribe(),
+            output.clone(),
+            config.clone(),
+            component_id.clone(),
+        )
+        .await;
         match result {
             Ok(_) => (),
             Err(err) => error!("{}", err),
@@ -45,7 +51,7 @@ where
 
 async fn task_main<TMessage, TMessageChannel>(
     input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     config: Config<TMessage, TMessageChannel>,
     component_id: ComponentId,
 ) -> Result<TMessage>
@@ -94,7 +100,7 @@ where
 
 /// Подписка на канал Pub/Sub
 async fn task_subscription<TMessage, TMessageChannel>(
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     config: Config<TMessage, TMessageChannel>,
 ) -> Result<TMessage>
 where
@@ -122,9 +128,9 @@ where
             }
         };
         // Фильтруем сообщения, которые были порождены данным сервисом
-        if msg.source() == config.service_id {
-            continue;
-        }
+        // if msg.source() == config.service_id {
+        //     continue;
+        // } TODO !!!
         output.send(msg).await?
     }
     Err(Error::EndRedisSubscription)
@@ -132,7 +138,7 @@ where
 
 /// Чтение данных из хеша
 async fn task_read_hash<TMessage, TMessageChannel>(
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     url: Url,
     redis_channel: TMessageChannel,
 ) -> Result<TMessage>

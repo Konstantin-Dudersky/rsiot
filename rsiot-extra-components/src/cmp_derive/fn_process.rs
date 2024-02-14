@@ -1,13 +1,13 @@
 use tokio::task::JoinSet;
 
-use rsiot_component_core::{ComponentInput, ComponentOutput};
+use rsiot_component_core::{CmpOutput, ComponentInput};
 use rsiot_messages_core::IMessage;
 
 use super::{Config, DeriveItemProcess, Error};
 
 pub async fn fn_process<TMsg>(
     input: ComponentInput<TMsg>,
-    output: ComponentOutput<TMsg>,
+    output: CmpOutput<TMsg>,
     config: Config<TMsg>,
 ) -> super::Result<()>
 where
@@ -31,7 +31,7 @@ where
 
 async fn task_process_derive_item<TMsg>(
     mut input: ComponentInput<TMsg>,
-    output: ComponentOutput<TMsg>,
+    output: CmpOutput<TMsg>,
     mut derive_item: Box<dyn DeriveItemProcess<TMsg>>,
 ) -> super::Result<()>
 where

@@ -2,7 +2,6 @@ use std::time::Duration;
 
 use instant::Instant;
 use serde::Serialize;
-use tokio::sync::mpsc;
 use tracing::trace;
 
 #[cfg(not(feature = "single-thread"))]
@@ -15,7 +14,7 @@ use gloo::timers::future::sleep;
 #[cfg(not(target_arch = "wasm32"))]
 use tokio::time::sleep;
 
-use rsiot_component_core::{Cache, ComponentError, ComponentOutput};
+use rsiot_component_core::{Cache, CmpOutput, ComponentError};
 use rsiot_messages_core::IMessage;
 
 use crate::{
@@ -26,7 +25,7 @@ use crate::{
 type Result<TMessage> = std::result::Result<(), Error<TMessage>>;
 
 pub async fn fn_process<TMessage, I, Q, S>(
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     config: Config<TMessage, I, Q, S>,
     cache: Cache<TMessage>,
 ) -> std::result::Result<(), ComponentError>
@@ -50,7 +49,7 @@ where
 }
 
 async fn task_main_loop<TMessage, I, Q, S>(
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     config: Config<TMessage, I, Q, S>,
     cache: Cache<TMessage>,
 ) -> Result<TMessage>
@@ -78,7 +77,7 @@ where
 }
 
 async fn task_main<TMessage, I, Q, S>(
-    output: &mpsc::Sender<TMessage>,
+    output: &CmpOutput<TMessage>,
     config: &Config<TMessage, I, Q, S>,
     fb_main: &mut FunctionBlockBase<I, Q, S>,
     cache: Cache<TMessage>,

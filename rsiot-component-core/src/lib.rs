@@ -6,7 +6,8 @@ mod error;
 mod types;
 
 pub use cache::Cache;
+pub use cmp_output::CmpOutput;
 pub use component::{Component, IComponent, IComponentProcess};
 pub use component_executor::ComponentExecutor;
 pub use error::ComponentError;
-pub use types::{ComponentInput, ComponentOutput, ComponentResult};
+pub use types::{ComponentInput, ComponentResult};

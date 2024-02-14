@@ -6,7 +6,7 @@ use surrealdb::{
     Surreal,
 };
 
-use rsiot_component_core::{ComponentError, ComponentInput, ComponentOutput};
+use rsiot_component_core::{CmpOutput, ComponentError, ComponentInput};
 use rsiot_messages_core::IMessage;
 use tokio::{sync::Mutex, task::JoinSet, time::sleep};
 use tracing::{error, info};
@@ -17,7 +17,7 @@ type Db = Arc<Mutex<Surreal<Client>>>;
 
 pub async fn fn_process<TMsg>(
     input: ComponentInput<TMsg>,
-    _output: ComponentOutput<TMsg>,
+    _output: CmpOutput<TMsg>,
     config: Config<TMsg>,
 ) -> Result<(), ComponentError>
 where

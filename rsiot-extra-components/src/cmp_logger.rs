@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use tracing::{debug, error, info, trace, warn, Level};
 
 use rsiot_component_core::{
-    Cache, Component, ComponentError, ComponentInput, ComponentOutput, IComponentProcess,
+    Cache, CmpOutput, Component, ComponentError, ComponentInput, IComponentProcess,
 };
 use rsiot_messages_core::IMessage;
 
@@ -17,8 +17,8 @@ pub struct Config {
     pub header: String,
 }
 
-#[cfg(not(feature = "single-thread"))]
-#[async_trait]
+#[cfg_attr(not(feature = "single-thread"), async_trait)]
+#[cfg_attr(feature = "single-thread", async_trait(?Send))]
 impl<TMessage> IComponentProcess<Config, TMessage> for Component<Config, TMessage>
 where
     TMessage: IMessage,
@@ -27,24 +27,7 @@ where
         &self,
         config: Config,
         input: ComponentInput<TMessage>,
-        output: ComponentOutput<TMessage>,
-        cache: Cache<TMessage>,
-    ) -> Result<(), ComponentError> {
-        process(config, input, output, cache).await
-    }
-}
-
-#[cfg(feature = "single-thread")]
-#[async_trait(?Send)]
-impl<TMessage> IComponentProcess<Config, TMessage> for Component<Config, TMessage>
-where
-    TMessage: IMessage,
-{
-    async fn process(
-        &self,
-        config: Config,
-        input: ComponentInput<TMessage>,
-        output: ComponentOutput<TMessage>,
+        output: CmpOutput<TMessage>,
         cache: Cache<TMessage>,
     ) -> Result<(), ComponentError> {
         process(config, input, output, cache).await
@@ -54,7 +37,7 @@ where
 async fn process<TMessage>(
     config: Config,
     mut input: ComponentInput<TMessage>,
-    _output: ComponentOutput<TMessage>,
+    _output: CmpOutput<TMessage>,
     _cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>
 where
