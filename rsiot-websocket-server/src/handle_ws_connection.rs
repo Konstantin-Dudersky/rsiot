@@ -33,6 +33,7 @@ pub async fn handle_ws_connection<TMessage>(
             warn!("Websocket client from address: {}, error: {}", addr, err)
         }
     }
+    info!("Connection closed");
 }
 
 async fn _handle_ws_connection<TMessage>(
@@ -64,7 +65,15 @@ where
     set.spawn(recv_from_client(read, output, config.fn_output));
 
     while let Some(res) = set.join_next().await {
-        res??;
+        let err = match res {
+            Ok(val) => match val {
+                Ok(_) => continue,
+                Err(err) => format!("{}", err),
+            },
+            Err(err) => format!("{}", err),
+        };
+        warn!("Connection error: {}", err);
+        set.shutdown().await;
     }
     Ok(())
 }
@@ -121,6 +130,7 @@ async fn send_to_client<TMessage>(
         trace!("Send message to client: {:?}", data);
         ws_stream_output.send(Message::Text(data)).await?;
     }
+    ws_stream_output.close().await.unwrap();
     debug!("Internal channel for sending to client closed");
     Ok(())
 }
@@ -128,7 +138,7 @@ async fn send_to_client<TMessage>(
 /// Получение данных от клиента
 async fn recv_from_client<TMessage>(
     mut ws_stream_input: SplitStream<WebSocketStream<TcpStream>>,
-    output: mpsc::Sender<TMessage>,
+    output: ComponentOutput<TMessage>,
     fn_output: fn(&str) -> anyhow::Result<Option<TMessage>>,
 ) -> crate::Result<(), TMessage>
 where
@@ -144,6 +154,10 @@ where
             Some(val) => val,
             None => continue,
         };
+        trace!(
+            "New message from websocket client, send to internal bus: {:?}",
+            msg
+        );
         output.send(msg).await?;
     }
     debug!("Input stream from client closed");

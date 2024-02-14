@@ -13,7 +13,7 @@ use tracing::{info, trace, warn};
 
 use rsiot_component_core::{ComponentInput, ComponentOutput};
 use rsiot_components_config::websocket_client::Config;
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::{msg_meta::ServiceId, IMessage};
 
 use crate::error::Error;
 
@@ -25,9 +25,16 @@ pub async fn fn_process<TMessage>(
 where
     TMessage: IMessage + 'static,
 {
-    info!("Starting");
+    let component_id = ServiceId::new("cmp-websocket-client-wasm");
+    info!("Starting cmp_websocket_client_wasm. Component id: {component_id:?}. Config: {config:?}");
     loop {
-        let result = task_main(config.clone(), input.resubscribe(), output.clone()).await;
+        let result = task_main(
+            config.clone(),
+            input.resubscribe(),
+            output.clone(),
+            component_id.clone(),
+        )
+        .await;
         warn!("End with resilt: {:?}", result);
         info!("Restarting...");
         sleep(Duration::from_secs(2)).await;
@@ -38,6 +45,7 @@ async fn task_main<TMessage>(
     config: Config<TMessage>,
     input: ComponentInput<TMessage>,
     output: ComponentOutput<TMessage>,
+    component_id: ServiceId,
 ) -> crate::Result<TMessage>
 where
     TMessage: IMessage + 'static,
@@ -48,8 +56,18 @@ where
     let (write_stream, read_stream) = ws.split();
 
     let mut task_set: JoinSet<crate::Result<TMessage>> = JoinSet::new();
-    task_set.spawn_local(task_input(config.clone(), input, write_stream));
-    task_set.spawn_local(task_output(config, output, read_stream));
+    task_set.spawn_local(task_input(
+        config.clone(),
+        input,
+        write_stream,
+        component_id.clone(),
+    ));
+    task_set.spawn_local(task_output(
+        config,
+        output,
+        read_stream,
+        component_id.clone(),
+    ));
 
     while let Some(task_result) = task_set.join_next().await {
         task_result??
@@ -62,11 +80,15 @@ async fn task_input<TMsg>(
     config: Config<TMsg>,
     mut input: ComponentInput<TMsg>,
     mut write_stream: SplitSink<WebSocket, Message>,
+    component_id: ServiceId,
 ) -> crate::Result<TMsg>
 where
     TMsg: IMessage,
 {
     while let Ok(msg) = input.recv().await {
+        if msg.source() == component_id {
+            continue;
+        }
         let ws_msg = (config.fn_input)(&msg).map_err(Error::FnInput)?;
         let ws_msg = match ws_msg {
             Some(val) => val,
@@ -84,6 +106,7 @@ async fn task_output<TMessage>(
     config: Config<TMessage>,
     output: ComponentOutput<TMessage>,
     mut read_stream: SplitStream<WebSocket>,
+    component_id: ServiceId,
 ) -> crate::Result<TMessage>
 where
     TMessage: IMessage,
@@ -96,7 +119,8 @@ where
                 Message::Bytes(_) => todo!(),
             };
             let msgs = (config.fn_output)(&msg).map_err(Error::FnOutput)?;
-            for msg in msgs {
+            for mut msg in msgs {
+                msg.source_set(component_id.clone());
                 output.send(msg).await?;
             }
         };

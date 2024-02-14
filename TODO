@@ -1,4 +1,3 @@
 TODO - избавиться от unwrap()
 
 TODO - tauri вывод с камеры (WebRTC?) - ошибка RtcPeerConnection
-

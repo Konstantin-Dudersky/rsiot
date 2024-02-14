@@ -19,8 +19,10 @@ where
     TView: Fn() -> TIntoView + 'static,
     TIntoView: IntoView,
 {
+    let component_id = ServiceId::new("cmp_leptos");
+
     provide_context(GlobalState::<TMsg> {
-        service_id: ServiceId::new(),
+        service_id: component_id,
         hostname: config.hostname,
         input: create_rw_signal(None),
         output: create_rw_signal(None),

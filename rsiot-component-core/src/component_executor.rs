@@ -154,12 +154,12 @@ where
             let mut lock = cache.write().await;
             let value_from_cache = lock.get(&key);
             if let Some(value_from_cache) = value_from_cache {
-                // если значение эквивалентно сохраненному в кеше, переходим к ожиданию следующего
-                // сообщения
-                if value == *value_from_cache {
+                // если в кеше более новое сообщение, отбрасываем
+                if value.ts() <= value_from_cache.ts() {
                     continue;
                 }
             }
+
             lock.insert(key, value);
         }
         output.send(msg).map_err(|err| {

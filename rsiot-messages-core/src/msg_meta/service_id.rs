@@ -1,23 +1,21 @@
 use serde::{Deserialize, Serialize};
-use uuid::{Error, Uuid};
+use uuid::Uuid;
 
 /// Идентификатор сервиса
-#[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Serialize)]
-pub struct ServiceId(Option<Uuid>);
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
+pub struct ServiceId(String);
 
 impl ServiceId {
     /// Создает новый уникальный идентификатор
-    pub fn new() -> Self {
-        Self(Some(Uuid::new_v4()))
-    }
-
-    /// Получить идентификатор из строки
-    pub fn parse_str(input: &str) -> Result<Self, Error> {
-        let uuid = Uuid::parse_str(input)?;
-        let field = Some(uuid);
-        let instance = Self(field);
-        Ok(instance)
+    pub fn new(prefix: &str) -> Self {
+        let id = Uuid::new_v4();
+        let id = format!("{prefix}:{id}");
+        Self(id)
     }
 }
 
-// TODO - переопределить PartialEq. Если внутренне поле None - выдавать неравенство!
+impl std::fmt::Display for ServiceId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}

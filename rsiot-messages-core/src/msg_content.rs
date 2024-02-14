@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::msg_meta::{ServiceId, Timestamp};
+use crate::msg_meta::{ComponentId, Timestamp};
 
 use super::msg_content_value::IMsgContentValue;
 /// Тип "Значение"
@@ -13,19 +13,19 @@ where
 {
     pub value: TValue,
     pub ts: Timestamp,
-    pub source: ServiceId,
+    pub cmp_source: ComponentId,
+    pub cmp_process: ComponentId,
 }
 
 impl<TValue> MsgContent<TValue>
 where
-    TValue: IMsgContentValue,
+    TValue: IMsgContentValue + Default,
 {
     /// Новое значение, метка времени - now()
     pub fn new(value: TValue) -> Self {
         Self {
             value,
-            ts: Timestamp::default(),
-            source: ServiceId::default(),
+            ..Default::default()
         }
     }
 
@@ -34,7 +34,11 @@ where
         Self {
             value,
             ts,
-            source: ServiceId::default(),
+            ..Default::default()
         }
+    }
+
+    pub fn cmp_set(&mut self, component_id: ComponentId) {
+        self.cmp_source
     }
 }
