@@ -77,6 +77,7 @@ async fn send_prepare_cache<TMessage>(
 where
     TMessage: IMessage,
 {
+    debug!("Sending cache to client started");
     let local_cache: Vec<TMessage>;
     {
         let lock = cache.read().await;
@@ -85,6 +86,7 @@ where
     for msg in local_cache {
         output.send(msg).await?;
     }
+    debug!("Sending cache to client complete");
     Ok(())
 }
 
@@ -96,9 +98,11 @@ async fn send_prepare_new_msgs<TMessage>(
 where
     TMessage: IMessage,
 {
+    debug!("Sending messages to client started");
     while let Ok(msg) = input.recv().await {
         output.send(msg).await?;
     }
+    warn!("Sending messages to client complete");
     Ok(())
 }
 
@@ -114,7 +118,7 @@ async fn send_to_client<TMessage>(
             Some(val) => val,
             None => continue,
         };
-        trace!("Send to client: {:?}", data);
+        trace!("Send message to client: {:?}", data);
         ws_stream_output.send(Message::Text(data)).await?;
     }
     debug!("Internal channel for sending to client closed");

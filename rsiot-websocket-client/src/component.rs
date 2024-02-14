@@ -4,11 +4,12 @@ use rsiot_component_core::{
     Cache, Component, ComponentError, ComponentInput, ComponentOutput, IComponentProcess,
 };
 use rsiot_messages_core::IMessage;
+use tracing::error;
 
 use crate::{config::ConfigAlias, fn_process::fn_process};
 
-#[cfg(not(feature = "single-thread"))]
-#[async_trait]
+#[cfg_attr(not(feature = "single-thread"), async_trait)]
+#[cfg_attr(feature = "single-thread", async_trait(?Send))]
 impl<TMessage> IComponentProcess<ConfigAlias<TMessage>, TMessage>
     for Component<ConfigAlias<TMessage>, TMessage>
 where
@@ -21,27 +22,11 @@ where
         output: ComponentOutput<TMessage>,
         _cache: Cache<TMessage>,
     ) -> Result<(), ComponentError> {
+        error!("Websocket client component begin execution");
         let config = config.0;
-        fn_process(input, output, config).await
-    }
-}
-
-#[cfg(feature = "single-thread")]
-#[async_trait(?Send)]
-impl<TMessage> IComponentProcess<ConfigAlias<TMessage>, TMessage>
-    for Component<ConfigAlias<TMessage>, TMessage>
-where
-    TMessage: IMessage + 'static,
-{
-    async fn process(
-        &self,
-        config: ConfigAlias<TMessage>,
-        input: ComponentInput<TMessage>,
-        output: ComponentOutput<TMessage>,
-        _cache: Cache<TMessage>,
-    ) -> Result<(), ComponentError> {
-        let config = config.0;
-        fn_process(input, output, config).await
+        fn_process(input, output, config).await?;
+        error!("Websocket client component end execution");
+        Ok(())
     }
 }
 

@@ -27,7 +27,7 @@ where
         match res {
             Ok(_) => (),
             Err(err) => {
-                error!("Error in http-client: {:?}", err);
+                error!("Error in influxdb-client: {:?}", err);
             }
         }
         info!("Restarting...");
