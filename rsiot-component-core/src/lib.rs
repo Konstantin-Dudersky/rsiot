@@ -1,4 +1,5 @@
 mod cache;
+mod cmp_output;
 mod component;
 mod component_executor;
 mod error;

@@ -9,7 +9,7 @@ use tracing::{error, info, trace};
 use url::Url;
 
 use rsiot_component_core::{Cache, ComponentError, ComponentInput, ComponentOutput};
-use rsiot_messages_core::{IMessage, IMessageChannel};
+use rsiot_messages_core::{msg_meta::ComponentId, IMessage, IMessageChannel};
 
 use crate::{config::Config, error::Error};
 
@@ -25,7 +25,11 @@ where
     TMessage: IMessage + 'static,
     TMessageChannel: IMessageChannel + 'static,
 {
-    info!("Initialization. Config: {:?}", config);
+    let component_id = ComponentId::new(&config.service_id, "redis-client");
+    info!(
+        "Initialization. Config: {:?}. Component id {}",
+        config, component_id
+    );
 
     loop {
         info!("Starting");
@@ -41,8 +45,9 @@ where
 
 async fn task_main<TMessage, TMessageChannel>(
     input: ComponentInput<TMessage>,
-    output: mpsc::Sender<TMessage>,
+    output: ComponentOutput<TMessage>,
     config: Config<TMessage, TMessageChannel>,
+    component_id: ComponentId,
 ) -> Result<TMessage>
 where
     TMessage: IMessage + 'static,
@@ -55,7 +60,7 @@ where
         config.url.clone(),
         config.subscription_channel.clone(),
     ));
-    set.spawn(task_publication(input, config));
+    set.spawn(task_publication(input, config, component_id));
     while let Some(res) = set.join_next().await {
         res??;
     }
@@ -66,6 +71,7 @@ where
 async fn task_publication<TMessage, TMessageChannel>(
     mut input: ComponentInput<TMessage>,
     config: Config<TMessage, TMessageChannel>,
+    component_id: ComponentId,
 ) -> Result<TMessage>
 where
     TMessage: IMessage,
@@ -74,7 +80,7 @@ where
     let client = redis::Client::open(config.url.to_string())?;
     let mut connection = client.get_async_connection().await?;
     while let Ok(mut msg) = input.recv().await {
-        msg.source_set(config.service_id);
+        msg.cmp_set(&component_id);
         let channels = (config.fn_input)(&msg);
         for channel in channels {
             let json = msg.to_json()?;
@@ -88,7 +94,7 @@ where
 
 /// Подписка на канал Pub/Sub
 async fn task_subscription<TMessage, TMessageChannel>(
-    output: mpsc::Sender<TMessage>,
+    output: ComponentOutput<TMessage>,
     config: Config<TMessage, TMessageChannel>,
 ) -> Result<TMessage>
 where
@@ -126,7 +132,7 @@ where
 
 /// Чтение данных из хеша
 async fn task_read_hash<TMessage, TMessageChannel>(
-    output: mpsc::Sender<TMessage>,
+    output: ComponentOutput<TMessage>,
     url: Url,
     redis_channel: TMessageChannel,
 ) -> Result<TMessage>

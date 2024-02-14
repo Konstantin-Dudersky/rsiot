@@ -3,21 +3,18 @@ use serde::{Deserialize, Serialize};
 use super::ServiceId;
 
 /// Идентификатор сервиса
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct ComponentId(Option<String>);
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
+pub struct ComponentId(String);
 
 impl ComponentId {
     pub fn new(service_id: &ServiceId, prefix: &str) -> Self {
         let id = format!("{service_id}:{prefix}");
-        Self(Some(id))
+        Self(id)
     }
 }
 
-impl PartialEq for ComponentId {
-    fn eq(&self, other: &Self) -> bool {
-        if self.0.is_none() {
-            return false;
-        }
-        self.0 == other.0
+impl std::fmt::Display for ComponentId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
     }
 }
