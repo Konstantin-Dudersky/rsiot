@@ -11,30 +11,23 @@ use gloo::{
 use tokio::task::JoinSet;
 use tracing::{info, trace, warn};
 
-use rsiot_component_core::{ComponentInput, ComponentOutput};
+use rsiot_component_core::{CmpInput, CmpOutput};
 use rsiot_components_config::websocket_client::Config;
-use rsiot_messages_core::{msg_meta::ServiceId, IMessage};
+use rsiot_messages_core::IMessage;
 
 use crate::error::Error;
 
 pub async fn fn_process<TMessage>(
     config: Config<TMessage>,
-    input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
+    input: CmpInput<TMessage>,
+    output: CmpOutput<TMessage>,
 ) -> crate::Result<TMessage>
 where
     TMessage: IMessage + 'static,
 {
-    let component_id = ServiceId::new("cmp-websocket-client-wasm");
-    info!("Starting cmp_websocket_client_wasm. Component id: {component_id:?}. Config: {config:?}");
+    info!("Starting cmp_websocket_client_wasm. Config: {config:?}");
     loop {
-        let result = task_main(
-            config.clone(),
-            input.resubscribe(),
-            output.clone(),
-            component_id.clone(),
-        )
-        .await;
+        let result = task_main(config.clone(), input.clone(), output.clone()).await;
         warn!("End with resilt: {:?}", result);
         info!("Restarting...");
         sleep(Duration::from_secs(2)).await;
@@ -43,9 +36,8 @@ where
 
 async fn task_main<TMessage>(
     config: Config<TMessage>,
-    input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
-    component_id: ServiceId,
+    input: CmpInput<TMessage>,
+    output: CmpOutput<TMessage>,
 ) -> crate::Result<TMessage>
 where
     TMessage: IMessage + 'static,
@@ -56,18 +48,8 @@ where
     let (write_stream, read_stream) = ws.split();
 
     let mut task_set: JoinSet<crate::Result<TMessage>> = JoinSet::new();
-    task_set.spawn_local(task_input(
-        config.clone(),
-        input,
-        write_stream,
-        component_id.clone(),
-    ));
-    task_set.spawn_local(task_output(
-        config,
-        output,
-        read_stream,
-        component_id.clone(),
-    ));
+    task_set.spawn_local(task_input(config.clone(), input, write_stream));
+    task_set.spawn_local(task_output(config, output, read_stream));
 
     while let Some(task_result) = task_set.join_next().await {
         task_result??
@@ -78,17 +60,17 @@ where
 /// Задача отправки входящего потока сообщений на Websocker сервер
 async fn task_input<TMsg>(
     config: Config<TMsg>,
-    mut input: ComponentInput<TMsg>,
+    mut input: CmpInput<TMsg>,
     mut write_stream: SplitSink<WebSocket, Message>,
-    component_id: ServiceId,
 ) -> crate::Result<TMsg>
 where
     TMsg: IMessage,
 {
     while let Ok(msg) = input.recv().await {
-        if msg.source() == component_id {
-            continue;
-        }
+        let msg = match msg {
+            Some(msg) => msg,
+            None => continue,
+        };
         let ws_msg = (config.fn_input)(&msg).map_err(Error::FnInput)?;
         let ws_msg = match ws_msg {
             Some(val) => val,
@@ -104,9 +86,8 @@ where
 /// Задача получения текста из Websoket сервера и преобразование в исходящий поток сообщений
 async fn task_output<TMessage>(
     config: Config<TMessage>,
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     mut read_stream: SplitStream<WebSocket>,
-    component_id: ServiceId,
 ) -> crate::Result<TMessage>
 where
     TMessage: IMessage,
@@ -119,8 +100,7 @@ where
                 Message::Bytes(_) => todo!(),
             };
             let msgs = (config.fn_output)(&msg).map_err(Error::FnOutput)?;
-            for mut msg in msgs {
-                msg.source_set(component_id.clone());
+            for msg in msgs {
                 output.send(msg).await?;
             }
         };

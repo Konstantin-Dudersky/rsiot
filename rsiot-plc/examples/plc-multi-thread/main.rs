@@ -4,8 +4,11 @@
 //! cargo run -p rsiot-plc --example plc-multi-thread
 //! ```
 
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 mod fb1_example;
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 mod fb2_example;
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 mod message;
 
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]

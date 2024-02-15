@@ -1,6 +1,6 @@
 //! HTTP-клиент для платформы WASM
 
-#![cfg(any(target_arch = "wasm32"))]
+#![cfg(target_arch = "wasm32")]
 
 mod component;
 mod config;

@@ -24,8 +24,11 @@ cargo clippy --all-targets --target="x86_64-unknown-linux-gnu" --features="singl
 # cargo clippy --all-targets --target="aarch64-unknown-linux-gnu" --features=""
 # TODO - настроить проверки по остальным таргетам
 
+print_header "workspace clippy - wasm32-unknown-unknown / single-thread"
+cargo clippy --all-targets --target="wasm32-unknown-unknown" --features="single-thread"
+
 # print_header "workspace clippy - wasm32-unknown-unknown / single-thread"
-# cargo clippy --all-targets --target="wasm32-unknown-unknown" --features="single-thread"
+# cargo clippy --all-targets --target="wasm32-unknown-unknown" --features=""
 
 do {
     print_header "rsiot"

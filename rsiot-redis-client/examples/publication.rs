@@ -14,14 +14,10 @@ async fn main() -> anyhow::Result<()> {
 
     use rsiot_component_core::ComponentExecutor;
     use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-    use rsiot_messages_core::{
-        msg_meta::ExecutorId, ExampleMessage, ExampleMessageChannel, MsgContent,
-    };
+    use rsiot_messages_core::{ExampleMessage, ExampleMessageChannel, MsgContent};
     use rsiot_redis_client::cmp_redis_client;
 
     fmt().init();
-
-    let service_id = ExecutorId::new("");
 
     let logger_config = cmp_logger::Config {
         level: Level::INFO,
@@ -29,7 +25,6 @@ async fn main() -> anyhow::Result<()> {
     };
 
     let redis_config = cmp_redis_client::Config {
-        service_id,
         url: Url::parse("redis://127.0.0.1:6379")?,
         fn_input: |_| vec![ExampleMessageChannel::Output],
         subscription_channel: ExampleMessageChannel::Output,

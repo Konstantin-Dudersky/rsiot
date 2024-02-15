@@ -34,7 +34,7 @@ where
 
     pub async fn send(&self, mut msg: TMsg) -> Result<(), SendError<TMsg>> {
         match &self.component_id {
-            Some(val) => msg.cmp_set(&val),
+            Some(val) => msg.cmp_set(val),
             None => {
                 error!("component_id not set, check component code");
                 panic!("component_id not set, check component code"); // TODO - передалать в Error

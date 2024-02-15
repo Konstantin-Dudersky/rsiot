@@ -1,7 +1,7 @@
 use rsiot_messages_core::msg_meta::Timestamp;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Ping {
     pub counter: u32,
     pub source_ts: Timestamp,

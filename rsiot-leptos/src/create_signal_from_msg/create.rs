@@ -24,7 +24,7 @@ where
         let key = config.default.key();
         let msg = lock.get(&key);
         if let Some(msg) = msg {
-            let content = (config.fn_input)(&msg).unwrap();
+            let content = (config.fn_input)(msg).unwrap();
             input_set.set(content)
         }
     }
@@ -33,7 +33,7 @@ where
     create_effect(move |_| {
         let msg = match gs_clone.input.get() {
             Some(msg) => msg,
-            None => return (),
+            None => return,
         };
         let msg = (config.fn_input)(&msg);
         if let Some(msg) = msg {
@@ -45,15 +45,14 @@ where
     create_effect(move |prev_value| {
         let output = output.get();
         if prev_value.is_none() {
-            return ();
+            return;
         }
         let msg = (config.fn_output)(output);
         let msg = match msg {
             Some(msg) => msg,
-            None => return (),
+            None => return,
         };
         gs_clone.output.set(Some(msg));
-        ()
     });
 
     (input, output_set)

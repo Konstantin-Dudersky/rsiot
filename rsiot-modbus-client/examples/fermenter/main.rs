@@ -1,6 +1,7 @@
 //! Пример для работы с ферментером UST.
-
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 mod config;
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 mod message;
 
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]

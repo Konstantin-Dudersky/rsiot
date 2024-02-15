@@ -4,7 +4,7 @@ use rsiot_component_core::{
     cmp_set_component_id, Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
 use rsiot_messages_core::IMessage;
-use tracing::error;
+use tracing::{error, info};
 
 use crate::{fn_process::fn_process, Config};
 
@@ -21,8 +21,8 @@ where
         mut output: CmpOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
-        error!("Influxdb client component start execution");
         cmp_set_component_id(&mut input, &mut output, "cmp_influxdb");
+        info!("Influxdb client component start execution");
         fn_process(input, output, config).await?;
         error!("Influxdb client component end execution");
         Ok(())
