@@ -37,7 +37,6 @@ where
     pub async fn recv(&mut self) -> Result<Option<TMsg>, RecvError> {
         let msg = self.channel.recv().await?;
         if msg.cmp_process() == self.component_id {
-            warn!("Message reject: {:?}", msg);
             return Ok(None);
         }
         Ok(Some(msg))
