@@ -3678,7 +3678,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot"
-version = "0.0.56"
+version = "0.0.57"
 dependencies = [
  "chrono",
  "document-features",
