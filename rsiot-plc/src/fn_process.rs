@@ -18,11 +18,12 @@ use rsiot_component_core::{Cache, CmpOutput, ComponentError};
 use rsiot_messages_core::IMessage;
 
 use crate::{
-    cmp_plc::plc::function_block_base::{FunctionBlockBase, IFunctionBlock},
     config::Config,
+    plc::function_block_base::{FunctionBlockBase, IFunctionBlock},
+    Error,
 };
 
-type Result<TMessage> = std::result::Result<(), Error<TMessage>>;
+type Result = std::result::Result<(), Error>;
 
 pub async fn fn_process<TMessage, I, Q, S>(
     output: CmpOutput<TMessage>,
@@ -52,7 +53,7 @@ async fn task_main_loop<TMessage, I, Q, S>(
     output: CmpOutput<TMessage>,
     config: Config<TMessage, I, Q, S>,
     cache: Cache<TMessage>,
-) -> Result<TMessage>
+) -> Result
 where
     TMessage: IMessage + 'static,
     I: Clone + Default + Send + Serialize + Sync,
@@ -81,7 +82,7 @@ async fn task_main<TMessage, I, Q, S>(
     config: &Config<TMessage, I, Q, S>,
     fb_main: &mut FunctionBlockBase<I, Q, S>,
     cache: Cache<TMessage>,
-) -> Result<TMessage>
+) -> Result
 where
     TMessage: IMessage + 'static,
     I: Clone + Default + Send + Serialize,
@@ -99,22 +100,7 @@ where
     fb_main.call(input);
     let msgs = (config.fn_output)(&fb_main.output);
     for msg in msgs {
-        output.send(msg).await?;
+        output.send(msg).await.map_err(Error::CmpOutput)?;
     }
     Ok(())
-}
-
-#[derive(Debug, thiserror::Error)]
-enum Error<TMessage> {
-    #[error("Send to channel error: {source}")]
-    Send {
-        #[from]
-        source: tokio::sync::mpsc::error::SendError<TMessage>,
-    },
-}
-
-impl<TMessage> From<Error<TMessage>> for ComponentError {
-    fn from(value: Error<TMessage>) -> Self {
-        ComponentError::Execution(value.to_string())
-    }
 }

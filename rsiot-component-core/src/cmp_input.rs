@@ -4,7 +4,6 @@ use rsiot_messages_core::{
     msg_meta::{ComponentId, ExecutorId},
     IMessage,
 };
-use tracing::warn;
 
 #[derive(Debug)]
 pub struct CmpInput<TMsg>

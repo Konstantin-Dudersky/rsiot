@@ -1,13 +1,10 @@
 #[derive(Debug, thiserror::Error)]
-pub enum Error<TMessage> {
+pub enum Error {
     #[error("Error when establishing connection: {0}")]
     Connect(gloo::utils::errors::JsError),
 
     #[error("JoinError: {0}")]
     TaskJoin(#[from] tokio::task::JoinError),
-
-    #[error("Error sending message to output channel: {0}")]
-    OutputSend(#[from] tokio::sync::mpsc::error::SendError<TMessage>),
 
     #[error("fn_input error: {0}")]
     FnInput(anyhow::Error),
@@ -20,4 +17,7 @@ pub enum Error<TMessage> {
 
     #[error("Websocker error: {0}")]
     Websocket(#[from] gloo::net::websocket::WebSocketError),
+
+    #[error(transparent)]
+    CmpOutput(rsiot_component_core::ComponentError),
 }

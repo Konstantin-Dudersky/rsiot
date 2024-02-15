@@ -2,14 +2,8 @@ use rsiot_component_core::ComponentError;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error("{0}")]
-    TokioMpscSend(String),
-
-    #[error("Tokio task join error: {0}")]
-    TokioTaskJoin(#[from] tokio::task::JoinError),
-
     #[error(transparent)]
-    CmpOutput(rsiot_component_core::ComponentError),
+    CmpOutput(ComponentError),
 }
 
 impl From<Error> for ComponentError {

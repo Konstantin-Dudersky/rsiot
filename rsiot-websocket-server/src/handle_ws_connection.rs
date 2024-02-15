@@ -42,7 +42,7 @@ async fn _handle_ws_connection<TMessage>(
     stream_and_addr: (TcpStream, SocketAddr),
     config: Config<TMessage>,
     cache: Cache<TMessage>,
-) -> crate::Result<(), TMessage>
+) -> crate::Result<()>
 where
     TMessage: IMessage + 'static,
 {
@@ -82,7 +82,7 @@ where
 async fn send_prepare_cache<TMessage>(
     output: mpsc::Sender<TMessage>,
     cache: Cache<TMessage>,
-) -> crate::Result<(), TMessage>
+) -> crate::Result<()>
 where
     TMessage: IMessage,
 {
@@ -103,7 +103,7 @@ where
 async fn send_prepare_new_msgs<TMessage>(
     mut input: CmpInput<TMessage>,
     output: mpsc::Sender<TMessage>,
-) -> crate::Result<(), TMessage>
+) -> crate::Result<()>
 where
     TMessage: IMessage,
 {
@@ -124,7 +124,7 @@ async fn send_to_client<TMessage>(
     mut input: mpsc::Receiver<TMessage>,
     mut ws_stream_output: SplitSink<WebSocketStream<TcpStream>, Message>,
     fn_input: fn(&TMessage) -> anyhow::Result<Option<String>>,
-) -> crate::Result<(), TMessage> {
+) -> crate::Result<()> {
     while let Some(msg) = input.recv().await {
         let msg = (fn_input)(&msg).map_err(Error::FnInput)?;
         let data = match msg {
@@ -144,7 +144,7 @@ async fn recv_from_client<TMessage>(
     mut ws_stream_input: SplitStream<WebSocketStream<TcpStream>>,
     output: CmpOutput<TMessage>,
     fn_output: fn(&str) -> anyhow::Result<Option<TMessage>>,
-) -> crate::Result<(), TMessage>
+) -> crate::Result<()>
 where
     TMessage: IMessage,
 {
@@ -162,7 +162,7 @@ where
             "New message from websocket client, send to internal bus: {:?}",
             msg
         );
-        output.send(msg).await?;
+        output.send(msg).await.map_err(Error::CmpOutput)?;
     }
     debug!("Input stream from client closed");
     Ok(())

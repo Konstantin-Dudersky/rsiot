@@ -46,7 +46,7 @@ where
 async fn task_main<TMessage>(
     shared_state: Arc<SharedState<TMessage>>,
     port: u16,
-) -> Result<(), Error<TMessage>>
+) -> Result<(), Error>
 where
     TMessage: IMessage + 'static,
 {
@@ -75,11 +75,9 @@ where
 
     let listener = tokio::net::TcpListener::bind(socket_addr)
         .await
-        .map_err(|err| Error::BindPort(err))?;
+        .map_err(Error::BindPort)?;
 
-    axum::serve(listener, app)
-        .await
-        .map_err(|err| Error::AxumServe(err))?;
+    axum::serve(listener, app).await.map_err(Error::AxumServe)?;
 
     Ok(())
 }

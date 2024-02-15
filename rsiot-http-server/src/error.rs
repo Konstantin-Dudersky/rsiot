@@ -1,49 +1,46 @@
 use std::io::Error as StdIoError;
 
 use axum::{http::StatusCode, response::IntoResponse};
-use tokio::sync::mpsc::error::SendError;
-
-use rsiot_messages_core::Error as MessageError;
 
 #[derive(Debug, thiserror::Error)]
-pub enum Error<TMessage> {
+pub enum Error {
     /// Ошибка Axum
+    #[error(transparent)]
     AxumServe(StdIoError),
+
     /// Ошибка привязки к порту
+    #[error(transparent)]
     BindPort(StdIoError),
+
+    #[error("{0}")]
     UnknownMessageKey(String),
-    Message(MessageError),
-    ChannelSend(SendError<TMessage>),
 
+    #[error(transparent)]
+    Message(#[from] rsiot_messages_core::Error),
+
+    #[error(transparent)]
     FnInput(anyhow::Error),
+
+    #[error(transparent)]
     FnOutput(anyhow::Error),
-}
 
-impl<TMessage> From<MessageError> for Error<TMessage> {
-    fn from(value: MessageError) -> Self {
-        Self::Message(value)
-    }
-}
-
-impl<TMessage> From<SendError<TMessage>> for Error<TMessage> {
-    fn from(value: SendError<TMessage>) -> Self {
-        Self::ChannelSend(value)
-    }
+    #[error(transparent)]
+    CmpOutput(#[from] rsiot_component_core::ComponentError),
 }
 
 /// Преобразование ошибки в понятный пользователю ответ
-impl<TMessage> IntoResponse for Error<TMessage> {
+impl IntoResponse for Error {
     fn into_response(self) -> axum::response::Response {
         let body = match self {
             Error::AxumServe(err) => format!("{:?}", err),
             Error::BindPort(err) => format!("{:?}", err),
-            Error::ChannelSend(err) => format!("{:?}", err),
             Error::Message(err) => format!("{:?}", err),
             Error::UnknownMessageKey(key) => {
                 format!("Unknown message key: {}", key)
             }
             Error::FnInput(err) => format!("{}", err),
             Error::FnOutput(err) => format!("{}", err),
+            Error::CmpOutput(err) => format!("{}", err),
         };
         (StatusCode::INTERNAL_SERVER_ERROR, body).into_response()
     }

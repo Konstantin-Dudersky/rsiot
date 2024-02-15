@@ -179,7 +179,7 @@ pub mod components {
     #[cfg(feature = "modbus-client")]
     pub use rsiot_modbus_client::cmp_modbus_client;
     #[cfg(feature = "plc")]
-    pub use rsiot_plc::cmp_plc;
+    pub use rsiot_plc as cmp_plc;
     #[cfg(feature = "redis-client")]
     pub use rsiot_redis_client::cmp_redis_client;
     #[cfg(feature = "surrealdb")]

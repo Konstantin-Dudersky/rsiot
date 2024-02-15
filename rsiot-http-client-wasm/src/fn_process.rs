@@ -18,7 +18,7 @@ pub async fn fn_process<TMessage>(
     input: CmpInput<TMessage>,
     output: CmpOutput<TMessage>,
     config: config::Config<TMessage>,
-) -> crate::Result<(), TMessage>
+) -> crate::Result<()>
 where
     TMessage: IMessage + 'static,
 {
@@ -41,11 +41,11 @@ async fn task_main<TMessage>(
     _input: CmpInput<TMessage>,
     output: CmpOutput<TMessage>,
     config: config::Config<TMessage>,
-) -> crate::Result<(), TMessage>
+) -> crate::Result<()>
 where
     TMessage: IMessage + 'static,
 {
-    let mut task_set = JoinSet::<crate::Result<(), TMessage>>::new();
+    let mut task_set = JoinSet::<crate::Result<()>>::new();
     // запускаем периодические запросы
     for req in config.requests_periodic {
         let future = task_periodic_request::<TMessage>(
@@ -70,7 +70,7 @@ async fn task_periodic_request<TMessage>(
     output: CmpOutput<TMessage>,
     config: config::RequestPeriodic<TMessage>,
     url: Url,
-) -> crate::Result<(), TMessage>
+) -> crate::Result<()>
 where
     TMessage: IMessage,
 {
@@ -85,7 +85,7 @@ where
         )
         .await?;
         for msg in msgs {
-            output.send(msg).await?;
+            output.send(msg).await.map_err(Error::CmpOutput)?;
         }
         let elapsed = begin.elapsed();
         let sleep_time = if config.period <= elapsed {
@@ -104,7 +104,7 @@ async fn process_request_and_response<TMessage>(
     request_param: &config::HttpParam,
     on_success: config::CbkOnSuccess<TMessage>,
     on_failure: config::CbkOnFailure<TMessage>,
-) -> crate::Result<Vec<TMessage>, TMessage>
+) -> crate::Result<Vec<TMessage>>
 where
     TMessage: IMessage,
 {
@@ -112,7 +112,7 @@ where
     let response = match response {
         Ok(val) => val,
         Err(err) => match err {
-            Error::GlooNet { source } => {
+            Error::GlooNet(source) => {
                 error!("{:?}", source);
                 let msgs = (on_failure)();
                 return Ok(msgs);
@@ -130,15 +130,12 @@ where
         );
         return Ok(msgs);
     }
-    let msgs = (on_success)(&text).map_err(|err| Error::OnSuccess(err))?;
+    let msgs = (on_success)(&text).map_err(Error::OnSuccess)?;
     Ok(msgs)
 }
 
 /// Выполнение HTTP запроса
-async fn send_request<TMessage>(
-    url: Url,
-    req: &config::HttpParam,
-) -> crate::Result<Response, TMessage> {
+async fn send_request(url: Url, req: &config::HttpParam) -> crate::Result<Response> {
     let endpoint = match req {
         config::HttpParam::Get(val) => val,
         config::HttpParam::Put(_) => todo!(),

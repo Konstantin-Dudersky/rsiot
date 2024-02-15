@@ -148,7 +148,7 @@ where
     let response = match response {
         Ok(val) => val,
         Err(err) => match err {
-            Error::Reqwest { source } => {
+            Error::Reqwest(source) => {
                 error!("{:?}", source);
                 let msgs = (on_failure)();
                 return Ok(msgs);

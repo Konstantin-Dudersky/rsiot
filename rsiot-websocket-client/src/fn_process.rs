@@ -94,7 +94,7 @@ where
         let data = msg?.into_text()?;
         let msgs = (fn_recv)(&data).map_err(|err| Error::FnOutput(err))?;
         for msg in msgs {
-            output.send(msg).await?;
+            output.send(msg).await.map_err(Error::CmpOutput)?;
         }
     }
     Ok(())

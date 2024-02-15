@@ -9,4 +9,4 @@ pub mod cmp_websocket_client_wasm {
     pub use super::{component::Cmp, config::Config};
 }
 
-type Result<TMessage> = std::result::Result<(), error::Error<TMessage>>;
+type Result = std::result::Result<(), error::Error>;

@@ -10,7 +10,7 @@ use crate::{error::Error, shared_state::SharedState};
 pub async fn replace<TMessage>(
     extract::State(shared_state): extract::State<Arc<SharedState<TMessage>>>,
     body: String,
-) -> Result<(), Error<TMessage>>
+) -> Result<(), Error>
 where
     TMessage: IMessage,
 {
@@ -19,6 +19,10 @@ where
         Some(val) => val,
         None => return Ok(()),
     };
-    shared_state.output.send(msg).await?;
+    shared_state
+        .output
+        .send(msg)
+        .await
+        .map_err(Error::CmpOutput)?;
     Ok(())
 }

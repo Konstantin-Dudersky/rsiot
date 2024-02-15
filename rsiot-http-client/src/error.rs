@@ -3,23 +3,13 @@ pub enum Error<TMessage> {
     /// Ошибка конфигурации пользователя
     Configuration(String),
 
-    Reqwest {
-        #[from]
-        source: reqwest::Error,
-    },
+    Reqwest(#[from] reqwest::Error),
 
-    SendChannel {
-        #[from]
-        source: tokio::sync::mpsc::error::SendError<TMessage>,
-    },
+    SendChannel(#[from] tokio::sync::mpsc::error::SendError<TMessage>),
 
-    TokioJoin {
-        #[from]
-        source: tokio::task::JoinError,
-    },
+    TokioJoin(#[from] tokio::task::JoinError),
 
-    ResponseCallback {
-        #[from]
-        source: anyhow::Error,
-    },
+    ResponseCallback(#[from] anyhow::Error),
+
+    ComponentCore(#[from] rsiot_component_core::ComponentError),
 }

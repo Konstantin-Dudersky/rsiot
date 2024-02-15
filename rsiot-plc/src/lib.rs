@@ -18,6 +18,8 @@
 //!
 //! Базовые компоненты для построения программы. Сохраняют состояние между вызовами.
 //!
+//!
+//! См. [документацию](https://docs.rs/rsiot-plc/latest/)
 
 #![cfg(any(
     target_arch = "x86_64",
@@ -28,15 +30,11 @@
 
 mod component;
 mod config;
+mod error;
 mod fn_process;
 pub mod plc;
 mod template;
 
-/// Компонент для исполнения логики наподобие PLC.
-///
-/// См. [документацию](https://docs.rs/rsiot-plc/latest/)
-pub mod cmp_plc {
-    pub use crate::component::Cmp;
-    pub use crate::config::Config;
-    pub use crate::plc;
-}
+pub use component::Cmp;
+pub use config::Config;
+pub use error::Error;

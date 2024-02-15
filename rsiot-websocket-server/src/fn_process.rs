@@ -58,7 +58,7 @@ async fn task_main<TMessage>(
     config: Config<TMessage>,
     cache: Cache<TMessage>,
     cancel: CancellationToken,
-) -> crate::Result<(), TMessage>
+) -> crate::Result<()>
 where
     TMessage: IMessage + 'static,
 {
@@ -81,7 +81,7 @@ where
     Ok(())
 }
 
-async fn create_tcp_listener<TMessage>(addr: String) -> crate::Result<TcpListener, TMessage> {
+async fn create_tcp_listener(addr: String) -> crate::Result<TcpListener> {
     let listener = TcpListener::bind(&addr).await;
     let listener = match listener {
         Ok(value) => value,

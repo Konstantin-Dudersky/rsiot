@@ -49,7 +49,7 @@ async fn task_main<TMessage>(
     input: CmpInput<TMessage>,
     output: CmpOutput<TMessage>,
     config: Config<TMessage>,
-) -> crate::Result<(), TMessage>
+) -> crate::Result<()>
 where
     TMessage: IMessage + 'static,
 {
@@ -68,7 +68,7 @@ where
     };
     let ctx = Arc::new(Mutex::new(ctx));
 
-    let mut set: JoinSet<crate::Result<(), TMessage>> = JoinSet::new();
+    let mut set: JoinSet<crate::Result<()>> = JoinSet::new();
 
     // Запускаем задачи периодических запросов
     for item in config.periodic_config {
@@ -98,7 +98,7 @@ async fn task_periodic_request<TMessage>(
     output: CmpOutput<TMessage>,
     ctx: Arc<Mutex<Context>>,
     periodic_config: config::PeriodicConfig<TMessage>,
-) -> crate::Result<(), TMessage>
+) -> crate::Result<()>
 where
     TMessage: IMessage,
 {
@@ -129,7 +129,7 @@ async fn task_input_request<TMessage>(
     output: CmpOutput<TMessage>,
     ctx: Arc<Mutex<Context>>,
     input_config: config::InputConfig<TMessage>,
-) -> crate::Result<(), TMessage>
+) -> crate::Result<()>
 where
     TMessage: IMessage,
 {
@@ -157,10 +157,10 @@ where
 }
 
 /// Выполняем запрос modbus
-async fn modbus_request<TMessage>(
+async fn modbus_request(
     ctx: Arc<Mutex<Context>>,
     request: &config::Request,
-) -> crate::Result<config::Response, TMessage> {
+) -> crate::Result<config::Response> {
     let mut lock = ctx.lock().await;
     match request {
         config::Request::ReadCoils(_, _) => todo!(),
@@ -179,10 +179,10 @@ async fn modbus_request<TMessage>(
 async fn modbus_response<TMessage>(
     output: CmpOutput<TMessage>,
     request: &config::Request,
-    response: &crate::Result<config::Response, TMessage>,
+    response: &crate::Result<config::Response>,
     fn_on_success: config::FnOnSuccess<TMessage>,
     fn_on_failure: config::FnOnFailure<TMessage>,
-) -> crate::Result<(), TMessage>
+) -> crate::Result<()>
 where
     TMessage: IMessage,
 {
@@ -199,7 +199,7 @@ where
         }
     };
     for msg in msgs {
-        output.send(msg).await?;
+        output.send(msg).await.map_err(Error::CmpOutput)?;
     }
     Ok(())
 }

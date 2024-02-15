@@ -45,14 +45,12 @@ do {
 do {
     print_header "rsiot-logging"
     cd rsiot-logging
-    cargo clippy --target="wasm32-unknown-unknown" -p rsiot-logging
     cargo rdme --force
 }
 
 do {
     print_header "rsiot-http-client-wasm"
-    cd rsiot-logging
-    cargo clippy -p rsiot-http-client-wasm --features single-thread --target wasm32-unknown-unknown
+    cd rsiot-http-client-wasm
     cargo rdme --force
 }
 

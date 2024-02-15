@@ -9,7 +9,7 @@ use crate::{error::Error, shared_state::SharedState};
 /// Маршрут для получения всех сообщений
 pub async fn list<TMessage>(
     extract::State(shared_state): extract::State<Arc<SharedState<TMessage>>>,
-) -> Result<String, Error<TMessage>>
+) -> Result<String, Error>
 where
     TMessage: IMessage,
 {
@@ -17,7 +17,7 @@ where
     {
         let lock = shared_state.cache.read().await;
         for msg in lock.values() {
-            let json = (shared_state.config.fn_output)(&msg).map_err(Error::FnOutput)?;
+            let json = (shared_state.config.fn_output)(msg).map_err(Error::FnOutput)?;
             msgs_json.push(json);
         }
     }

@@ -21,7 +21,7 @@ pub async fn fn_process<TMessage>(
     config: Config<TMessage>,
     input: CmpInput<TMessage>,
     output: CmpOutput<TMessage>,
-) -> crate::Result<TMessage>
+) -> crate::Result
 where
     TMessage: IMessage + 'static,
 {
@@ -38,7 +38,7 @@ async fn task_main<TMessage>(
     config: Config<TMessage>,
     input: CmpInput<TMessage>,
     output: CmpOutput<TMessage>,
-) -> crate::Result<TMessage>
+) -> crate::Result
 where
     TMessage: IMessage + 'static,
 {
@@ -47,7 +47,7 @@ where
     info!("Connection to websocket server established");
     let (write_stream, read_stream) = ws.split();
 
-    let mut task_set: JoinSet<crate::Result<TMessage>> = JoinSet::new();
+    let mut task_set: JoinSet<crate::Result> = JoinSet::new();
     task_set.spawn_local(task_input(config.clone(), input, write_stream));
     task_set.spawn_local(task_output(config, output, read_stream));
 
@@ -62,7 +62,7 @@ async fn task_input<TMsg>(
     config: Config<TMsg>,
     mut input: CmpInput<TMsg>,
     mut write_stream: SplitSink<WebSocket, Message>,
-) -> crate::Result<TMsg>
+) -> crate::Result
 where
     TMsg: IMessage,
 {
@@ -88,7 +88,7 @@ async fn task_output<TMessage>(
     config: Config<TMessage>,
     output: CmpOutput<TMessage>,
     mut read_stream: SplitStream<WebSocket>,
-) -> crate::Result<TMessage>
+) -> crate::Result
 where
     TMessage: IMessage,
 {
@@ -101,7 +101,7 @@ where
             };
             let msgs = (config.fn_output)(&msg).map_err(Error::FnOutput)?;
             for msg in msgs {
-                output.send(msg).await?;
+                output.send(msg).await.map_err(Error::CmpOutput)?;
             }
         };
     }

@@ -12,4 +12,4 @@ pub mod cmp_http_client_wasm {
     pub use crate::config::config;
 }
 
-type Result<T, TMessage> = std::result::Result<T, error::Error<TMessage>>;
+type Result<T> = std::result::Result<T, error::Error>;

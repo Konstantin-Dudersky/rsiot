@@ -10,7 +10,7 @@ use crate::{error::Error, shared_state::SharedState};
 pub async fn get<TMessage>(
     extract::Path(key): extract::Path<String>,
     extract::State(shared_state): extract::State<Arc<SharedState<TMessage>>>,
-) -> Result<String, Error<TMessage>>
+) -> Result<String, Error>
 where
     TMessage: IMessage,
 {

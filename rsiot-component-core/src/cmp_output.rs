@@ -1,10 +1,11 @@
-use tokio::sync::mpsc::{self, error::SendError};
+use tokio::sync::mpsc;
 
 use rsiot_messages_core::{
     msg_meta::{ComponentId, ExecutorId},
     IMessage,
 };
-use tracing::error;
+
+use crate::ComponentError;
 
 #[derive(Clone, Debug)]
 pub struct CmpOutput<TMsg>
@@ -32,14 +33,17 @@ where
         self.component_id = Some(component_name);
     }
 
-    pub async fn send(&self, mut msg: TMsg) -> Result<(), SendError<TMsg>> {
+    pub async fn send(&self, mut msg: TMsg) -> Result<(), ComponentError> {
         match &self.component_id {
             Some(val) => msg.cmp_set(val),
             None => {
-                error!("component_id not set, check component code");
-                panic!("component_id not set, check component code"); // TODO - передалать в Error
+                let err = "component_id not set, check component code";
+                return Err(ComponentError::CmpOutput(err.into()));
             }
         }
-        self.channel.send(msg).await
+        self.channel
+            .send(msg)
+            .await
+            .map_err(|e| ComponentError::CmpOutput(e.to_string()))
     }
 }

@@ -46,4 +46,4 @@ pub mod cmp_modbus_client {
     pub use crate::conversion;
 }
 
-type Result<T, TMessage> = std::result::Result<T, error::Error<TMessage>>;
+type Result<T> = std::result::Result<T, error::Error>;

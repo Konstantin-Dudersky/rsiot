@@ -4,7 +4,7 @@ use rsiot_messages_core::{msg_meta::ExecutorId, IMessage};
 use tokio::task::JoinSet;
 use tracing::debug;
 
-use crate::GlobalState;
+use crate::{Error, GlobalState};
 
 use super::Config;
 
@@ -13,7 +13,7 @@ pub async fn fn_process<TMsg, TView, TIntoView>(
     input: CmpInput<TMsg>,
     output: CmpOutput<TMsg>,
     cache: Cache<TMsg>,
-) -> crate::Result<TMsg>
+) -> crate::Result
 where
     TMsg: IMessage + 'static,
     TView: Fn() -> TIntoView + 'static,
@@ -33,7 +33,7 @@ where
     mount_to_body(config.body_component);
     debug!("Leptos app mounted");
 
-    let mut task_set: JoinSet<crate::Result<TMsg>> = JoinSet::new();
+    let mut task_set: JoinSet<crate::Result> = JoinSet::new();
     task_set.spawn_local(task_input(input, gs.clone()));
     task_set.spawn_local(task_output(output, gs));
     while let Some(task_result) = task_set.join_next().await {
@@ -42,7 +42,7 @@ where
     Ok(())
 }
 
-async fn task_input<TMsg>(mut input: CmpInput<TMsg>, gs: GlobalState<TMsg>) -> crate::Result<TMsg>
+async fn task_input<TMsg>(mut input: CmpInput<TMsg>, gs: GlobalState<TMsg>) -> crate::Result
 where
     TMsg: IMessage,
 {
@@ -56,7 +56,7 @@ where
     Ok(())
 }
 
-async fn task_output<TMsg>(output: CmpOutput<TMsg>, gs: GlobalState<TMsg>) -> crate::Result<TMsg>
+async fn task_output<TMsg>(output: CmpOutput<TMsg>, gs: GlobalState<TMsg>) -> crate::Result
 where
     TMsg: IMessage,
 {
@@ -65,13 +65,14 @@ where
     create_effect(move |_| {
         let msg = gs.output.get();
         if let Some(msg) = msg {
-            tx.blocking_send(msg)?;
+            tx.blocking_send(msg)
+                .map_err(|e| Error::TokioMpscSend(e.to_string()))?;
         }
-        Ok(()) as crate::Result<TMsg>
+        Ok(()) as crate::Result
     });
 
     while let Some(msg) = rx.recv().await {
-        output.send(msg).await?;
+        output.send(msg).await.map_err(Error::CmpOutput)?;
     }
 
     Ok(())

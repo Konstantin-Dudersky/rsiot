@@ -1,5 +1,5 @@
 #[derive(Debug, thiserror::Error)]
-pub enum Error<TMsg> {
+pub enum Error {
     #[error("{0}")]
     Tungstenite(#[from] tokio_tungstenite::tungstenite::Error),
 
@@ -10,7 +10,7 @@ pub enum Error<TMsg> {
     TokioTaskJoin(#[from] tokio::task::JoinError),
 
     #[error("{0}")]
-    TokioSyncMpscSend(#[from] tokio::sync::mpsc::error::SendError<TMsg>),
+    TokioSyncMpsc(String),
 
     #[error("{0}")]
     FnInput(anyhow::Error),
@@ -20,4 +20,13 @@ pub enum Error<TMsg> {
 
     #[error("Client disconnected")]
     ClientDisconnected,
+
+    #[error(transparent)]
+    CmpOutput(rsiot_component_core::ComponentError),
+}
+
+impl<TMsg> From<tokio::sync::mpsc::error::SendError<TMsg>> for Error {
+    fn from(value: tokio::sync::mpsc::error::SendError<TMsg>) -> Self {
+        Self::TokioSyncMpsc(value.to_string())
+    }
 }

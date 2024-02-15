@@ -1,4 +1,4 @@
-// #![cfg(target_arch = "wasm32")]
+#![cfg(target_arch = "wasm32")]
 
 mod cmp_leptos;
 pub mod components;
@@ -12,4 +12,4 @@ pub use error::Error;
 pub use global_state::GlobalState;
 pub use rsiot_macros::create_signal_from_msg;
 
-type Result<TMsg> = std::result::Result<(), Error<TMsg>>;
+type Result = std::result::Result<(), Error>;

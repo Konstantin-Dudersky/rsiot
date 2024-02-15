@@ -12,7 +12,7 @@ use rsiot_messages_core::{IMessage, IMessageChannel};
 
 use crate::{config::Config, error::Error};
 
-type Result<TMessage> = std::result::Result<(), Error<TMessage>>;
+type Result = std::result::Result<(), Error>;
 
 pub async fn fn_process<TMessage, TMessageChannel>(
     input: CmpInput<TMessage>,
@@ -42,7 +42,7 @@ async fn task_main<TMessage, TMessageChannel>(
     input: CmpInput<TMessage>,
     output: CmpOutput<TMessage>,
     config: Config<TMessage, TMessageChannel>,
-) -> Result<TMessage>
+) -> Result
 where
     TMessage: IMessage + 'static,
     TMessageChannel: IMessageChannel + 'static,
@@ -65,7 +65,7 @@ where
 async fn task_publication<TMessage, TMessageChannel>(
     mut input: CmpInput<TMessage>,
     config: Config<TMessage, TMessageChannel>,
-) -> Result<TMessage>
+) -> Result
 where
     TMessage: IMessage,
     TMessageChannel: IMessageChannel,
@@ -92,7 +92,7 @@ where
 async fn task_subscription<TMessage, TMessageChannel>(
     output: CmpOutput<TMessage>,
     config: Config<TMessage, TMessageChannel>,
-) -> Result<TMessage>
+) -> Result
 where
     TMessage: IMessage,
     TMessageChannel: IMessageChannel,
@@ -117,11 +117,7 @@ where
                 continue;
             }
         };
-        // Фильтруем сообщения, которые были порождены данным сервисом
-        // if msg.source() == config.service_id {
-        //     continue;
-        // } TODO !!!
-        output.send(msg).await?
+        output.send(msg).await.map_err(Error::CmpOutput)?
     }
     Err(Error::EndRedisSubscription)
 }
@@ -131,7 +127,7 @@ async fn task_read_hash<TMessage, TMessageChannel>(
     output: CmpOutput<TMessage>,
     url: Url,
     redis_channel: TMessageChannel,
-) -> Result<TMessage>
+) -> Result
 where
     TMessage: IMessage,
     TMessageChannel: IMessageChannel,
@@ -150,7 +146,7 @@ where
                 continue;
             }
         };
-        output.send(msg).await?;
+        output.send(msg).await.map_err(Error::CmpOutput)?;
     }
     info!("Finish reading redis hash");
     Ok(())

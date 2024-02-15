@@ -26,9 +26,9 @@ fn main() -> anyhow::Result<()> {
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
     enum Message {
-        Message0(MsgContent<f64>),
-        Message1(MsgContent<f64>),
-        MessageSet(MsgContent<f64>),
+        Msg0(MsgContent<f64>),
+        Msg1(MsgContent<f64>),
+        MsgSet(MsgContent<f64>),
     }
 
     impl IMessage for Message {
@@ -63,8 +63,8 @@ fn main() -> anyhow::Result<()> {
     let inject_periodic_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg1 = Message::Message0(MsgContent::new(counter));
-            let msg2 = Message::Message1(MsgContent::new(counter * 2.0));
+            let msg1 = Message::Msg0(MsgContent::new(counter));
+            let msg2 = Message::Msg1(MsgContent::new(counter * 2.0));
             counter += 1.0;
             vec![msg1, msg2]
         },

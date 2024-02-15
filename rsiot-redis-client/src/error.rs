@@ -1,32 +1,19 @@
 #[derive(Debug, thiserror::Error)]
-pub enum Error<TMessage> {
-    #[error("Error in async task: {source}")]
-    Join {
-        #[from]
-        source: tokio::task::JoinError,
-    },
+pub enum Error {
+    #[error("Error in async task: {0}")]
+    Join(#[from] tokio::task::JoinError),
 
     #[error("End redis subscription")]
     EndRedisSubscription,
 
     /// Ошибка десериализации
-    #[error("Error in message serialization / deserialization: {source:?}")]
-    Message {
-        #[from]
-        source: rsiot_messages_core::Error,
-    },
+    #[error("Error in message serialization / deserialization: {0}")]
+    Message(#[from] rsiot_messages_core::Error),
 
     /// Ошибка подключения к redis
-    #[error("Redis connection error: {source}")]
-    RedisConnection {
-        #[from]
-        source: redis::RedisError,
-    },
+    #[error("Redis connection error: {0}")]
+    RedisConnection(#[from] redis::RedisError),
 
-    /// Ошибка отправки соообщения в канал mpsc
-    #[error("Error sending message to channel: {source}")]
-    SendChannel {
-        #[from]
-        source: tokio::sync::mpsc::error::SendError<TMessage>,
-    },
+    #[error(transparent)]
+    CmpOutput(rsiot_component_core::ComponentError),
 }

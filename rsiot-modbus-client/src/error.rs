@@ -1,5 +1,5 @@
 #[derive(Debug, thiserror::Error)]
-pub enum Error<TMessage> {
+pub enum Error {
     #[error("{0}")]
     Connection(#[from] std::io::Error),
 
@@ -9,8 +9,8 @@ pub enum Error<TMessage> {
         error: String,
     },
 
-    #[error("{0}")]
-    TokioSyncMpsc(#[from] tokio::sync::mpsc::error::SendError<TMessage>),
+    #[error(transparent)]
+    CmpOutput(rsiot_component_core::ComponentError),
 
     #[error("{0}")]
     TokioTaskJoin(#[from] tokio::task::JoinError),

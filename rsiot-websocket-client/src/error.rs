@@ -23,4 +23,7 @@ pub enum Error<TMessage> {
 
     #[error("fn_output error: {0}")]
     FnOutput(anyhow::Error),
+
+    #[error(transparent)]
+    CmpOutput(rsiot_component_core::ComponentError),
 }
