@@ -7,7 +7,7 @@ license.workspace = true
 name = "rsiot-component-core"
 readme = "README.md"
 rust-version.workspace = true
-version = "0.0.57"
+version = "0.0.58"
 
 [dependencies]
 async-trait = { workspace = true }
