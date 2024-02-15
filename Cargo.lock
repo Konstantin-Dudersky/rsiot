@@ -3822,11 +3822,9 @@ dependencies = [
 name = "rsiot-influxdb"
 version = "0.0.58"
 dependencies = [
- "anyhow",
  "async-trait",
  "reqwest",
  "rsiot-component-core",
- "rsiot-components-config",
  "rsiot-extra-components",
  "rsiot-messages-core",
  "serde",

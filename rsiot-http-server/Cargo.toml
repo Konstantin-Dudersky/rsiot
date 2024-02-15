@@ -22,8 +22,6 @@ url = { workspace = true }
 
 rsiot-component-core = { workspace = true }
 rsiot-components-config = { workspace = true }
-# TODO - нужна только в dev, но ругается на feature
-rsiot-extra-components = { workspace = true }
 rsiot-messages-core = { workspace = true }
 
 
@@ -32,6 +30,8 @@ anyhow = { workspace = true }
 serde = { workspace = true }
 tokio = { workspace = true, features = ["rt-multi-thread"] }
 tracing-subscriber = { workspace = true }
+
+rsiot-extra-components = { workspace = true }
 
 
 [features]

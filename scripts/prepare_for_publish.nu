@@ -14,6 +14,8 @@ print_header "workspace - unused dependencies"
 # cargo +nightly udeps
 # TODO - разобраться с ошибками
 
+# cargo clippy -------------------------------------------------------------------------------------
+
 print_header "workspace clippy - x86_64-unknown-linux-gnu / multi-thread"
 cargo clippy --all-targets --target="x86_64-unknown-linux-gnu" --features=""
 
@@ -29,6 +31,12 @@ cargo clippy --all-targets --target="wasm32-unknown-unknown" --features="single-
 
 # print_header "workspace clippy - wasm32-unknown-unknown / single-thread"
 # cargo clippy --all-targets --target="wasm32-unknown-unknown" --features=""
+
+# cargo test ---------------------------------------------------------------------------------------
+
+# print_header "workspace test - x86_64-unknown-linux-gnu / multi-thread"
+# cargo test --all-targets --target="x86_64-unknown-linux-gnu" --features=""
+# TODO - тесты не проходят
 
 do {
     print_header "rsiot"
