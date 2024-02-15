@@ -3,13 +3,13 @@ use tokio::time::{sleep, Duration};
 use tracing::{error, info, trace};
 use url::Url;
 
-use rsiot_component_core::{ComponentError, ComponentInput};
+use rsiot_component_core::{CmpInput, ComponentError};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::Config, error::Error, model::Row};
 
 pub async fn fn_process<TMessage>(
-    mut input: ComponentInput<TMessage>,
+    mut input: CmpInput<TMessage>,
     config: Config,
 ) -> Result<(), ComponentError>
 where
@@ -29,7 +29,7 @@ where
 }
 
 async fn task_main<TMessage>(
-    input: &mut ComponentInput<TMessage>,
+    input: &mut CmpInput<TMessage>,
     connection_string: &Url,
 ) -> Result<(), Error>
 where
@@ -40,6 +40,10 @@ where
         .connect(connection_string.as_str())
         .await?;
     while let Ok(msg) = input.recv().await {
+        let msg = match msg {
+            Some(val) => val,
+            None => continue,
+        };
         let msgs_eav = msg.into_eav();
         for msg in msgs_eav {
             let row: Row = msg.into();

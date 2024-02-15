@@ -8,13 +8,13 @@ use tokio::{
 use tracing::{error, info};
 use url::Url;
 
-use rsiot_component_core::{CmpOutput, ComponentError, ComponentInput};
+use rsiot_component_core::{CmpInput, CmpOutput, ComponentError};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::config, error::Error};
 
 pub async fn fn_process<TMessage>(
-    input: ComponentInput<TMessage>,
+    input: CmpInput<TMessage>,
     output: CmpOutput<TMessage>,
     config: config::Config<TMessage>,
 ) -> Result<(), ComponentError>
@@ -24,7 +24,7 @@ where
     info!("Starting http-client, configuration: {:?}", config);
 
     loop {
-        let res = task_main::<TMessage>(input.resubscribe(), output.clone(), config.clone()).await;
+        let res = task_main::<TMessage>(input.clone(), output.clone(), config.clone()).await;
         match res {
             Ok(_) => (),
             Err(err) => {
@@ -38,7 +38,7 @@ where
 
 /// Основная задача
 async fn task_main<TMessage>(
-    input: ComponentInput<TMessage>,
+    input: CmpInput<TMessage>,
     output: CmpOutput<TMessage>,
     config: config::Config<TMessage>,
 ) -> crate::Result<(), TMessage>
@@ -58,7 +58,7 @@ where
     // Запускаем задачи запросов на основе входного потока сообщений
     for item in config.requests_input {
         let future = task_input_request(
-            input.resubscribe(),
+            input.clone(),
             output.clone(),
             config.connection_config.base_url.clone(),
             item,
@@ -106,7 +106,7 @@ where
 
 /// Задача обработки запросов на основе входящего потока сообщений
 async fn task_input_request<TMessage>(
-    mut input: ComponentInput<TMessage>,
+    mut input: CmpInput<TMessage>,
     output: CmpOutput<TMessage>,
     url: Url,
     config: config::RequestInput<TMessage>,
@@ -115,6 +115,10 @@ where
     TMessage: IMessage,
 {
     while let Ok(msg) = input.recv().await {
+        let msg = match msg {
+            Some(val) => val,
+            None => continue,
+        };
         let http_param = (config.fn_input)(&msg);
         let http_param = match http_param {
             Some(val) => val,

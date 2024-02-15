@@ -1,12 +1,12 @@
 use tokio::task::JoinSet;
 
-use rsiot_component_core::{CmpOutput, ComponentInput};
+use rsiot_component_core::{CmpInput, CmpOutput};
 use rsiot_messages_core::IMessage;
 
 use super::{Config, DeriveItemProcess, Error};
 
 pub async fn fn_process<TMsg>(
-    input: ComponentInput<TMsg>,
+    input: CmpInput<TMsg>,
     output: CmpOutput<TMsg>,
     config: Config<TMsg>,
 ) -> super::Result<()>
@@ -17,7 +17,7 @@ where
 
     for item in config.derive_items {
         task_set.spawn(task_process_derive_item(
-            input.resubscribe(),
+            input.clone(),
             output.clone(),
             item,
         ));
@@ -30,7 +30,7 @@ where
 }
 
 async fn task_process_derive_item<TMsg>(
-    mut input: ComponentInput<TMsg>,
+    mut input: CmpInput<TMsg>,
     output: CmpOutput<TMsg>,
     mut derive_item: Box<dyn DeriveItemProcess<TMsg>>,
 ) -> super::Result<()>
@@ -38,6 +38,10 @@ where
     TMsg: IMessage,
 {
     while let Ok(msg) = input.recv().await {
+        let msg = match msg {
+            Some(val) => val,
+            None => continue,
+        };
         let msgs = derive_item.process(&msg);
         let msgs = match msgs {
             Some(val) => val,

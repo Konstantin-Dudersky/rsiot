@@ -10,13 +10,13 @@ use tokio::{
 use tokio_tungstenite::{connect_async, tungstenite::Message, MaybeTlsStream, WebSocketStream};
 use tracing::{error, info, warn};
 
-use rsiot_component_core::{CmpOutput, ComponentError, ComponentInput};
+use rsiot_component_core::{CmpInput, CmpOutput, ComponentError};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::Config, error::Error};
 
 pub async fn fn_process<TMessage>(
-    input: ComponentInput<TMessage>,
+    input: CmpInput<TMessage>,
     output: CmpOutput<TMessage>,
     config: Config<TMessage>,
 ) -> Result<(), ComponentError>
@@ -26,7 +26,7 @@ where
     info!("cmp_websocket_client starting");
 
     loop {
-        let res = task_connect(input.resubscribe(), output.clone(), config.clone()).await;
+        let res = task_connect(input.clone(), output.clone(), config.clone()).await;
         match res {
             Ok(_) => (),
             Err(err) => error!("{:?}", err),
@@ -38,7 +38,7 @@ where
 
 /// Подключаемся к серверу и запускаем потоки получения и отправки
 async fn task_connect<TMessage>(
-    input: ComponentInput<TMessage>,
+    input: CmpInput<TMessage>,
     output: CmpOutput<TMessage>,
     config: Config<TMessage>,
 ) -> Result<(), Error<TMessage>>
@@ -60,7 +60,7 @@ where
 
 /// Задача отправки данных на сервер Websocket
 async fn task_send<TMessage>(
-    mut input: ComponentInput<TMessage>,
+    mut input: CmpInput<TMessage>,
     mut write: SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>,
     fn_send: fn(&TMessage) -> anyhow::Result<Option<String>>,
 ) -> Result<(), Error<TMessage>>
@@ -68,6 +68,10 @@ where
     TMessage: IMessage,
 {
     while let Ok(msg) = input.recv().await {
+        let msg = match msg {
+            Some(val) => val,
+            None => continue,
+        };
         let text = (fn_send)(&msg).map_err(Error::FnInput)?;
         if let Some(text) = text {
             let text = Message::Text(text);

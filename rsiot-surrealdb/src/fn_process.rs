@@ -6,7 +6,7 @@ use surrealdb::{
     Surreal,
 };
 
-use rsiot_component_core::{CmpOutput, ComponentError, ComponentInput};
+use rsiot_component_core::{CmpInput, CmpOutput, ComponentError};
 use rsiot_messages_core::IMessage;
 use tokio::{sync::Mutex, task::JoinSet, time::sleep};
 use tracing::{error, info};
@@ -16,7 +16,7 @@ use crate::Config;
 type Db = Arc<Mutex<Surreal<Client>>>;
 
 pub async fn fn_process<TMsg>(
-    input: ComponentInput<TMsg>,
+    input: CmpInput<TMsg>,
     _output: CmpOutput<TMsg>,
     config: Config<TMsg>,
 ) -> Result<(), ComponentError>
@@ -25,7 +25,7 @@ where
 {
     info!("Starting Surrealdb");
     loop {
-        let result = task_main(input.resubscribe(), &config).await;
+        let result = task_main(input.clone(), &config).await;
         match result {
             Ok(_) => error!("SurrealDB stop execution"),
             Err(err) => error!("SurrealDB error: {err:?}"),
@@ -35,7 +35,7 @@ where
     }
 }
 
-async fn task_main<TMsg>(input: ComponentInput<TMsg>, config: &Config<TMsg>) -> crate::Result<()>
+async fn task_main<TMsg>(input: CmpInput<TMsg>, config: &Config<TMsg>) -> crate::Result<()>
 where
     TMsg: IMessage + 'static,
 {
@@ -46,7 +46,7 @@ where
 
     for item in &config.input_config {
         tasks.spawn(task_periodic_request(
-            input.resubscribe(),
+            input.clone(),
             item.clone(),
             db.clone(),
         ));
@@ -83,7 +83,7 @@ async fn init_script<TMsg>(config: &Config<TMsg>, db: Db) -> crate::Result<()> {
 }
 
 async fn task_periodic_request<TMsg>(
-    mut input: ComponentInput<TMsg>,
+    mut input: CmpInput<TMsg>,
     input_config: crate::config::InputConfig<TMsg>,
     db: Db,
 ) -> crate::Result<()>
@@ -91,6 +91,10 @@ where
     TMsg: IMessage,
 {
     while let Ok(msg) = input.recv().await {
+        let msg = match msg {
+            Some(val) => val,
+            None => continue,
+        };
         let query = (input_config.fn_input)(&msg);
         let query = match query {
             Some(val) => val,

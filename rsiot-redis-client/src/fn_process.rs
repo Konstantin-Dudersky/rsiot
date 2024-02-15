@@ -1,14 +1,13 @@
 use futures::StreamExt;
 use redis::{AsyncCommands, Client};
 use tokio::{
-    sync::mpsc,
     task::JoinSet,
     time::{sleep, Duration},
 };
 use tracing::{error, info, trace};
 use url::Url;
 
-use rsiot_component_core::{Cache, CmpOutput, ComponentError, ComponentInput};
+use rsiot_component_core::{Cache, CmpInput, CmpOutput, ComponentError};
 use rsiot_messages_core::{msg_meta::ComponentId, IMessage, IMessageChannel};
 
 use crate::{config::Config, error::Error};
@@ -16,7 +15,7 @@ use crate::{config::Config, error::Error};
 type Result<TMessage> = std::result::Result<(), Error<TMessage>>;
 
 pub async fn fn_process<TMessage, TMessageChannel>(
-    input: ComponentInput<TMessage>,
+    input: CmpInput<TMessage>,
     output: CmpOutput<TMessage>,
     config: Config<TMessage, TMessageChannel>,
     _cache: Cache<TMessage>,
@@ -33,13 +32,7 @@ where
 
     loop {
         info!("Starting");
-        let result = task_main(
-            input.resubscribe(),
-            output.clone(),
-            config.clone(),
-            component_id.clone(),
-        )
-        .await;
+        let result = task_main(input.clone(), output.clone(), config.clone()).await;
         match result {
             Ok(_) => (),
             Err(err) => error!("{}", err),
@@ -50,10 +43,9 @@ where
 }
 
 async fn task_main<TMessage, TMessageChannel>(
-    input: ComponentInput<TMessage>,
+    input: CmpInput<TMessage>,
     output: CmpOutput<TMessage>,
     config: Config<TMessage, TMessageChannel>,
-    component_id: ComponentId,
 ) -> Result<TMessage>
 where
     TMessage: IMessage + 'static,
@@ -66,7 +58,7 @@ where
         config.url.clone(),
         config.subscription_channel.clone(),
     ));
-    set.spawn(task_publication(input, config, component_id));
+    set.spawn(task_publication(input, config));
     while let Some(res) = set.join_next().await {
         res??;
     }
@@ -75,9 +67,8 @@ where
 
 /// Задача публикации в канале Pub/Sub, и сохранение в кеше.
 async fn task_publication<TMessage, TMessageChannel>(
-    mut input: ComponentInput<TMessage>,
+    mut input: CmpInput<TMessage>,
     config: Config<TMessage, TMessageChannel>,
-    component_id: ComponentId,
 ) -> Result<TMessage>
 where
     TMessage: IMessage,
@@ -85,8 +76,11 @@ where
 {
     let client = redis::Client::open(config.url.to_string())?;
     let mut connection = client.get_async_connection().await?;
-    while let Ok(mut msg) = input.recv().await {
-        msg.cmp_set(&component_id);
+    while let Ok(msg) = input.recv().await {
+        let msg = match msg {
+            Some(val) => val,
+            None => continue,
+        };
         let channels = (config.fn_input)(&msg);
         for channel in channels {
             let json = msg.to_json()?;

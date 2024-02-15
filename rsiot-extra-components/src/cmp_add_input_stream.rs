@@ -4,18 +4,22 @@ use async_trait::async_trait;
 use tokio::task::JoinSet;
 
 use rsiot_component_core::{
-    Cache, CmpOutput, Component, ComponentError, ComponentInput, IComponentProcess,
+    Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
 use rsiot_messages_core::IMessage;
 
 async fn task_subscription<TMessage>(
-    mut input: ComponentInput<TMessage>,
+    mut input: CmpInput<TMessage>,
     output: CmpOutput<TMessage>,
 ) -> Result<(), ComponentError>
 where
     TMessage: IMessage,
 {
     while let Ok(msg) = input.recv().await {
+        let msg = match msg {
+            Some(val) => val,
+            None => continue,
+        };
         output
             .send(msg)
             .await
@@ -26,8 +30,11 @@ where
 
 /// Настройки
 #[derive(Debug)]
-pub struct Cfg<TMessage> {
-    pub channel: ComponentInput<TMessage>,
+pub struct Cfg<TMessage>
+where
+    TMessage: IMessage,
+{
+    pub channel: CmpInput<TMessage>,
 }
 
 /// Компонент для добавления сообщений из побочного потока
@@ -40,7 +47,7 @@ where
     async fn process(
         &self,
         config: Cfg<TMsg>,
-        input: ComponentInput<TMsg>,
+        input: CmpInput<TMsg>,
         output: CmpOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
@@ -66,7 +73,7 @@ where
     async fn process(
         &self,
         config: Cfg<TMsg>,
-        input: ComponentInput<TMsg>,
+        input: CmpInput<TMsg>,
         output: CmpOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {

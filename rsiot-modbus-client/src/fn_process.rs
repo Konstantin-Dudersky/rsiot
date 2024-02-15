@@ -8,7 +8,7 @@ use tokio::{
 use tokio_modbus::{client::Context, prelude::*};
 use tracing::{debug, error, info, trace};
 
-use rsiot_component_core::{Cache, CmpOutput, ComponentError, ComponentInput};
+use rsiot_component_core::{Cache, CmpInput, CmpOutput, ComponentError};
 use rsiot_messages_core::IMessage;
 
 use crate::{
@@ -17,7 +17,7 @@ use crate::{
 };
 
 pub async fn fn_process<TMessage>(
-    input: ComponentInput<TMessage>,
+    input: CmpInput<TMessage>,
     output: CmpOutput<TMessage>,
     config: Config<TMessage>,
     _cache: Cache<TMessage>,
@@ -33,7 +33,7 @@ where
 
     loop {
         info!("Starting modbus client, configuration: {:?}", config);
-        let res = task_main::<TMessage>(input.resubscribe(), output.clone(), config.clone()).await;
+        let res = task_main::<TMessage>(input.clone(), output.clone(), config.clone()).await;
         match res {
             Ok(_) => (),
             Err(err) => {
@@ -46,7 +46,7 @@ where
 }
 
 async fn task_main<TMessage>(
-    input: ComponentInput<TMessage>,
+    input: CmpInput<TMessage>,
     output: CmpOutput<TMessage>,
     config: Config<TMessage>,
 ) -> crate::Result<(), TMessage>
@@ -81,7 +81,7 @@ where
     // Запускаем задачи запросов на основе входного потока сообщений
     for item in config.input_config {
         set.spawn(task_input_request(
-            input.resubscribe(),
+            input.clone(),
             output.clone(),
             ctx.clone(),
             item,
@@ -125,7 +125,7 @@ where
 
 /// Задача обработки запроса на основе входного потока сообщений
 async fn task_input_request<TMessage>(
-    mut input: ComponentInput<TMessage>,
+    mut input: CmpInput<TMessage>,
     output: CmpOutput<TMessage>,
     ctx: Arc<Mutex<Context>>,
     input_config: config::InputConfig<TMessage>,
@@ -134,6 +134,10 @@ where
     TMessage: IMessage,
 {
     while let Ok(msg) = input.recv().await {
+        let msg = match msg {
+            Some(val) => val,
+            None => continue,
+        };
         let request = (input_config.fn_input)(&msg);
         let request = match request {
             Some(val) => val,

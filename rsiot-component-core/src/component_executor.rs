@@ -6,7 +6,7 @@ use tokio::{
 use rsiot_messages_core::IMessage;
 use tracing::{debug, error, info, trace, warn};
 
-use crate::{error::ComponentError, Cache, CmpOutput, ComponentInput, IComponent};
+use crate::{error::ComponentError, Cache, CmpInput, CmpOutput, IComponent};
 
 /// Запуск коллекции компонентов в работу
 ///
@@ -42,7 +42,7 @@ where
     TMessage: IMessage,
 {
     task_set: JoinSet<Result<(), ComponentError>>,
-    component_input: ComponentInput<TMessage>,
+    component_input: CmpInput<TMessage>,
     component_output: CmpOutput<TMessage>,
     cache: Cache<TMessage>,
 }
@@ -70,7 +70,7 @@ where
         } else {
             task_set.spawn(task_internal_handle);
         }
-
+        let component_input = CmpInput::new(component_input);
         let component_output = CmpOutput::new(component_output);
         Self {
             task_set,
@@ -87,7 +87,7 @@ where
         TMessage: IMessage,
     {
         component.set_interface(
-            self.component_input.resubscribe(),
+            self.component_input.clone(),
             self.component_output.clone(),
             self.cache.clone(),
         );
@@ -103,7 +103,7 @@ where
         TMessage: IMessage,
     {
         component.set_interface(
-            self.component_input.resubscribe(),
+            self.component_input.clone(),
             self.component_output.clone(),
             self.cache.clone(),
         );

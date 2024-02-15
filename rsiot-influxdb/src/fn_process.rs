@@ -4,7 +4,7 @@ use reqwest::{Client, StatusCode};
 use tokio::time::sleep;
 use tracing::{error, info, trace, warn};
 
-use rsiot_component_core::{CmpOutput, ComponentError, ComponentInput};
+use rsiot_component_core::{CmpInput, CmpOutput, ComponentError};
 use rsiot_messages_core::IMessage;
 
 use crate::{
@@ -13,7 +13,7 @@ use crate::{
 };
 
 pub async fn fn_process<TMsg>(
-    input: ComponentInput<TMsg>,
+    input: CmpInput<TMsg>,
     _output: CmpOutput<TMsg>,
     config: Config<TMsg>,
 ) -> Result<(), ComponentError>
@@ -23,7 +23,7 @@ where
     info!("Starting influxdb client, configuration: {:?}", config);
 
     loop {
-        let res = task_main::<TMsg>(input.resubscribe(), config.clone()).await;
+        let res = task_main::<TMsg>(input.clone(), config.clone()).await;
         match res {
             Ok(_) => (),
             Err(err) => {
@@ -35,11 +35,15 @@ where
     }
 }
 
-async fn task_main<TMsg>(mut input: ComponentInput<TMsg>, config: Config<TMsg>) -> crate::Result<()>
+async fn task_main<TMsg>(mut input: CmpInput<TMsg>, config: Config<TMsg>) -> crate::Result<()>
 where
     TMsg: IMessage + 'static,
 {
     while let Ok(msg) = input.recv().await {
+        let msg = match msg {
+            Some(val) => val,
+            None => continue,
+        };
         let datapoints = (config.fn_input)(&msg);
         handle_request(datapoints, config.clone()).await?;
     }

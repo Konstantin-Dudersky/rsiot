@@ -2,14 +2,14 @@ use async_trait::async_trait;
 
 use rsiot_messages_core::IMessage;
 
-use crate::{Cache, ComponentError, ComponentInput, ComponentOutput};
+use crate::{Cache, CmpInput, CmpOutput, ComponentError};
 
 pub struct Component<TConfig, TMessage>
 where
     TMessage: IMessage,
 {
-    input: Option<ComponentInput<TMessage>>,
-    output: Option<ComponentOutput<TMessage>>,
+    input: Option<CmpInput<TMessage>>,
+    output: Option<CmpOutput<TMessage>>,
     cache: Option<Cache<TMessage>>,
     config: Option<TConfig>,
 }
@@ -37,8 +37,8 @@ where
 {
     fn set_interface(
         &mut self,
-        input: ComponentInput<TMessage>,
-        output: ComponentOutput<TMessage>,
+        input: CmpInput<TMessage>,
+        output: CmpOutput<TMessage>,
         cache: Cache<TMessage>,
     ) {
         self.input = Some(input);
@@ -79,8 +79,8 @@ where
     async fn process(
         &self,
         config: TConfig,
-        input: ComponentInput<TMessage>,
-        output: ComponentOutput<TMessage>,
+        input: CmpInput<TMessage>,
+        output: CmpOutput<TMessage>,
         cache: Cache<TMessage>,
     ) -> Result<(), ComponentError>;
 }
@@ -92,8 +92,8 @@ where
 {
     fn set_interface(
         &mut self,
-        input: ComponentInput<TMessage>,
-        output: ComponentOutput<TMessage>,
+        input: CmpInput<TMessage>,
+        output: CmpOutput<TMessage>,
         cache: Cache<TMessage>,
     );
 

@@ -6,7 +6,7 @@ use futures::{
     stream::{SplitSink, SplitStream},
     SinkExt, StreamExt,
 };
-use rsiot_component_core::{Cache, CmpOutput, ComponentInput};
+use rsiot_component_core::{Cache, CmpInput, CmpOutput};
 use tokio::{net::TcpStream, sync::mpsc, task::JoinSet};
 use tokio_tungstenite::{accept_async, tungstenite::Message, WebSocketStream};
 use tracing::{debug, info, trace, warn};
@@ -17,7 +17,7 @@ use crate::{config::Config, errors::Error};
 
 /// Создание и управление подключением между сервером и клиентом
 pub async fn handle_ws_connection<TMessage>(
-    input: ComponentInput<TMessage>,
+    input: CmpInput<TMessage>,
     output: CmpOutput<TMessage>,
     config: Config<TMessage>,
     stream_and_addr: (TcpStream, SocketAddr),
@@ -37,7 +37,7 @@ pub async fn handle_ws_connection<TMessage>(
 }
 
 async fn _handle_ws_connection<TMessage>(
-    input: ComponentInput<TMessage>,
+    input: CmpInput<TMessage>,
     output: CmpOutput<TMessage>,
     stream_and_addr: (TcpStream, SocketAddr),
     config: Config<TMessage>,
@@ -101,7 +101,7 @@ where
 
 /// При получении новых сообщений, отправляем клиенту
 async fn send_prepare_new_msgs<TMessage>(
-    mut input: ComponentInput<TMessage>,
+    mut input: CmpInput<TMessage>,
     output: mpsc::Sender<TMessage>,
 ) -> crate::Result<(), TMessage>
 where
@@ -109,6 +109,10 @@ where
 {
     debug!("Sending messages to client started");
     while let Ok(msg) = input.recv().await {
+        let msg = match msg {
+            Some(val) => val,
+            None => continue,
+        };
         output.send(msg).await?;
     }
     warn!("Sending messages to client complete");

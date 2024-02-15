@@ -1,5 +1,5 @@
 use leptos::*;
-use rsiot_component_core::{Cache, CmpOutput, ComponentInput};
+use rsiot_component_core::{Cache, CmpInput, CmpOutput};
 use rsiot_messages_core::{msg_meta::ServiceId, IMessage};
 use tokio::task::JoinSet;
 use tracing::debug;
@@ -10,7 +10,7 @@ use super::Config;
 
 pub async fn fn_process<TMsg, TView, TIntoView>(
     config: Config<TView, TIntoView>,
-    input: ComponentInput<TMsg>,
+    input: CmpInput<TMsg>,
     output: CmpOutput<TMsg>,
     cache: Cache<TMsg>,
 ) -> crate::Result<TMsg>
@@ -42,14 +42,15 @@ where
     Ok(())
 }
 
-async fn task_input<TMsg>(
-    mut input: ComponentInput<TMsg>,
-    gs: GlobalState<TMsg>,
-) -> crate::Result<TMsg>
+async fn task_input<TMsg>(mut input: CmpInput<TMsg>, gs: GlobalState<TMsg>) -> crate::Result<TMsg>
 where
     TMsg: IMessage,
 {
     while let Ok(msg) = input.recv().await {
+        let msg = match msg {
+            Some(val) => val,
+            None => continue,
+        };
         gs.input.set(Some(msg));
     }
     Ok(())

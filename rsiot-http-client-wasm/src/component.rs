@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
 use rsiot_component_core::{
-    Cache, Component, ComponentError, ComponentInput, ComponentOutput, IComponentProcess,
+    Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
 use rsiot_messages_core::IMessage;
 
@@ -19,8 +19,8 @@ where
     async fn process(
         &self,
         _config: ConfigAlias<TMsg>,
-        _input: ComponentInput<TMsg>,
-        _output: ComponentOutput<TMsg>,
+        _input: CmpInput<TMsg>,
+        _output: CmpOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         unimplemented!();
@@ -40,8 +40,8 @@ where
     async fn process(
         &self,
         config: ConfigAlias<TMsg>,
-        input: ComponentInput<TMsg>,
-        output: ComponentOutput<TMsg>,
+        input: CmpInput<TMsg>,
+        output: CmpOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         let config = config.0;

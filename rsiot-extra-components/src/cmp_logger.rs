@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use tracing::{debug, error, info, trace, warn, Level};
 
 use rsiot_component_core::{
-    Cache, CmpOutput, Component, ComponentError, ComponentInput, IComponentProcess,
+    Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
 use rsiot_messages_core::IMessage;
 
@@ -26,7 +26,7 @@ where
     async fn process(
         &self,
         config: Config,
-        input: ComponentInput<TMessage>,
+        input: CmpInput<TMessage>,
         output: CmpOutput<TMessage>,
         cache: Cache<TMessage>,
     ) -> Result<(), ComponentError> {
@@ -36,7 +36,7 @@ where
 
 async fn process<TMessage>(
     config: Config,
-    mut input: ComponentInput<TMessage>,
+    mut input: CmpInput<TMessage>,
     _output: CmpOutput<TMessage>,
     _cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>

@@ -19,6 +19,7 @@ where
     }
 
     pub async fn send(&self, msg: TMsg) -> Result<(), SendError<TMsg>> {
+        // TODO добавить установку полей по источнику сообщения
         self.channel.send(msg).await
     }
 }

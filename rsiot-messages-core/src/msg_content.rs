@@ -6,7 +6,7 @@ use super::msg_content_value::IMsgContentValue;
 /// Тип "Значение"
 ///
 /// Содержит значение типа обобщенного типа `T`, с меткой времени
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct MsgContent<TValue>
 where
     TValue: IMsgContentValue,

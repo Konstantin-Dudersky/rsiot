@@ -5,7 +5,7 @@ use tokio::time::sleep;
 use tracing::info;
 
 use rsiot_component_core::{
-    Cache, Component, ComponentError, ComponentInput, ComponentOutput, IComponentProcess,
+    Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
 use rsiot_messages_core::IMessage;
 
@@ -19,8 +19,8 @@ where
     async fn process(
         &self,
         _config: Config,
-        _input: ComponentInput<TMsg>,
-        _output: ComponentOutput<TMsg>,
+        _input: CmpInput<TMsg>,
+        _output: CmpOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         loop {

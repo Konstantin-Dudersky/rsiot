@@ -9,14 +9,14 @@ use tokio::task::JoinSet;
 use tracing::{error, info};
 use url::Url;
 
-use rsiot_component_core::{ComponentInput, ComponentOutput};
+use rsiot_component_core::{CmpInput, CmpOutput};
 use rsiot_messages_core::IMessage;
 
 use crate::{config::config, error::Error};
 
 pub async fn fn_process<TMessage>(
-    input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
+    input: CmpInput<TMessage>,
+    output: CmpOutput<TMessage>,
     config: config::Config<TMessage>,
 ) -> crate::Result<(), TMessage>
 where
@@ -25,7 +25,7 @@ where
     info!("Starting http-client-wasm, configuration: {:?}", config);
 
     loop {
-        let res = task_main::<TMessage>(input.resubscribe(), output.clone(), config.clone()).await;
+        let res = task_main::<TMessage>(input.clone(), output.clone(), config.clone()).await;
         match res {
             Ok(_) => (),
             Err(err) => {
@@ -38,8 +38,8 @@ where
 }
 
 async fn task_main<TMessage>(
-    _input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
+    _input: CmpInput<TMessage>,
+    output: CmpOutput<TMessage>,
     config: config::Config<TMessage>,
 ) -> crate::Result<(), TMessage>
 where
@@ -67,7 +67,7 @@ where
 
 /// Задача обработки периодического запроса
 async fn task_periodic_request<TMessage>(
-    output: ComponentOutput<TMessage>,
+    output: CmpOutput<TMessage>,
     config: config::RequestPeriodic<TMessage>,
     url: Url,
 ) -> crate::Result<(), TMessage>
