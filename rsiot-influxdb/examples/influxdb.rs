@@ -35,7 +35,7 @@ async fn main() {
         fn_input: |msg: &ExampleMessage| cmp_influxdb::msg_into_line_protocol(msg),
     };
 
-    ComponentExecutor::new(100)
+    ComponentExecutor::new(100, "influxdb")
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
         .add_cmp(cmp_influxdb::Cmp::new(influxdb_config))
         .wait_result()

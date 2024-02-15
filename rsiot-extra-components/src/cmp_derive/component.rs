@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
 use rsiot_component_core::{
-    Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
+    cmp_set_component_id, Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
 use rsiot_messages_core::IMessage;
 
@@ -16,10 +16,11 @@ where
     async fn process(
         &self,
         config: Config<TMsg>,
-        input: CmpInput<TMsg>,
-        output: CmpOutput<TMsg>,
+        mut input: CmpInput<TMsg>,
+        mut output: CmpOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
+        cmp_set_component_id(&mut input, &mut output, "cmp_derive");
         fn_process(input, output, config)
             .await
             .map_err(|e| ComponentError::Execution(e.to_string()))

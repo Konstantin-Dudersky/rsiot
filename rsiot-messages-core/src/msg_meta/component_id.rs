@@ -1,14 +1,14 @@
 use serde::{Deserialize, Serialize};
 
-use super::ServiceId;
+use super::ExecutorId;
 
 /// Идентификатор сервиса
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct ComponentId(String);
 
 impl ComponentId {
-    pub fn new(service_id: &ServiceId, prefix: &str) -> Self {
-        let id = format!("{service_id}:{prefix}");
+    pub fn new(service_id: &ExecutorId, prefix: &str) -> Self {
+        let id = format!("{service_id}::{prefix}");
         Self(id)
     }
 }

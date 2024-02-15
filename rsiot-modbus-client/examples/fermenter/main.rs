@@ -22,7 +22,7 @@ async fn main() -> anyhow::Result<()> {
         header: "".into(),
     };
 
-    ComponentExecutor::<Messages>::new(100)
+    ComponentExecutor::<Messages>::new(100, "fermenter")
         .add_cmp(cmp_modbus_client::Cmp::new(config::config()))
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .wait_result()

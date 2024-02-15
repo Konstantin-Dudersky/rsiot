@@ -1,9 +1,9 @@
 mod component_id;
-mod service_id;
+mod executor_id;
 mod timestamp;
 
 pub use component_id::ComponentId;
-pub use service_id::ServiceId;
+pub use executor_id::ExecutorId;
 pub use timestamp::Timestamp;
 
 pub trait MsgMeta {

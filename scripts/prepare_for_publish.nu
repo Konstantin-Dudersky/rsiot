@@ -1,7 +1,7 @@
 # Подготовка к публикации
 
 def print_header [header: string] {
-    print $"\n\n(ansi magenta_bold) ($header) (ansi reset)\n\n"
+    print $"\n\n(ansi magenta_bold)($header)(ansi reset)\n\n"
 }
 
 print_header "workspace - update"
@@ -12,21 +12,20 @@ cargo outdated
 
 print_header "workspace - unused dependencies"
 # cargo +nightly udeps
+# TODO - разобраться с ошибками
 
-print $"\n\n(ansi magenta_bold) workspace - check (ansi reset)\n\n"
-cargo check --all-targets
+print_header "workspace clippy - x86_64-unknown-linux-gnu / multi-thread"
+cargo clippy --all-targets --target="x86_64-unknown-linux-gnu" --features=""
 
-print $"\n\n(ansi magenta_bold) workspace - clippy \(multi-thread\) (ansi reset)\n\n"
-cargo clippy --all-targets --features=""
+print_header "workspace clippy - x86_64-unknown-linux-gnu / single-thread"
+cargo clippy --all-targets --target="x86_64-unknown-linux-gnu" --features="single-thread"
 
-print $"\n\n(ansi magenta_bold) workspace - clippy \(single-thread\) (ansi reset)\n\n"
-cargo clippy --all-targets --features="single-thread"
+# print_header "workspace clippy - aarch64-unknown-linux-gnu / multi-thread"
+# cargo clippy --all-targets --target="aarch64-unknown-linux-gnu" --features=""
+# TODO - настроить проверки по остальным таргетам
 
-print $"\n\n(ansi magenta_bold) workspace - build \(multi-thread\) (ansi reset)\n\n"
-cargo build --all-targets --features=""
-
-print $"\n\n(ansi magenta_bold) workspace - build \(single-thread\) (ansi reset)\n\n"
-cargo build --all-targets --features="single-thread"
+# print_header "workspace clippy - wasm32-unknown-unknown / single-thread"
+# cargo clippy --all-targets --target="wasm32-unknown-unknown" --features="single-thread"
 
 do {
     print_header "rsiot"

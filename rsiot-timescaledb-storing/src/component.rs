@@ -1,14 +1,14 @@
 use async_trait::async_trait;
 
 use rsiot_component_core::{
-    Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
+    cmp_set_component_id, Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
 use rsiot_messages_core::IMessage;
 
 use crate::{config::ConfigAlias, fn_process::fn_process};
 
-#[cfg(not(feature = "single-thread"))]
-#[async_trait]
+#[cfg_attr(not(feature = "single-thread"), async_trait)]
+#[cfg_attr(feature = "single-thread", async_trait(?Send))]
 impl<TMsg> IComponentProcess<ConfigAlias, TMsg> for Component<ConfigAlias, TMsg>
 where
     TMsg: IMessage,
@@ -16,29 +16,12 @@ where
     async fn process(
         &self,
         config: ConfigAlias,
-        input: CmpInput<TMsg>,
-        _output: CmpOutput<TMsg>,
+        mut input: CmpInput<TMsg>,
+        mut output: CmpOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         let config = config.0;
-        fn_process(input, config).await
-    }
-}
-
-#[cfg(feature = "single-thread")]
-#[async_trait(?Send)]
-impl<TMsg> IComponentProcess<ConfigAlias, TMsg> for Component<ConfigAlias, TMsg>
-where
-    TMsg: IMessage,
-{
-    async fn process(
-        &self,
-        config: ConfigAlias,
-        input: CmpInput<TMsg>,
-        _output: CmpOutput<TMsg>,
-        _cache: Cache<TMsg>,
-    ) -> Result<(), ComponentError> {
-        let config = config.0;
+        cmp_set_component_id(&mut input, &mut output, "cmp_timescaledb_storing");
         fn_process(input, config).await
     }
 }

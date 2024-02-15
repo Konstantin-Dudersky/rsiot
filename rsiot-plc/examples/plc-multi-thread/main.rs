@@ -41,7 +41,7 @@ async fn main() -> anyhow::Result<()> {
         header: "Logger: ".into(),
     };
 
-    ComponentExecutor::<message::Message>::new(100)
+    ComponentExecutor::<message::Message>::new(100, "plc-multi-thread")
         .add_cmp(cmp_plc::Cmp::new(plc_config))
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .wait_result()

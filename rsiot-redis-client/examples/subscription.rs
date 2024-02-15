@@ -30,12 +30,12 @@ async fn main() -> anyhow::Result<()> {
 
     use rsiot_component_core::ComponentExecutor;
     use rsiot_extra_components::cmp_logger;
-    use rsiot_messages_core::{msg_meta::ServiceId, ExampleMessage, ExampleMessageChannel};
+    use rsiot_messages_core::{msg_meta::ExecutorId, ExampleMessage, ExampleMessageChannel};
     use rsiot_redis_client::cmp_redis_client;
 
     fmt().init();
 
-    let service_id = ServiceId::new("");
+    let service_id = ExecutorId::new("");
 
     let logger_config = cmp_logger::Config {
         level: Level::INFO,
@@ -49,7 +49,7 @@ async fn main() -> anyhow::Result<()> {
         subscription_channel: ExampleMessageChannel::Output,
     };
 
-    ComponentExecutor::<ExampleMessage>::new(100)
+    ComponentExecutor::<ExampleMessage>::new(100, "redis-client-subscription")
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .add_cmp(cmp_redis_client::Cmp::new(redis_config))
         .wait_result()

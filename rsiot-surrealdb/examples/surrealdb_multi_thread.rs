@@ -68,7 +68,7 @@ async fn main() -> anyhow::Result<()> {
         },
     };
 
-    ComponentExecutor::<Message>::new(100)
+    ComponentExecutor::<Message>::new(100, "surrealdb_multi_thread")
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
         .add_cmp(cmp_surrealdb::Cmp::new(surrealdb_config))
         .wait_result()

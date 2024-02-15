@@ -75,7 +75,7 @@ async fn main() -> anyhow::Result<()> {
     };
 
     let mut counter = 0.0;
-    ComponentExecutor::new(100)
+    ComponentExecutor::new(100, "modbus_tcp_client")
         // Периодическое генерирование сообщения для записи счетчика на сервер
         .add_cmp(cmp_inject_periodic::Cmp::new(cmp_inject_periodic::Config {
             period: Duration::from_secs(2),

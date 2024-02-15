@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use tokio::task::JoinSet;
 
 use rsiot_component_core::{
-    Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
+    cmp_set_component_id, Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
 use rsiot_messages_core::IMessage;
 
@@ -47,10 +47,11 @@ where
     async fn process(
         &self,
         config: Cfg<TMsg>,
-        input: CmpInput<TMsg>,
-        output: CmpOutput<TMsg>,
+        mut input: CmpInput<TMsg>,
+        mut output: CmpOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
+        cmp_set_component_id(&mut input, &mut output, "cmp_add_input_stream");
         let mut task_set: JoinSet<Result<(), ComponentError>> = JoinSet::new();
 
         task_set.spawn(task_subscription(input, output.clone()));
@@ -73,10 +74,11 @@ where
     async fn process(
         &self,
         config: Cfg<TMsg>,
-        input: CmpInput<TMsg>,
-        output: CmpOutput<TMsg>,
+        mut input: CmpInput<TMsg>,
+        mut output: CmpOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
+        cmp_set_component_id(&mut input, &mut output, "cmp_add_input_stream");
         let mut task_set: JoinSet<Result<(), ComponentError>> = JoinSet::new();
 
         task_set.spawn(task_subscription(input, output.clone()));

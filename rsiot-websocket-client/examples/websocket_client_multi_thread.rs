@@ -93,7 +93,7 @@ async fn main() -> anyhow::Result<()> {
         fn_output,
     };
 
-    ComponentExecutor::<Message>::new(100)
+    ComponentExecutor::<Message>::new(100, "rsiot-websocket-client")
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
         .add_cmp(cmp_websocket_client::Cmp::new(ws_client))

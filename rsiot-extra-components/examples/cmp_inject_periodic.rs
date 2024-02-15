@@ -29,7 +29,7 @@ async fn main() -> anyhow::Result<()> {
             },
         };
 
-        ComponentExecutor::<ExampleMessage>::new(100)
+        ComponentExecutor::<ExampleMessage>::new(100, "cmp_inject_periodic")
             .add_cmp(cmp_logger::Cmp::new(logger_config))
             .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
             .wait_result()

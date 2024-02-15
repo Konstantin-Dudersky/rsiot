@@ -1,14 +1,14 @@
 use async_trait::async_trait;
 
 use rsiot_component_core::{
-    Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
+    cmp_set_component_id, Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
 use rsiot_messages_core::IMessage;
 
 use crate::{config::ConfigNewType, fn_process::fn_process};
 
-#[cfg(not(feature = "single-thread"))]
-#[async_trait()]
+#[cfg_attr(not(feature = "single-thread"), async_trait)]
+#[cfg_attr(feature = "single-thread", async_trait(?Send))]
 impl<TMessage> IComponentProcess<ConfigNewType<TMessage>, TMessage>
     for Component<ConfigNewType<TMessage>, TMessage>
 where
@@ -17,28 +17,11 @@ where
     async fn process(
         &self,
         config: ConfigNewType<TMessage>,
-        input: CmpInput<TMessage>,
-        output: CmpOutput<TMessage>,
+        mut input: CmpInput<TMessage>,
+        mut output: CmpOutput<TMessage>,
         cache: Cache<TMessage>,
     ) -> Result<(), ComponentError> {
-        fn_process(input, output, config.0, cache).await
-    }
-}
-
-#[cfg(feature = "single-thread")]
-#[async_trait(?Send)]
-impl<TMessage> IComponentProcess<ConfigNewType<TMessage>, TMessage>
-    for Component<ConfigNewType<TMessage>, TMessage>
-where
-    TMessage: IMessage + 'static,
-{
-    async fn process(
-        &self,
-        config: ConfigNewType<TMessage>,
-        input: CmpInput<TMessage>,
-        output: CmpOutput<TMessage>,
-        cache: Cache<TMessage>,
-    ) -> Result<(), ComponentError> {
+        cmp_set_component_id(&mut input, &mut output, "cmp_modbus_client");
         fn_process(input, output, config.0, cache).await
     }
 }

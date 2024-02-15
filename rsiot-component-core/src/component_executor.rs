@@ -3,7 +3,7 @@ use tokio::{
     task::JoinSet,
 };
 
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::{msg_meta::ExecutorId, IMessage};
 use tracing::{debug, error, info, trace, warn};
 
 use crate::{error::ComponentError, Cache, CmpInput, CmpOutput, IComponent};
@@ -52,8 +52,9 @@ where
     TMessage: IMessage + 'static,
 {
     /// Создание коллекции компонентов
-    pub fn new(buffer_size: usize) -> Self {
+    pub fn new(buffer_size: usize, executor_name: &str) -> Self {
         info!("ComponentExecutor start creation");
+        let service_id = ExecutorId::new(executor_name);
         let (component_input_send, component_input) = broadcast::channel::<TMessage>(buffer_size);
         let (component_output, component_output_recv) = mpsc::channel::<TMessage>(buffer_size);
         let cache: Cache<TMessage> = Cache::new();
@@ -70,8 +71,8 @@ where
         } else {
             task_set.spawn(task_internal_handle);
         }
-        let component_input = CmpInput::new(component_input);
-        let component_output = CmpOutput::new(component_output);
+        let component_input = CmpInput::new(component_input, service_id.clone());
+        let component_output = CmpOutput::new(component_output, service_id);
         Self {
             task_set,
             component_input,

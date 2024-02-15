@@ -48,7 +48,7 @@ async fn main() -> anyhow::Result<()> {
         },
     };
 
-    ComponentExecutor::new(100)
+    ComponentExecutor::new(100, "rsiot-websocket-server")
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .add_cmp(cmp_websocket_server::Cmp::new(ws_server_config))
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))

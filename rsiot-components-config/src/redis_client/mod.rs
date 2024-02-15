@@ -1,6 +1,6 @@
 use url::Url;
 
-use rsiot_messages_core::{msg_meta::ServiceId, IMessage, IMessageChannel};
+use rsiot_messages_core::{msg_meta::ExecutorId, IMessage, IMessageChannel};
 
 #[derive(Clone, Debug)]
 pub struct Config<TMessage, TMessageChannel>
@@ -9,7 +9,7 @@ where
     TMessageChannel: IMessageChannel,
 {
     /// Идентификатор сервиса
-    pub service_id: ServiceId,
+    pub service_id: ExecutorId,
 
     /// Адрес сервера Redis
     pub url: Url,

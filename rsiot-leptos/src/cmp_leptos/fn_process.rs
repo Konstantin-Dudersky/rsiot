@@ -1,6 +1,6 @@
 use leptos::*;
 use rsiot_component_core::{Cache, CmpInput, CmpOutput};
-use rsiot_messages_core::{msg_meta::ServiceId, IMessage};
+use rsiot_messages_core::{msg_meta::ExecutorId, IMessage};
 use tokio::task::JoinSet;
 use tracing::debug;
 
@@ -19,7 +19,7 @@ where
     TView: Fn() -> TIntoView + 'static,
     TIntoView: IntoView,
 {
-    let component_id = ServiceId::new("cmp_leptos");
+    let component_id = ExecutorId::new("cmp_leptos");
 
     provide_context(GlobalState::<TMsg> {
         service_id: component_id,

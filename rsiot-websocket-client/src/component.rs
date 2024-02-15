@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
 use rsiot_component_core::{
-    Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
+    cmp_set_component_id, Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
 use rsiot_messages_core::IMessage;
 use tracing::error;
@@ -18,10 +18,11 @@ where
     async fn process(
         &self,
         config: ConfigAlias<TMessage>,
-        input: CmpInput<TMessage>,
-        output: CmpOutput<TMessage>,
+        mut input: CmpInput<TMessage>,
+        mut output: CmpOutput<TMessage>,
         _cache: Cache<TMessage>,
     ) -> Result<(), ComponentError> {
+        cmp_set_component_id(&mut input, &mut output, "cmp_websocket_client");
         error!("Websocket client component begin execution");
         let config = config.0;
         fn_process(input, output, config).await?;

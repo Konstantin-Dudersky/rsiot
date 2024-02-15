@@ -32,7 +32,7 @@ async fn main() -> anyhow::Result<()> {
         connection_string: url,
     };
 
-    ComponentExecutor::new(100)
+    ComponentExecutor::new(100, "timescaledb-storing")
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
         .add_cmp(cmp_timescaledb_storing::Cmp::new(db_config))
         .wait_result()

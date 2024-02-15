@@ -1,7 +1,8 @@
 use async_trait::async_trait;
 
 use rsiot_component_core::{
-    Cache, Component, ComponentError, ComponentInput, ComponentOutput, IComponentProcess,
+    cmp_set_component_id, Cache, Component, ComponentError, ComponentInput, ComponentOutput,
+    IComponentProcess,
 };
 use rsiot_messages_core::IMessage;
 
@@ -21,6 +22,7 @@ where
         output: ComponentOutput<TMessage>,
         _cache: Cache<TMessage>,
     ) -> Result<(), ComponentError> {
+        cmp_set_component_id(&mut input, &mut output, "cmp_websocket_client_wasm");
         fn_process(config.0, input, output)
             .await
             .map_err(|err| ComponentError::Execution(err.to_string()))

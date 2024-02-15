@@ -8,7 +8,7 @@ use tracing::{error, info, trace};
 use url::Url;
 
 use rsiot_component_core::{Cache, CmpInput, CmpOutput, ComponentError};
-use rsiot_messages_core::{msg_meta::ComponentId, IMessage, IMessageChannel};
+use rsiot_messages_core::{IMessage, IMessageChannel};
 
 use crate::{config::Config, error::Error};
 
@@ -24,11 +24,7 @@ where
     TMessage: IMessage + 'static,
     TMessageChannel: IMessageChannel + 'static,
 {
-    let component_id = ComponentId::new(&config.service_id, "redis-client");
-    info!(
-        "Initialization. Config: {:?}. Component id {}",
-        config, component_id
-    );
+    info!("Initialization. Config: {:?}", config,);
 
     loop {
         info!("Starting");

@@ -75,7 +75,7 @@ fn main() -> anyhow::Result<()> {
         .enable_all()
         .build()?
         .block_on(async move {
-            ComponentExecutor::new(100)
+            ComponentExecutor::new(100, "http-server")
                 .add_cmp(cmp_logger::Cmp::new(logger_config))
                 .add_cmp(cmp_inject_periodic::Cmp::new(inject_periodic_config))
                 .add_cmp(cmp_http_server::Cmp::new(http_server_config))
@@ -93,7 +93,7 @@ fn main() -> anyhow::Result<()> {
             let local_set = LocalSet::new();
 
             local_set.spawn_local(async move {
-                ComponentExecutor::new(100)
+                ComponentExecutor::new(100, "http-server")
                     .add_cmp(cmp_logger::Cmp::new(logger_config))
                     .add_cmp(cmp_inject_periodic::Cmp::new(inject_periodic_config))
                     .add_cmp(cmp_http_server::Cmp::new(http_server_config))

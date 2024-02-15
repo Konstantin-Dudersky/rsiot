@@ -104,7 +104,7 @@ async fn main() -> anyhow::Result<()> {
         }],
     };
 
-    ComponentExecutor::new(100)
+    ComponentExecutor::new(100, "http_client")
         .add_cmp(cmp_http_client::Cmp::new(http_config))
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
         .add_cmp(cmp_logger::Cmp::new(logger_config))

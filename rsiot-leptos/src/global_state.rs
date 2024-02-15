@@ -1,6 +1,6 @@
 use leptos::*;
 use rsiot_component_core::Cache;
-use rsiot_messages_core::{msg_meta::ServiceId, IMessage};
+use rsiot_messages_core::{msg_meta::ExecutorId, IMessage};
 
 #[derive(Clone)]
 pub struct GlobalState<TMsg>
@@ -8,7 +8,7 @@ where
     TMsg: IMessage + 'static,
 {
     /// Идентификатор клиента
-    pub service_id: ServiceId,
+    pub service_id: ExecutorId,
 
     /// hostname
     pub hostname: String,
