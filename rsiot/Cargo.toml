@@ -19,6 +19,7 @@ chrono = { workspace = true }
 url = { workspace = true }
 
 
+rsiot-auth = { workspace = true, optional = true }
 rsiot-component-core = { workspace = true, optional = true }
 rsiot-env-vars = { workspace = true, optional = true }
 rsiot-extra-components = { workspace = true, optional = true }
@@ -49,6 +50,8 @@ components = [
     "dep:rsiot-extra-components",
     "dep:rsiot-component-core",
 ]
+## Компонент аутентификации
+auth = ["dep:rsiot-auth"]
 ## Конфигурирование через переменные
 env-vars = ["dep:rsiot-env-vars"]
 ## Компонент http-клиент
@@ -79,6 +82,7 @@ websocket-client-wasm = ["components", "dep:rsiot-websocket-client-wasm"]
 websocket-server = ["components", "dep:rsiot-websocket-server"]
 ## Работа в одном потоке, в LocalSet
 single-thread = [
+    "rsiot-auth?/single-thread",
     "rsiot-component-core?/single-thread",
     "rsiot-extra-components?/single-thread",
     "rsiot-http-client?/single-thread",

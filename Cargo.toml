@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "./rsiot",
+    "./rsiot-auth",
     "./rsiot-component-core",
     "./rsiot-components-config",
     "./rsiot-env-vars",
@@ -37,6 +38,7 @@ rust-version = "1.75.0"
 
 [workspace.dependencies]
 formatx = { version = "0.2.2" }
+jwt = { version = "0.16.0" }
 openssl = { version = "0.10", features = ["vendored"] }
 
 # async
@@ -125,6 +127,7 @@ sqlx = { version = "0.7.3", features = [
 
 
 # workspace packages
+rsiot-auth = { version = "0.0.0", path = "./rsiot-auth" }
 rsiot-component-core = { version = "0.0.59", path = "./rsiot-component-core" }
 rsiot-components-config = { version = "0.0.58", path = "./rsiot-components-config" }
 rsiot-env-vars = { version = "0.0.55", path = "./rsiot-env-vars" }

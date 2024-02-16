@@ -1,10 +1,9 @@
 use serde::{Deserialize, Serialize};
-
-use crate::msg_meta::ExecutorId;
+use uuid::Uuid;
 
 /// Ответ на запрос на регистрацию
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub struct AuthResponse {
-    service_id: ExecutorId,
-    answer: bool,
+pub struct AuthLoginResponse {
+    request_id: Uuid,
+    token: Option<String>,
 }

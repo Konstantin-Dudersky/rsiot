@@ -1,5 +1,8 @@
-#![doc = include_str!("../README.md")]
+//! Представление сообщений в системе.
+//!
+//! Сообщения представлены типом перечисления (enum). Данные вложены в варианты перечисления.
 
+mod auth_roles;
 mod error;
 mod example_message;
 mod example_message_channel;
@@ -11,8 +14,8 @@ mod msg_content_value;
 pub mod eav;
 pub mod eav_helpers;
 pub mod msg_meta;
-pub mod msg_types;
 
+pub use auth_roles::AuthRoles;
 pub use error::Error;
 pub use example_message::ExampleMessage;
 pub use example_message_channel::ExampleMessageChannel;

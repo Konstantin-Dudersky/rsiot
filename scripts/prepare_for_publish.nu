@@ -86,6 +86,12 @@ do {
 }
 
 do {
+    print_header "rsiot-messages-core"
+    cd rsiot-messages-core
+    cargo rdme --force
+}
+
+do {
     print_header "rsiot-modbus-client"
     cd rsiot-modbus-client
     cargo rdme --force

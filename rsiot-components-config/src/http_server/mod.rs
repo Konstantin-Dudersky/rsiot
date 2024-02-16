@@ -57,3 +57,5 @@ where
     /// ```
     pub fn_output: fn(&TMsg) -> anyhow::Result<String>,
 }
+
+// TODO - переименовать fn_input и fn_output - смысл наоборот

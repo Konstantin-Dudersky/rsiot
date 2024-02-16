@@ -1,0 +1,29 @@
+[package]
+categories.workspace = true
+description = "Компонент аутентификации"
+edition.workspace = true
+keywords.workspace = true
+license.workspace = true
+name = "rsiot-auth"
+readme = "README.md"
+repository.workspace = true
+rust-version.workspace = true
+version = "0.0.0"
+
+
+[dependencies]
+async-trait = { workspace = true }
+serde = { workspace = true }
+tracing = { workspace = true }
+uuid = { workspace = true }
+jwt = { workspace = true }
+
+rsiot-component-core = { workspace = true }
+rsiot-messages-core = { workspace = true }
+
+
+[dev-dependencies]
+
+
+[features]
+single-thread = ["rsiot-component-core/single-thread"]
