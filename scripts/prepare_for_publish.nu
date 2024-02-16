@@ -10,9 +10,6 @@ cargo update
 print_header "workspace - outdated"
 cargo outdated
 
-print_header "workspace - unused dependencies"
-# cargo +nightly udeps
-# TODO - разобраться с ошибками
 
 # cargo clippy -------------------------------------------------------------------------------------
 
@@ -22,15 +19,41 @@ cargo clippy --all-targets --target="x86_64-unknown-linux-gnu" --features=""
 print_header "workspace clippy - x86_64-unknown-linux-gnu / single-thread"
 cargo clippy --all-targets --target="x86_64-unknown-linux-gnu" --features="single-thread"
 
-# print_header "workspace clippy - aarch64-unknown-linux-gnu / multi-thread"
-# cargo clippy --all-targets --target="aarch64-unknown-linux-gnu" --features=""
+print_header "workspace clippy - aarch64-unknown-linux-gnu / multi-thread"
+cargo clippy --all-targets --target="aarch64-unknown-linux-gnu" --features=""
+
+print_header "workspace clippy - aarch64-unknown-linux-gnu / single-thread"
+cargo clippy --all-targets --target="aarch64-unknown-linux-gnu" --features="single-thread"
+
+# print_header "workspace clippy - wasm32-unknown-unknown / multi-thread"
+# cargo clippy --all-targets --target="wasm32-unknown-unknown" --features=""
 # TODO - настроить проверки по остальным таргетам
 
 print_header "workspace clippy - wasm32-unknown-unknown / single-thread"
 cargo clippy --all-targets --target="wasm32-unknown-unknown" --features="single-thread"
 
-# print_header "workspace clippy - wasm32-unknown-unknown / single-thread"
-# cargo clippy --all-targets --target="wasm32-unknown-unknown" --features=""
+
+# cargo udeps --------------------------------------------------------------------------------------
+
+print_header "workspace udeps - x86_64-unknown-linux-gnu / multi-thread"
+cargo +nightly udeps --target="x86_64-unknown-linux-gnu" --features=""
+
+print_header "workspace udeps - x86_64-unknown-linux-gnu / single-thread"
+cargo +nightly udeps --target="x86_64-unknown-linux-gnu" --features="single-thread"
+
+# print_header "workspace udeps - aarch64-unknown-linux-gnu / multi-thread"
+# cargo +nightly udeps --target="aarch64-unknown-linux-gnu" --features=""
+
+# print_header "workspace udeps - aarch64-unknown-linux-gnu / single-thread"
+# cargo +nightly udeps --target="aarch64-unknown-linux-gnu" --features="single-thread"
+
+# print_header "workspace udeps - wasm32-unknown-unknown / multi-thread"
+# cargo +nightly udeps --target="wasm32-unknown-unknown" --features=""
+
+print_header "workspace udeps - wasm32-unknown-unknown / single-thread"
+cargo +nightly udeps --target="wasm32-unknown-unknown" --features="single-thread"
+
+
 
 # cargo test ---------------------------------------------------------------------------------------
 

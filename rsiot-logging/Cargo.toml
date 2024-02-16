@@ -14,7 +14,6 @@ rust-version.workspace = true
 thiserror = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
-url = { workspace = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 tracing-web = { workspace = true }
@@ -22,3 +21,4 @@ tracing-web = { workspace = true }
 [target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dependencies]
 tracing-loki = { workspace = true }
 tokio = { workspace = true }
+url = { workspace = true }

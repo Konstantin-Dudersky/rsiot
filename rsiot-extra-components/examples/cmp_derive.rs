@@ -9,21 +9,27 @@
 //! cargo run --package rsiot-extra-components --example cmp_derive --features single-thread
 //! ```
 
-use std::time::Duration;
-
-use tokio::runtime;
-#[cfg(feature = "single-thread")]
-use tokio::task::LocalSet;
-
-use rsiot_component_core::ComponentExecutor;
-use rsiot_extra_components::{
-    cmp_derive::{self, DeriveItem},
-    cmp_inject_periodic, cmp_logger,
-};
-use rsiot_messages_core::{ExampleMessage, MsgContent};
-use tracing::Level;
-
+#[cfg(any(
+    target_arch = "x86_64",
+    target_arch = "aarch64",
+    all(target_arch = "wasm32", feature = "single-thread"),
+    all(target_arch = "riscv32", feature = "single-thread"),
+))]
 fn main() -> anyhow::Result<()> {
+    use std::time::Duration;
+
+    use tokio::runtime;
+    #[cfg(feature = "single-thread")]
+    use tokio::task::LocalSet;
+
+    use rsiot_component_core::ComponentExecutor;
+    use rsiot_extra_components::{
+        cmp_derive::{self, DeriveItem},
+        cmp_inject_periodic, cmp_logger,
+    };
+    use rsiot_messages_core::{ExampleMessage, MsgContent};
+    use tracing::Level;
+
     tracing_subscriber::fmt().init();
 
     #[derive(Clone, Default, PartialEq)]
@@ -103,3 +109,11 @@ fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
+
+#[cfg(not(any(
+    target_arch = "x86_64",
+    target_arch = "aarch64",
+    all(target_arch = "wasm32", feature = "single-thread"),
+    all(target_arch = "riscv32", feature = "single-thread"),
+)))]
+fn main() {}

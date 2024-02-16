@@ -1,3 +1,10 @@
+#![cfg(any(
+    target_arch = "x86_64",
+    target_arch = "aarch64",
+    all(target_arch = "wasm32", feature = "single-thread"),
+    all(target_arch = "riscv32", feature = "single-thread"),
+))]
+
 pub mod cmp_add_input_stream;
 pub mod cmp_add_output_stream;
 // pub mod cmp_delay; TODO

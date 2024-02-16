@@ -18,6 +18,7 @@ thiserror = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }
 url = { workspace = true }
+openssl = { workspace = true, features = ["vendored"] }
 
 rsiot-component-core = { workspace = true }
 rsiot-components-config = { workspace = true }
