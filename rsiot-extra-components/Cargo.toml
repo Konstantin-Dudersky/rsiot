@@ -1,6 +1,6 @@
 [package]
 name = "rsiot-extra-components"
-version = "0.0.58"
+version = "0.0.59"
 description = "Дополнительные компоненты"
 categories.workspace = true
 edition.workspace = true

@@ -1,6 +1,6 @@
 [package]
 name = "rsiot-logging"
-version = "0.0.55"
+version = "0.0.59"
 description = "Настройка логгирования"
 categories.workspace = true
 edition.workspace = true
