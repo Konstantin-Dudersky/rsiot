@@ -29,7 +29,7 @@ rsiot-http-server = { workspace = true, optional = true }
 rsiot-influxdb = { workspace = true, optional = true }
 rsiot-leptos = { workspace = true, optional = true }
 rsiot-logging = { workspace = true }
-rsiot-messages-core = { workspace = true }
+rsiot-messages-core = { workspace = true, features = ["serde-json"] }
 rsiot-modbus-client = { workspace = true, optional = true }
 rsiot-plc = { workspace = true, optional = true }
 rsiot-redis-client = { workspace = true, optional = true }

@@ -10,6 +10,7 @@ mod imessage;
 mod message_channel;
 mod msg_content;
 mod msg_content_value;
+mod new_message;
 
 pub mod eav;
 pub mod eav_helpers;
