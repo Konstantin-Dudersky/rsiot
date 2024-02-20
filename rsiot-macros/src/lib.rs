@@ -41,3 +41,16 @@ pub fn create_signal_from_msg(msg: TokenStream) -> TokenStream {
         #code
     })
 }
+
+// let test = "Data-Data::DataGroup-DataGroup1::DataGroupStruct";
+// let msg = match msg.content {
+//     MsgContentType::System(_) => todo!(),
+//     MsgContentType::Data(msg) => match msg {
+//         Data::DataUnit(_) => todo!(),
+//         Data::DataF64(_) => todo!(),
+//         Data::DataGroup(msg) => match msg {
+//             DataGroup1::DataGroupF64(_) => todo!(),
+//             DataGroup1::DataGroupStruct(msg) => msg,
+//         },
+//     },
+// };

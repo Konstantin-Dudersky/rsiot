@@ -16,7 +16,7 @@ pub struct CmpOutput<TMsg> {
 
 impl<TMsg> CmpOutput<TMsg>
 where
-    TMsg: Debug + Serialize,
+    TMsg: Clone + Debug + Serialize,
 {
     pub fn new(
         channel: mpsc::Sender<Message<TMsg>>,

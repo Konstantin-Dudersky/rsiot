@@ -1,14 +1,11 @@
 use rsiot_messages_core::{
     eav::{EavModel, ValueType},
+    message_v2::Message,
     msg_meta::Timestamp,
-    IMessage,
 };
 
 #[derive(Clone, Debug)]
-pub struct Config<TMsg>
-where
-    TMsg: IMessage,
-{
+pub struct Config<TMsg> {
     pub host: String,
     pub port: u16,
     pub org: String,
@@ -24,7 +21,7 @@ where
     /// ```rust
     /// |msg: &TMsg| cmp_influxdb::msg_into_line_protocol(msg)
     /// ```
-    pub fn_input: fn(&TMsg) -> Vec<LineProtocolItem>,
+    pub fn_input: fn(&Message<TMsg>) -> Vec<LineProtocolItem>,
 }
 
 /// Строка записи в данных в базу через HTTP API
@@ -85,13 +82,12 @@ fn eav_to_line_protocol(eav: &EavModel) -> LineProtocolItem {
 }
 
 /// Преобразование сообщения в вектор строк протокола InfluxDB
-pub fn msg_into_line_protocol<TMsg>(msg: &TMsg) -> Vec<LineProtocolItem>
-where
-    TMsg: IMessage,
-{
-    msg.clone()
-        .into_eav()
-        .iter()
-        .map(eav_to_line_protocol)
-        .collect()
+pub fn msg_into_line_protocol<TMsg>(msg: &TMsg) -> Vec<LineProtocolItem> {
+    // msg.clone()
+    //     .into_eav()
+    //     .iter()
+    //     .map(eav_to_line_protocol)
+    //     .collect()
+    // TODO
+    vec![]
 }

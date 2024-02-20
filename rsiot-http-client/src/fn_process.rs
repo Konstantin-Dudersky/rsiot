@@ -1,6 +1,7 @@
 use std::{fmt::Debug, time::Duration};
 
 use reqwest::{Client, Response, StatusCode};
+use rsiot_messages_core::message_v2::{Message, MsgContentBound};
 use serde::Serialize;
 use tokio::{
     task::JoinSet,
@@ -19,7 +20,8 @@ pub async fn fn_process<TMsg>(
     config: config::Config<TMsg>,
 ) -> Result<(), ComponentError>
 where
-    TMsg: Clone + 'static,
+    // TMsg: Clone + Debug + Send + Serialize + 'static,
+    TMsg: MsgContentBound + 'static,
 {
     info!("Starting http-client, configuration: {:?}", config);
 
@@ -37,18 +39,19 @@ where
 }
 
 /// Основная задача
-async fn task_main<TMessage>(
-    input: CmpInput<TMessage>,
-    output: CmpOutput<TMessage>,
-    config: config::Config<TMessage>,
-) -> crate::Result<(), TMessage>
+async fn task_main<TMsg>(
+    input: CmpInput<TMsg>,
+    output: CmpOutput<TMsg>,
+    config: config::Config<TMsg>,
+) -> crate::Result<(), TMsg>
 where
-    TMessage: Clone + 'static,
+    // TMsg: Clone + Debug + Send + Serialize + 'static,
+    TMsg: MsgContentBound + 'static,
 {
-    let mut set = JoinSet::<crate::Result<(), TMessage>>::new();
+    let mut set = JoinSet::<crate::Result<(), TMsg>>::new();
     // запускаем периодические запросы
     for req in config.requests_periodic {
-        let future = task_periodic_request::<TMessage>(
+        let future = task_periodic_request::<TMsg>(
             output.clone(),
             req,
             config.connection_config.base_url.clone(),
@@ -72,13 +75,14 @@ where
 }
 
 /// Задача обработки периодического запроса
-async fn task_periodic_request<TMessage>(
-    output: CmpOutput<TMessage>,
-    config: config::RequestPeriodic<TMessage>,
+async fn task_periodic_request<TMsg>(
+    output: CmpOutput<TMsg>,
+    config: config::RequestPeriodic<TMsg>,
     url: Url,
-) -> crate::Result<(), TMessage>
+) -> crate::Result<(), TMsg>
 where
-    TMessage: Debug + Serialize,
+    // TMsg: Clone + Debug + Serialize,
+    TMsg: MsgContentBound,
 {
     loop {
         let begin = Instant::now();
@@ -140,10 +144,7 @@ async fn process_request_and_response<TMsg>(
     request_param: &config::HttpParam,
     on_success: config::CbkOnSuccess<TMsg>,
     on_failure: config::CbkOnFailure<TMsg>,
-) -> crate::Result<Vec<TMsg>, TMsg>
-where
-    TMsg: IMessage,
-{
+) -> crate::Result<Vec<Message<TMsg>>, TMsg> {
     let response = send_request(url.clone(), request_param).await;
     let response = match response {
         Ok(val) => val,

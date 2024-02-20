@@ -11,7 +11,10 @@ use rsiot_component_core::{
 pub struct Config {}
 
 #[async_trait]
-impl<TMsg> IComponentProcess<Config, TMsg> for Component<Config, TMsg> {
+impl<TMsg> IComponentProcess<Config, TMsg> for Component<Config, TMsg>
+where
+    TMsg: Send,
+{
     async fn process(
         &self,
         _config: Config,

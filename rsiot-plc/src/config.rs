@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use serde::Serialize;
 
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::message_v2::MsgContentBound;
 
 use crate::plc::function_block_base::{FunctionBlockBase, IFunctionBlock};
 
@@ -15,7 +15,7 @@ use crate::plc::function_block_base::{FunctionBlockBase, IFunctionBlock};
 #[derive(Clone)]
 pub struct Config<TMessage, I, Q, S>
 where
-    TMessage: IMessage,
+    TMessage: MsgContentBound,
     I: Clone + Default + Serialize,
     Q: Clone + Default + Serialize,
     S: Clone + Default + Serialize,

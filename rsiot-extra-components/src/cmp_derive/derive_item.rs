@@ -22,7 +22,7 @@ where
 
 impl<TMsg, TStore> DeriveItemProcess<TMsg> for DeriveItem<TMsg, TStore>
 where
-    TMsg: Debug + Serialize,
+    TMsg: Clone + Debug + Serialize,
     TStore: Clone + Default + PartialEq + Send + Sync,
 {
     fn process(&mut self, msg: &Message<TMsg>) -> Option<Vec<Message<TMsg>>> {

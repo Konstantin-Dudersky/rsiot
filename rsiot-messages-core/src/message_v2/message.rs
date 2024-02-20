@@ -24,7 +24,7 @@ pub struct Message<TData> {
 
 impl<TData> Message<TData>
 where
-    TData: Debug + Serialize,
+    TData: Clone + Debug + Serialize,
 {
     pub fn new(msg: TData) -> Self {
         let content = MsgContentType::Data(msg);
@@ -48,6 +48,13 @@ where
         }
         self.process = Some(cmp.clone());
     }
+
+    pub fn get_data(&self) -> Option<TData> {
+        match &self.content {
+            MsgContentType::System(_) => None,
+            MsgContentType::Data(data) => Some(data.clone()),
+        }
+    }
 }
 
 #[cfg(test)]
@@ -56,19 +63,19 @@ mod tests {
 
     #[test]
     fn test_key() {
-        #[derive(Debug, Deserialize, PartialEq, Serialize)]
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         struct StructInDataGroup {
             struct_field1: bool,
             struct_field2: f64,
         }
 
-        #[derive(Debug, Deserialize, PartialEq, Serialize)]
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         enum DataGroup1 {
             DataGroupF64(f64),
             DataGroupStruct(StructInDataGroup),
         }
 
-        #[derive(Debug, Deserialize, PartialEq, Serialize)]
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         enum Data {
             DataUnit(()),
             DataF64(f64),

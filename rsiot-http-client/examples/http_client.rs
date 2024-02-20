@@ -18,16 +18,19 @@ async fn main() -> anyhow::Result<()> {
     use rsiot_component_core::ComponentExecutor;
     use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
     use rsiot_http_client::cmp_http_client::{self, config};
+    use rsiot_messages_core::message_v2::{Message, MsgContentBound};
 
     //------------------------------------------------------------------------------
 
     #[allow(clippy::enum_variant_names)]
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    enum Message {
+    enum Data {
         HttpMethodsGetPeriodicRespone(HttpMethodsGet),
         HttpMethodsGetOnEventResponse(HttpMethodsGet),
         HttpMethodsGetOnEventRequest(()),
     }
+
+    impl MsgContentBound for Data {}
 
     //------------------------------------------------------------------------------
 
@@ -48,7 +51,9 @@ async fn main() -> anyhow::Result<()> {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg = Message::HttpMethodsGetOnEventRequest(MsgContent::new(()));
+            let msg = rsiot_messages_core::message_v2::Message::new(
+                Data::HttpMethodsGetOnEventRequest(()),
+            );
             vec![msg]
         },
     };
@@ -58,23 +63,24 @@ async fn main() -> anyhow::Result<()> {
         header: "HTTP response".into(),
     };
 
-    let http_config = config::Config::<Message> {
+    let http_config = config::Config::<Data> {
         connection_config: config::ConnectionConfig {
             base_url: Url::parse("http://127.0.0.1:80")?,
         },
         requests_input: vec![config::RequestInput {
-            fn_input: |msg| match msg {
-                Message::HttpMethodsGetOnEventRequest(_) => {
-                    let param = config::HttpParam::Get("get".to_string());
-                    Some(param)
+            fn_input: |msg| {
+                let msg = msg.get_data()?;
+                match msg {
+                    Data::HttpMethodsGetOnEventRequest(_) => {
+                        let param = config::HttpParam::Get("get".to_string());
+                        Some(param)
+                    }
+                    _ => None,
                 }
-                _ => None,
             },
             on_success: |body| {
                 let res = from_str::<HttpMethodsGet>(body)?;
-                Ok(vec![Message::HttpMethodsGetOnEventResponse(
-                    MsgContent::new(res),
-                )])
+                Ok(vec![Message::new(Data::HttpMethodsGetOnEventResponse(res))])
             },
             on_failure: Vec::new,
         }],
@@ -83,9 +89,7 @@ async fn main() -> anyhow::Result<()> {
             http_param: config::HttpParam::Get("get".to_string()),
             on_success: |body| {
                 let res = from_str::<HttpMethodsGet>(body)?;
-                Ok(vec![Message::HttpMethodsGetPeriodicRespone(
-                    MsgContent::new(res),
-                )])
+                Ok(vec![Message::new(Data::HttpMethodsGetPeriodicRespone(res))])
             },
             on_failure: Vec::new,
         }],

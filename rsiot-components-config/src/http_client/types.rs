@@ -1,4 +1,5 @@
 use anyhow::Result;
+use rsiot_messages_core::message_v2::Message;
 
-pub type CbkOnSuccess<TMessage> = fn(&str) -> Result<Vec<TMessage>>;
-pub type CbkOnFailure<TMessage> = fn() -> Vec<TMessage>;
+pub type CbkOnSuccess<TMsg> = fn(&str) -> Result<Vec<Message<TMsg>>>;
+pub type CbkOnFailure<TMsg> = fn() -> Vec<Message<TMsg>>;
