@@ -1,46 +1,44 @@
+use std::fmt::Debug;
+
+use serde::Serialize;
 use tokio::sync::mpsc;
 
-use rsiot_messages_core::{
-    msg_meta::{ComponentId, ExecutorId},
-    IMessage,
-};
+use rsiot_messages_core::message_v2::{Message, MsgSource};
+use uuid::Uuid;
 
 use crate::ComponentError;
 
 #[derive(Clone, Debug)]
-pub struct CmpOutput<TMsg>
-where
-    TMsg: IMessage,
-{
-    channel: mpsc::Sender<TMsg>,
-    _executor_id: ExecutorId,
-    component_id: Option<ComponentId>,
+pub struct CmpOutput<TMsg> {
+    channel: mpsc::Sender<Message<TMsg>>,
+    msg_source: MsgSource,
 }
 
 impl<TMsg> CmpOutput<TMsg>
 where
-    TMsg: IMessage,
+    TMsg: Debug + Serialize,
 {
-    pub fn new(channel: mpsc::Sender<TMsg>, service_id: ExecutorId) -> Self {
+    pub fn new(
+        channel: mpsc::Sender<Message<TMsg>>,
+        executor_name: &str,
+        executor_id: Uuid,
+    ) -> Self {
+        let msg_source = MsgSource::new(executor_name, executor_id);
         Self {
             channel,
-            _executor_id: service_id,
-            component_id: None,
+            msg_source,
         }
     }
 
-    pub(crate) fn set_component_id(&mut self, component_name: ComponentId) {
-        self.component_id = Some(component_name);
+    pub(crate) fn set_component_id(&mut self, component_name: &str, component_id: Uuid) {
+        self.msg_source.set_component(component_name, component_id);
     }
 
-    pub async fn send(&self, mut msg: TMsg) -> Result<(), ComponentError> {
-        match &self.component_id {
-            Some(val) => msg.cmp_set(val),
-            None => {
-                let err = "component_id not set, check component code";
-                return Err(ComponentError::CmpOutput(err.into()));
-            }
-        }
+    pub(crate) fn set_session_id(&mut self, session_name: &str, session_id: Uuid) {
+        self.msg_source.set_session(session_name, session_id);
+    }
+    pub async fn send(&self, mut msg: Message<TMsg>) -> Result<(), ComponentError> {
+        msg.cmp_set(&self.msg_source);
         self.channel
             .send(msg)
             .await

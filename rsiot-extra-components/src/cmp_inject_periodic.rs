@@ -1,19 +1,22 @@
 //! Компонент для периодического генерирования сообщений
 
+use std::fmt::Debug;
+
 use async_trait::async_trait;
+use serde::Serialize;
 use tokio::time::{sleep, Duration, Instant};
 use tracing::debug;
 
 use rsiot_component_core::{
     cmp_set_component_id, Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::message_v2::Message;
 
 #[derive(Clone, Debug)]
-pub struct Config<TMessage, TFnPeriodic>
+pub struct Config<TMsg, TFnPeriodic>
 where
-    TMessage: IMessage,
-    TFnPeriodic: FnMut() -> Vec<TMessage>,
+    TMsg: Clone,
+    TFnPeriodic: FnMut() -> Vec<Message<TMsg>>,
 {
     /// Период вызова
     pub period: Duration,
@@ -23,33 +26,33 @@ where
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
-impl<TMessage, TFnPeriodic> IComponentProcess<Config<TMessage, TFnPeriodic>, TMessage>
-    for Component<Config<TMessage, TFnPeriodic>, TMessage>
+impl<TMsg, TFnPeriodic> IComponentProcess<Config<TMsg, TFnPeriodic>, TMsg>
+    for Component<Config<TMsg, TFnPeriodic>, TMsg>
 where
-    TMessage: IMessage,
-    TFnPeriodic: FnMut() -> Vec<TMessage> + Send + Sync,
+    TMsg: Clone + Debug + Send + Serialize + Sync,
+    TFnPeriodic: FnMut() -> Vec<Message<TMsg>> + Send + Sync,
 {
     async fn process(
         &self,
-        config: Config<TMessage, TFnPeriodic>,
-        mut input: CmpInput<TMessage>,
-        mut output: CmpOutput<TMessage>,
-        cache: Cache<TMessage>,
+        config: Config<TMsg, TFnPeriodic>,
+        mut input: CmpInput<TMsg>,
+        mut output: CmpOutput<TMsg>,
+        cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         cmp_set_component_id(&mut input, &mut output, "cmp_inject_periodic");
         process(config, input, output, cache).await
     }
 }
 
-async fn process<TMessage, TFnPeriodic>(
-    mut config: Config<TMessage, TFnPeriodic>,
-    _input: CmpInput<TMessage>,
-    output: CmpOutput<TMessage>,
-    _cache: Cache<TMessage>,
+async fn process<TMsg, TFnPeriodic>(
+    mut config: Config<TMsg, TFnPeriodic>,
+    _input: CmpInput<TMsg>,
+    output: CmpOutput<TMsg>,
+    _cache: Cache<TMsg>,
 ) -> Result<(), ComponentError>
 where
-    TMessage: IMessage,
-    TFnPeriodic: FnMut() -> Vec<TMessage>,
+    TMsg: Clone + Debug + Serialize,
+    TFnPeriodic: FnMut() -> Vec<Message<TMsg>>,
 {
     debug!("cmp_inject_periodic started");
     loop {

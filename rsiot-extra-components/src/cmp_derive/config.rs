@@ -1,11 +1,6 @@
-use rsiot_messages_core::IMessage;
-
 use super::derive_item_process::DeriveItemProcess;
 
-pub struct Config<TMsg>
-where
-    TMsg: IMessage,
-{
+pub struct Config<TMsg> {
     /// Вектор структур `DeriveItem`
     ///
     /// # Примеры

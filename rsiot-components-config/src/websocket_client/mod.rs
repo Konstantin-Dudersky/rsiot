@@ -1,13 +1,8 @@
 use url::Url;
 
-use rsiot_messages_core::IMessage;
-
 /// Настройки Websocket-клиента
 #[derive(Clone, Debug)]
-pub struct Config<TMsg>
-where
-    TMsg: IMessage,
-{
+pub struct Config<TMsg> {
     /// Адрес Websocket-сервера
     pub url: Url,
 

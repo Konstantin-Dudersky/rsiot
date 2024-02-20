@@ -1,34 +1,31 @@
-use tokio::sync::broadcast::{self, error::RecvError};
+use std::fmt::Debug;
+
+use tokio::sync::broadcast::{self};
 use uuid::Uuid;
 
-use rsiot_messages_core::{
-    message_v2::{Message, MsgSource},
-    IMessage,
-};
+use rsiot_messages_core::message_v2::{Message, MsgSource};
 
 use crate::ComponentError;
 
 #[derive(Debug)]
-pub struct CmpInput<TMsg>
-// where
-//     TMsg: IMessage,
-{
+pub struct CmpInput<TMsg> {
     channel: broadcast::Receiver<Message<TMsg>>,
     msg_source: MsgSource,
 }
 
 impl<TMsg> CmpInput<TMsg>
 where
-    TMsg: Clone,
+    TMsg: Clone + Debug,
 {
     pub fn new(
         channel: broadcast::Receiver<Message<TMsg>>,
         executor_name: &str,
         executor_id: Uuid,
     ) -> Self {
+        let msg_source = MsgSource::new(executor_name, executor_id);
         Self {
             channel,
-            msg_source: MsgSource::new(executor_name, executor_id),
+            msg_source,
         }
     }
 
@@ -41,14 +38,19 @@ where
     }
 
     pub async fn recv(&mut self) -> Result<Option<Message<TMsg>>, ComponentError> {
-        let msg = self.channel.recv().await.map_err(|e| ComponentError::CmpInput(e.to_string()))?;
-        // match msg.process {
-        //     Some(msg_process) => todo!(),
-        //     None => ,
-        // }
-        let msg_process = 
-
-        if msg.process == self.msg_source {
+        let msg = self
+            .channel
+            .recv()
+            .await
+            .map_err(|e| ComponentError::CmpInput(e.to_string()))?;
+        let msg_cmp_process = match &msg.process {
+            Some(cmp_process) => cmp_process,
+            None => {
+                let err = format!("cmp_process not set for message: {:?}", msg);
+                return Err(ComponentError::CmpInput(err));
+            }
+        };
+        if msg_cmp_process == &self.msg_source {
             return Ok(None);
         }
         Ok(Some(msg))
@@ -57,13 +59,12 @@ where
 
 impl<TMsg> Clone for CmpInput<TMsg>
 where
-    TMsg: IMessage,
+    TMsg: Clone,
 {
     fn clone(&self) -> Self {
         Self {
             channel: self.channel.resubscribe(),
-            executor_id: self.executor_id.clone(),
-            component_id: self.component_id.clone(),
+            msg_source: self.msg_source.clone(),
         }
     }
 }

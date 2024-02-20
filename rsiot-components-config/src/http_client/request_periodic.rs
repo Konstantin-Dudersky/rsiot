@@ -1,7 +1,5 @@
 use std::time::Duration;
 
-use rsiot_messages_core::IMessage;
-
 use super::{
     http_param::HttpParam,
     types::{CbkOnFailure, CbkOnSuccess},
@@ -9,10 +7,7 @@ use super::{
 
 /// Параметры периодического запроса
 #[derive(Clone, Debug)]
-pub struct RequestPeriodic<TMessage>
-where
-    TMessage: IMessage,
-{
+pub struct RequestPeriodic<TMessage> {
     /// Периодичность вызова
     pub period: Duration,
     /// Параметры запроса

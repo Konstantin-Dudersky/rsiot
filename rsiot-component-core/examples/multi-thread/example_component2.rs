@@ -7,15 +7,11 @@ use tracing::info;
 use rsiot_component_core::{
     Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
-use rsiot_messages_core::IMessage;
 
 pub struct Config {}
 
 #[async_trait]
-impl<TMsg> IComponentProcess<Config, TMsg> for Component<Config, TMsg>
-where
-    TMsg: IMessage,
-{
+impl<TMsg> IComponentProcess<Config, TMsg> for Component<Config, TMsg> {
     async fn process(
         &self,
         _config: Config,

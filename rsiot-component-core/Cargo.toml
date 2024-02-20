@@ -12,6 +12,7 @@ version = "0.0.59"
 [dependencies]
 async-trait = { workspace = true }
 futures = { workspace = true }
+serde = { workspace = true }
 thiserror = { workspace = true }
 tokio = { version = "1", features = ["macros", "sync", "rt"] }
 tracing = { workspace = true }

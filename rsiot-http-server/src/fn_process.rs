@@ -1,9 +1,11 @@
 use std::{
+    fmt::Debug,
     net::{IpAddr, Ipv4Addr, SocketAddr},
     sync::Arc,
 };
 
 use axum::routing;
+use serde::Serialize;
 use tokio::time::{sleep, Duration};
 use tower_http::{
     cors::CorsLayer,
@@ -13,18 +15,17 @@ use tower_http::{
 use tracing::{error, info, Level};
 
 use rsiot_component_core::{Cache, CmpOutput, ComponentError};
-use rsiot_messages_core::IMessage;
 
 use crate::{config::Config, error::Error, routes, shared_state::SharedState};
 
 /// Компонент для получения и ввода сообщений через HTTP Server
-pub async fn fn_process<TMessage>(
-    output: CmpOutput<TMessage>,
-    config: Config<TMessage>,
-    cache: Cache<TMessage>,
+pub async fn fn_process<TMsg>(
+    output: CmpOutput<TMsg>,
+    config: Config<TMsg>,
+    cache: Cache<TMsg>,
 ) -> Result<(), ComponentError>
 where
-    TMessage: IMessage + 'static,
+    TMsg: Clone + Debug + Send + Serialize + Sync + 'static,
 {
     info!("Component started, configuration: {:?}", config);
     // общее состояние
@@ -43,12 +44,9 @@ where
     }
 }
 
-async fn task_main<TMessage>(
-    shared_state: Arc<SharedState<TMessage>>,
-    port: u16,
-) -> Result<(), Error>
+async fn task_main<TMsg>(shared_state: Arc<SharedState<TMsg>>, port: u16) -> Result<(), Error>
 where
-    TMessage: IMessage + 'static,
+    TMsg: Clone + Debug + Send + Serialize + Sync + 'static,
 {
     let ipaddr = IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0));
     let socket_addr = SocketAddr::new(ipaddr, port);
@@ -66,9 +64,9 @@ where
 
     let app = routing::Router::new()
         .route("/", routing::get(routes::root))
-        .route("/messages", routing::get(routes::list::<TMessage>))
-        .route("/messages/:id", routing::get(routes::get::<TMessage>))
-        .route("/messages", routing::put(routes::replace::<TMessage>))
+        .route("/messages", routing::get(routes::list::<TMsg>))
+        .route("/messages/:id", routing::get(routes::get::<TMsg>))
+        .route("/messages", routing::put(routes::replace::<TMsg>))
         .with_state(shared_state)
         .layer(layer_cors)
         .layer(layer_trace);

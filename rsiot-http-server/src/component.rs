@@ -1,9 +1,11 @@
+use std::fmt::Debug;
+
 use async_trait::async_trait;
 
 use rsiot_component_core::{
     cmp_set_component_id, Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
-use rsiot_messages_core::IMessage;
+use serde::Serialize;
 
 use crate::{config::ConfigAlias, fn_process::fn_process};
 
@@ -11,7 +13,7 @@ use crate::{config::ConfigAlias, fn_process::fn_process};
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
 impl<TMsg> IComponentProcess<ConfigAlias<TMsg>, TMsg> for Component<ConfigAlias<TMsg>, TMsg>
 where
-    TMsg: IMessage + 'static,
+    TMsg: Clone + Debug + Send + Serialize + Sync + 'static,
 {
     async fn process(
         &self,

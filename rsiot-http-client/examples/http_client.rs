@@ -18,22 +18,15 @@ async fn main() -> anyhow::Result<()> {
     use rsiot_component_core::ComponentExecutor;
     use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
     use rsiot_http_client::cmp_http_client::{self, config};
-    use rsiot_messages_core::{msg_meta, IMessage, IMsgContentValue, MsgContent, MsgMeta};
 
     //------------------------------------------------------------------------------
 
     #[allow(clippy::enum_variant_names)]
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     enum Message {
-        HttpMethodsGetPeriodicRespone(MsgContent<HttpMethodsGet>),
-        HttpMethodsGetOnEventResponse(MsgContent<HttpMethodsGet>),
-        HttpMethodsGetOnEventRequest(MsgContent<()>),
-    }
-
-    impl IMessage for Message {
-        fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
-            vec![]
-        }
+        HttpMethodsGetPeriodicRespone(HttpMethodsGet),
+        HttpMethodsGetOnEventResponse(HttpMethodsGet),
+        HttpMethodsGetOnEventRequest(()),
     }
 
     //------------------------------------------------------------------------------
@@ -44,12 +37,6 @@ async fn main() -> anyhow::Result<()> {
         headers: HashMap<String, String>,
         origin: String,
         url: String,
-    }
-
-    impl IMsgContentValue for HttpMethodsGet {
-        fn fmt_value(&self, _template: &str) -> String {
-            todo!()
-        }
     }
 
     //------------------------------------------------------------------------------

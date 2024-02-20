@@ -22,19 +22,13 @@ fn main() -> anyhow::Result<()> {
     use rsiot_component_core::ComponentExecutor;
     use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
     use rsiot_http_server as cmp_http_server;
-    use rsiot_messages_core::{msg_meta, IMessage, IMsgContentValue, MsgContent, MsgMeta};
+    use rsiot_messages_core::message_v2::Message;
 
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
-    enum Message {
-        Msg0(MsgContent<f64>),
-        Msg1(MsgContent<f64>),
-        MsgSet(MsgContent<f64>),
-    }
-
-    impl IMessage for Message {
-        fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
-            vec![]
-        }
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    enum Data {
+        Msg0(f64),
+        Msg1(f64),
+        MsgSet(f64),
     }
 
     tracing_subscriber::fmt()
@@ -50,12 +44,12 @@ fn main() -> anyhow::Result<()> {
 
     let http_server_config = cmp_http_server::Config {
         port: 8011,
-        fn_input: |text: &str| {
-            let msg = Message::from_json(text)?;
+        fn_output: |text: &str| {
+            let msg = Message::<Data>::deserialize(text)?;
             Ok(Some(msg))
         },
-        fn_output: |msg: &Message| {
-            let text = msg.to_json()?;
+        fn_input: |msg: &Message<Data>| {
+            let text = msg.serialize()?;
             Ok(text) as anyhow::Result<String>
         },
     };
@@ -63,8 +57,8 @@ fn main() -> anyhow::Result<()> {
     let inject_periodic_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg1 = Message::Msg0(MsgContent::new(counter));
-            let msg2 = Message::Msg1(MsgContent::new(counter * 2.0));
+            let msg1 = Message::new(Data::Msg0(counter));
+            let msg2 = Message::new(Data::Msg1(counter * 2.0));
             counter += 1.0;
             vec![msg1, msg2]
         },

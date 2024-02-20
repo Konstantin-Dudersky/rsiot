@@ -1,11 +1,9 @@
-use super::Message;
+use super::message::Message;
 
 use serde::{de::DeserializeOwned, Serialize};
 
 #[cfg(feature = "serde-json")]
 use serde_json::{from_str as deserialize, to_string as serialize};
-
-use crate::Error;
 
 impl<TData> Message<TData>
 where
@@ -18,19 +16,19 @@ where
             Ok(value) => Ok(value),
             Err(error) => {
                 let error = error.to_string();
-                Err(Error::Serialization(error))
+                Err(crate::Error::Serialization(error))
             }
         }
     }
 
     /// Десериализация сообщений из json
     #[cfg(feature = "serde-json")]
-    pub fn deserialize(text: &str) -> Result<Self, Error> {
+    pub fn deserialize(text: &str) -> Result<Self, crate::Error> {
         match deserialize::<Self>(text) {
             Ok(value) => Ok(value),
             Err(error) => {
                 let error = error.to_string();
-                Err(Error::Deserialization(error))
+                Err(crate::Error::Deserialization(error))
             }
         }
     }

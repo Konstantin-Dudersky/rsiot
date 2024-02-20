@@ -1,5 +1,3 @@
-use rsiot_messages_core::IMessage;
-
 use super::{
     connection_config::ConnectionConfig, request_input::RequestInput,
     request_periodic::RequestPeriodic,
@@ -7,10 +5,7 @@ use super::{
 
 /// Параметры компонента http-client
 #[derive(Clone, Debug)]
-pub struct Config<TMessage>
-where
-    TMessage: IMessage,
-{
+pub struct Config<TMessage> {
     /// Параметры подключения
     pub connection_config: ConnectionConfig,
     /// Запросы, которые формируются на основе входящих сообщений

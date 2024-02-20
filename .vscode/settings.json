@@ -1,5 +1,5 @@
 {
-  // "rust-analyzer.cargo.features": ["single-thread"],
+  // "rust-analyzer.cargo.features": ["single-thread", "serde-json"],
   "rust-analyzer.cargo.features": ["serde-json"],
 
   // "rust-analyzer.cargo.target": "wasm32-unknown-unknown",

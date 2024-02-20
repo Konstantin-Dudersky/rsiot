@@ -27,7 +27,7 @@ fn main() -> anyhow::Result<()> {
         cmp_derive::{self, DeriveItem},
         cmp_inject_periodic, cmp_logger,
     };
-    use rsiot_messages_core::{ExampleMessage, MsgContent};
+    use rsiot_messages_core::{message_v2::Message, ExampleMessage};
     use tracing::Level;
 
     tracing_subscriber::fmt().init();
@@ -42,14 +42,14 @@ fn main() -> anyhow::Result<()> {
         derive_items: vec![Box::new(DeriveItem {
             store: ValueInstantString::default(),
             fn_input: |msg, store| match msg {
-                ExampleMessage::ValueInstantF64(content) => store.f64 = Some(content.value),
-                ExampleMessage::ValueInstantBool(content) => store.bool = Some(content.value),
+                ExampleMessage::ValueInstantF64(content) => store.f64 = Some(*content),
+                ExampleMessage::ValueInstantBool(content) => store.bool = Some(*content),
                 _ => (),
             },
             fn_output: |value| {
                 let msg_content =
                     format!("New Message: bool: {}, f64: {}", value.bool?, value.f64?);
-                let msg = ExampleMessage::ValueInstantString(MsgContent::new(msg_content));
+                let msg = ExampleMessage::ValueInstantString(msg_content);
                 Some(vec![msg])
             },
         })],
@@ -64,8 +64,8 @@ fn main() -> anyhow::Result<()> {
     let inject_periodic_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg1 = ExampleMessage::ValueInstantF64(MsgContent::new(counter));
-            let msg2 = ExampleMessage::ValueInstantBool(MsgContent::new(true));
+            let msg1 = Message::new(ExampleMessage::ValueInstantF64(counter));
+            let msg2 = Message::new(ExampleMessage::ValueInstantBool(true));
             counter += 1.0;
             vec![msg1, msg2]
         },

@@ -1,37 +1,13 @@
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::message_v2::Message;
 
 /// Конфигурация компонента http-server
 #[derive(Clone, Debug)]
 pub struct Config<TMsg>
 where
-    TMsg: IMessage,
+    TMsg: Clone,
 {
     /// Порт, через который доступен сервер
     pub port: u16,
-
-    /// Функция преобразования текста в сообщения
-    ///
-    /// # Примеры
-    ///
-    /// ## Заглушка
-    ///
-    /// ```rust
-    /// # enum Message{}
-    /// |_: &str| Ok::<String, anyhow::Error>(String::from(""))
-    /// # ;
-    /// ```
-    ///
-    /// ## Десериализация из json
-    ///
-    /// ```rust
-    /// # use rsiot_messages_core::{ExampleMessage as Message, IMessage};
-    /// |text: &str| {
-    ///     let msg = Message::from_json(text)?;
-    ///     Ok::<Option<Message>, anyhow::Error>(Some(msg))
-    /// }
-    /// # ;
-    /// ```
-    pub fn_input: fn(&str) -> anyhow::Result<Option<TMsg>>,
 
     /// Функция преобразования сообщений в текст
     ///
@@ -55,7 +31,29 @@ where
     /// }
     /// # ;
     /// ```
-    pub fn_output: fn(&TMsg) -> anyhow::Result<String>,
-}
+    pub fn_input: fn(&Message<TMsg>) -> anyhow::Result<String>,
 
-// TODO - переименовать fn_input и fn_output - смысл наоборот
+    /// Функция преобразования текста в сообщения
+    ///
+    /// # Примеры
+    ///
+    /// ## Заглушка
+    ///
+    /// ```rust
+    /// # enum Message{}
+    /// |_: &str| Ok::<String, anyhow::Error>(String::from(""))
+    /// # ;
+    /// ```
+    ///
+    /// ## Десериализация из json
+    ///
+    /// ```rust
+    /// # use rsiot_messages_core::{ExampleMessage as Message, IMessage};
+    /// |text: &str| {
+    ///     let msg = Message::from_json(text)?;
+    ///     Ok::<Option<Message>, anyhow::Error>(Some(msg))
+    /// }
+    /// # ;
+    /// ```
+    pub fn_output: fn(&str) -> anyhow::Result<Option<Message<TMsg>>>,
+}

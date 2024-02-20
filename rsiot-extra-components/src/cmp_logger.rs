@@ -1,12 +1,17 @@
 //! Компонент для логгирования сообщений
 
+use std::{
+    fmt::Debug,
+    marker::{Send, Sync},
+};
+
 use async_trait::async_trait;
+use serde::Serialize;
 use tracing::{debug, error, info, trace, warn, Level};
 
 use rsiot_component_core::{
     cmp_set_component_id, Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
-use rsiot_messages_core::IMessage;
 
 /// Настройки компонента логгирования
 #[derive(Clone, Debug)]
@@ -21,7 +26,7 @@ pub struct Config {
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
 impl<TMessage> IComponentProcess<Config, TMessage> for Component<Config, TMessage>
 where
-    TMessage: IMessage,
+    TMessage: Clone + Debug + Send + Serialize + Sync,
 {
     async fn process(
         &self,
@@ -42,7 +47,7 @@ async fn process<TMessage>(
     _cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>
 where
-    TMessage: IMessage,
+    TMessage: Clone + Debug,
 {
     debug!("cmp_logger started");
     let header = match config.header.as_str() {

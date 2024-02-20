@@ -1,23 +1,15 @@
 use async_trait::async_trait;
 
-use rsiot_messages_core::IMessage;
-
 use crate::{Cache, CmpInput, CmpOutput, ComponentError};
 
-pub struct Component<TConfig, TMessage>
-where
-    TMessage: IMessage,
-{
+pub struct Component<TConfig, TMessage> {
     input: Option<CmpInput<TMessage>>,
     output: Option<CmpOutput<TMessage>>,
     cache: Option<Cache<TMessage>>,
     config: Option<TConfig>,
 }
 
-impl<TConfig, TMessage> Component<TConfig, TMessage>
-where
-    TMessage: IMessage,
-{
+impl<TConfig, TMsg> Component<TConfig, TMsg> {
     pub fn new(config: impl Into<TConfig>) -> Self {
         Self {
             input: None,
@@ -29,17 +21,16 @@ where
 }
 
 #[async_trait(?Send)]
-impl<TConfig, TMessage> IComponent<TMessage> for Component<TConfig, TMessage>
+impl<TConfig, TMsg> IComponent<TMsg> for Component<TConfig, TMsg>
 where
-    TMessage: IMessage,
-    Self: IComponentProcess<TConfig, TMessage>,
+    Self: IComponentProcess<TConfig, TMsg>,
     TConfig: Send,
 {
     fn set_interface(
         &mut self,
-        input: CmpInput<TMessage>,
-        output: CmpOutput<TMessage>,
-        cache: Cache<TMessage>,
+        input: CmpInput<TMsg>,
+        output: CmpOutput<TMsg>,
+        cache: Cache<TMsg>,
     ) {
         self.input = Some(input);
         self.output = Some(output);
@@ -72,30 +63,19 @@ where
 }
 
 #[async_trait(?Send)]
-pub trait IComponentProcess<TConfig, TMessage>
-where
-    TMessage: IMessage,
-{
+pub trait IComponentProcess<TConfig, TMsg> {
     async fn process(
         &self,
         config: TConfig,
-        input: CmpInput<TMessage>,
-        output: CmpOutput<TMessage>,
-        cache: Cache<TMessage>,
+        input: CmpInput<TMsg>,
+        output: CmpOutput<TMsg>,
+        cache: Cache<TMsg>,
     ) -> Result<(), ComponentError>;
 }
 
 #[async_trait(?Send)]
-pub trait IComponent<TMessage>
-where
-    TMessage: IMessage,
-{
-    fn set_interface(
-        &mut self,
-        input: CmpInput<TMessage>,
-        output: CmpOutput<TMessage>,
-        cache: Cache<TMessage>,
-    );
+pub trait IComponent<TMsg> {
+    fn set_interface(&mut self, input: CmpInput<TMsg>, output: CmpOutput<TMsg>, cache: Cache<TMsg>);
 
     async fn spawn(&mut self) -> Result<(), ComponentError>;
 }

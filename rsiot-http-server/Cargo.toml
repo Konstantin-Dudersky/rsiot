@@ -14,6 +14,7 @@ rust-version.workspace = true
 anyhow = { workspace = true }
 async-trait = { workspace = true }
 axum = { workspace = true }
+serde = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }
@@ -27,10 +28,10 @@ rsiot-messages-core = { workspace = true }
 
 [target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dev-dependencies]
 anyhow = { workspace = true }
-serde = { workspace = true }
 tokio = { workspace = true, features = ["rt-multi-thread"] }
 tracing-subscriber = { workspace = true }
 
+rsiot-messages-core = { workspace = true, features = ["serde-json"] }
 rsiot-extra-components = { workspace = true }
 
 

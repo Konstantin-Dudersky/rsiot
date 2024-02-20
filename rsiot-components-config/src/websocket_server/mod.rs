@@ -1,11 +1,6 @@
-use rsiot_messages_core::IMessage;
-
 /// Конфигурация Websocket-сервера
 #[derive(Clone, Debug)]
-pub struct Config<TMessage>
-where
-    TMessage: IMessage,
-{
+pub struct Config<TMessage> {
     /// Порт, через который доступен сервер
     pub port: u16,
 

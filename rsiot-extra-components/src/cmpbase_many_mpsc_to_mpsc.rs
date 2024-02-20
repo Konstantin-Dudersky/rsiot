@@ -1,7 +1,6 @@
 use tokio::{sync::mpsc, task::JoinSet};
 
 use rsiot_component_core::ComponentError;
-use rsiot_messages_core::IMessage;
 
 /// Компонент для объединения нескольких потоков в один
 pub async fn new<TMessage>(
@@ -9,7 +8,7 @@ pub async fn new<TMessage>(
     output: mpsc::Sender<TMessage>,
 ) -> Result<(), ComponentError>
 where
-    TMessage: IMessage + 'static,
+    TMessage: Send + 'static,
 {
     let (tx, mut rx) = mpsc::channel::<TMessage>(100);
     let mut task_set: JoinSet<Result<(), ComponentError>> = JoinSet::new();

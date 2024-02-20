@@ -1,11 +1,10 @@
 use url::Url;
 
-use rsiot_messages_core::{IMessage, IMessageChannel};
+use rsiot_messages_core::IMessageChannel;
 
 #[derive(Clone, Debug)]
 pub struct Config<TMessage, TMessageChannel>
 where
-    TMessage: IMessage,
     TMessageChannel: IMessageChannel,
 {
     /// Адрес сервера Redis

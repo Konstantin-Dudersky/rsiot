@@ -12,7 +12,7 @@ pub struct MsgSourceItem {
 pub struct MsgSource {
     /// Идентификатор исполнителя
     pub executor: MsgSourceItem,
-    
+
     /// Идентификатор компонента внутри исполнителя
     pub component: Option<MsgSourceItem>,
 

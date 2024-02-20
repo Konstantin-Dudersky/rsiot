@@ -2,17 +2,18 @@
 //!
 //! Кеш представляет собой `HashMap`, а точнее `Arc<Mutex<RwLock<String, TMessage>>>`
 
+use std::fmt::Debug;
+
 use rsiot_component_core::{Cache, CmpInput};
-use rsiot_messages_core::IMessage;
 
 #[derive(Clone, Debug)]
 pub struct Config<TMessage> {
     pub cache: Cache<TMessage>,
 }
 
-pub async fn cmpbase_cache<TMessage>(mut input: CmpInput<TMessage>, config: Config<TMessage>)
+pub async fn cmpbase_cache<TMsg>(mut input: CmpInput<TMsg>, config: Config<TMsg>)
 where
-    TMessage: IMessage,
+    TMsg: Clone + Debug,
 {
     while let Ok(msg) = input.recv().await {
         {
@@ -21,7 +22,7 @@ where
                 None => continue,
             };
             let mut lock = config.cache.write().await;
-            let key = msg.key().clone();
+            let key = msg.key.clone();
             let value = msg.clone();
             lock.insert(key, value);
         }
