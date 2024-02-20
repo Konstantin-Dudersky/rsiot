@@ -1,4 +1,7 @@
-mod json;
+mod msg_serde;
+mod msg_source;
+
+pub use msg_source::MsgSource;
 
 use std::fmt::Debug;
 
@@ -6,20 +9,22 @@ use serde::{Deserialize, Serialize};
 
 use super::msg_meta::Timestamp;
 
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum SystemMsg {}
 
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum MsgType<TData> {
     System(SystemMsg),
     Data(TData),
 }
 
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Message<TData> {
-    content: MsgType<TData>,
-    key: String,
-    ts: Timestamp,
+    pub content: MsgType<TData>,
+    pub key: String,
+    pub ts: Timestamp,
+    pub source: Option<MsgSource>,
+    pub process: Option<MsgSource>,
 }
 
 impl<TData> Message<TData>
@@ -37,6 +42,8 @@ where
             content,
             key,
             ts: Default::default(),
+            source: None,
+            process: None,
         }
     }
 }

@@ -8,9 +8,9 @@ mod example_message;
 mod example_message_channel;
 mod imessage;
 mod message_channel;
+pub mod message_v2;
 mod msg_content;
 mod msg_content_value;
-mod new_message;
 
 pub mod eav;
 pub mod eav_helpers;

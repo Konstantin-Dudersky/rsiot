@@ -15,6 +15,7 @@ futures = { workspace = true }
 thiserror = { workspace = true }
 tokio = { version = "1", features = ["macros", "sync", "rt"] }
 tracing = { workspace = true }
+uuid = { workspace = true }
 
 rsiot-messages-core = { workspace = true }
 

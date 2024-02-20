@@ -7,5 +7,8 @@ pub enum ComponentError {
     Execution(String),
 
     #[error("Component output error: {0}")]
+    CmpInput(String),
+
+    #[error("Component output error: {0}")]
     CmpOutput(String),
 }

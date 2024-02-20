@@ -54,7 +54,7 @@ where
     /// Создание коллекции компонентов
     pub fn new(buffer_size: usize, executor_name: &str) -> Self {
         info!("ComponentExecutor start creation");
-        let service_id = ExecutorId::new(executor_name);
+        let executor_name = ExecutorId::new(executor_name);
         let (component_input_send, component_input) = broadcast::channel::<TMessage>(buffer_size);
         let (component_output, component_output_recv) = mpsc::channel::<TMessage>(buffer_size);
         let cache: Cache<TMessage> = Cache::new();
@@ -71,8 +71,8 @@ where
         } else {
             task_set.spawn(task_internal_handle);
         }
-        let component_input = CmpInput::new(component_input, service_id.clone());
-        let component_output = CmpOutput::new(component_output, service_id);
+        let component_input = CmpInput::new(component_input, executor_name.clone());
+        let component_output = CmpOutput::new(component_output, executor_name);
         Self {
             task_set,
             component_input,

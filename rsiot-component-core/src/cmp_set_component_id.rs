@@ -9,6 +9,6 @@ pub fn cmp_set_component_id<TMsg>(
 ) where
     TMsg: IMessage,
 {
-    let component_id = input.set_component_name(component_name);
+    let component_id = input.set_component_id(component_name);
     output.set_component_id(component_id);
 }
