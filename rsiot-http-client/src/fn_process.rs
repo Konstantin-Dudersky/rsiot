@@ -1,8 +1,7 @@
-use std::{fmt::Debug, time::Duration};
+use std::time::Duration;
 
 use reqwest::{Client, Response, StatusCode};
-use rsiot_messages_core::message_v2::{Message, MsgContentBound};
-use serde::Serialize;
+use rsiot_messages_core::message_v2::{Message, MsgDataBound};
 use tokio::{
     task::JoinSet,
     time::{sleep, Instant},
@@ -20,8 +19,7 @@ pub async fn fn_process<TMsg>(
     config: config::Config<TMsg>,
 ) -> Result<(), ComponentError>
 where
-    // TMsg: Clone + Debug + Send + Serialize + 'static,
-    TMsg: MsgContentBound + 'static,
+    TMsg: MsgDataBound + 'static,
 {
     info!("Starting http-client, configuration: {:?}", config);
 
@@ -45,8 +43,7 @@ async fn task_main<TMsg>(
     config: config::Config<TMsg>,
 ) -> crate::Result<(), TMsg>
 where
-    // TMsg: Clone + Debug + Send + Serialize + 'static,
-    TMsg: MsgContentBound + 'static,
+    TMsg: MsgDataBound + 'static,
 {
     let mut set = JoinSet::<crate::Result<(), TMsg>>::new();
     // запускаем периодические запросы
@@ -81,8 +78,7 @@ async fn task_periodic_request<TMsg>(
     url: Url,
 ) -> crate::Result<(), TMsg>
 where
-    // TMsg: Clone + Debug + Serialize,
-    TMsg: MsgContentBound,
+    TMsg: MsgDataBound,
 {
     loop {
         let begin = Instant::now();
@@ -116,7 +112,7 @@ async fn task_input_request<TMessage>(
     config: config::RequestInput<TMessage>,
 ) -> crate::Result<(), TMessage>
 where
-    TMessage: Clone + Debug + Serialize,
+    TMessage: MsgDataBound,
 {
     while let Ok(msg) = input.recv().await {
         let msg = match msg {

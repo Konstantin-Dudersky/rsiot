@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use serde::Serialize;
 
-use rsiot_messages_core::message_v2::MsgContentBound;
+use rsiot_messages_core::message_v2::{Message, MsgDataBound};
 
 use crate::plc::function_block_base::{FunctionBlockBase, IFunctionBlock};
 
@@ -15,7 +15,7 @@ use crate::plc::function_block_base::{FunctionBlockBase, IFunctionBlock};
 #[derive(Clone)]
 pub struct Config<TMessage, I, Q, S>
 where
-    TMessage: MsgContentBound,
+    TMessage: MsgDataBound,
     I: Clone + Default + Serialize,
     Q: Clone + Default + Serialize,
     S: Clone + Default + Serialize,
@@ -28,7 +28,7 @@ where
     /// ```rust
     /// fn_input: |input: &mut fb_main::I, msg: &TMessage| match msg {}
     /// ```
-    pub fn_input: fn(&mut I, &TMessage) -> (),
+    pub fn_input: fn(&mut I, &Message<TMessage>) -> (),
 
     /// Функция преобразования выходной структуры ПЛК в исходящие сообщения.
     ///
@@ -37,7 +37,7 @@ where
     /// ```rust
     /// fn_output: |output: &fb_main::Q| vec![]
     /// ```
-    pub fn_output: fn(&Q) -> Vec<TMessage>,
+    pub fn_output: fn(&Q) -> Vec<Message<TMessage>>,
 
     /// Главный функциональный блок ПЛК
     ///

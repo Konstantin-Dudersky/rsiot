@@ -20,19 +20,25 @@ async fn main() -> anyhow::Result<()> {
 
     use rsiot_component_core::ComponentExecutor;
     use rsiot_extra_components::cmp_logger;
-    use rsiot_messages_core::MsgContent;
+    use rsiot_messages_core::message_v2::Message;
     use rsiot_plc as cmp_plc;
 
-    use message::Message;
+    use message::Data;
 
     tracing_subscriber::fmt().init();
 
     let plc_config = cmp_plc::Config {
-        fn_input: |_input: &mut fb1_example::I, msg: &Message| match msg {
-            Message::OutputValue(_) => (),
+        fn_input: |_input: &mut fb1_example::I, msg: &Message<Data>| {
+            let msg = match msg.get_data() {
+                Some(val) => val,
+                None => return,
+            };
+            match msg {
+                Data::OutputValue(_) => (),
+            }
         },
         fn_output: |data: &fb1_example::Q| {
-            let msg = Message::OutputValue(MsgContent::new(data.out_counter));
+            let msg = Message::new(Data::OutputValue(data.out_counter));
             vec![msg]
         },
         fb_main: fb1_example::FB::new(),
@@ -44,7 +50,7 @@ async fn main() -> anyhow::Result<()> {
         header: "Logger: ".into(),
     };
 
-    ComponentExecutor::<message::Message>::new(100, "plc-multi-thread")
+    ComponentExecutor::<message::Data>::new(100, "plc-multi-thread")
         .add_cmp(cmp_plc::Cmp::new(plc_config))
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .wait_result()

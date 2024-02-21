@@ -5,7 +5,7 @@ use tokio::{
 };
 
 use rsiot_extra_components::cmpbase_mpsc_to_broadcast;
-use rsiot_messages_core::{ExampleMessage, MsgContent};
+use rsiot_messages_core::ExampleMessage;
 use tracing::info;
 
 #[main(flavor = "current_thread")]
@@ -23,7 +23,7 @@ async fn main() -> anyhow::Result<()> {
     #[allow(unreachable_code)]
     let _source_task = spawn(async move {
         loop {
-            let msg = ExampleMessage::ValueInstantF64(MsgContent::new(counter));
+            let msg = ExampleMessage::ValueInstantF64(counter);
             counter += 1.0;
             mpsc_send.send(msg).await?;
             sleep(Duration::from_secs(2)).await;

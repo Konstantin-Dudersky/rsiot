@@ -1,5 +1,7 @@
 use url::Url;
 
+use rsiot_messages_core::message_v2::Message;
+
 /// Настройки Websocket-клиента
 #[derive(Clone, Debug)]
 pub struct Config<TMsg> {
@@ -10,21 +12,21 @@ pub struct Config<TMsg> {
     ///
     /// # Примеры
     ///
-    /// ## Пустой коллбек
+    /// ## Заглушка
     ///
     /// ```rust
-    /// |_: &TMsg| Ok(None)
+    /// |_: &Message<TMsg>| Ok(None)
     /// ```
     ///
-    /// ## Преобразование в json
+    /// ## Сериализация в json
     ///
     /// ```rust
-    /// |msg: &TMsg| {
-    ///     let text = msg.to_json()?;
+    /// |msg: &Message<ExampleMessage>| {
+    ///     let text = msg.serialize()?;
     ///     Ok(Some(text))
     /// }
     /// ```
-    pub fn_input: fn(&TMsg) -> anyhow::Result<Option<String>>,
+    pub fn_input: fn(&Message<TMsg>) -> anyhow::Result<Option<String>>,
 
     /// Преобразование полученного от сервера текста в исходящие сообщения
     ///
@@ -41,10 +43,10 @@ pub struct Config<TMsg> {
     /// ```rust
     /// # use rsiot_messages::ExampleMessage as Message;
     /// |text: &str| {
-    ///     let msg = Message::from_json(text)?;
-    ///     Ok(vec![msg])
+    ///     let msg = Message::deserialize(text)?;
+    ///     Ok(Some(vec![msg]))
     /// }
     /// # ;
     /// ```
-    pub fn_output: fn(&str) -> anyhow::Result<Vec<TMsg>>,
+    pub fn_output: fn(&str) -> anyhow::Result<Option<Vec<Message<TMsg>>>>,
 }

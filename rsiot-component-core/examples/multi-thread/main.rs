@@ -25,11 +25,11 @@ mod message;
 async fn main() {
     use rsiot_component_core::ComponentExecutor;
 
-    use message::Message;
+    use message::Data;
 
     tracing_subscriber::fmt().init();
 
-    ComponentExecutor::<Message>::new(100, "multi-thread")
+    ComponentExecutor::<Data>::new(100, "multi-thread")
         .add_cmp(example_component1::Cmp::new(example_component1::Config {}))
         .add_cmp(example_component2::Cmp::new(example_component2::Config {}))
         .wait_result()

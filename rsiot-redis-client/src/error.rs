@@ -16,4 +16,10 @@ pub enum Error {
 
     #[error(transparent)]
     CmpOutput(rsiot_component_core::ComponentError),
+
+    #[error(transparent)]
+    FnInput(anyhow::Error),
+
+    #[error("FnOutput: {0}")]
+    FnOutput(anyhow::Error),
 }

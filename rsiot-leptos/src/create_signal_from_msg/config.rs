@@ -1,9 +1,9 @@
-use rsiot_messages_core::{IMessage, IMsgContentValue, MsgContent};
+use rsiot_messages_core::{Message, MsgDataBound};
 
 pub struct Config<TMsg, TValue>
 where
-    TMsg: IMessage + 'static,
-    TValue: IMsgContentValue,
+    TMsg: MsgDataBound + 'static,
+    TValue: Default,
 {
     /// Значение по-умолчанию
     ///
@@ -11,7 +11,7 @@ where
     /// ```rust
     /// Message::Variant(MsgContent::default())
     /// ```
-    pub default: TMsg,
+    pub default: Message<TMsg>,
 
     /// Преобразование сообщения в сигнал чтения
     ///
@@ -22,7 +22,7 @@ where
     /// _ => None,
     /// }
     /// ```
-    pub fn_input: fn(&TMsg) -> Option<MsgContent<TValue>>,
+    pub fn_input: fn(&Message<TMsg>) -> Option<TValue>,
 
     /// Преоборазование сигнала записи в сообщение
     ///
@@ -30,5 +30,5 @@ where
     /// ```rust
     /// |_| None
     /// ```
-    pub fn_output: fn(TValue) -> Option<TMsg>,
+    pub fn_output: fn(TValue) -> Option<Message<TMsg>>,
 }

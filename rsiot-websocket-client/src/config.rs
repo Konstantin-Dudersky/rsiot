@@ -1,13 +1,13 @@
 pub use rsiot_components_config::websocket_client::Config;
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::message_v2::MsgDataBound;
 
 pub struct ConfigAlias<TMessage>(pub Config<TMessage>)
 where
-    TMessage: IMessage;
+    TMessage: MsgDataBound;
 
 impl<TMessage> From<Config<TMessage>> for ConfigAlias<TMessage>
 where
-    TMessage: IMessage,
+    TMessage: MsgDataBound,
 {
     fn from(value: Config<TMessage>) -> Self {
         ConfigAlias(value)

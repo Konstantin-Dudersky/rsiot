@@ -1,7 +1,9 @@
-use rsiot_messages_core::{msg_meta, IMsgContentValue, MsgContent, MsgMeta};
+use rsiot_messages_core::MsgDataBound;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum Message {
-    TestMessage(MsgContent<i32>),
+    TestMessage(i32),
 }
+
+impl MsgDataBound for Message {}

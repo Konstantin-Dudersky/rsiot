@@ -1,5 +1,5 @@
 use leptos::*;
-use rsiot_messages_core::{IMessage, IMsgContentValue, MsgContent};
+use rsiot_messages_core::{IMsgContentValue, MsgDataBound};
 
 use crate::GlobalState;
 
@@ -7,10 +7,10 @@ use super::Config;
 
 pub fn create<TMsg, TValue>(
     config: Config<TMsg, TValue>,
-) -> (ReadSignal<MsgContent<TValue>>, WriteSignal<TValue>)
+) -> (ReadSignal<TValue>, WriteSignal<TValue>)
 where
     TValue: Clone + std::fmt::Debug + Default + IMsgContentValue + 'static,
-    TMsg: IMessage + 'static,
+    TMsg: MsgDataBound + 'static,
 {
     let gs = use_context::<GlobalState<TMsg>>().unwrap();
 
@@ -21,7 +21,7 @@ where
     let cache = gs.cache.clone();
     {
         let lock = cache.blocking_read();
-        let key = config.default.key();
+        let key = config.default.key;
         let msg = lock.get(&key);
         if let Some(msg) = msg {
             let content = (config.fn_input)(msg).unwrap();

@@ -1,6 +1,6 @@
 use leptos::*;
 use rsiot_component_core::{Cache, CmpInput, CmpOutput};
-use rsiot_messages_core::{msg_meta::ExecutorId, IMessage};
+use rsiot_messages_core::MsgDataBound;
 use tokio::task::JoinSet;
 use tracing::debug;
 
@@ -15,14 +15,11 @@ pub async fn fn_process<TMsg, TView, TIntoView>(
     cache: Cache<TMsg>,
 ) -> crate::Result
 where
-    TMsg: IMessage + 'static,
+    TMsg: MsgDataBound + 'static,
     TView: Fn() -> TIntoView + 'static,
     TIntoView: IntoView,
 {
-    let component_id = ExecutorId::new("cmp_leptos");
-
     provide_context(GlobalState::<TMsg> {
-        service_id: component_id,
         hostname: config.hostname,
         input: create_rw_signal(None),
         output: create_rw_signal(None),
@@ -44,7 +41,7 @@ where
 
 async fn task_input<TMsg>(mut input: CmpInput<TMsg>, gs: GlobalState<TMsg>) -> crate::Result
 where
-    TMsg: IMessage,
+    TMsg: MsgDataBound,
 {
     while let Ok(msg) = input.recv().await {
         let msg = match msg {
@@ -58,7 +55,7 @@ where
 
 async fn task_output<TMsg>(output: CmpOutput<TMsg>, gs: GlobalState<TMsg>) -> crate::Result
 where
-    TMsg: IMessage,
+    TMsg: MsgDataBound,
 {
     let (tx, mut rx) = tokio::sync::mpsc::channel(100);
 

@@ -1,9 +1,8 @@
 use std::fmt::Debug;
 
-use serde::Serialize;
 use tokio::sync::mpsc;
 
-use rsiot_messages_core::message_v2::{Message, MsgSource};
+use rsiot_messages_core::message_v2::{Message, MsgDataBound, MsgSource};
 use uuid::Uuid;
 
 use crate::ComponentError;
@@ -16,7 +15,7 @@ pub struct CmpOutput<TMsg> {
 
 impl<TMsg> CmpOutput<TMsg>
 where
-    TMsg: Clone + Debug + Serialize,
+    TMsg: MsgDataBound,
 {
     pub fn new(
         channel: mpsc::Sender<Message<TMsg>>,

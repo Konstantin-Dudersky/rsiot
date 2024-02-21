@@ -9,7 +9,7 @@ use tokio_modbus::{client::Context, prelude::*};
 use tracing::{debug, error, info, trace};
 
 use rsiot_component_core::{Cache, CmpInput, CmpOutput, ComponentError};
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::message_v2::MsgDataBound;
 
 use crate::{
     config::{self, Config},
@@ -23,7 +23,7 @@ pub async fn fn_process<TMessage>(
     _cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>
 where
-    TMessage: IMessage + 'static,
+    TMessage: MsgDataBound + 'static,
 {
     if config.enabled {
         loop {
@@ -51,7 +51,7 @@ async fn task_main<TMessage>(
     config: Config<TMessage>,
 ) -> crate::Result<()>
 where
-    TMessage: IMessage + 'static,
+    TMessage: MsgDataBound + 'static,
 {
     let ctx = match config.client_type {
         config::ClientType::Tcp(tcp_config) => {
@@ -100,7 +100,7 @@ async fn task_periodic_request<TMessage>(
     periodic_config: config::PeriodicConfig<TMessage>,
 ) -> crate::Result<()>
 where
-    TMessage: IMessage,
+    TMessage: MsgDataBound,
 {
     loop {
         let begin = Instant::now();
@@ -131,7 +131,7 @@ async fn task_input_request<TMessage>(
     input_config: config::InputConfig<TMessage>,
 ) -> crate::Result<()>
 where
-    TMessage: IMessage,
+    TMessage: MsgDataBound,
 {
     while let Ok(msg) = input.recv().await {
         let msg = match msg {
@@ -184,7 +184,7 @@ async fn modbus_response<TMessage>(
     fn_on_failure: config::FnOnFailure<TMessage>,
 ) -> crate::Result<()>
 where
-    TMessage: IMessage,
+    TMessage: MsgDataBound,
 {
     trace!("Modbus response: {:?}", response);
     let msgs = match response {

@@ -18,7 +18,7 @@ async fn main() -> anyhow::Result<()> {
     use rsiot_component_core::ComponentExecutor;
     use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
     use rsiot_http_client::cmp_http_client::{self, config};
-    use rsiot_messages_core::message_v2::{Message, MsgContentBound};
+    use rsiot_messages_core::message_v2::{Message, MsgDataBound};
 
     //------------------------------------------------------------------------------
 
@@ -30,7 +30,7 @@ async fn main() -> anyhow::Result<()> {
         HttpMethodsGetOnEventRequest(()),
     }
 
-    impl MsgContentBound for Data {}
+    impl MsgDataBound for Data {}
 
     //------------------------------------------------------------------------------
 

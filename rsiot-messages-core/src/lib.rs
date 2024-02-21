@@ -22,6 +22,7 @@ pub use example_message::ExampleMessage;
 pub use example_message_channel::ExampleMessageChannel;
 // pub use imessage::IMessage;
 pub use message_channel::IMessageChannel;
+pub use message_v2::{Message, MsgDataBound};
 pub use msg_content::MsgContent;
 pub use msg_content_value::IMsgContentValue;
 pub use msg_meta::MsgMeta;

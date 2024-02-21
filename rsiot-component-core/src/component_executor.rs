@@ -1,12 +1,11 @@
 use std::fmt::Debug;
 
-use serde::Serialize;
 use tokio::{
     sync::{broadcast, mpsc},
     task::JoinSet,
 };
 
-use rsiot_messages_core::message_v2::{Message, MsgSource};
+use rsiot_messages_core::message_v2::{Message, MsgDataBound, MsgSource};
 use tracing::{debug, error, info, trace, warn};
 
 use crate::{error::ComponentError, Cache, CmpInput, CmpOutput, IComponent};
@@ -49,7 +48,7 @@ pub struct ComponentExecutor<TMsg> {
 
 impl<TMsg> ComponentExecutor<TMsg>
 where
-    TMsg: Debug + Clone + Send + Serialize + Sync + 'static,
+    TMsg: MsgDataBound + 'static,
 {
     /// Создание коллекции компонентов
     pub fn new(buffer_size: usize, executor_name: &str) -> Self {

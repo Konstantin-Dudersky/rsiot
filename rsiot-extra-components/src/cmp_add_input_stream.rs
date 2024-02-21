@@ -1,21 +1,19 @@
 //! Компонент для добавления сообщений из побочного потока
 
-use std::fmt::Debug;
-
 use async_trait::async_trait;
-use serde::Serialize;
 use tokio::task::JoinSet;
 
 use rsiot_component_core::{
     cmp_set_component_id, Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
+use rsiot_messages_core::message_v2::MsgDataBound;
 
 async fn task_subscription<TMessage>(
     mut input: CmpInput<TMessage>,
     output: CmpOutput<TMessage>,
 ) -> Result<(), ComponentError>
 where
-    TMessage: Clone + Debug + Serialize,
+    TMessage: MsgDataBound,
 {
     while let Ok(msg) = input.recv().await {
         let msg = match msg {
@@ -41,7 +39,7 @@ pub struct Cfg<TMessage> {
 #[async_trait()]
 impl<TMsg> IComponentProcess<Cfg<TMsg>, TMsg> for Component<Cfg<TMsg>, TMsg>
 where
-    TMsg: Clone + Debug + Send + Serialize + Sync + 'static,
+    TMsg: MsgDataBound + 'static,
 {
     async fn process(
         &self,
@@ -68,7 +66,7 @@ where
 #[async_trait(?Send)]
 impl<TMsg> IComponentProcess<Cfg<TMsg>, TMsg> for Component<Cfg<TMsg>, TMsg>
 where
-    TMsg: Clone + Debug + Send + Serialize + Sync + 'static,
+    TMsg: MsgDataBound + 'static,
 {
     async fn process(
         &self,

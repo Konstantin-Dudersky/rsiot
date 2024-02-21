@@ -6,7 +6,9 @@ use tokio::{
 };
 
 use rsiot_extra_components::component_filter_message;
-use rsiot_messages_core::{msg_meta, IMessage, IMsgContentValue, MsgContent, MsgMeta};
+use rsiot_messages_core::{
+    message_v2::MsgDataBound, msg_meta, IMsgContentValue, MsgContent, MsgMeta,
+};
 use tracing::info;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
@@ -15,11 +17,7 @@ enum Message {
     Message1(MsgContent<f64>),
 }
 
-impl IMessage for Message {
-    fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
-        vec![]
-    }
-}
+impl MsgDataBound for Message {}
 
 #[main(flavor = "current_thread")]
 async fn main() -> anyhow::Result<()> {

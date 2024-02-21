@@ -24,20 +24,16 @@ async fn main() -> anyhow::Result<()> {
 
     use rsiot_component_core::ComponentExecutor;
     use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-    use rsiot_messages_core::{msg_meta, IMessage, IMsgContentValue, MsgContent, MsgMeta};
+    use rsiot_messages_core::message_v2::{Message, MsgDataBound};
     use rsiot_modbus_client::cmp_modbus_client::{self, *};
 
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub enum Messages {
-        ValueWrite(MsgContent<f64>),
-        ValueRead(MsgContent<f64>),
+        ValueWrite(f64),
+        ValueRead(f64),
     }
 
-    impl IMessage for Messages {
-        fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
-            vec![]
-        }
-    }
+    impl MsgDataBound for Messages {}
 
     // логгирование
     fmt().init();
@@ -47,10 +43,8 @@ async fn main() -> anyhow::Result<()> {
         enabled: true,
         unit_id: 1,
         input_config: vec![InputConfig {
-            fn_input: |msg| match msg {
-                Messages::ValueWrite(val) => {
-                    Some(Request::WriteSingleRegister(0, val.value as u16))
-                }
+            fn_input: |msg| match msg.get_data()? {
+                Messages::ValueWrite(val) => Some(Request::WriteSingleRegister(0, val as u16)),
                 Messages::ValueRead(_) => None,
             },
             fn_on_success: |_data| vec![],
@@ -62,7 +56,7 @@ async fn main() -> anyhow::Result<()> {
             fn_on_success: |data| {
                 let mut msgs = vec![];
                 if let Response::U16(data) = data {
-                    msgs.push(Messages::ValueRead(MsgContent::new(data[0] as f64)));
+                    msgs.push(Message::new(Messages::ValueRead(data[0] as f64)));
                 }
                 msgs
             },
@@ -80,7 +74,7 @@ async fn main() -> anyhow::Result<()> {
         .add_cmp(cmp_inject_periodic::Cmp::new(cmp_inject_periodic::Config {
             period: Duration::from_secs(2),
             fn_periodic: move || {
-                let msg = Messages::ValueWrite(MsgContent::new(counter));
+                let msg = Message::new(Messages::ValueWrite(counter));
                 counter += 1.0;
                 vec![msg]
             },

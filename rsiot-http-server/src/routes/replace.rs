@@ -1,7 +1,8 @@
-use std::{fmt::Debug, sync::Arc};
+use std::sync::Arc;
 
 use axum::extract;
-use serde::Serialize;
+
+use rsiot_messages_core::message_v2::MsgDataBound;
 
 use crate::{error::Error, shared_state::SharedState};
 
@@ -11,7 +12,7 @@ pub async fn replace<TMsg>(
     body: String,
 ) -> Result<(), Error>
 where
-    TMsg: Clone + Debug + Serialize,
+    TMsg: MsgDataBound,
 {
     let msg = (shared_state.config.fn_output)(&body).map_err(Error::FnInput)?;
     let msg = match msg {

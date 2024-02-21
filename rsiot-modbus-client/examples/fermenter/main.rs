@@ -14,7 +14,7 @@ async fn main() -> anyhow::Result<()> {
     use rsiot_extra_components::cmp_logger;
     use rsiot_modbus_client::cmp_modbus_client;
 
-    use message::Messages;
+    use message::Data;
 
     fmt().with_max_level(LevelFilter::INFO).init();
 
@@ -23,7 +23,7 @@ async fn main() -> anyhow::Result<()> {
         header: "".into(),
     };
 
-    ComponentExecutor::<Messages>::new(100, "fermenter")
+    ComponentExecutor::<Data>::new(100, "fermenter")
         .add_cmp(cmp_modbus_client::Cmp::new(config::config()))
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .wait_result()

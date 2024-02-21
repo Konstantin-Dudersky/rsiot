@@ -4,7 +4,7 @@ use serde::Serialize;
 use rsiot_component_core::{
     cmp_set_component_id, Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::message_v2::MsgDataBound;
 
 use crate::{
     config::Config,
@@ -17,7 +17,7 @@ use crate::{
 impl<TMsg, I, Q, S> IComponentProcess<Config<TMsg, I, Q, S>, TMsg>
     for Component<Config<TMsg, I, Q, S>, TMsg>
 where
-    TMsg: IMessage + 'static,
+    TMsg: MsgDataBound + 'static,
     I: Clone + Default + Send + Serialize + 'static + Sync,
     Q: Clone + Default + Send + Serialize + 'static + Sync,
     S: Clone + Default + Send + Serialize + 'static + Sync,

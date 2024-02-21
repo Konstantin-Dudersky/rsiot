@@ -13,7 +13,7 @@ use tracing::{info, trace, warn};
 
 use rsiot_component_core::{CmpInput, CmpOutput};
 use rsiot_components_config::websocket_client::Config;
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::MsgDataBound;
 
 use crate::error::Error;
 
@@ -23,7 +23,7 @@ pub async fn fn_process<TMessage>(
     output: CmpOutput<TMessage>,
 ) -> crate::Result
 where
-    TMessage: IMessage + 'static,
+    TMessage: MsgDataBound + 'static,
 {
     info!("Starting cmp_websocket_client_wasm. Config: {config:?}");
     loop {
@@ -40,7 +40,7 @@ async fn task_main<TMessage>(
     output: CmpOutput<TMessage>,
 ) -> crate::Result
 where
-    TMessage: IMessage + 'static,
+    TMessage: MsgDataBound + 'static,
 {
     let url = config.url.to_string();
     let ws = WebSocket::open(&url).map_err(Error::Connect)?;
@@ -64,7 +64,7 @@ async fn task_input<TMsg>(
     mut write_stream: SplitSink<WebSocket, Message>,
 ) -> crate::Result
 where
-    TMsg: IMessage,
+    TMsg: MsgDataBound,
 {
     while let Ok(msg) = input.recv().await {
         let msg = match msg {
@@ -90,20 +90,26 @@ async fn task_output<TMessage>(
     mut read_stream: SplitStream<WebSocket>,
 ) -> crate::Result
 where
-    TMessage: IMessage,
+    TMessage: MsgDataBound,
 {
     while let Some(text) = read_stream.next().await {
         trace!("New message from Websocket server: {:?}", text);
-        if let Ok(text) = text {
-            let msg = match text {
-                Message::Text(value) => value,
-                Message::Bytes(_) => todo!(),
-            };
-            let msgs = (config.fn_output)(&msg).map_err(Error::FnOutput)?;
-            for msg in msgs {
-                output.send(msg).await.map_err(Error::CmpOutput)?;
-            }
+        let text = match text {
+            Ok(text) => text,
+            Err(_) => continue,
         };
+        let msg = match text {
+            Message::Text(value) => value,
+            Message::Bytes(_) => todo!(),
+        };
+        let msgs = (config.fn_output)(&msg).map_err(Error::FnOutput)?;
+        let msgs = match msgs {
+            Some(msgs) => msgs,
+            None => continue,
+        };
+        for msg in msgs {
+            output.send(msg).await.map_err(Error::CmpOutput)?;
+        }
     }
     Ok(())
 }

@@ -1,23 +1,20 @@
 use leptos::*;
 use rsiot_component_core::Cache;
-use rsiot_messages_core::{msg_meta::ExecutorId, IMessage};
+use rsiot_messages_core::{Message, MsgDataBound};
 
 #[derive(Clone)]
 pub struct GlobalState<TMsg>
 where
-    TMsg: IMessage + 'static,
+    TMsg: MsgDataBound + 'static,
 {
-    /// Идентификатор клиента
-    pub service_id: ExecutorId,
-
     /// hostname
     pub hostname: String,
 
     /// Сигнал для входных сообщений
-    pub input: RwSignal<Option<TMsg>>,
+    pub input: RwSignal<Option<Message<TMsg>>>,
 
     /// Сигнал для выходных сообщений
-    pub output: RwSignal<Option<TMsg>>,
+    pub output: RwSignal<Option<Message<TMsg>>>,
 
     /// Кеш сообщений
     pub cache: Cache<TMsg>,

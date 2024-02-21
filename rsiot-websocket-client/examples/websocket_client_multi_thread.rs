@@ -14,47 +14,41 @@ async fn main() -> anyhow::Result<()> {
 
     use rsiot_component_core::ComponentExecutor;
     use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-    use rsiot_messages_core::{msg_meta, IMessage, IMsgContentValue, MsgContent, MsgMeta};
+    use rsiot_messages_core::message_v2::{Message, MsgDataBound};
     use rsiot_websocket_client::cmp_websocket_client;
 
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
-    enum Message {
-        Send(MsgContent<f64>),
-        Recv(MsgContent<f64>),
-        Tick(MsgContent<u64>),
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    enum Data {
+        Send(f64),
+        Recv(f64),
+        Tick(u64),
     }
 
-    impl IMessage for Message {
-        fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
-            vec![]
-        }
+    impl MsgDataBound for Data {}
+
+    fn fn_input(msg: &Message<Data>) -> anyhow::Result<Option<String>> {
+        let text = msg.serialize()?;
+        Ok(Some(text))
     }
 
-    fn fn_input(msg: &Message) -> anyhow::Result<Option<String>> {
-        let text = msg.to_json()?;
-        match msg {
-            Message::Send(_) => Ok(Some(text)),
-            Message::Recv(_) => Ok(None),
-            Message::Tick(_) => Ok(None),
-        }
-    }
-
-    fn fn_output(data: &str) -> Result<Vec<Message>, anyhow::Error> {
+    fn fn_output(text: &str) -> anyhow::Result<Option<Vec<Message<Data>>>> {
         // сообщение tick ...
-        if let Some(val) = parse_tick(data) {
-            return Ok(vec![val]);
+        if let Some(val) = parse_tick(text) {
+            return Ok(Some(vec![val]));
         }
-        if let Ok(msg) = Message::from_json(data) {
-            match msg {
-                Message::Send(val) => return Ok(vec![Message::Recv(val)]),
-                Message::Recv(_) => return Ok(vec![]),
-                Message::Tick(_) => return Ok(vec![]),
-            }
+        let msg = Message::deserialize(text)?;
+        let msg = match msg.get_data() {
+            Some(msg) => msg,
+            None => return Ok(None),
+        };
+        match msg {
+            Data::Send(val) => return Ok(Some(vec![Message::new(Data::Recv(val))])),
+            Data::Recv(_) => return Ok(None),
+            Data::Tick(_) => return Ok(None),
         }
-        Ok(vec![])
     }
 
-    fn parse_tick(data: &str) -> Option<Message> {
+    fn parse_tick(data: &str) -> Option<Message<Data>> {
         let parts: Vec<&str> = data.split(' ').collect();
         if parts.len() != 2 {
             return None;
@@ -67,7 +61,7 @@ async fn main() -> anyhow::Result<()> {
             Some(val) => val,
             None => return None,
         };
-        Some(Message::Tick(MsgContent::new(num)))
+        Some(Message::new(Data::Tick(num)))
     }
 
     tracing_subscriber::fmt().init();
@@ -81,7 +75,7 @@ async fn main() -> anyhow::Result<()> {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg = Message::Send(MsgContent::new(counter));
+            let msg = Message::new(Data::Send(counter));
             counter += 1.0;
             vec![msg]
         },
@@ -93,7 +87,7 @@ async fn main() -> anyhow::Result<()> {
         fn_output,
     };
 
-    ComponentExecutor::<Message>::new(100, "rsiot-websocket-client")
+    ComponentExecutor::<Data>::new(100, "rsiot-websocket-client")
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
         .add_cmp(cmp_websocket_client::Cmp::new(ws_client))

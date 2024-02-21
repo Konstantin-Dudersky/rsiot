@@ -6,7 +6,7 @@ async fn main() {
     use rsiot_component_core::ComponentExecutor;
     use rsiot_extra_components::cmp_inject_periodic;
     use rsiot_influxdb as cmp_influxdb;
-    use rsiot_messages_core::{ExampleMessage, MsgContent};
+    use rsiot_messages_core::{message_v2::Message, ExampleMessage};
     use tracing::level_filters::LevelFilter;
 
     const TOKEN: &str =
@@ -20,7 +20,7 @@ async fn main() {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg = ExampleMessage::ValueInstantF64(MsgContent::new(counter as f64));
+            let msg = Message::new(ExampleMessage::ValueInstantF64(counter as f64));
             counter += 1;
             vec![msg]
         },
@@ -32,7 +32,13 @@ async fn main() {
         org: "test".into(),
         bucket: "test1".into(),
         token: TOKEN.into(),
-        fn_input: |msg: &ExampleMessage| cmp_influxdb::msg_into_line_protocol(msg),
+        fn_input: |msg: &Message<ExampleMessage>| {
+            let msg = match msg.get_data() {
+                Some(val) => val,
+                None => return vec![],
+            };
+            cmp_influxdb::msg_into_line_protocol(&msg)
+        },
     };
 
     ComponentExecutor::new(100, "influxdb")

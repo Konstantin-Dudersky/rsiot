@@ -15,7 +15,7 @@ use gloo::timers::future::sleep;
 use tokio::time::sleep;
 
 use rsiot_component_core::{Cache, CmpOutput, ComponentError};
-use rsiot_messages_core::message_v2::{Message, MsgContentBound};
+use rsiot_messages_core::message_v2::MsgDataBound;
 
 use crate::{
     config::Config,
@@ -31,7 +31,7 @@ pub async fn fn_process<TMessage, I, Q, S>(
     cache: Cache<TMessage>,
 ) -> std::result::Result<(), ComponentError>
 where
-    TMessage: MsgContentBound + 'static,
+    TMessage: MsgDataBound + 'static,
     I: Clone + Default + Send + Serialize + 'static + Sync,
     Q: Clone + Default + Send + Serialize + 'static + Sync,
     S: Clone + Default + Send + Serialize + 'static + Sync,
@@ -55,7 +55,7 @@ async fn task_main_loop<TMessage, I, Q, S>(
     cache: Cache<TMessage>,
 ) -> Result
 where
-    TMessage: MsgContentBound + 'static,
+    TMessage: MsgDataBound + 'static,
     I: Clone + Default + Send + Serialize + Sync,
     Q: Clone + Default + Send + Serialize + Sync,
     S: Clone + Default + Send + Serialize + Sync,
@@ -84,7 +84,7 @@ async fn task_main<TMessage, I, Q, S>(
     cache: Cache<TMessage>,
 ) -> Result
 where
-    TMessage: MsgContentBound + 'static,
+    TMessage: MsgDataBound + 'static,
     I: Clone + Default + Send + Serialize,
     Q: Clone + Default + Send + Serialize,
     S: Clone + Default + Send + Serialize,

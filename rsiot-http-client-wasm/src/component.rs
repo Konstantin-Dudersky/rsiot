@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use rsiot_component_core::{
     cmp_set_component_id, Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::MsgDataBound;
 
 use crate::config::ConfigAlias;
 // #[cfg(feature = "single-thread")]
@@ -14,7 +14,7 @@ use crate::fn_process::fn_process;
 #[async_trait]
 impl<TMsg> IComponentProcess<ConfigAlias<TMsg>, TMsg> for Component<ConfigAlias<TMsg>, TMsg>
 where
-    TMsg: IMessage + 'static,
+    TMsg: MsgDataBound + 'static,
 {
     async fn process(
         &self,
@@ -35,7 +35,7 @@ where
 #[async_trait(?Send)]
 impl<TMsg> IComponentProcess<ConfigAlias<TMsg>, TMsg> for Component<ConfigAlias<TMsg>, TMsg>
 where
-    TMsg: IMessage + 'static,
+    TMsg: MsgDataBound + 'static,
 {
     async fn process(
         &self,

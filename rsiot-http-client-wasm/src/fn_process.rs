@@ -10,7 +10,7 @@ use tracing::{error, info};
 use url::Url;
 
 use rsiot_component_core::{CmpInput, CmpOutput};
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::{Message, MsgDataBound};
 
 use crate::{config::config, error::Error};
 
@@ -20,7 +20,7 @@ pub async fn fn_process<TMessage>(
     config: config::Config<TMessage>,
 ) -> crate::Result<()>
 where
-    TMessage: IMessage + 'static,
+    TMessage: MsgDataBound + 'static,
 {
     info!("Starting http-client-wasm, configuration: {:?}", config);
 
@@ -43,7 +43,7 @@ async fn task_main<TMessage>(
     config: config::Config<TMessage>,
 ) -> crate::Result<()>
 where
-    TMessage: IMessage + 'static,
+    TMessage: MsgDataBound + 'static,
 {
     let mut task_set = JoinSet::<crate::Result<()>>::new();
     // запускаем периодические запросы
@@ -72,7 +72,7 @@ async fn task_periodic_request<TMessage>(
     url: Url,
 ) -> crate::Result<()>
 where
-    TMessage: IMessage,
+    TMessage: MsgDataBound,
 {
     loop {
         let begin = Instant::now();
@@ -104,9 +104,9 @@ async fn process_request_and_response<TMessage>(
     request_param: &config::HttpParam,
     on_success: config::CbkOnSuccess<TMessage>,
     on_failure: config::CbkOnFailure<TMessage>,
-) -> crate::Result<Vec<TMessage>>
+) -> crate::Result<Vec<Message<TMessage>>>
 where
-    TMessage: IMessage,
+    TMessage: MsgDataBound,
 {
     let response = send_request(url.clone(), request_param).await;
     let response = match response {

@@ -14,8 +14,8 @@ async fn main() -> anyhow::Result<()> {
 
     use rsiot_component_core::ComponentExecutor;
     use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-    use rsiot_messages_core::{ExampleMessage, ExampleMessageChannel, MsgContent};
-    use rsiot_redis_client::cmp_redis_client;
+    use rsiot_messages_core::{message_v2::Message, ExampleMessage, ExampleMessageChannel};
+    use rsiot_redis_client as cmp_redis_client;
 
     fmt().init();
 
@@ -26,15 +26,28 @@ async fn main() -> anyhow::Result<()> {
 
     let redis_config = cmp_redis_client::Config {
         url: Url::parse("redis://127.0.0.1:6379")?,
-        fn_input: |_| vec![ExampleMessageChannel::Output],
         subscription_channel: ExampleMessageChannel::Output,
+        fn_input: |msg: &Message<ExampleMessage>| {
+            let channel = ExampleMessageChannel::Output;
+            let key = msg.key.clone();
+            let value = msg.serialize()?;
+            Ok(Some(vec![cmp_redis_client::ConfigFnInputItem {
+                channel,
+                key,
+                value,
+            }]))
+        },
+        fn_output: |text: &str| {
+            let msg = Message::deserialize(text)?;
+            Ok(Some(vec![msg]))
+        },
     };
 
     let mut counter = 0;
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg = ExampleMessage::ValueInstantF64(MsgContent::new(counter as f64));
+            let msg = Message::new(ExampleMessage::ValueInstantF64(counter as f64));
 
             counter += 1;
             vec![msg]

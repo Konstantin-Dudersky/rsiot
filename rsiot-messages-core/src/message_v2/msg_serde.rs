@@ -9,6 +9,19 @@ impl<TData> Message<TData>
 where
     TData: DeserializeOwned + Serialize,
 {
+    #[cfg(not(feature = "serde-json"))]
+    pub fn serialize(&self) -> Result<String, crate::Error> {
+        let err = "Serialization feature not select".to_string();
+        Err(crate::Error::Serialization(err))
+    }
+
+    #[cfg(not(feature = "serde-json"))]
+    pub fn deserialize(_text: &str) -> Result<Self, crate::Error> {
+        let error = "Serialization feature not select".to_string();
+        let data = "".to_string();
+        Err(crate::Error::Deserialization { error, data })
+    }
+
     /// Сериализация сообщений в json
     #[cfg(feature = "serde-json")]
     pub fn serialize(&self) -> Result<String, crate::Error> {
@@ -28,7 +41,8 @@ where
             Ok(value) => Ok(value),
             Err(error) => {
                 let error = error.to_string();
-                Err(crate::Error::Deserialization(error))
+                let data = text.to_string();
+                Err(crate::Error::Deserialization { error, data })
             }
         }
     }

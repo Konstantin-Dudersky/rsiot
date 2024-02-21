@@ -5,7 +5,7 @@ use tokio::time::sleep;
 use tracing::{error, info, trace, warn};
 
 use rsiot_component_core::{CmpInput, CmpOutput, ComponentError};
-use rsiot_messages_core::message_v2::MsgContentBound;
+use rsiot_messages_core::message_v2::MsgDataBound;
 
 use crate::{
     config::{Config, LineProtocolItem},
@@ -18,7 +18,7 @@ pub async fn fn_process<TMsg>(
     config: Config<TMsg>,
 ) -> Result<(), ComponentError>
 where
-    TMsg: MsgContentBound + 'static,
+    TMsg: MsgDataBound + 'static,
 {
     info!("Starting influxdb client, configuration: {:?}", config);
 
@@ -37,7 +37,7 @@ where
 
 async fn task_main<TMsg>(mut input: CmpInput<TMsg>, config: Config<TMsg>) -> crate::Result<()>
 where
-    TMsg: MsgContentBound + 'static,
+    TMsg: MsgDataBound + 'static,
 {
     while let Ok(msg) = input.recv().await {
         let msg = match msg {
@@ -55,7 +55,7 @@ async fn handle_request<TMsg>(
     config: Config<TMsg>,
 ) -> crate::Result<()>
 where
-    TMsg: MsgContentBound,
+    TMsg: MsgDataBound,
 {
     trace!("New request to InfluxDB");
     let url = format!(

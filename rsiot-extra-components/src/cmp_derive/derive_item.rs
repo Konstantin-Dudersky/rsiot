@@ -1,8 +1,4 @@
-use std::fmt::Debug;
-
-use serde::Serialize;
-
-use rsiot_messages_core::message_v2::{Message, MsgContentType};
+use rsiot_messages_core::message_v2::{Message, MsgData, MsgDataBound};
 
 use super::derive_item_process::DeriveItemProcess;
 
@@ -22,14 +18,14 @@ where
 
 impl<TMsg, TStore> DeriveItemProcess<TMsg> for DeriveItem<TMsg, TStore>
 where
-    TMsg: Clone + Debug + Serialize,
+    TMsg: MsgDataBound,
     TStore: Clone + Default + PartialEq + Send + Sync,
 {
     fn process(&mut self, msg: &Message<TMsg>) -> Option<Vec<Message<TMsg>>> {
         let old_store = self.store.clone();
-        let msg_content_data = match &msg.content {
-            MsgContentType::System(_) => return None,
-            MsgContentType::Data(msg_data) => msg_data,
+        let msg_content_data = match &msg.data {
+            MsgData::System(_) => return None,
+            MsgData::Custom(msg_data) => msg_data,
         };
         (self.fn_input)(&msg_content_data, &mut self.store);
         if old_store == self.store {

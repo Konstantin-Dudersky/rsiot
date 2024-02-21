@@ -1,3 +1,5 @@
+use rsiot_messages_core::message_v2::Message;
+
 #[derive(Clone, Debug)]
 pub struct Config<TMsg> {
     /// localhost
@@ -32,7 +34,7 @@ pub type FnOnFailure<TMessage> = fn() -> Vec<TMessage>;
 #[derive(Clone, Debug)]
 pub struct InputConfig<TMsg> {
     /// Функция формирования запроса на основе потока сообщений
-    pub fn_input: fn(&TMsg) -> Option<String>,
+    pub fn_input: fn(&Message<TMsg>) -> Option<String>,
     /// Функция вызывается при успешно выполненном запросе
     pub fn_on_success: FnOnSuccess<TMsg>,
     /// Функция вызывается при ошибке выполнения запроса

@@ -4,7 +4,7 @@ use tracing::{error, info, trace};
 use url::Url;
 
 use rsiot_component_core::{CmpInput, ComponentError};
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::message_v2::MsgDataBound;
 
 use crate::{config::Config, error::Error, model::Row};
 
@@ -13,7 +13,7 @@ pub async fn fn_process<TMessage>(
     config: Config,
 ) -> Result<(), ComponentError>
 where
-    TMessage: IMessage,
+    TMessage: MsgDataBound,
 {
     info!("Start timescaledb-storing");
 
@@ -33,7 +33,7 @@ async fn task_main<TMessage>(
     connection_string: &Url,
 ) -> Result<(), Error>
 where
-    TMessage: IMessage,
+    TMessage: MsgDataBound,
 {
     let pool = PgPoolOptions::new()
         .max_connections(5)
@@ -44,11 +44,12 @@ where
             Some(val) => val,
             None => continue,
         };
-        let msgs_eav = msg.into_eav();
-        for msg in msgs_eav {
-            let row: Row = msg.into();
-            save_row_in_db(&row, &pool).await?;
-        }
+        // TODO
+        // let msgs_eav = msg.into_eav();
+        // for msg in msgs_eav {
+        //     let row: Row = msg.into();
+        //     save_row_in_db(&row, &pool).await?;
+        // }
     }
     Ok(())
 }

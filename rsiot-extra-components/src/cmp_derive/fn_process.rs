@@ -1,9 +1,7 @@
-use std::fmt::Debug;
-
-use serde::Serialize;
 use tokio::task::JoinSet;
 
 use rsiot_component_core::{CmpInput, CmpOutput};
+use rsiot_messages_core::message_v2::MsgDataBound;
 
 use super::{Config, DeriveItemProcess, Error};
 
@@ -13,7 +11,7 @@ pub async fn fn_process<TMsg>(
     config: Config<TMsg>,
 ) -> super::Result<()>
 where
-    TMsg: Clone + Debug + Send + Serialize + 'static,
+    TMsg: MsgDataBound + 'static,
 {
     let mut task_set = JoinSet::new();
 
@@ -37,7 +35,7 @@ async fn task_process_derive_item<TMsg>(
     mut derive_item: Box<dyn DeriveItemProcess<TMsg>>,
 ) -> super::Result<()>
 where
-    TMsg: Clone + Debug + Serialize,
+    TMsg: MsgDataBound,
 {
     while let Ok(msg) = input.recv().await {
         let msg = match msg {

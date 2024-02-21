@@ -23,9 +23,11 @@ pub fn derive_into_eav(input: TokenStream) -> TokenStream {
 /// ```
 #[proc_macro]
 pub fn create_signal_from_msg(msg: TokenStream) -> TokenStream {
+    let parts = msg.to_string().split("-").collect::<Vec<String>>()[0];
+    // default: &msg(Default::default()),
     let code = r#"
     create_signal_from_msg::create(create_signal_from_msg::Config {
-        default: &msg(MsgContent::default()),
+        default: &default,
         fn_input: |msg| match msg {
             &msg(content) => Some(content.clone()),
             _ => None,
@@ -34,6 +36,7 @@ pub fn create_signal_from_msg(msg: TokenStream) -> TokenStream {
     })
 "#;
     let code = code.replace("&msg", &msg.to_string());
+    let code = code.replace("&default", &parts.to_string());
     let code = code.replace('\"', "");
     let code = parse_str::<syn::Expr>(&code).unwrap();
 

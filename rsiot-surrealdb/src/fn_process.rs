@@ -7,7 +7,7 @@ use surrealdb::{
 };
 
 use rsiot_component_core::{CmpInput, CmpOutput, ComponentError};
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::message_v2::MsgDataBound;
 use tokio::{sync::Mutex, task::JoinSet, time::sleep};
 use tracing::{error, info};
 
@@ -21,7 +21,7 @@ pub async fn fn_process<TMsg>(
     config: Config<TMsg>,
 ) -> Result<(), ComponentError>
 where
-    TMsg: IMessage + 'static,
+    TMsg: MsgDataBound + 'static,
 {
     info!("Starting Surrealdb");
     loop {
@@ -37,7 +37,7 @@ where
 
 async fn task_main<TMsg>(input: CmpInput<TMsg>, config: &Config<TMsg>) -> crate::Result<()>
 where
-    TMsg: IMessage + 'static,
+    TMsg: MsgDataBound + 'static,
 {
     let db = connect(config).await?;
     init_script(config, db.clone()).await?;
@@ -88,7 +88,7 @@ async fn task_periodic_request<TMsg>(
     db: Db,
 ) -> crate::Result<()>
 where
-    TMsg: IMessage,
+    TMsg: MsgDataBound,
 {
     while let Ok(msg) = input.recv().await {
         let msg = match msg {

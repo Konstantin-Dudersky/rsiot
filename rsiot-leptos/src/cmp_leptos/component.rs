@@ -1,10 +1,11 @@
 use async_trait::async_trait;
 use leptos::*;
+use tracing::info;
+
 use rsiot_component_core::{
     cmp_set_component_id, Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
-use rsiot_messages_core::IMessage;
-use tracing::info;
+use rsiot_messages_core::MsgDataBound;
 
 use super::{fn_process::fn_process, Config};
 
@@ -13,7 +14,7 @@ use super::{fn_process::fn_process, Config};
 impl<TMsg, TView, TIntoView> IComponentProcess<Config<TView, TIntoView>, TMsg>
     for Component<Config<TView, TIntoView>, TMsg>
 where
-    TMsg: IMessage + 'static,
+    TMsg: MsgDataBound + 'static,
     TView: Fn() -> TIntoView + 'static,
     TIntoView: IntoView,
 {

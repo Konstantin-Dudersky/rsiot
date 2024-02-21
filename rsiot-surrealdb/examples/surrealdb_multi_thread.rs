@@ -13,21 +13,18 @@ async fn main() -> anyhow::Result<()> {
     use rsiot_component_core::ComponentExecutor;
     use rsiot_extra_components::cmp_inject_periodic;
     use rsiot_messages_core::{
-        msg_meta, Deserialize, IMessage, IMsgContentValue, MsgContent, MsgMeta, Serialize,
+        message_v2::{Message, MsgDataBound},
+        msg_meta, Deserialize, IMsgContentValue, MsgContent, MsgMeta, Serialize,
     };
     use rsiot_surrealdb as cmp_surrealdb;
     use tracing::info;
 
     #[derive(Clone, Debug, Deserialize, MsgMeta, PartialEq, Serialize)]
-    enum Message {
+    enum Custom {
         Request(MsgContent<u16>),
     }
 
-    impl IMessage for Message {
-        fn into_eav(self) -> Vec<rsiot_messages_core::eav::EavModel> {
-            vec![]
-        }
-    }
+    impl MsgDataBound for Custom {}
 
     tracing_subscriber::fmt().init();
 
@@ -40,8 +37,8 @@ async fn main() -> anyhow::Result<()> {
         database: "rsiot".into(),
         init_script: include_str!("./init.surql").into(),
         input_config: vec![InputConfig {
-            fn_input: |msg| match msg {
-                Message::Request(content) => {
+            fn_input: |msg| match msg.get_data()? {
+                Custom::Request(content) => {
                     let value = content.value;
                     let query = include_str!("./new_value_int.surql");
                     let query = query
@@ -62,13 +59,13 @@ async fn main() -> anyhow::Result<()> {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg = Message::Request(MsgContent::new(counter));
+            let msg = Message::new(Custom::Request(MsgContent::new(counter)));
             counter += 1;
             vec![msg]
         },
     };
 
-    ComponentExecutor::<Message>::new(100, "surrealdb_multi_thread")
+    ComponentExecutor::<Custom>::new(100, "surrealdb_multi_thread")
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
         .add_cmp(cmp_surrealdb::Cmp::new(surrealdb_config))
         .wait_result()

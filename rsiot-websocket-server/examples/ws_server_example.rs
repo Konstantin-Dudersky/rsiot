@@ -14,7 +14,7 @@ async fn main() -> anyhow::Result<()> {
 
     use rsiot_component_core::ComponentExecutor;
     use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-    use rsiot_messages_core::{ExampleMessage, IMessage, MsgContent};
+    use rsiot_messages_core::{message_v2::Message, ExampleMessage};
     use rsiot_websocket_server::cmp_websocket_server;
 
     tracing_subscriber::fmt()
@@ -28,13 +28,13 @@ async fn main() -> anyhow::Result<()> {
 
     let ws_server_config = cmp_websocket_server::Config {
         port: 8021,
-        fn_input: |msg: &ExampleMessage| {
-            let text = msg.to_json()?;
+        fn_input: |msg: &Message<ExampleMessage>| {
+            let text = msg.serialize()?;
             Ok(Some(text))
         },
-        fn_output: |data: &str| {
-            let msg = ExampleMessage::from_json(data)?;
-            Ok(Some(msg))
+        fn_output: |text: &str| {
+            let msg = Message::deserialize(text)?;
+            Ok(Some(vec![msg]))
         },
     };
 
@@ -42,7 +42,7 @@ async fn main() -> anyhow::Result<()> {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(10),
         fn_periodic: move || {
-            let msg = ExampleMessage::ValueInstantF64(MsgContent::new(counter));
+            let msg = Message::new(ExampleMessage::ValueInstantF64(counter));
             counter += 1.0;
             vec![msg]
         },

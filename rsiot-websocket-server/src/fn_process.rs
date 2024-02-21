@@ -12,7 +12,7 @@ use tokio_util::sync::CancellationToken;
 use tracing::{error, info};
 
 use rsiot_component_core::{Cache, CmpInput, CmpOutput, ComponentError};
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::message_v2::MsgDataBound;
 
 use crate::{config::Config, errors::Error};
 
@@ -25,7 +25,7 @@ pub async fn fn_process<TMessage>(
     cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>
 where
-    TMessage: IMessage + 'static,
+    TMessage: MsgDataBound + 'static,
 {
     info!(
         "Component cmp_websocket_server started. Config: {:?}",
@@ -60,7 +60,7 @@ async fn task_main<TMessage>(
     cancel: CancellationToken,
 ) -> crate::Result<()>
 where
-    TMessage: IMessage + 'static,
+    TMessage: MsgDataBound + 'static,
 {
     let addr = format!("0.0.0.0:{}", config.port);
 
