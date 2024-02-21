@@ -1,4 +1,5 @@
 mod derive_msg_meta;
+mod create_signal_from_msg;
 
 use proc_macro::TokenStream;
 use proc_macro_error::proc_macro_error;
@@ -23,8 +24,18 @@ pub fn derive_into_eav(input: TokenStream) -> TokenStream {
 /// ```
 #[proc_macro]
 pub fn create_signal_from_msg(msg: TokenStream) -> TokenStream {
-    let parts = msg.to_string().split("-").collect::<Vec<String>>()[0];
+    let parts = &msg
+        .to_string()
+        .split("-")
+        .map(String::from)
+        .collect::<Vec<String>>();
     // default: &msg(Default::default()),
+
+    let default = format!(
+        "Message::new_full({}(Default::default())){}",
+        parts.join("("),
+        ")".repeat(parts.len() - 1)
+    );
     let code = r#"
     create_signal_from_msg::create(create_signal_from_msg::Config {
         default: &default,
@@ -36,7 +47,7 @@ pub fn create_signal_from_msg(msg: TokenStream) -> TokenStream {
     })
 "#;
     let code = code.replace("&msg", &msg.to_string());
-    let code = code.replace("&default", &parts.to_string());
+    let code = code.replace("&default", &default);
     let code = code.replace('\"', "");
     let code = parse_str::<syn::Expr>(&code).unwrap();
 
@@ -45,15 +56,3 @@ pub fn create_signal_from_msg(msg: TokenStream) -> TokenStream {
     })
 }
 
-// let test = "Data-Data::DataGroup-DataGroup1::DataGroupStruct";
-// let msg = match msg.content {
-//     MsgContentType::System(_) => todo!(),
-//     MsgContentType::Data(msg) => match msg {
-//         Data::DataUnit(_) => todo!(),
-//         Data::DataF64(_) => todo!(),
-//         Data::DataGroup(msg) => match msg {
-//             DataGroup1::DataGroupF64(_) => todo!(),
-//             DataGroup1::DataGroupStruct(msg) => msg,
-//         },
-//     },
-// };

@@ -42,6 +42,17 @@ where
         Self::new(custom_data)
     }
 
+    pub fn new_full(data: MsgData<TCustom>) -> Self {
+        let key = define_key(&data);
+        Self {
+            data,
+            key,
+            ts: Default::default(),
+            source: None,
+            process: None,
+        }
+    }
+
     pub fn cmp_set(&mut self, cmp: &MsgSource) {
         if self.source.is_none() {
             self.source = Some(cmp.clone());
