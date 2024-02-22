@@ -5,7 +5,7 @@ use tokio::{
 };
 
 use rsiot_extra_components::cmpbase_mpsc_to_broadcast;
-use rsiot_messages_core::ExampleMessage;
+use rsiot_messages_core::example_message::*;
 use tracing::info;
 
 #[main(flavor = "current_thread")]

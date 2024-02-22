@@ -12,7 +12,7 @@ async fn main() -> anyhow::Result<()> {
 
     use rsiot_component_core::ComponentExecutor;
     use rsiot_extra_components::cmp_inject_periodic;
-    use rsiot_messages_core::{message_v2::Message, ExampleMessage};
+    use rsiot_messages_core::{example_message::*, *};
     use rsiot_timescaledb_storing::cmp_timescaledb_storing;
 
     tracing_subscriber::fmt().init();

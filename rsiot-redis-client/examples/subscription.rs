@@ -30,7 +30,7 @@ async fn main() -> anyhow::Result<()> {
 
     use rsiot_component_core::ComponentExecutor;
     use rsiot_extra_components::cmp_logger;
-    use rsiot_messages_core::{message_v2::Message, ExampleMessage, ExampleMessageChannel};
+    use rsiot_messages_core::{example_message::*, *};
     use rsiot_redis_client as cmp_redis_client;
 
     fmt().init();

@@ -9,7 +9,7 @@ use tokio::{main, task::LocalSet, time::Duration};
 
 use rsiot_component_core::ComponentExecutor;
 use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-use rsiot_messages_core::{message_v2::Message, ExampleMessage};
+use rsiot_messages_core::{example_message::*, Message};
 use tracing::{level_filters::LevelFilter, Level};
 
 #[main(flavor = "current_thread")]

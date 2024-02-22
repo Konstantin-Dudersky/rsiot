@@ -4,7 +4,7 @@
 
 mod auth_roles;
 mod error;
-mod example_message;
+pub mod example_message;
 mod example_message_channel;
 // mod imessage;
 mod message_channel;
@@ -18,11 +18,10 @@ pub mod msg_meta;
 
 pub use auth_roles::AuthRoles;
 pub use error::Error;
-pub use example_message::ExampleMessage;
 pub use example_message_channel::ExampleMessageChannel;
 // pub use imessage::IMessage;
 pub use message_channel::IMessageChannel;
-pub use message_v2::{Message, MsgDataBound};
+pub use message_v2::{Message, MsgDataBound, MsgType};
 pub use msg_content::MsgContent;
 pub use msg_content_value::IMsgContentValue;
 pub use msg_meta::MsgMeta;

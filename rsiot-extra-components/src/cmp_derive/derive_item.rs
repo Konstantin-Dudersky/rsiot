@@ -1,4 +1,4 @@
-use rsiot_messages_core::message_v2::{Message, MsgData, MsgDataBound};
+use rsiot_messages_core::message_v2::{Message, MsgDataBound, MsgType};
 
 use super::derive_item_process::DeriveItemProcess;
 
@@ -24,8 +24,8 @@ where
     fn process(&mut self, msg: &Message<TMsg>) -> Option<Vec<Message<TMsg>>> {
         let old_store = self.store.clone();
         let msg_content_data = match &msg.data {
-            MsgData::System(_) => return None,
-            MsgData::Custom(msg_data) => msg_data,
+            MsgType::System(_) => return None,
+            MsgType::Custom(msg_data) => msg_data,
         };
         (self.fn_input)(&msg_content_data, &mut self.store);
         if old_store == self.store {

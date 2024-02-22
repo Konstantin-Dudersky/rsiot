@@ -16,7 +16,6 @@ async-trait = { workspace = true }
 serde = { workspace = true }
 tracing = { workspace = true }
 uuid = { workspace = true }
-jwt = { workspace = true }
 
 rsiot-component-core = { workspace = true }
 rsiot-messages-core = { workspace = true }

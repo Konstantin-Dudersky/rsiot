@@ -6,7 +6,7 @@ async fn main() {
     use rsiot_component_core::ComponentExecutor;
     use rsiot_extra_components::cmp_inject_periodic;
     use rsiot_influxdb as cmp_influxdb;
-    use rsiot_messages_core::{message_v2::Message, ExampleMessage};
+    use rsiot_messages_core::{example_message::*, *};
     use tracing::level_filters::LevelFilter;
 
     const TOKEN: &str =

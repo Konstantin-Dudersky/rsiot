@@ -27,7 +27,7 @@ fn main() -> anyhow::Result<()> {
         cmp_derive::{self, DeriveItem},
         cmp_inject_periodic, cmp_logger,
     };
-    use rsiot_messages_core::{message_v2::Message, ExampleMessage};
+    use rsiot_messages_core::{example_message::*, Message};
     use tracing::Level;
 
     tracing_subscriber::fmt().init();

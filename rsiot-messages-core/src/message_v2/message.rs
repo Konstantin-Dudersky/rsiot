@@ -8,14 +8,14 @@ use super::{super::msg_meta::Timestamp, MsgDataBound, MsgSource};
 pub enum SystemData {}
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub enum MsgData<TCustom> {
+pub enum MsgType<TCustom> {
     System(SystemData),
     Custom(TCustom),
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Message<TData> {
-    pub data: MsgData<TData>,
+    pub data: MsgType<TData>,
     pub key: String,
     pub ts: Timestamp,
     pub source: Option<MsgSource>,
@@ -27,7 +27,7 @@ where
     TCustom: MsgDataBound,
 {
     pub fn new(custom_data: TCustom) -> Self {
-        let data = MsgData::Custom(custom_data);
+        let data = MsgType::Custom(custom_data);
         let key = define_key(&data);
         Self {
             data,
@@ -42,7 +42,7 @@ where
         Self::new(custom_data)
     }
 
-    pub fn new_full(data: MsgData<TCustom>) -> Self {
+    pub fn new_full(data: MsgType<TCustom>) -> Self {
         let key = define_key(&data);
         Self {
             data,
@@ -62,13 +62,13 @@ where
 
     pub fn get_data(&self) -> Option<TCustom> {
         match &self.data {
-            MsgData::System(_) => None,
-            MsgData::Custom(data) => Some(data.clone()),
+            MsgType::System(_) => None,
+            MsgType::Custom(data) => Some(data.clone()),
         }
     }
 }
 
-fn define_key<TCustom>(data: &MsgData<TCustom>) -> String
+fn define_key<TCustom>(data: &MsgType<TCustom>) -> String
 where
     TCustom: MsgDataBound,
 {
