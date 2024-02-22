@@ -4,25 +4,25 @@
 
 mod auth_roles;
 mod error;
-pub mod example_message;
 mod example_message_channel;
-// mod imessage;
+mod message;
 mod message_channel;
-mod message_v2;
-mod msg_content;
-mod msg_content_value;
+mod msg_data_bound;
+mod msg_serde;
+mod msg_source;
+mod timestamp;
 
 pub mod eav;
 pub mod eav_helpers;
-mod msg_meta;
+pub mod example_message;
 
 pub use auth_roles::AuthRoles;
 pub use error::Error;
 pub use example_message_channel::ExampleMessageChannel;
-// pub use imessage::IMessage;
+pub use message::{Message, MsgType};
 pub use message_channel::IMessageChannel;
-pub use message_v2::{Message, MsgDataBound, MsgSource, MsgType};
-pub use msg_content::MsgContent;
-pub use msg_content_value::IMsgContentValue;
-pub use msg_meta::Timestamp;
+pub use msg_data_bound::MsgDataBound;
+pub use msg_source::MsgSource;
+pub use timestamp::Timestamp;
+
 pub use serde::{Deserialize, Serialize};

@@ -37,7 +37,6 @@ rust-version = "1.75.0"
 
 
 [workspace.dependencies]
-formatx = { version = "0.2.2" }
 jwt = { version = "0.16.0" }
 openssl = { version = "0.10", features = ["vendored"] }
 

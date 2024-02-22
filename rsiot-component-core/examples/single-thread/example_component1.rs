@@ -7,7 +7,7 @@ use tracing::info;
 use rsiot_component_core::{
     Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
-use rsiot_messages_core::message_v2::MsgDataBound;
+use rsiot_messages_core::MsgDataBound;
 
 pub struct Config {}
 

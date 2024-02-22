@@ -1,4 +1,4 @@
-use crate::{eav, msg_meta::Timestamp};
+use crate::{eav, Timestamp};
 
 /// Счетчик с нарастающим итогом
 pub struct ValueCounter {

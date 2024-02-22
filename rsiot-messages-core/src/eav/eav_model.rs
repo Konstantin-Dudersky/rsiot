@@ -1,4 +1,4 @@
-use crate::msg_meta::Timestamp;
+use crate::Timestamp;
 
 use super::{AggType, ValueType};
 

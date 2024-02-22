@@ -1,5 +1,5 @@
 use leptos::*;
-use rsiot_messages_core::{IMsgContentValue, MsgDataBound};
+use rsiot_messages_core::MsgDataBound;
 
 use crate::GlobalState;
 
@@ -9,7 +9,7 @@ pub fn create<TMsg, TValue>(
     config: Config<TMsg, TValue>,
 ) -> (ReadSignal<TValue>, WriteSignal<TValue>)
 where
-    TValue: Clone + std::fmt::Debug + Default + IMsgContentValue + 'static,
+    TValue: Clone + std::fmt::Debug + Default + 'static,
     TMsg: MsgDataBound + 'static,
 {
     let gs = use_context::<GlobalState<TMsg>>().unwrap();
@@ -57,9 +57,3 @@ where
 
     (input, output_set)
 }
-
-// TODO - доработать макрос - вместо полной записи использовать сокращенную, с условием соглашения -
-// наименование перечисления совпадает с наименованием варианта вышестоящего перечисления
-
-// TODO - также в макросе можно упростить fn_input - сделать типа
-// MsgType::Custom(Custom::ValueInstantF64(data))

@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use serde::{Deserialize, Serialize};
 
-use super::{super::msg_meta::Timestamp, MsgDataBound, MsgSource};
+use super::{MsgDataBound, MsgSource, Timestamp};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum System {}

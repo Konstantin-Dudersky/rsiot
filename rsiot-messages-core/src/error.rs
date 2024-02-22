@@ -5,7 +5,4 @@ pub enum Error {
 
     #[error("Message serialization error: {0}")]
     Serialization(String),
-
-    #[error("Value formating error: {0}")]
-    Format(#[from] formatx::Error),
 }
