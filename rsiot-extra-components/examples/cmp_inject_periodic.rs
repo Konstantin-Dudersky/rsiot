@@ -30,14 +30,14 @@ async fn main() -> anyhow::Result<()> {
         let inject_config = cmp_inject_periodic::Config {
             period: Duration::from_secs(2),
             fn_periodic: move || {
-                let msg = ExampleMessage::ValueInstantF64(counter);
+                let msg = Custom::ValueInstantF64(counter);
                 let msg = Message::new(msg);
                 counter += 1.0;
                 vec![msg]
             },
         };
 
-        ComponentExecutor::<ExampleMessage>::new(100, "cmp_inject_periodic")
+        ComponentExecutor::<Custom>::new(100, "cmp_inject_periodic")
             .add_cmp(cmp_logger::Cmp::new(logger_config))
             .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
             .wait_result()

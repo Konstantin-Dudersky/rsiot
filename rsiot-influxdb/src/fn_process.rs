@@ -45,6 +45,10 @@ where
             None => continue,
         };
         let datapoints = (config.fn_input)(&msg);
+        let datapoints = match datapoints {
+            Some(datapoints) => datapoints,
+            None => continue,
+        };
         handle_request(datapoints, config.clone()).await?;
     }
     Ok(())
@@ -67,7 +71,8 @@ where
     let lines = datapoints
         .iter()
         .map(String::try_from)
-        .collect::<crate::Result<Vec<String>>>()?
+        .collect::<std::result::Result<Vec<String>, _>>()
+        .map_err(crate::Error::Config)?
         .join("\n");
 
     let client = Client::new();

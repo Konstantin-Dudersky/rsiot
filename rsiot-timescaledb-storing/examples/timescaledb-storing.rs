@@ -21,7 +21,7 @@ async fn main() -> anyhow::Result<()> {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg = Message::new(ExampleMessage::ValueInstantF64(counter));
+            let msg = Message::new(Custom::ValueInstantF64(counter));
             counter += 1.0;
             vec![msg]
         },

@@ -1,15 +1,15 @@
 //! Пример реализации сообщения. Можно использовать для тестирования компонентов
 
-use crate::{message_v2::MsgDataBound, Deserialize, Serialize};
+use crate::{Deserialize, MsgDataBound, Serialize};
 
 /// Пример реализации сообщения. Можно использовать для тестирования компонентов
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub enum ExampleMessage {
+pub enum Custom {
     ValueInstantF64(f64),
     ValueInstantBool(bool),
     ValueInstantString(String),
     DataUnit(()),
-    DataGroup(DataGroup1),
+    DataGroup(DataGroup),
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -19,12 +19,12 @@ pub struct StructInDataGroup {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub enum DataGroup1 {
+pub enum DataGroup {
     DataGroupF64(f64),
     DataGroupStruct(StructInDataGroup),
 }
 
-impl MsgDataBound for ExampleMessage {}
+impl MsgDataBound for Custom {}
 
 #[cfg(test)]
 mod tests {
@@ -33,60 +33,27 @@ mod tests {
 
     #[test]
     fn test1() {
-        let _msg = ExampleMessage::ValueInstantF64(12.3456);
+        let _msg = Custom::ValueInstantF64(12.3456);
     }
 
     #[test]
     fn test_key() {
-        let msg = Message::new(ExampleMessage::DataUnit(()));
-        println!("{:?}", msg.data);
+        let msg = Message::new(Custom::DataUnit(()));
         assert_eq!("Custom-DataUnit", msg.key);
 
-        let msg = Message::new(ExampleMessage::ValueInstantF64(0.0));
+        let msg = Message::new(Custom::ValueInstantF64(0.0));
         assert_eq!("Custom-ValueInstantF64", msg.key);
 
-        let msg = Message::new(ExampleMessage::DataGroup(DataGroup1::DataGroupF64(0.0)));
+        let msg = Message::new(Custom::DataGroup(DataGroup::DataGroupF64(0.0)));
         assert_eq!("Custom-DataGroup-DataGroupF64", msg.key);
 
-        let msg = Message::new(ExampleMessage::DataGroup(DataGroup1::DataGroupStruct(
+        let msg = Message::new(Custom::DataGroup(DataGroup::DataGroupStruct(
             StructInDataGroup {
                 struct_field1: false,
                 struct_field2: 0.0,
             },
         )));
-        assert_eq!("Custom-DataGroup-DataGroupStruct", msg.key);
 
-        let msg = Message::new(ExampleMessage::ValueInstantF64(Default::default()));
+        assert_eq!("Custom-DataGroup-DataGroupStruct", msg.key);
     }
 }
-
-// impl IMessage for ExampleMessage {
-//     fn into_eav(self) -> Vec<eav::EavModel> {
-//         let entity = self.key();
-//         match self {
-//             ExampleMessage::ValueInstantF64(msg_content) => eav_helpers::ValueInstant {
-//                 ts: msg_content.ts,
-//                 entity,
-//                 attr: None,
-//                 value: msg_content.value.into(),
-//             }
-//             .into(),
-
-//             ExampleMessage::ValueInstantBool(msg_content) => eav_helpers::ValueInstant {
-//                 ts: msg_content.ts,
-//                 entity,
-//                 attr: None,
-//                 value: msg_content.value.into(),
-//             }
-//             .into(),
-
-//             ExampleMessage::ValueInstantString(msg_content) => eav_helpers::ValueInstant {
-//                 ts: msg_content.ts,
-//                 entity,
-//                 attr: None,
-//                 value: msg_content.value.clone().into(),
-//             }
-//             .into(),
-//         }
-//     }
-// }

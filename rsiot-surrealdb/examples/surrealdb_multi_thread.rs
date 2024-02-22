@@ -12,16 +12,13 @@ async fn main() -> anyhow::Result<()> {
     use cmp_surrealdb::InputConfig;
     use rsiot_component_core::ComponentExecutor;
     use rsiot_extra_components::cmp_inject_periodic;
-    use rsiot_messages_core::{
-        message_v2::{Message, MsgDataBound},
-        msg_meta, Deserialize, IMsgContentValue, MsgContent, MsgMeta, Serialize,
-    };
+    use rsiot_messages_core::{Deserialize, Message, MsgDataBound, Serialize};
     use rsiot_surrealdb as cmp_surrealdb;
     use tracing::info;
 
-    #[derive(Clone, Debug, Deserialize, MsgMeta, PartialEq, Serialize)]
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     enum Custom {
-        Request(MsgContent<u16>),
+        Request(u16),
     }
 
     impl MsgDataBound for Custom {}
@@ -39,10 +36,10 @@ async fn main() -> anyhow::Result<()> {
         input_config: vec![InputConfig {
             fn_input: |msg| match msg.get_data()? {
                 Custom::Request(content) => {
-                    let value = content.value;
+                    let value = content;
                     let query = include_str!("./new_value_int.surql");
                     let query = query
-                        .replace("$ts", &content.ts.to_rfc3339())
+                        .replace("$ts", &msg.ts.to_rfc3339())
                         .replace("$value_float", &format!("{:.2}", value));
                     Some(query)
                 }
@@ -59,7 +56,7 @@ async fn main() -> anyhow::Result<()> {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg = Message::new(Custom::Request(MsgContent::new(counter)));
+            let msg = Message::new(Custom::Request(counter));
             counter += 1;
             vec![msg]
         },

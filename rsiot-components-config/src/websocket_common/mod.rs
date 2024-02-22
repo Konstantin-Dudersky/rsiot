@@ -1,4 +1,4 @@
-use rsiot_messages_core::msg_meta::Timestamp;
+use rsiot_messages_core::Timestamp;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]

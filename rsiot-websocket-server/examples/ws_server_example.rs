@@ -28,7 +28,7 @@ async fn main() -> anyhow::Result<()> {
 
     let ws_server_config = cmp_websocket_server::Config {
         port: 8021,
-        fn_input: |msg: &Message<ExampleMessage>| {
+        fn_input: |msg: &Message<Custom>| {
             let text = msg.serialize()?;
             Ok(Some(text))
         },
@@ -42,7 +42,7 @@ async fn main() -> anyhow::Result<()> {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(10),
         fn_periodic: move || {
-            let msg = Message::new(ExampleMessage::ValueInstantF64(counter));
+            let msg = Message::new(Custom::ValueInstantF64(counter));
             counter += 1.0;
             vec![msg]
         },

@@ -6,28 +6,25 @@ fn main() {
     // Раскомментировать для cargo-expand
     // use rsiot_macros::create_signal_from_msg;
 
-    let (_signal, _signal_set) = create_signal_from_msg!(
-        "MsgType::Custom-ExampleMessage::DataGroup-DataGroup1::DataGroupF64"
-    );
+    let (_signal, _signal_set) =
+        create_signal_from_msg!("MsgType::Custom-Custom::DataGroup-DataGroup::DataGroupF64");
 
     let (_signal, _signal_set) = create_signal_from_msg::create(create_signal_from_msg::Config {
-        default: Message::new_full(MsgType::Custom(ExampleMessage::ValueInstantF64(
-            Default::default(),
-        ))),
+        default: Message::new_full(MsgType::Custom(Custom::ValueInstantF64(Default::default()))),
         fn_input: |msg| {
             let value = &msg.data;
             match value {
                 MsgType::Custom(value) => match value {
-                    ExampleMessage::ValueInstantF64(value) => Some(value.clone()),
+                    Custom::ValueInstantF64(value) => Some(value.clone()),
                     _ => None,
                 },
                 _ => None,
             }
         },
         fn_output: |value| {
-            Some(Message::new_full(MsgType::Custom(
-                ExampleMessage::ValueInstantF64(value),
-            )))
+            Some(Message::new_full(MsgType::Custom(Custom::ValueInstantF64(
+                value,
+            ))))
         },
     });
 }

@@ -195,18 +195,16 @@ dependencies = [
 
 [[package]]
 name = "async-executor"
-version = "1.9.0"
+version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "601848938f6e24595d8f63bd4c4e98ed905a3bfa832743c7b8298a73d1b0517b"
+checksum = "17ae5ebefcc48e7452b4987947920dac9450be1110cadf34d1b8c116bdbaf97c"
 dependencies = [
  "async-lock",
  "async-task",
- "atomic-waker",
  "concurrent-queue",
  "fastrand",
  "futures-lite",
  "slab",
- "thread_local",
 ]
 
 [[package]]
@@ -282,12 +280,6 @@ checksum = "8cf2bce30dfe09ef0bfaef228b9d414faaf7e563035494d7fe092dba54b300f4"
 dependencies = [
  "critical-section",
 ]
-
-[[package]]
-name = "atomic-waker"
-version = "1.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
 
 [[package]]
 name = "atomic-write-file"
@@ -3787,6 +3779,7 @@ dependencies = [
  "async-trait",
  "reqwest",
  "rsiot-component-core",
+ "rsiot-components-config",
  "rsiot-extra-components",
  "rsiot-messages-core",
  "serde",
@@ -3848,7 +3841,6 @@ dependencies = [
  "chrono",
  "formatx",
  "rgb",
- "rsiot-macros",
  "serde",
  "serde_json",
  "thiserror",

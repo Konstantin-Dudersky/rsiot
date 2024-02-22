@@ -43,7 +43,7 @@ async fn main() -> anyhow::Result<()> {
     let redis_config = cmp_redis_client::Config {
         url: Url::parse("redis://127.0.0.1:6379")?,
         subscription_channel: ExampleMessageChannel::Output,
-        fn_input: |msg: &Message<ExampleMessage>| {
+        fn_input: |msg: &Message<Custom>| {
             let channel = ExampleMessageChannel::Output;
             let key = msg.key.clone();
             let value = msg.serialize()?;
@@ -59,7 +59,7 @@ async fn main() -> anyhow::Result<()> {
         },
     };
 
-    ComponentExecutor::<ExampleMessage>::new(100, "redis-client-subscription")
+    ComponentExecutor::<Custom>::new(100, "redis-client-subscription")
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .add_cmp(cmp_redis_client::Cmp::new(redis_config))
         .wait_result()

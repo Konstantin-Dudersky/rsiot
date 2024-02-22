@@ -19,5 +19,9 @@ where
     }
     let msg = msg.ok_or(Error::UnknownMessageKey(key))?;
     let json = (shared_state.config.fn_input)(&msg).map_err(Error::FnOutput)?;
+    let json = match json {
+        Some(json) => json,
+        None => return Ok("".into()),
+    };
     Ok(json)
 }

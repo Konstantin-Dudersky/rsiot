@@ -6,7 +6,7 @@ mod error;
 mod fn_process;
 
 pub use component::Cmp;
-pub use config::{msg_into_line_protocol, Config, DataPointVaueType, LineProtocolItem};
+pub use config::{Config, LineProtocolItem, ValueType};
 pub use error::Error;
 
 type Result<T> = std::result::Result<T, Error>;

@@ -16,6 +16,10 @@ where
         let lock = shared_state.cache.read().await;
         for msg in lock.values() {
             let json = (shared_state.config.fn_input)(msg).map_err(Error::FnOutput)?;
+            let json = match json {
+                Some(json) => json,
+                None => continue,
+            };
             msgs_json.push(json);
         }
     }

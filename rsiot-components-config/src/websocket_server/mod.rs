@@ -1,4 +1,12 @@
-use rsiot_messages_core::message_v2::Message;
+//! Конфигурация Websocket-сервера
+//!
+//! Тестирование:
+//!
+//! ```bash
+//! cargo test -p rsiot-components-config --doc websocket_server
+//! ```
+
+use rsiot_messages_core::*;
 
 /// Конфигурация Websocket-сервера
 #[derive(Clone, Debug)]
@@ -14,8 +22,8 @@ pub struct Config<TMsg> {
     ///
     /// ```rust
     /// # use rsiot_components_config::websocket_server::Config;
-    /// # use rsiot_messages_core::{ExampleMessage, Message};
-    /// # let c = Config::<ExampleMessage> {
+    /// # use rsiot_messages_core::{example_message::*, *};
+    /// # Config::<Custom> {
     /// #    port: 8000,
     /// fn_input: |_| Ok(None),
     /// #    fn_output: |_| Ok(None)
@@ -26,10 +34,10 @@ pub struct Config<TMsg> {
     ///
     /// ```
     /// # use rsiot_components_config::websocket_server::Config;
-    /// # use rsiot_messages_core::{ExampleMessage, Message};
-    /// # let c = Config::<ExampleMessage> {
+    /// # use rsiot_messages_core::{example_message::*, *};
+    /// # Config::<Custom> {
     /// #    port: 8000,
-    /// fn_input: |msg: &Message<ExampleMessage>| {
+    /// fn_input: |msg: &Message<Custom>| {
     ///     let text = msg.serialize()?;
     ///     Ok(Some(text))
     /// }
@@ -48,8 +56,8 @@ pub struct Config<TMsg> {
     ///
     /// ```rust
     /// # use rsiot_components_config::websocket_server::Config;
-    /// # use rsiot_messages_core::{ExampleMessage, Message};
-    /// # let c = Config::<ExampleMessage> {
+    /// # use rsiot_messages_core::{example_message::*, *};
+    /// # Config::<Custom> {
     /// #    port: 8000,
     /// #    fn_input: |_| Ok(None),
     /// fn_output: |_| Ok(None)
@@ -59,13 +67,13 @@ pub struct Config<TMsg> {
     /// ## Десериализация из json:
     /// ```rust
     /// # use rsiot_components_config::websocket_server::Config;
-    /// # use rsiot_messages_core::{ExampleMessage, Message};
-    /// # let c = Config::<ExampleMessage> {
+    /// # use rsiot_messages_core::{example_message::*, *};
+    /// # Config::<Custom> {
     /// #    port: 8000,
     /// #    fn_input: |_| Ok(None),
     /// fn_output: |text: &str| {
-    ///     let msg = Message::<ExampleMessage>::deserialize(text)?;
-    ///     Ok::<Option<Vec<Message<ExampleMessage>>>, anyhow::Error>(Some(vec![msg]))
+    ///     let msg = Message::<Custom>::deserialize(text)?;
+    ///     Ok::<Option<Vec<Message<Custom>>>, anyhow::Error>(Some(vec![msg]))
     /// }
     /// # };
     /// ```

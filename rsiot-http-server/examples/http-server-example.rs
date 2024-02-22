@@ -52,7 +52,7 @@ fn main() -> anyhow::Result<()> {
         },
         fn_input: |msg: &Message<Data>| {
             let text = msg.serialize()?;
-            Ok(text) as anyhow::Result<String>
+            Ok(Some(text))
         },
     };
 

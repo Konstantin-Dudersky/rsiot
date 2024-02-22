@@ -5,11 +5,11 @@ use serde::{Deserialize, Serialize};
 use super::{super::msg_meta::Timestamp, MsgDataBound, MsgSource};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub enum SystemData {}
+pub enum System {}
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum MsgType<TCustom> {
-    System(SystemData),
+    System(System),
     Custom(TCustom),
 }
 

@@ -14,7 +14,7 @@ mod msg_content_value;
 
 pub mod eav;
 pub mod eav_helpers;
-pub mod msg_meta;
+mod msg_meta;
 
 pub use auth_roles::AuthRoles;
 pub use error::Error;
@@ -24,8 +24,5 @@ pub use message_channel::IMessageChannel;
 pub use message_v2::{Message, MsgDataBound, MsgType};
 pub use msg_content::MsgContent;
 pub use msg_content_value::IMsgContentValue;
-pub use msg_meta::MsgMeta;
-pub use rsiot_macros::MsgMeta;
+pub use msg_meta::Timestamp;
 pub use serde::{Deserialize, Serialize};
-
-pub type Result<T> = std::result::Result<T, Error>;

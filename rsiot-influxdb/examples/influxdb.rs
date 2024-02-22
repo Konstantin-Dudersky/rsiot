@@ -20,7 +20,7 @@ async fn main() {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg = Message::new(ExampleMessage::ValueInstantF64(counter as f64));
+            let msg = Message::new(Custom::ValueInstantF64(counter as f64));
             counter += 1;
             vec![msg]
         },
@@ -32,12 +32,16 @@ async fn main() {
         org: "test".into(),
         bucket: "test1".into(),
         token: TOKEN.into(),
-        fn_input: |msg: &Message<ExampleMessage>| {
-            let msg = match msg.get_data() {
-                Some(val) => val,
-                None => return vec![],
+        fn_input: |msg: &Message<Custom>| {
+            let value = match &msg.data {
+                MsgType::Custom(data) => match data {
+                    Custom::ValueInstantF64(data) => cmp_influxdb::ValueType::f64(*data),
+                    _ => return None,
+                },
+                _ => return None,
             };
-            cmp_influxdb::msg_into_line_protocol(&msg)
+            let line = cmp_influxdb::LineProtocolItem::new(&msg.key, value, &msg.ts);
+            Some(vec![line])
         },
     };
 

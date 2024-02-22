@@ -12,9 +12,9 @@ use tracing::info;
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt().init();
 
-    let (mpsc_send, mpsc_rcv) = mpsc::channel::<ExampleMessage>(128);
+    let (mpsc_send, mpsc_rcv) = mpsc::channel::<Custom>(128);
 
-    let (broadcast_send, _) = broadcast::channel::<ExampleMessage>(128);
+    let (broadcast_send, _) = broadcast::channel::<Custom>(128);
     let mut broadcast_rcv_1 = broadcast_send.subscribe();
     let mut broadcast_rcv_2 = broadcast_send.subscribe();
 
@@ -23,7 +23,7 @@ async fn main() -> anyhow::Result<()> {
     #[allow(unreachable_code)]
     let _source_task = spawn(async move {
         loop {
-            let msg = ExampleMessage::ValueInstantF64(counter);
+            let msg = Custom::ValueInstantF64(counter);
             counter += 1.0;
             mpsc_send.send(msg).await?;
             sleep(Duration::from_secs(2)).await;

@@ -6,12 +6,10 @@ use tokio::{
 };
 
 use rsiot_extra_components::component_filter_message;
-use rsiot_messages_core::{
-    message_v2::MsgDataBound, msg_meta, IMsgContentValue, MsgContent, MsgMeta,
-};
+use rsiot_messages_core::{message_v2::MsgDataBound, MsgContent};
 use tracing::info;
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgMeta)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 enum Message {
     Message0(MsgContent<f64>),
     Message1(MsgContent<f64>),

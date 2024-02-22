@@ -27,7 +27,7 @@ async fn main() -> anyhow::Result<()> {
     let redis_config = cmp_redis_client::Config {
         url: Url::parse("redis://127.0.0.1:6379")?,
         subscription_channel: ExampleMessageChannel::Output,
-        fn_input: |msg: &Message<ExampleMessage>| {
+        fn_input: |msg: &Message<Custom>| {
             let channel = ExampleMessageChannel::Output;
             let key = msg.key.clone();
             let value = msg.serialize()?;
@@ -47,7 +47,7 @@ async fn main() -> anyhow::Result<()> {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg = Message::new(ExampleMessage::ValueInstantF64(counter as f64));
+            let msg = Message::new(Custom::ValueInstantF64(counter as f64));
 
             counter += 1;
             vec![msg]
