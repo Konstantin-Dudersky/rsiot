@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use tokio::sync::mpsc;
 
-use rsiot_messages_core::message_v2::{Message, MsgDataBound, MsgSource};
+use rsiot_messages_core::{Message, MsgDataBound, MsgSource};
 use uuid::Uuid;
 
 use crate::ComponentError;

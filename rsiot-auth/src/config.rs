@@ -1,4 +1,4 @@
-use rsiot_messages_core::message_v2::MsgDataBound;
+use rsiot_messages_core::MsgDataBound;
 
 use crate::{types::AuthLoginRequest, AuthLoginResponse};
 

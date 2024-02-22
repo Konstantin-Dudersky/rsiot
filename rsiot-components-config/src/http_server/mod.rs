@@ -91,6 +91,7 @@ mod tests {
     use crate::http_server as cmp_http_server;
     use rsiot_messages_core::{example_message::*, *};
 
+    #[allow(clippy::no_effect)]
     #[test]
     fn stub() {
         cmp_http_server::Config::<Custom> {
@@ -100,6 +101,7 @@ mod tests {
         };
     }
 
+    #[allow(clippy::no_effect)]
     #[test]
     fn fn_input_json() {
         cmp_http_server::Config::<Custom> {
@@ -112,6 +114,7 @@ mod tests {
         };
     }
 
+    #[allow(clippy::no_effect)]
     #[test]
     fn fn_output_json() {
         cmp_http_server::Config::<Custom> {

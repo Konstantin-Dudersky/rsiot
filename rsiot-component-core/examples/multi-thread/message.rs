@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use rsiot_messages_core::message_v2::MsgDataBound;
+use rsiot_messages_core::MsgDataBound;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum Data {

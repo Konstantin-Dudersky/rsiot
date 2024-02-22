@@ -8,7 +8,7 @@ pub mod example_message;
 mod example_message_channel;
 // mod imessage;
 mod message_channel;
-pub mod message_v2;
+mod message_v2;
 mod msg_content;
 mod msg_content_value;
 
@@ -21,7 +21,7 @@ pub use error::Error;
 pub use example_message_channel::ExampleMessageChannel;
 // pub use imessage::IMessage;
 pub use message_channel::IMessageChannel;
-pub use message_v2::{Message, MsgDataBound, MsgType};
+pub use message_v2::{Message, MsgDataBound, MsgSource, MsgType};
 pub use msg_content::MsgContent;
 pub use msg_content_value::IMsgContentValue;
 pub use msg_meta::Timestamp;

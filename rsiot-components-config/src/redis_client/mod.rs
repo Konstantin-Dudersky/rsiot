@@ -10,6 +10,10 @@ use url::Url;
 
 use rsiot_messages_core::*;
 
+pub type FnInput<TMsg, TMessageChannel> =
+    fn(&Message<TMsg>) -> anyhow::Result<Option<Vec<ConfigFnInputItem<TMessageChannel>>>>;
+pub type FnOutput<TMsg> = fn(&str) -> anyhow::Result<Option<Vec<Message<TMsg>>>>;
+
 #[derive(Clone, Debug)]
 pub struct Config<TMsg, TMessageChannel>
 where
@@ -99,8 +103,7 @@ where
     /// ```
     ///
     /// Возможность рассылки в несколько каналов нужна для организации роутинга сообщений
-    pub fn_input:
-        fn(&Message<TMsg>) -> anyhow::Result<Option<Vec<ConfigFnInputItem<TMessageChannel>>>>,
+    pub fn_input: FnInput<TMsg, TMessageChannel>,
 
     /// Функция преобразования данных из Redis в исходящий поток сообщений
     ///
@@ -140,7 +143,7 @@ where
     /// },
     /// # };
     /// ```
-    pub fn_output: fn(&str) -> anyhow::Result<Option<Vec<Message<TMsg>>>>,
+    pub fn_output: FnOutput<TMsg>,
 }
 
 pub struct ConfigFnInputItem<TMessageChannel>
@@ -162,7 +165,7 @@ mod tests {
     pub fn stub() {
         use rsiot_messages_core::{example_message::*, *};
         use url::Url;
-        Config::<Custom, ExampleMessageChannel> {
+        let _ = Config::<Custom, ExampleMessageChannel> {
             url: Url::parse("redis://redis:6379").unwrap(),
             subscription_channel: ExampleMessageChannel::Output,
             fn_input: |_| Ok(None),
@@ -174,7 +177,7 @@ mod tests {
     pub fn fn_input_json() {
         use rsiot_messages_core::{example_message::*, *};
         use url::Url;
-        Config::<Custom, ExampleMessageChannel> {
+        let _ = Config::<Custom, ExampleMessageChannel> {
             url: Url::parse("redis://redis:6379").unwrap(),
             subscription_channel: ExampleMessageChannel::Output,
             fn_input: |msg: &Message<Custom>| {
@@ -195,7 +198,7 @@ mod tests {
     pub fn fn_output_json() {
         use rsiot_messages_core::{example_message::*, *};
         use url::Url;
-        Config::<Custom, ExampleMessageChannel> {
+        let _ = Config::<Custom, ExampleMessageChannel> {
             url: Url::parse("redis://redis:6379").unwrap(),
             subscription_channel: ExampleMessageChannel::Output,
             fn_input: |_| Ok(None),

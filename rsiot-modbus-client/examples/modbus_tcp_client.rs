@@ -24,7 +24,7 @@ async fn main() -> anyhow::Result<()> {
 
     use rsiot_component_core::ComponentExecutor;
     use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-    use rsiot_messages_core::message_v2::{Message, MsgDataBound};
+    use rsiot_messages_core::{Message, MsgDataBound};
     use rsiot_modbus_client::cmp_modbus_client::{self, *};
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]

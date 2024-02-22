@@ -9,7 +9,7 @@ use tokio_modbus::{client::Context, prelude::*};
 use tracing::{debug, error, info, trace};
 
 use rsiot_component_core::{Cache, CmpInput, CmpOutput, ComponentError};
-use rsiot_messages_core::message_v2::MsgDataBound;
+use rsiot_messages_core::MsgDataBound;
 
 use crate::{
     config::{self, Config},

@@ -1,5 +1,5 @@
 pub fn create_signal_from_msg(input: &str) -> String {
-    let parts = &input.split("-").map(String::from).collect::<Vec<String>>();
+    let parts = &input.split('-').map(String::from).collect::<Vec<String>>();
     let code = r#"
 create_signal_from_msg::create(create_signal_from_msg::Config {
     default: &default,
@@ -11,11 +11,10 @@ create_signal_from_msg::create(create_signal_from_msg::Config {
         Some(&fn_output)
     },
 })"#;
-    let code = code.replace("&default", &msg_new_full(&parts, "Default::default()"));
-    let code = code.replace("&fn_input", &fn_input(&parts));
-    let code = code.replace("&fn_output", &msg_new_full(&parts, "value"));
-    let code = code.replace('\"', "");
-    code.into()
+    let code = code.replace("&default", &msg_new_full(parts, "Default::default()"));
+    let code = code.replace("&fn_input", &fn_input(parts));
+    let code = code.replace("&fn_output", &msg_new_full(parts, "value"));
+    code.replace('\"', "")
 }
 
 fn msg_new_full(parts: &[String], value: &str) -> String {

@@ -2,6 +2,8 @@ use url::Url;
 
 use rsiot_messages_core::Message;
 
+pub type FnOutput<TMsg> = fn(&str) -> anyhow::Result<Option<Vec<Message<TMsg>>>>;
+
 /// Настройки Websocket-клиента
 #[derive(Clone, Debug)]
 pub struct Config<TMsg> {
@@ -48,5 +50,5 @@ pub struct Config<TMsg> {
     /// }
     /// # ;
     /// ```
-    pub fn_output: fn(&str) -> anyhow::Result<Option<Vec<Message<TMsg>>>>,
+    pub fn_output: FnOutput<TMsg>,
 }

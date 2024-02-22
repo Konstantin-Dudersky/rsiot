@@ -1,4 +1,4 @@
-use rsiot_messages_core::message_v2::{MsgDataBound, MsgSource};
+use rsiot_messages_core::{MsgDataBound, MsgSource};
 
 use crate::{CmpInput, CmpOutput};
 

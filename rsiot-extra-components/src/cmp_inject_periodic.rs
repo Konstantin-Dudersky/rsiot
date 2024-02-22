@@ -7,7 +7,7 @@ use tracing::debug;
 use rsiot_component_core::{
     cmp_set_component_id, Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
-use rsiot_messages_core::message_v2::{Message, MsgDataBound};
+use rsiot_messages_core::{Message, MsgDataBound};
 
 #[derive(Clone, Debug)]
 pub struct Config<TMsg, TFnPeriodic>

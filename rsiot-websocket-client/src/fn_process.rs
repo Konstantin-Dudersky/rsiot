@@ -13,9 +13,12 @@ use tokio_tungstenite::{
 use tracing::{error, info, warn};
 
 use rsiot_component_core::{CmpInput, CmpOutput, ComponentError};
-use rsiot_messages_core::message_v2::{Message, MsgDataBound};
+use rsiot_messages_core::{Message, MsgDataBound};
 
-use crate::{config::Config, error::Error};
+use crate::{
+    config::{Config, FnOutput},
+    error::Error,
+};
 
 pub async fn fn_process<TMessage>(
     input: CmpInput<TMessage>,
@@ -87,7 +90,7 @@ where
 async fn task_recv<TMessage>(
     output: CmpOutput<TMessage>,
     mut read: SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>,
-    fn_recv: fn(&str) -> anyhow::Result<Option<Vec<Message<TMessage>>>>,
+    fn_recv: FnOutput<TMessage>,
 ) -> Result<(), Error<TMessage>>
 where
     TMessage: MsgDataBound,

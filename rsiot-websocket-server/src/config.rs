@@ -1,5 +1,5 @@
-pub use rsiot_components_config::websocket_server::Config;
-use rsiot_messages_core::message_v2::MsgDataBound;
+pub use rsiot_components_config::websocket_server::*;
+use rsiot_messages_core::MsgDataBound;
 
 pub struct ConfigAlias<TMessage>(pub Config<TMessage>)
 where

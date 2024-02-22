@@ -2,7 +2,7 @@ use std::net::{IpAddr, Ipv4Addr};
 
 use tokio::time::Duration;
 
-use rsiot_messages_core::message_v2::Message;
+use rsiot_messages_core::Message;
 use rsiot_modbus_client::cmp_modbus_client::{self, *};
 
 use super::message::Data;

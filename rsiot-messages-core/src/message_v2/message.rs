@@ -73,9 +73,8 @@ where
     TCustom: MsgDataBound,
 {
     let full_str = format!("{:?}", data);
-    let key = full_str.split("(").into_iter().collect::<Vec<&str>>();
+    let key = full_str.split('(').collect::<Vec<&str>>();
     // Убираем последний элемент. Если тип unit (), нужно убрать два последних элемента
-    let skip = if key[key.len() - 2] == "" { 2 } else { 1 };
-    let key = key[0..key.len() - skip].join("-");
-    key
+    let skip = if key[key.len() - 2].is_empty() { 2 } else { 1 };
+    key[0..key.len() - skip].join("-")
 }

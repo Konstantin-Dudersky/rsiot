@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use tokio::sync::broadcast::{self};
 use uuid::Uuid;
 
-use rsiot_messages_core::message_v2::{Message, MsgSource};
+use rsiot_messages_core::{Message, MsgSource};
 
 use crate::ComponentError;
 

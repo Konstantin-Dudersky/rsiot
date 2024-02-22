@@ -34,10 +34,9 @@ async fn main() {
         token: TOKEN.into(),
         fn_input: |msg: &Message<Custom>| {
             let value = match &msg.data {
-                MsgType::Custom(data) => match data {
-                    Custom::ValueInstantF64(data) => cmp_influxdb::ValueType::f64(*data),
-                    _ => return None,
-                },
+                MsgType::Custom(Custom::ValueInstantF64(data)) => {
+                    cmp_influxdb::ValueType::f64(*data)
+                }
                 _ => return None,
             };
             let line = cmp_influxdb::LineProtocolItem::new(&msg.key, value, &msg.ts);

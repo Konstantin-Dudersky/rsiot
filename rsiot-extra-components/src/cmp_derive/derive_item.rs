@@ -1,4 +1,4 @@
-use rsiot_messages_core::message_v2::{Message, MsgDataBound, MsgType};
+use rsiot_messages_core::{Message, MsgDataBound, MsgType};
 
 use super::derive_item_process::DeriveItemProcess;
 
@@ -27,7 +27,7 @@ where
             MsgType::System(_) => return None,
             MsgType::Custom(msg_data) => msg_data,
         };
-        (self.fn_input)(&msg_content_data, &mut self.store);
+        (self.fn_input)(msg_content_data, &mut self.store);
         if old_store == self.store {
             return None;
         }

@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use axum::extract;
 
-use rsiot_messages_core::message_v2::MsgDataBound;
+use rsiot_messages_core::MsgDataBound;
 
 use crate::{error::Error, shared_state::SharedState};
 

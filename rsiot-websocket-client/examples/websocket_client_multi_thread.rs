@@ -14,7 +14,7 @@ async fn main() -> anyhow::Result<()> {
 
     use rsiot_component_core::ComponentExecutor;
     use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-    use rsiot_messages_core::message_v2::{Message, MsgDataBound};
+    use rsiot_messages_core::{Message, MsgDataBound};
     use rsiot_websocket_client::cmp_websocket_client;
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -42,9 +42,9 @@ async fn main() -> anyhow::Result<()> {
             None => return Ok(None),
         };
         match msg {
-            Data::Send(val) => return Ok(Some(vec![Message::new(Data::Recv(val))])),
-            Data::Recv(_) => return Ok(None),
-            Data::Tick(_) => return Ok(None),
+            Data::Send(val) => Ok(Some(vec![Message::new(Data::Recv(val))])),
+            Data::Recv(_) => Ok(None),
+            Data::Tick(_) => Ok(None),
         }
     }
 

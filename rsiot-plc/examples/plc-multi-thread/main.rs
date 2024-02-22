@@ -20,7 +20,7 @@ async fn main() -> anyhow::Result<()> {
 
     use rsiot_component_core::ComponentExecutor;
     use rsiot_extra_components::cmp_logger;
-    use rsiot_messages_core::message_v2::Message;
+    use rsiot_messages_core::Message;
     use rsiot_plc as cmp_plc;
 
     use message::Data;

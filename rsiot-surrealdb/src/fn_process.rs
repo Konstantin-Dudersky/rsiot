@@ -7,7 +7,7 @@ use surrealdb::{
 };
 
 use rsiot_component_core::{CmpInput, CmpOutput, ComponentError};
-use rsiot_messages_core::message_v2::MsgDataBound;
+use rsiot_messages_core::MsgDataBound;
 use tokio::{sync::Mutex, task::JoinSet, time::sleep};
 use tracing::{error, info};
 

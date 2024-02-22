@@ -7,7 +7,7 @@ use tokio::{
 use tracing::{error, info, trace, warn};
 
 use rsiot_component_core::{Cache, CmpInput, CmpOutput, ComponentError};
-use rsiot_messages_core::{message_v2::MsgDataBound, IMessageChannel};
+use rsiot_messages_core::{IMessageChannel, MsgDataBound};
 
 use crate::{config::Config, error::Error};
 

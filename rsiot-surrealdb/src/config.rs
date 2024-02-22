@@ -1,4 +1,4 @@
-use rsiot_messages_core::message_v2::Message;
+use rsiot_messages_core::Message;
 
 #[derive(Clone, Debug)]
 pub struct Config<TMsg> {

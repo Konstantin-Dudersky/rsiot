@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use rsiot_component_core::{
     cmp_set_component_id, Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
-use rsiot_messages_core::message_v2::MsgDataBound;
+use rsiot_messages_core::MsgDataBound;
 
 use crate::{fn_process::fn_process, Config};
 

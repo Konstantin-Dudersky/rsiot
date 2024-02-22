@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use reqwest::{Client, Response, StatusCode};
-use rsiot_messages_core::message_v2::{Message, MsgDataBound};
+use rsiot_messages_core::{Message, MsgDataBound};
 use tokio::{
     task::JoinSet,
     time::{sleep, Instant},

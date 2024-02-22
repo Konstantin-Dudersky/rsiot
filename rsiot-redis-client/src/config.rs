@@ -1,5 +1,5 @@
 pub use rsiot_components_config::redis_client::{Config, ConfigFnInputItem};
-use rsiot_messages_core::{message_v2::MsgDataBound, IMessageChannel};
+use rsiot_messages_core::{IMessageChannel, MsgDataBound};
 
 pub struct ConfigAlias<TMessage, TMessageChannel>(pub Config<TMessage, TMessageChannel>)
 where

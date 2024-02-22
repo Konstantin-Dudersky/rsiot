@@ -1,7 +1,7 @@
 use tracing::error;
 
 use rsiot_component_core::{CmpInput, CmpOutput};
-use rsiot_messages_core::message_v2::MsgDataBound;
+use rsiot_messages_core::MsgDataBound;
 
 /// Компонент для разделение одного потока в несколько
 pub async fn new<TMessage>(mut input: CmpInput<TMessage>, outputs: Vec<CmpOutput<TMessage>>)

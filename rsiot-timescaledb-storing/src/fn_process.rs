@@ -4,7 +4,7 @@ use tracing::{error, info, trace};
 use url::Url;
 
 use rsiot_component_core::{CmpInput, ComponentError};
-use rsiot_messages_core::message_v2::MsgDataBound;
+use rsiot_messages_core::MsgDataBound;
 
 use crate::{config::Config, error::Error, model::Row};
 

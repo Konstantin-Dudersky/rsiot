@@ -79,7 +79,7 @@ mod test {
     #[test]
     fn stub() {
         use rsiot_messages_core::example_message::*;
-        cmp_influxdb::Config::<Custom> {
+        let _ = cmp_influxdb::Config::<Custom> {
             host: String::from("influxdb"),
             port: 8086,
             org: String::from("org"),
@@ -92,7 +92,7 @@ mod test {
     #[test]
     fn fn_input() {
         use rsiot_messages_core::{example_message::*, *};
-        cmp_influxdb::Config::<Custom> {
+        let _ = cmp_influxdb::Config::<Custom> {
             host: String::from("influxdb"),
             port: 8086,
             org: String::from("org"),
@@ -100,10 +100,9 @@ mod test {
             token: String::from("token"),
             fn_input: |msg: &Message<Custom>| {
                 let value = match &msg.data {
-                    MsgType::Custom(data) => match data {
-                        Custom::ValueInstantF64(data) => cmp_influxdb::ValueType::f64(*data),
-                        _ => return None,
-                    },
+                    MsgType::Custom(Custom::ValueInstantF64(data)) => {
+                        cmp_influxdb::ValueType::f64(*data)
+                    }
                     _ => return None,
                 };
                 let line = cmp_influxdb::LineProtocolItem::new(&msg.key, value, &msg.ts);

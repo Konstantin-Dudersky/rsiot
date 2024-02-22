@@ -6,7 +6,7 @@ use tokio::{
 };
 
 use rsiot_extra_components::cmpbase_many_mpsc_to_mpsc;
-use rsiot_messages_core::{message_v2::MsgDataBound, MsgContent};
+use rsiot_messages_core::{MsgContent, MsgDataBound};
 use tracing::info;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]

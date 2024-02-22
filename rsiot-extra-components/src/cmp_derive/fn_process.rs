@@ -1,7 +1,7 @@
 use tokio::task::JoinSet;
 
 use rsiot_component_core::{CmpInput, CmpOutput};
-use rsiot_messages_core::message_v2::MsgDataBound;
+use rsiot_messages_core::MsgDataBound;
 
 use super::{Config, DeriveItemProcess, Error};
 

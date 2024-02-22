@@ -13,9 +13,12 @@ use tokio_tungstenite::{
 };
 use tracing::{debug, info, trace, warn};
 
-use rsiot_messages_core::message_v2::{Message, MsgDataBound};
+use rsiot_messages_core::{Message, MsgDataBound};
 
-use crate::{config::Config, errors::Error};
+use crate::{
+    config::{Config, FnOutput},
+    errors::Error,
+};
 
 /// Создание и управление подключением между сервером и клиентом
 pub async fn handle_ws_connection<TMessage>(
@@ -146,7 +149,7 @@ async fn send_to_client<TMessage>(
 async fn recv_from_client<TMsg>(
     mut ws_stream_input: SplitStream<WebSocketStream<TcpStream>>,
     output: CmpOutput<TMsg>,
-    fn_output: fn(&str) -> anyhow::Result<Option<Vec<Message<TMsg>>>>,
+    fn_output: FnOutput<TMsg>,
 ) -> crate::Result<()>
 where
     TMsg: MsgDataBound,

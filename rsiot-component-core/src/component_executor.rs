@@ -5,7 +5,7 @@ use tokio::{
     task::JoinSet,
 };
 
-use rsiot_messages_core::message_v2::{Message, MsgDataBound, MsgSource};
+use rsiot_messages_core::{Message, MsgDataBound, MsgSource};
 use tracing::{debug, error, info, trace, warn};
 
 use crate::{error::ComponentError, Cache, CmpInput, CmpOutput, IComponent};

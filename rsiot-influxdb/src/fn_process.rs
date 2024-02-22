@@ -5,7 +5,7 @@ use tokio::time::sleep;
 use tracing::{error, info, trace, warn};
 
 use rsiot_component_core::{CmpInput, CmpOutput, ComponentError};
-use rsiot_messages_core::message_v2::MsgDataBound;
+use rsiot_messages_core::MsgDataBound;
 
 use crate::{
     config::{Config, LineProtocolItem},

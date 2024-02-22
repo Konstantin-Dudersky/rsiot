@@ -12,7 +12,7 @@ use tokio_util::sync::CancellationToken;
 use tracing::{error, info};
 
 use rsiot_component_core::{Cache, CmpInput, CmpOutput, ComponentError};
-use rsiot_messages_core::message_v2::MsgDataBound;
+use rsiot_messages_core::MsgDataBound;
 
 use crate::{config::Config, errors::Error};
 

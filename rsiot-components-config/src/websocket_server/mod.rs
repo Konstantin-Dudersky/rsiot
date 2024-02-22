@@ -78,5 +78,7 @@ pub struct Config<TMsg> {
     /// # };
     /// ```
     ///
-    pub fn_output: fn(&str) -> anyhow::Result<Option<Vec<Message<TMsg>>>>,
+    pub fn_output: FnOutput<TMsg>,
 }
+
+pub type FnOutput<TMsg> = fn(&str) -> anyhow::Result<Option<Vec<Message<TMsg>>>>;

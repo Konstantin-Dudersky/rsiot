@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use rsiot_messages_core::message_v2::MsgDataBound;
+use rsiot_messages_core::MsgDataBound;
 
 #[allow(non_camel_case_types)]
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
