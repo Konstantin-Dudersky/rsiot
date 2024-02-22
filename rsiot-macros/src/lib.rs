@@ -1,5 +1,5 @@
-mod derive_msg_meta;
 mod create_signal_from_msg;
+mod derive_msg_meta;
 
 use proc_macro::TokenStream;
 use proc_macro_error::proc_macro_error;
@@ -24,35 +24,10 @@ pub fn derive_into_eav(input: TokenStream) -> TokenStream {
 /// ```
 #[proc_macro]
 pub fn create_signal_from_msg(msg: TokenStream) -> TokenStream {
-    let parts = &msg
-        .to_string()
-        .split("-")
-        .map(String::from)
-        .collect::<Vec<String>>();
-    // default: &msg(Default::default()),
-
-    let default = format!(
-        "Message::new_full({}(Default::default())){}",
-        parts.join("("),
-        ")".repeat(parts.len() - 1)
-    );
-    let code = r#"
-    create_signal_from_msg::create(create_signal_from_msg::Config {
-        default: &default,
-        fn_input: |msg| match msg {
-            &msg(content) => Some(content.clone()),
-            _ => None,
-        },
-        fn_output: |value| Some(&msg(MsgContent::new(value))),
-    })
-"#;
-    let code = code.replace("&msg", &msg.to_string());
-    let code = code.replace("&default", &default);
-    let code = code.replace('\"', "");
+    let code = create_signal_from_msg::create_signal_from_msg(&msg.to_string());
     let code = parse_str::<syn::Expr>(&code).unwrap();
 
     TokenStream::from(quote! {
         #code
     })
 }
-
