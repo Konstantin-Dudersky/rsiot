@@ -23,6 +23,7 @@ pub use message::{Message, MsgType};
 pub use message_channel::IMessageChannel;
 pub use msg_data_bound::MsgDataBound;
 pub use msg_source::MsgSource;
+pub use rsiot_macros::message_new;
 pub use timestamp::Timestamp;
 
 pub use serde::{Deserialize, Serialize};

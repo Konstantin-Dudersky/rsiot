@@ -1,9 +1,9 @@
 pub fn create_signal_from_msg(input: &str) -> String {
-    let enums = &input.split('-').map(String::from).collect::<Vec<String>>();
-    let enums = add_enum_names(&enums);
+    let enum_variants = parse_enum_variants(input);
+    let enum_with_names = add_enum_names(&enum_variants);
     let code = r#"
 create_signal_from_msg::create(create_signal_from_msg::Config {
-    default: Message::new_full(&default),
+    default: &default,
     fn_input: |msg| {
         let value = &msg.data;
         match value {
@@ -12,21 +12,52 @@ create_signal_from_msg::create(create_signal_from_msg::Config {
         }
     },
     fn_output: |value| {
-        Some(Message::new_full(&fn_output))
+        Some(&fn_output)
     },
 })"#;
-    let code = code.replace("&default", &msg_new_full(&enums, "Default::default()"));
-    let code = code.replace("&fn_input", &msg_new_full(&enums, "value"));
-    let code = code.replace("&fn_output", &msg_new_full(&enums, "value"));
+    let code = code.replace(
+        "&default",
+        &message_new_from_enums(&enum_with_names, "Default::default()"),
+    );
+    let code = code.replace("&fn_input", &create_msg_data(&enum_with_names, "value"));
+    let code = code.replace(
+        "&fn_output",
+        &message_new_from_enums(&enum_with_names, "value"),
+    );
     code.replace('\"', "")
 }
 
-fn msg_new_full(parts: &[String], value: &str) -> String {
+/// Создание сообщения из строки вида `Variant1-Variant2-Variant3::value`
+pub fn message_new(input: &str) -> String {
+    let enum_variants_and_value = input.split("::").collect::<Vec<&str>>();
+
+    let enum_variants = enum_variants_and_value[0];
+    let enum_variants = parse_enum_variants(&enum_variants);
+    let enum_with_names = add_enum_names(&enum_variants);
+
+    let value = enum_variants_and_value[1];
+
+    let code = message_new_from_enums(&enum_with_names, &value);
+    code.replace('\"', "")
+}
+
+fn parse_enum_variants(input: &str) -> Vec<String> {
+    input.split('-').map(String::from).collect::<Vec<String>>()
+}
+
+/// Создание данных сообщения
+fn create_msg_data(parts: &[String], value: &str) -> String {
     let mut token = String::from(value);
     for part in parts.iter().rev() {
         token = format!("{part}({token})");
     }
     token
+}
+
+/// Создание сообщения
+fn message_new_from_enums(enums: &[String], value: &str) -> String {
+    let msg_data = create_msg_data(enums, value);
+    format!("Message::new({msg_data})")
 }
 
 /// Добавляет названия перечислений к вариантам
@@ -55,10 +86,10 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test1() {
+    fn test_create_signal_from_msg() {
         let valid_out = r#"
 create_signal_from_msg::create(create_signal_from_msg::Config {
-    default: Message::new_full(MsgType::Custom(Custom::ValueInstantF64(Default::default()))),
+    default: Message::new(MsgType::Custom(Custom::ValueInstantF64(Default::default()))),
     fn_input: |msg| {
         let value = &msg.data;
         match value {
@@ -67,10 +98,17 @@ create_signal_from_msg::create(create_signal_from_msg::Config {
         }
     },
     fn_output: |value| {
-        Some(Message::new_full(MsgType::Custom(Custom::ValueInstantF64(value))))
+        Some(Message::new(MsgType::Custom(Custom::ValueInstantF64(value))))
     },
 })"#;
         let test_out = create_signal_from_msg("Custom-ValueInstantF64");
+        assert_eq!(valid_out, test_out);
+    }
+
+    #[test]
+    fn test_message_new() {
+        let valid_out = "Message::new(MsgType::Custom(Custom::ValueInstantF64(123.0)))";
+        let test_out = message_new("Custom-ValueInstantF64::123.0");
         assert_eq!(valid_out, test_out);
     }
 }

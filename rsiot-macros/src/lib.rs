@@ -20,13 +20,24 @@ pub fn derive_into_eav(input: TokenStream) -> TokenStream {
 /// # Пример
 ///
 /// ```rust
-/// let (signal, signal_set) = create_signal_from_msg!(ExampleMessage::ValueInstantF64);
+/// let (signal, signal_set) = create_signal_from_msg!("Custom-ValueInstantF64");
 /// ```
 #[proc_macro]
 pub fn create_signal_from_msg(msg: TokenStream) -> TokenStream {
     let code = create_signal_from_msg::create_signal_from_msg(&msg.to_string());
     let code = parse_str::<syn::Expr>(&code).unwrap();
+    TokenStream::from(quote! {
+        #code
+    })
+}
 
+/// Макрос для упрощения создания сообщения
+///
+/// Принимает на вход строку вида `Variant1-Variant2-Variant3::value`
+#[proc_macro]
+pub fn message_new(msg: TokenStream) -> TokenStream {
+    let code = create_signal_from_msg::message_new(&msg.to_string());
+    let code = parse_str::<syn::Expr>(&code).unwrap();
     TokenStream::from(quote! {
         #code
     })
