@@ -1,6 +1,6 @@
 [package]
 name = "rsiot-leptos"
-version = "0.0.61"
+version = "0.0.62"
 description = "Компоненты для создания интерфейса Leptos"
 categories.workspace = true
 edition.workspace = true
