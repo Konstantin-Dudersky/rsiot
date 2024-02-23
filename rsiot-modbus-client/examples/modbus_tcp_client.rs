@@ -56,7 +56,7 @@ async fn main() -> anyhow::Result<()> {
             fn_on_success: |data| {
                 let mut msgs = vec![];
                 if let Response::U16(data) = data {
-                    msgs.push(Message::new(Messages::ValueRead(data[0] as f64)));
+                    msgs.push(Message::new_custom(Messages::ValueRead(data[0] as f64)));
                 }
                 msgs
             },
@@ -74,7 +74,7 @@ async fn main() -> anyhow::Result<()> {
         .add_cmp(cmp_inject_periodic::Cmp::new(cmp_inject_periodic::Config {
             period: Duration::from_secs(2),
             fn_periodic: move || {
-                let msg = Message::new(Messages::ValueWrite(counter));
+                let msg = Message::new_custom(Messages::ValueWrite(counter));
                 counter += 1.0;
                 vec![msg]
             },

@@ -38,16 +38,16 @@ mod tests {
 
     #[test]
     fn test_key() {
-        let msg = Message::new(Custom::DataUnit(()));
+        let msg = Message::new_custom(Custom::DataUnit(()));
         assert_eq!("Custom-DataUnit", msg.key);
 
-        let msg = Message::new(Custom::ValueInstantF64(0.0));
+        let msg = Message::new_custom(Custom::ValueInstantF64(0.0));
         assert_eq!("Custom-ValueInstantF64", msg.key);
 
-        let msg = Message::new(Custom::DataGroup(DataGroup::DataGroupF64(0.0)));
+        let msg = Message::new_custom(Custom::DataGroup(DataGroup::DataGroupF64(0.0)));
         assert_eq!("Custom-DataGroup-DataGroupF64", msg.key);
 
-        let msg = Message::new(Custom::DataGroup(DataGroup::DataGroupStruct(
+        let msg = Message::new_custom(Custom::DataGroup(DataGroup::DataGroupStruct(
             StructInDataGroup {
                 struct_field1: false,
                 struct_field2: 0.0,

@@ -42,7 +42,7 @@ async fn main() -> anyhow::Result<()> {
             None => return Ok(None),
         };
         match msg {
-            Data::Send(val) => Ok(Some(vec![Message::new(Data::Recv(val))])),
+            Data::Send(val) => Ok(Some(vec![Message::new_custom(Data::Recv(val))])),
             Data::Recv(_) => Ok(None),
             Data::Tick(_) => Ok(None),
         }
@@ -61,7 +61,7 @@ async fn main() -> anyhow::Result<()> {
             Some(val) => val,
             None => return None,
         };
-        Some(Message::new(Data::Tick(num)))
+        Some(Message::new_custom(Data::Tick(num)))
     }
 
     tracing_subscriber::fmt().init();
@@ -75,7 +75,7 @@ async fn main() -> anyhow::Result<()> {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg = Message::new(Data::Send(counter));
+            let msg = Message::new_custom(Data::Send(counter));
             counter += 1.0;
             vec![msg]
         },

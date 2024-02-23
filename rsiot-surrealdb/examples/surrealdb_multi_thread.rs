@@ -56,7 +56,7 @@ async fn main() -> anyhow::Result<()> {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg = Message::new(Custom::Request(counter));
+            let msg = Message::new_custom(Custom::Request(counter));
             counter += 1;
             vec![msg]
         },

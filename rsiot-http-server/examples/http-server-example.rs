@@ -59,8 +59,8 @@ fn main() -> anyhow::Result<()> {
     let inject_periodic_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg1 = Message::new(Data::Msg0(counter));
-            let msg2 = Message::new(Data::Msg1(counter * 2.0));
+            let msg1 = Message::new_custom(Data::Msg0(counter));
+            let msg2 = Message::new_custom(Data::Msg1(counter * 2.0));
             counter += 1.0;
             vec![msg1, msg2]
         },

@@ -38,7 +38,7 @@ async fn main() -> anyhow::Result<()> {
             }
         },
         fn_output: |data: &fb1_example::Q| {
-            let msg = Message::new(Data::OutputValue(data.out_counter));
+            let msg = Message::new_custom(Data::OutputValue(data.out_counter));
             vec![msg]
         },
         fb_main: fb1_example::FB::new(),

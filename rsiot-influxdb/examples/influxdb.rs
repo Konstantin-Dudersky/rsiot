@@ -20,7 +20,7 @@ async fn main() {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg = Message::new(Custom::ValueInstantF64(counter as f64));
+            let msg = Message::new_custom(Custom::ValueInstantF64(counter as f64));
             counter += 1;
             vec![msg]
         },

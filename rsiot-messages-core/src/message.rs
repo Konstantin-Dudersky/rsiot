@@ -26,8 +26,7 @@ impl<TCustom> Message<TCustom>
 where
     TCustom: MsgDataBound,
 {
-    pub fn new(custom_data: TCustom) -> Self {
-        let data = MsgType::Custom(custom_data);
+    pub fn new(data: MsgType<TCustom>) -> Self {
         let key = define_key(&data);
         Self {
             data,
@@ -39,10 +38,7 @@ where
     }
 
     pub fn new_custom(custom_data: TCustom) -> Self {
-        Self::new(custom_data)
-    }
-
-    pub fn new_full(data: MsgType<TCustom>) -> Self {
+        let data = MsgType::Custom(custom_data);
         let key = define_key(&data);
         Self {
             data,

@@ -31,7 +31,7 @@ async fn main() -> anyhow::Result<()> {
             period: Duration::from_secs(2),
             fn_periodic: move || {
                 let msg = Custom::ValueInstantF64(counter);
-                let msg = Message::new(msg);
+                let msg = Message::new_custom(msg);
                 counter += 1.0;
                 vec![msg]
             },

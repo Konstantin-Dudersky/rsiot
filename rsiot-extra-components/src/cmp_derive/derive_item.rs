@@ -32,7 +32,10 @@ where
             return None;
         }
         let msgs_content_data = (self.fn_output)(&self.store)?;
-        let msgs_vec = msgs_content_data.into_iter().map(Message::new).collect();
+        let msgs_vec = msgs_content_data
+            .into_iter()
+            .map(Message::new_custom)
+            .collect();
         Some(msgs_vec)
     }
 }

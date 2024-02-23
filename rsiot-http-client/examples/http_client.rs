@@ -51,7 +51,8 @@ async fn main() -> anyhow::Result<()> {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg = rsiot_messages_core::Message::new(Data::HttpMethodsGetOnEventRequest(()));
+            let msg =
+                rsiot_messages_core::Message::new_custom(Data::HttpMethodsGetOnEventRequest(()));
             vec![msg]
         },
     };
@@ -78,7 +79,9 @@ async fn main() -> anyhow::Result<()> {
             },
             on_success: |body| {
                 let res = from_str::<HttpMethodsGet>(body)?;
-                Ok(vec![Message::new(Data::HttpMethodsGetOnEventResponse(res))])
+                Ok(vec![Message::new_custom(
+                    Data::HttpMethodsGetOnEventResponse(res),
+                )])
             },
             on_failure: Vec::new,
         }],
@@ -87,7 +90,9 @@ async fn main() -> anyhow::Result<()> {
             http_param: config::HttpParam::Get("get".to_string()),
             on_success: |body| {
                 let res = from_str::<HttpMethodsGet>(body)?;
-                Ok(vec![Message::new(Data::HttpMethodsGetPeriodicRespone(res))])
+                Ok(vec![Message::new_custom(
+                    Data::HttpMethodsGetPeriodicRespone(res),
+                )])
             },
             on_failure: Vec::new,
         }],
