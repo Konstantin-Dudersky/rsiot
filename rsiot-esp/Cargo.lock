@@ -171,9 +171,9 @@ dependencies = [
 
 [[package]]
 name = "bumpalo"
-version = "3.15.2"
+version = "3.15.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a3b1be7772ee4501dba05acbe66bb1e8760f6a6c474a36035631638e4415f130"
+checksum = "8ea184aa71bb362a1157c896979544cc23974e08fd265f29ea96b59f0b4a555b"
 
 [[package]]
 name = "byteorder"
@@ -343,9 +343,9 @@ dependencies = [
 
 [[package]]
 name = "darling"
-version = "0.20.6"
+version = "0.20.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c376d08ea6aa96aafe61237c7200d1241cb177b7d3a542d791f2d118e9cbb955"
+checksum = "3a5d17510e4a1a87f323de70b7b1eaac1ee0e37866c6720b2d279452d0edf389"
 dependencies = [
  "darling_core",
  "darling_macro",
@@ -353,9 +353,9 @@ dependencies = [
 
 [[package]]
 name = "darling_core"
-version = "0.20.6"
+version = "0.20.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "33043dcd19068b8192064c704b3f83eb464f91f1ff527b44a4e2b08d9cdb8855"
+checksum = "a98eea36a7ff910fa751413d0895551143a8ea41d695d9798ec7d665df7f7f5e"
 dependencies = [
  "fnv",
  "ident_case",
@@ -366,9 +366,9 @@ dependencies = [
 
 [[package]]
 name = "darling_macro"
-version = "0.20.6"
+version = "0.20.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c5a91391accf613803c2a9bf9abccdbaa07c54b4244a5b64883f9c3c137c86be"
+checksum = "d6a366a3f90c5d59a4b91169775f88e52e8f71a0e7804cc98a8db2932cf4ed57"
 dependencies = [
  "darling_core",
  "quote",
@@ -672,12 +672,6 @@ name = "fnv"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
-
-[[package]]
-name = "formatx"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "db0f0c49aba98a3b2578315766960bd242885ff672fd62610c5557cd6c6efe03"
 
 [[package]]
 name = "fs_at"
@@ -1270,9 +1264,9 @@ dependencies = [
 
 [[package]]
 name = "rsiot-component-core"
-version = "0.0.45"
+version = "0.0.62"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "47b73facafde1800b1e7a9742b6703f8010e977df0ee23f917315576def90893"
+checksum = "d32833f42f3d011d9757ca92fa71c27c0cfad2b53b0698679b149ed1f84719b0"
 dependencies = [
  "async-trait",
  "futures",
@@ -1280,6 +1274,7 @@ dependencies = [
  "thiserror",
  "tokio",
  "tracing",
+ "uuid",
 ]
 
 [[package]]
@@ -1301,9 +1296,9 @@ dependencies = [
 
 [[package]]
 name = "rsiot-macros"
-version = "0.0.45"
+version = "0.0.62"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ce4934325090e19aa6a9a0d8962a3b7c6a774cbd1cb003e1538944a1fec6cc41"
+checksum = "7654347f518408196db36891d736e4d93a70951ab8e19cf1980cb1e52ceaa807"
 dependencies = [
  "proc-macro-error",
  "proc-macro2",
@@ -1313,15 +1308,13 @@ dependencies = [
 
 [[package]]
 name = "rsiot-messages-core"
-version = "0.0.45"
+version = "0.0.62"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fa022d18eeff0c42b1bf75ac44c037ad18e31bd9543ee4b4e31eb6d7593aaf35"
+checksum = "2ff21c22bca27ccc0206deba456fe6351a2133249dee347132ffae3c19afb6bd"
 dependencies = [
  "chrono",
- "formatx",
  "rsiot-macros",
  "serde",
- "serde_json",
  "thiserror",
  "uuid",
 ]

@@ -12,21 +12,21 @@ use tokio::{
 };
 
 use rsiot::{
-    component_core::Cache,
-    message::{msg_types::Value, IMessage},
+    component_core::{Cache, CmpInput, CmpOutput},
+    message::*,
 };
 use rsiot_esp::hardware_tasks::{gpio_input, gpio_output, wifi_setup, GpioOutputConfig};
 
-use super::message::Message;
+use super::message::*;
 use super::ws2812rmt::WS2812RMT;
 
 pub struct Config;
 
 pub async fn hal(
-    input: broadcast::Receiver<Message>,
-    output: mpsc::Sender<Message>,
+    input: CmpInput<Custom>,
+    output: CmpOutput<Custom>,
     _config: Config,
-    _cache: Cache<Message>,
+    _cache: Cache<Custom>,
 ) {
     let mut set: JoinSet<()> = JoinSet::new();
 
@@ -37,7 +37,7 @@ pub async fn hal(
     // включаем реле на gpio2
     let relay = PinDriver::output(peripherals.pins.gpio2).unwrap();
     set.spawn(gpio_output(
-        input.resubscribe(),
+        input.clone(),
         output.clone(),
         GpioOutputConfig {
             driver: relay,
@@ -62,6 +62,7 @@ pub async fn hal(
     ));
 
     // читаем кнопку с gpio9
+
     let button = PinDriver::input(peripherals.pins.gpio9).unwrap();
     set.spawn(gpio_input(
         input.resubscribe(),

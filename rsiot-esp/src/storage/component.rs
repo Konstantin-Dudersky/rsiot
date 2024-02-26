@@ -1,28 +1,30 @@
 use async_trait::async_trait;
 
 use rsiot_component_core::{
-    Cache, Component, ComponentError, ComponentInput, ComponentOutput, IComponentProcess,
+    Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
 };
-use rsiot_messages_core::IMessage;
+use rsiot_messages_core::MsgDataBound;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 
 use super::config::Config;
-// #[cfg(feature = "single-thread")]
+#[cfg(feature = "single-thread")]
 use super::fn_process::fn_process;
 
 #[allow(unreachable_code)]
 #[cfg(not(feature = "single-thread"))]
 #[async_trait]
-impl<TMsg> IComponentProcess<Config<TMsg>, TMsg> for Component<Config<TMsg>, TMsg>
+impl<TMsg, TStorageData> IComponentProcess<Config<TMsg, TStorageData>, TMsg>
+    for Component<Config<TMsg, TStorageData>, TMsg>
 where
-    TMsg: IMessage + 'static,
+    TMsg: MsgDataBound + 'static,
+    TStorageData: std::fmt::Debug + Default + DeserializeOwned + PartialEq + Serialize,
 {
     async fn process(
         &self,
-        _config: Config<TMsg>,
-        _input: ComponentInput<TMsg>,
-        _output: ComponentOutput<TMsg>,
+        _config: Config<TMsg, TStorageData>,
+        _input: CmpInput<TMsg>,
+        _output: CmpOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         unimplemented!();
@@ -34,14 +36,14 @@ where
 impl<TMsg, TStorageData> IComponentProcess<Config<TMsg, TStorageData>, TMsg>
     for Component<Config<TMsg, TStorageData>, TMsg>
 where
-    TMsg: IMessage + 'static,
+    TMsg: MsgDataBound + 'static,
     TStorageData: std::fmt::Debug + Default + DeserializeOwned + PartialEq + Serialize,
 {
     async fn process(
         &self,
         config: Config<TMsg, TStorageData>,
-        input: ComponentInput<TMsg>,
-        output: ComponentOutput<TMsg>,
+        input: CmpInput<TMsg>,
+        output: CmpOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         fn_process(input, output, config)

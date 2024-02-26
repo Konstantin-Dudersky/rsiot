@@ -5,20 +5,20 @@ use postcard::{from_bytes, to_stdvec};
 use serde::{de::DeserializeOwned, Serialize};
 use tracing::{info, warn};
 
-use rsiot_component_core::{ComponentError, ComponentInput, ComponentOutput};
-use rsiot_messages_core::IMessage;
+use rsiot_component_core::{CmpInput, CmpOutput, ComponentError};
+use rsiot_messages_core::MsgDataBound;
 
 use super::{config::Config, error::Error};
 
 type Result<T> = std::result::Result<T, Error>;
 
 pub async fn fn_process<TMessage, TStorageData>(
-    input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
+    input: CmpInput<TMessage>,
+    output: CmpOutput<TMessage>,
     config: Config<TMessage, TStorageData>,
 ) -> std::result::Result<(), ComponentError>
 where
-    TMessage: IMessage,
+    TMessage: MsgDataBound,
     TStorageData: Debug + Default + DeserializeOwned + PartialEq + Serialize,
 {
     info!("Starting cmp_storage_esp component");
@@ -29,12 +29,12 @@ where
 }
 
 async fn task_main<TMessage, TStorageData>(
-    input: ComponentInput<TMessage>,
-    output: ComponentOutput<TMessage>,
+    input: CmpInput<TMessage>,
+    output: CmpOutput<TMessage>,
     config: Config<TMessage, TStorageData>,
 ) -> Result<()>
 where
-    TMessage: IMessage,
+    TMessage: MsgDataBound,
     TStorageData: Debug + Default + DeserializeOwned + PartialEq + Serialize,
 {
     let nvs_default_partition: EspNvsPartition<NvsDefault> =
@@ -63,17 +63,21 @@ where
 }
 
 async fn task_input<TMessage, TStorageData>(
-    mut input: ComponentInput<TMessage>,
+    mut input: CmpInput<TMessage>,
     config: Config<TMessage, TStorageData>,
     mut nvs: EspNvs<NvsDefault>,
     data: TStorageData,
 ) -> Result<()>
 where
-    TMessage: IMessage,
+    TMessage: MsgDataBound,
     TStorageData: Debug + Default + DeserializeOwned + PartialEq + Serialize,
 {
     let mut data = data;
     while let Ok(msg) = input.recv().await {
+        let msg = match msg {
+            Some(msg) => msg,
+            None => continue,
+        };
         let new_data = (config.fn_input)(&data, &msg);
         let new_data = match new_data {
             Some(data) => data,

@@ -1,4 +1,5 @@
 {
-  "rust-analyzer.cargo.features": ["single-thread"]
+  "rust-analyzer.cargo.features": ["single-thread"],
+  "rust-analyzer.cargo.target": "riscv32imc-esp-espidf"
   // "rust-analyzer.cargo.features": [],
 }

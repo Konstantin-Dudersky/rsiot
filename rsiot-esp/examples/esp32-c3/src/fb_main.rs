@@ -16,8 +16,8 @@ pub struct S {
 }
 
 impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
-    fn logic(&mut self) -> Q {
-        let color = match self.stat.counter {
+    fn logic(_input: &I, stat: &mut S) -> Q {
+        let color = match stat.counter {
             0..=10 => RGB8::new(0, 0, 0),
             11..=20 => RGB8::new(255, 0, 0),
             21..=30 => RGB8::new(0, 255, 0),
@@ -29,9 +29,9 @@ impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
             _ => RGB8::new(255, 0, 0),
         };
 
-        self.stat.counter += 1;
-        if self.stat.counter > 80 {
-            self.stat.counter = 0;
+        stat.counter += 1;
+        if stat.counter > 80 {
+            stat.counter = 0;
         }
 
         Q { color }

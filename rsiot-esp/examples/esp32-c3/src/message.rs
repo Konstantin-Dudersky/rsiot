@@ -1,20 +1,13 @@
-use rgb::RGB8;
-use rsiot::message::{
-    msg_meta, Deserialize, IMessage, IMsgContentValue, MsgContent, MsgMeta, Serialize,
-};
+use rsiot::message::{Deserialize, MsgDataBound, Serialize};
 
-#[derive(Clone, Debug, Deserialize, MsgMeta, PartialEq, Serialize)]
-pub enum Message {
-    Button(MsgContent<bool>),
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+pub enum Custom {
+    Button(bool),
     // SetLedColor(MsgContent<RGB8>), TODO - update rsiot
-    TestFromHttpServer(MsgContent<u16>),
-    Relay2(MsgContent<bool>),
+    TestFromHttpServer(u16),
+    Relay2(bool),
 
-    StorageI32(MsgContent<i32>),
+    StorageI32(i32),
 }
 
-impl IMessage for Message {
-    fn into_eav(self) -> Vec<rsiot::message::eav::EavModel> {
-        vec![]
-    }
-}
+impl MsgDataBound for Custom {}

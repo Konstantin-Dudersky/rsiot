@@ -29,7 +29,7 @@ use crate::{error::ComponentError, Cache, CmpInput, CmpOutput, IComponent};
 ///
 /// let context = LocalSet::new();
 /// context.spawn_local(async move {
-///     ComponentExecutor::<Message>::new(100)
+///     ComponentExecutor::<Message>::new(100, "example")
 ///         .add_cmp(cmp_websocket_client_wasm::Cmp::new(ws_client_config))
 ///         .add_cmp(cmp_leptos::Cmp::new(leptos_config))
 ///         .wait_result()
