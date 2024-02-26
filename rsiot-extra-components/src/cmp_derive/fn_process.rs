@@ -1,7 +1,7 @@
 use tokio::task::JoinSet;
 
 use rsiot_component_core::{CmpInput, CmpOutput};
-use rsiot_messages_core::MsgDataBound;
+use rsiot_messages_core::*;
 
 use super::{Config, DeriveItemProcess, Error};
 
@@ -38,18 +38,12 @@ where
     TMsg: MsgDataBound,
 {
     while let Ok(msg) = input.recv().await {
-        let msg = match msg {
-            Some(val) => val,
-            None => continue,
-        };
+        let Some(msg) = msg else { continue };
         let msgs = derive_item.process(&msg);
-        let msgs = match msgs {
-            Some(val) => val,
-            None => continue,
-        };
-        for msg1 in msgs {
+        let Some(msgs) = msgs else { continue };
+        for msg in msgs {
             output
-                .send(msg1)
+                .send(msg)
                 .await
                 .map_err(|e| Error::TokioSynBroadcast(e.to_string()))?
         }

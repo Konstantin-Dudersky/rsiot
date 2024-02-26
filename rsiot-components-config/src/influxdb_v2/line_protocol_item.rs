@@ -33,6 +33,7 @@ impl TryFrom<&LineProtocolItem> for String {
     fn try_from(line_protocol_item: &LineProtocolItem) -> Result<Self, Self::Error> {
         let measurement = line_protocol_item.measurement.clone();
         let value = match line_protocol_item.value {
+            ValueType::bool(value) => value.to_string(),
             ValueType::f64(value) => value.to_string(),
         };
         let ts = line_protocol_item

@@ -24,7 +24,6 @@ impl<TConfig, TMsg> Component<TConfig, TMsg> {
 impl<TConfig, TMsg> IComponent<TMsg> for Component<TConfig, TMsg>
 where
     Self: IComponentProcess<TConfig, TMsg>,
-    TConfig: Send,
 {
     fn set_interface(
         &mut self,

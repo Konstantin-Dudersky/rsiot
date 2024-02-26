@@ -27,7 +27,7 @@ fn main() -> anyhow::Result<()> {
         cmp_derive::{self, DeriveItem},
         cmp_inject_periodic, cmp_logger,
     };
-    use rsiot_messages_core::{example_message::*, Message};
+    use rsiot_messages_core::{example_message::*, *};
     use tracing::Level;
 
     tracing_subscriber::fmt().init();
@@ -41,15 +41,18 @@ fn main() -> anyhow::Result<()> {
     let derive_config = cmp_derive::Config {
         derive_items: vec![Box::new(DeriveItem {
             store: ValueInstantString::default(),
-            fn_input: |msg, store| match msg {
-                Custom::ValueInstantF64(content) => store.f64 = Some(*content),
-                Custom::ValueInstantBool(content) => store.bool = Some(*content),
-                _ => (),
+            fn_input: |msg, store| match &msg.data {
+                MsgType::Custom(data) => match data {
+                    Custom::ValueInstantF64(content) => store.f64 = Some(*content),
+                    Custom::ValueInstantBool(content) => store.bool = Some(*content),
+                    _ => (),
+                },
+                MsgType::System(_) => (),
             },
-            fn_output: |value| {
+            fn_output: |store| {
                 let msg_content =
-                    format!("New Message: bool: {}, f64: {}", value.bool?, value.f64?);
-                let msg = Custom::ValueInstantString(msg_content);
+                    format!("New Message: bool: {}, f64: {}", store.bool?, store.f64?);
+                let msg = Message::new(MsgType::Custom(Custom::ValueInstantString(msg_content)));
                 Some(vec![msg])
             },
         })],
