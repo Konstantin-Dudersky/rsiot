@@ -1,8 +1,17 @@
-use std::sync::Arc;
+//! Тестирование документации:
+//!
+//! ```bash
+//! cargo test -p rsiot-extra-components --doc cmp_external_fn_process; cargo test -p rsiot-extra-components --doc cmp_external_fn_process --features single-thread
+//! ```
 
 use async_trait::async_trait;
-use futures::future::{BoxFuture, LocalBoxFuture};
-use tokio::sync::Mutex;
+
+#[cfg(feature = "single-thread")]
+use futures::future::LocalBoxFuture;
+
+#[cfg(not(feature = "single-thread"))]
+use futures::future::BoxFuture;
+
 use tracing::info;
 
 use rsiot_component_core::{
@@ -10,52 +19,209 @@ use rsiot_component_core::{
 };
 use rsiot_messages_core::*;
 
-#[cfg(feature = "single-thread")]
-// #[derive(Clone, Debug)]
-pub struct Config {
-    pub fn_process: Box<dyn Fn() -> LocalBoxFuture<'static, ComponentResult>>,
-}
+pub struct Config<TMsg> {
+    /// Внешняя функция для выполнения
+    ///
+    /// Выполняемую асинхронную функцию `fn_external` необходимо обернуть в функцию.
+    ///
+    /// ```rust
+    /// # use rsiot_extra_components::cmp_external_fn_process;
+    /// # // insert-start test single_thread
+    /// use std::time::Duration;
+    ///
+    /// use futures::future::LocalBoxFuture;
+    /// use tokio::time::sleep;
+    /// use tracing::info;
+    ///
+    /// use rsiot_component_core::{Cache, CmpInput, CmpOutput, ComponentResult};
+    /// use rsiot_messages_core::{example_message::*, *};
+    ///
+    /// fn fn_process_wrapper<TMsg>(
+    ///     input: CmpInput<TMsg>,
+    ///     output: CmpOutput<TMsg>,
+    ///     cache: Cache<TMsg>,
+    /// ) -> LocalBoxFuture<'static, ComponentResult>
+    /// where
+    ///     TMsg: MsgDataBound + 'static,
+    /// {
+    ///     Box::pin(async { fn_process(input, output, cache).await })
+    /// }
+    /// async fn fn_process<TMsg>(
+    ///     _input: CmpInput<TMsg>,
+    ///     _output: CmpOutput<TMsg>,
+    ///     _cache: Cache<TMsg>,
+    /// ) -> ComponentResult {
+    ///     loop {
+    ///         info!("External fn process");
+    ///         sleep(Duration::from_secs(2)).await;
+    ///     }
+    /// }
+    ///
+    /// let _config = cmp_external_fn_process::Config {
+    ///     fn_process: Box::new(fn_process_wrapper::<Custom>),
+    /// };
+    /// # // insert-end
+    /// ```
+    #[cfg(feature = "single-thread")]
+    pub fn_process: Box<
+        dyn Fn(
+            CmpInput<TMsg>,
+            CmpOutput<TMsg>,
+            Cache<TMsg>,
+        ) -> LocalBoxFuture<'static, ComponentResult>,
+    >,
 
-// #[cfg(not(feature = "single-thread"))]
-// // #[derive(Clone)]
-// pub struct Config
-// // where
-// //     Box<dyn Fn() -> BoxFuture<'static, ComponentResult>>: Send,
-// {
-//     // pub fn_process: Box<dyn Fn() -> BoxFuture<'static, ComponentResult>>,
-//     // pub fn_process: Arc<Mutex<Box<dyn Fn() -> BoxFuture<'static, ComponentResult>>>>,
-//     pub fn_process: u16,
-// }
-
-#[cfg(not(feature = "single-thread"))]
-struct Config
-where
-    Self: Send,
-    Box<dyn Fn() -> ()>: Send,
-{
-    func: Box<dyn Fn() -> () + Send>,
+    /// Внешняя функция для выполнения
+    ///
+    /// Выполняемую асинхронную функцию `fn_external` необходимо обернуть в функцию.
+    ///
+    /// ```rust
+    /// # use rsiot_extra_components::cmp_external_fn_process;
+    /// # // insert-start test multi_thread
+    /// use std::time::Duration;
+    ///
+    /// use futures::future::BoxFuture;
+    /// use tokio::time::sleep;
+    /// use tracing::info;
+    ///
+    /// use rsiot_component_core::{Cache, CmpInput, CmpOutput, ComponentResult};
+    /// use rsiot_messages_core::{example_message::*, *};
+    ///
+    /// fn fn_process_wrapper<TMsg>(
+    ///     input: CmpInput<TMsg>,
+    ///     output: CmpOutput<TMsg>,
+    ///     cache: Cache<TMsg>,
+    /// ) -> BoxFuture<'static, ComponentResult>
+    /// where
+    ///     TMsg: MsgDataBound + 'static,
+    /// {
+    ///     Box::pin(async { fn_process(input, output, cache).await })
+    /// }
+    ///
+    /// async fn fn_process<TMsg>(
+    ///     _input: CmpInput<TMsg>,
+    ///     _output: CmpOutput<TMsg>,
+    ///     _cache: Cache<TMsg>,
+    /// ) -> ComponentResult {
+    ///     loop {
+    ///         info!("External fn process");
+    ///         sleep(Duration::from_secs(2)).await;
+    ///     }
+    /// }
+    ///
+    /// let _config = cmp_external_fn_process::Config {
+    ///     fn_process: Box::new(fn_process_wrapper::<Custom>),
+    /// };
+    /// # // insert-end
+    /// ```
+    #[cfg(not(feature = "single-thread"))]
+    pub fn_process: Box<
+        dyn Fn(CmpInput<TMsg>, CmpOutput<TMsg>, Cache<TMsg>) -> BoxFuture<'static, ComponentResult>
+            + Send
+            + Sync,
+    >,
 }
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
 #[async_trait(?Send)]
-impl<TMsg> IComponentProcess<Config, TMsg> for Component<Config, TMsg>
+impl<TMsg> IComponentProcess<Config<TMsg>, TMsg> for Component<Config<TMsg>, TMsg>
 where
     TMsg: MsgDataBound,
 {
     async fn process(
         &self,
-        config: Config,
-        _input: CmpInput<TMsg>,
-        _output: CmpOutput<TMsg>,
-        _cache: Cache<TMsg>,
+        config: Config<TMsg>,
+        input: CmpInput<TMsg>,
+        output: CmpOutput<TMsg>,
+        cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         info!("Start component cmp_extrenal_fn_process");
-        // let fn_ = config.fn_process.lock().await;
-        // (fn_)().await
-        Ok(())
+        (config.fn_process)(input, output, cache).await
     }
 }
 
-#[cfg(feature = "single-thread")]
-pub type Cmp<TMessage> = Component<Config, TMessage>;
+pub type Cmp<TMsg> = Component<Config<TMsg>, TMsg>;
+
+#[cfg(test)]
+mod tests {
+
+    use super::super::cmp_external_fn_process;
+
+    #[cfg(feature = "single-thread")]
+    #[test]
+    fn single_thread() {
+        use std::time::Duration;
+
+        use futures::future::LocalBoxFuture;
+        use tokio::time::sleep;
+        use tracing::info;
+
+        use rsiot_component_core::{Cache, CmpInput, CmpOutput, ComponentResult};
+        use rsiot_messages_core::{example_message::*, *};
+
+        fn fn_process_wrapper<TMsg>(
+            input: CmpInput<TMsg>,
+            output: CmpOutput<TMsg>,
+            cache: Cache<TMsg>,
+        ) -> LocalBoxFuture<'static, ComponentResult>
+        where
+            TMsg: MsgDataBound + 'static,
+        {
+            Box::pin(async { fn_process(input, output, cache).await })
+        }
+        async fn fn_process<TMsg>(
+            _input: CmpInput<TMsg>,
+            _output: CmpOutput<TMsg>,
+            _cache: Cache<TMsg>,
+        ) -> ComponentResult {
+            loop {
+                info!("External fn process");
+                sleep(Duration::from_secs(2)).await;
+            }
+        }
+
+        let _config = cmp_external_fn_process::Config {
+            fn_process: Box::new(fn_process_wrapper::<Custom>),
+        };
+    }
+
+    #[cfg(not(feature = "single-thread"))]
+    #[test]
+    fn multi_thread() {
+        use std::time::Duration;
+
+        use futures::future::BoxFuture;
+        use tokio::time::sleep;
+        use tracing::info;
+
+        use rsiot_component_core::{Cache, CmpInput, CmpOutput, ComponentResult};
+        use rsiot_messages_core::{example_message::*, *};
+
+        fn fn_process_wrapper<TMsg>(
+            input: CmpInput<TMsg>,
+            output: CmpOutput<TMsg>,
+            cache: Cache<TMsg>,
+        ) -> BoxFuture<'static, ComponentResult>
+        where
+            TMsg: MsgDataBound + 'static,
+        {
+            Box::pin(async { fn_process(input, output, cache).await })
+        }
+
+        async fn fn_process<TMsg>(
+            _input: CmpInput<TMsg>,
+            _output: CmpOutput<TMsg>,
+            _cache: Cache<TMsg>,
+        ) -> ComponentResult {
+            loop {
+                info!("External fn process");
+                sleep(Duration::from_secs(2)).await;
+            }
+        }
+
+        let _config = cmp_external_fn_process::Config {
+            fn_process: Box::new(fn_process_wrapper::<Custom>),
+        };
+    }
+}

@@ -11,11 +11,14 @@
 
 use std::time::Duration;
 
-use futures::future::{BoxFuture, LocalBoxFuture};
+#[cfg(not(feature = "single-thread"))]
+use futures::future::BoxFuture;
+#[cfg(feature = "single-thread")]
+use futures::future::LocalBoxFuture;
 use tokio::{main, task::LocalSet, time::sleep};
 use tracing::{info, level_filters::LevelFilter};
 
-use rsiot_component_core::{ComponentExecutor, ComponentResult};
+use rsiot_component_core::{Cache, CmpInput, CmpOutput, ComponentExecutor, ComponentResult};
 use rsiot_extra_components::cmp_external_fn_process;
 use rsiot_messages_core::{example_message::*, *};
 
@@ -26,8 +29,7 @@ async fn main() {
         .init();
 
     let config_external_process = cmp_external_fn_process::Config {
-        // fn_process: Box::new(foo),
-        fn_process: Box::new(multi_thread),
+        fn_process: Box::new(fn_process_wrapper),
     };
 
     let task_set = LocalSet::new();
@@ -40,17 +42,37 @@ async fn main() {
     task_set.await;
 }
 
-async fn fn_process() -> ComponentResult {
+async fn fn_process<TMsg>(
+    _input: CmpInput<TMsg>,
+    _output: CmpOutput<TMsg>,
+    _cache: Cache<TMsg>,
+) -> ComponentResult {
     loop {
         info!("External fn process");
         sleep(Duration::from_secs(2)).await;
     }
 }
 
-fn single_thread() -> LocalBoxFuture<'static, ComponentResult> {
-    Box::pin(async { fn_process().await })
+#[cfg(feature = "single-thread")]
+fn fn_process_wrapper<TMsg>(
+    input: CmpInput<TMsg>,
+    output: CmpOutput<TMsg>,
+    cache: Cache<TMsg>,
+) -> LocalBoxFuture<'static, ComponentResult>
+where
+    TMsg: MsgDataBound + 'static,
+{
+    Box::pin(async { fn_process(input, output, cache).await })
 }
 
-fn multi_thread() -> BoxFuture<'static, ComponentResult> {
-    Box::pin(async { fn_process().await })
+#[cfg(not(feature = "single-thread"))]
+fn fn_process_wrapper<TMsg>(
+    input: CmpInput<TMsg>,
+    output: CmpOutput<TMsg>,
+    cache: Cache<TMsg>,
+) -> BoxFuture<'static, ComponentResult>
+where
+    TMsg: MsgDataBound + 'static,
+{
+    Box::pin(async { fn_process(input, output, cache).await })
 }
