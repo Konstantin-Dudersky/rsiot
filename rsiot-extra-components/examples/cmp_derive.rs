@@ -42,17 +42,17 @@ fn main() -> anyhow::Result<()> {
         derive_items: vec![Box::new(DeriveItem {
             store: ValueInstantString::default(),
             fn_input: |msg, store| match &msg.data {
-                MsgType::Custom(data) => match data {
+                MsgData::Custom(data) => match data {
                     Custom::ValueInstantF64(content) => store.f64 = Some(*content),
                     Custom::ValueInstantBool(content) => store.bool = Some(*content),
                     _ => (),
                 },
-                MsgType::System(_) => (),
+                MsgData::System(_) => (),
             },
             fn_output: |store| {
                 let msg_content =
                     format!("New Message: bool: {}, f64: {}", store.bool?, store.f64?);
-                let msg = Message::new(MsgType::Custom(Custom::ValueInstantString(msg_content)));
+                let msg = Message::new(MsgData::Custom(Custom::ValueInstantString(msg_content)));
                 Some(vec![msg])
             },
         })],

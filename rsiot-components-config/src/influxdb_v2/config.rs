@@ -55,7 +55,7 @@ pub struct Config<TMsg> {
     /// #     token: String::from("token"),
     /// fn_input: |msg: &Message<Custom>| {
     ///     let value = match &msg.data {
-    ///         MsgType::Custom(data) => match data {
+    ///         MsgData::Custom(data) => match data {
     ///             Custom::ValueInstantF64(data) => {
     ///                 cmp_influxdb::ValueType::f64(*data)
     ///             }
@@ -100,7 +100,7 @@ mod test {
             token: String::from("token"),
             fn_input: |msg: &Message<Custom>| {
                 let value = match &msg.data {
-                    MsgType::Custom(Custom::ValueInstantF64(data)) => {
+                    MsgData::Custom(Custom::ValueInstantF64(data)) => {
                         cmp_influxdb::ValueType::f64(*data)
                     }
                     _ => return None,

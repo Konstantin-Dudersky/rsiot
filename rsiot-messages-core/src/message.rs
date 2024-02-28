@@ -3,23 +3,11 @@ use std::fmt::Debug;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::{system_messages, MsgDataBound, MsgTrace, Timestamp};
-
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub enum System {
-    AuthLoginRequest(system_messages::AuthLoginRequest),
-    AuthLoginResponse(system_messages::AuthLoginResponse),
-}
-
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub enum MsgType<TCustom> {
-    System(System),
-    Custom(TCustom),
-}
+use crate::{MsgData, MsgDataBound, MsgTrace, Timestamp};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Message<TCustom> {
-    pub data: MsgType<TCustom>,
+    pub data: MsgData<TCustom>,
     pub key: String,
     pub ts: Timestamp,
     pub trace: MsgTrace,
@@ -29,7 +17,7 @@ impl<TCustom> Message<TCustom>
 where
     TCustom: MsgDataBound,
 {
-    pub fn new(data: MsgType<TCustom>) -> Self {
+    pub fn new(data: MsgData<TCustom>) -> Self {
         let key = define_key(&data);
         Self {
             data,
@@ -40,7 +28,7 @@ where
     }
 
     pub fn new_custom(custom_data: TCustom) -> Self {
-        let data = MsgType::Custom(custom_data);
+        let data = MsgData::Custom(custom_data);
         let key = define_key(&data);
         Self {
             data,
@@ -52,8 +40,8 @@ where
 
     pub fn get_data(&self) -> Option<TCustom> {
         match &self.data {
-            MsgType::System(_) => None,
-            MsgType::Custom(data) => Some(data.clone()),
+            MsgData::System(_) => None,
+            MsgData::Custom(data) => Some(data.clone()),
         }
     }
 
@@ -66,7 +54,8 @@ where
     }
 }
 
-fn define_key<TCustom>(data: &MsgType<TCustom>) -> String
+/// Определить ключ сообщения по выводу Debug
+fn define_key<TCustom>(data: &MsgData<TCustom>) -> String
 where
     TCustom: MsgDataBound,
 {

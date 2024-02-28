@@ -64,10 +64,10 @@ fn message_new_from_enums(enums: &[String], value: &str) -> String {
 /// Добавляет названия перечислений к вариантам
 ///
 /// Т.е. из строки вида `Custom-ValueInstantF64`
-/// получается строка вида `MsgType::Custom-Custom::ValueInstantF64`
+/// получается строка вида `MsgData::Custom-Custom::ValueInstantF64`
 fn add_enum_names(enum_variants: &[String]) -> Vec<String> {
     let mut new_enum_variants = vec![];
-    let mut enum_name = String::from("MsgType");
+    let mut enum_name = String::from("MsgData");
     for enum_variant in enum_variants {
         let new_add = enum_variant.clone();
         new_enum_variants.push(format!("{enum_name}::{enum_variant}"));
@@ -90,16 +90,16 @@ mod tests {
     fn test_create_signal_from_msg() {
         let valid_out = r#"
 create_signal_from_msg::create(create_signal_from_msg::Config {
-    default: Message::new(MsgType::Custom(Custom::ValueInstantF64(Default::default()))),
+    default: Message::new(MsgData::Custom(Custom::ValueInstantF64(Default::default()))),
     fn_input: |msg| {
         let value = &msg.data;
         match value {
-            MsgType::Custom(Custom::ValueInstantF64(value)) => Some(value.clone()),
+            MsgData::Custom(Custom::ValueInstantF64(value)) => Some(value.clone()),
             _ => None,
         }
     },
     fn_output: |value| {
-        Some(Message::new(MsgType::Custom(Custom::ValueInstantF64(value))))
+        Some(Message::new(MsgData::Custom(Custom::ValueInstantF64(value))))
     },
 })"#;
         let test_out = create_signal_from_msg("Custom-ValueInstantF64");
@@ -108,7 +108,7 @@ create_signal_from_msg::create(create_signal_from_msg::Config {
 
     #[test]
     fn test_message_new() {
-        let valid_out = "Message::new(MsgType::Custom(Custom::ValueInstantF64(123.0)))";
+        let valid_out = "Message::new(MsgData::Custom(Custom::ValueInstantF64(123.0)))";
         let test_out = message_new("Custom-ValueInstantF64::123.0");
         assert_eq!(valid_out, test_out);
     }

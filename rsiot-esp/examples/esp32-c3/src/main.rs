@@ -37,14 +37,14 @@ async fn main() {
 
     let plc_config = cmp_plc::Config {
         fn_input: |_input: &mut fb_main::I, msg: &Message<Custom>| match &msg.data {
-            MsgType::Custom(msg) => match msg {
+            MsgData::Custom(msg) => match msg {
                 Custom::Button(_) => (),
                 // Message::SetLedColor(_) => (),
                 Custom::TestFromHttpServer(_) => (),
                 Custom::Relay2(_) => (),
                 Custom::StorageI32(_) => (),
             },
-            MsgType::System(_) => (),
+            MsgData::System(_) => (),
         },
         fn_output: |_output: &fb_main::Q| {
             // let msg1 = Message::SetLedColor(MsgContent::new(output.color));
@@ -59,7 +59,7 @@ async fn main() {
 
     let storage_config = cmp_storage_esp::Config {
         fn_input: |data: &StorageData, msg| match &msg.data {
-            MsgType::Custom(msg) => match msg {
+            MsgData::Custom(msg) => match msg {
                 Custom::StorageI32(value) => Some(StorageData {
                     test_i32: *value,
                     ..*data
@@ -69,7 +69,7 @@ async fn main() {
                 Custom::TestFromHttpServer(_) => None,
                 Custom::Relay2(_) => None,
             },
-            MsgType::System(_) => None,
+            MsgData::System(_) => None,
         },
         fn_output: |data: &StorageData| {
             vec![Message::new_custom(Custom::StorageI32(data.test_i32))]

@@ -9,16 +9,16 @@ fn main() {
     let (_signal, _signal_set) = create_signal_from_msg!("Custom-DataGroup-DataGroupF64");
 
     let (_signal, _signal_set) = create_signal_from_msg::create(create_signal_from_msg::Config {
-        default: Message::new(MsgType::Custom(Custom::ValueInstantF64(Default::default()))),
+        default: Message::new(MsgData::Custom(Custom::ValueInstantF64(Default::default()))),
         fn_input: |msg| {
             let value = &msg.data;
             match value {
-                MsgType::Custom(Custom::ValueInstantF64(value)) => Some(value.clone()),
+                MsgData::Custom(Custom::ValueInstantF64(value)) => Some(value.clone()),
                 _ => None,
             }
         },
         fn_output: |value| {
-            Some(Message::new(MsgType::Custom(Custom::ValueInstantF64(
+            Some(Message::new(MsgData::Custom(Custom::ValueInstantF64(
                 value,
             ))))
         },

@@ -34,7 +34,7 @@ async fn main() {
         token: TOKEN.into(),
         fn_input: |msg: &Message<Custom>| {
             let value = match &msg.data {
-                MsgType::Custom(Custom::ValueInstantF64(data)) => {
+                MsgData::Custom(Custom::ValueInstantF64(data)) => {
                     cmp_influxdb::ValueType::f64(*data)
                 }
                 _ => return None,

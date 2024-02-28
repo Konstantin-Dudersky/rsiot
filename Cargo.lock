@@ -3636,6 +3636,7 @@ dependencies = [
  "rsiot-component-core",
  "rsiot-messages-core",
  "serde",
+ "thiserror",
  "tracing",
  "uuid",
 ]
