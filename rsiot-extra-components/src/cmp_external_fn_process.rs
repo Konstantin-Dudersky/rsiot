@@ -19,6 +19,22 @@ use rsiot_component_core::{
 };
 use rsiot_messages_core::*;
 
+#[cfg(feature = "single-thread")]
+type FnProcess<TMsg> = Box<
+    dyn Fn(
+        CmpInput<TMsg>,
+        CmpOutput<TMsg>,
+        Cache<TMsg>,
+    ) -> LocalBoxFuture<'static, ComponentResult>,
+>;
+
+#[cfg(not(feature = "single-thread"))]
+type FnProcess<TMsg> = Box<
+    dyn Fn(CmpInput<TMsg>, CmpOutput<TMsg>, Cache<TMsg>) -> BoxFuture<'static, ComponentResult>
+        + Send
+        + Sync,
+>;
+
 pub struct Config<TMsg> {
     /// Внешняя функция для выполнения
     ///
@@ -63,13 +79,7 @@ pub struct Config<TMsg> {
     /// # // insert-end
     /// ```
     #[cfg(feature = "single-thread")]
-    pub fn_process: Box<
-        dyn Fn(
-            CmpInput<TMsg>,
-            CmpOutput<TMsg>,
-            Cache<TMsg>,
-        ) -> LocalBoxFuture<'static, ComponentResult>,
-    >,
+    pub fn_process: FnProcess<TMsg>,
 
     /// Внешняя функция для выполнения
     ///
@@ -115,11 +125,7 @@ pub struct Config<TMsg> {
     /// # // insert-end
     /// ```
     #[cfg(not(feature = "single-thread"))]
-    pub fn_process: Box<
-        dyn Fn(CmpInput<TMsg>, CmpOutput<TMsg>, Cache<TMsg>) -> BoxFuture<'static, ComponentResult>
-            + Send
-            + Sync,
-    >,
+    pub fn_process: FnProcess<TMsg>,
 }
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]

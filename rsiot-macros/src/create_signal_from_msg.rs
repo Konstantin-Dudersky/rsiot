@@ -32,12 +32,12 @@ pub fn message_new(input: &str) -> String {
     let enum_variants_and_value = input.split("::").collect::<Vec<&str>>();
 
     let enum_variants = enum_variants_and_value[0];
-    let enum_variants = parse_enum_variants(&enum_variants);
+    let enum_variants = parse_enum_variants(enum_variants);
     let enum_with_names = add_enum_names(&enum_variants);
 
     let value = enum_variants_and_value[1];
 
-    let code = message_new_from_enums(&enum_with_names, &value);
+    let code = message_new_from_enums(&enum_with_names, value);
     code.replace('\"', "")
 }
 

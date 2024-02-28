@@ -24,7 +24,7 @@ where
     fn process(&mut self, msg: &Message<TMsg>) -> Option<Vec<Message<TMsg>>> {
         let old_store = self.store.clone();
 
-        (self.fn_input)(&msg, &mut self.store);
+        (self.fn_input)(msg, &mut self.store);
         if old_store == self.store {
             return None;
         }
