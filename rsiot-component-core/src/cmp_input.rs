@@ -3,38 +3,41 @@ use std::fmt::Debug;
 use tokio::sync::broadcast::{self};
 use uuid::Uuid;
 
-use rsiot_messages_core::{Message, MsgSource};
+use rsiot_messages_core::*;
 
 use crate::ComponentError;
 
 #[derive(Debug)]
 pub struct CmpInput<TMsg> {
     channel: broadcast::Receiver<Message<TMsg>>,
-    msg_source: MsgSource,
+    id: Uuid,
+    name: String,
 }
 
 impl<TMsg> CmpInput<TMsg>
 where
-    TMsg: Clone + Debug,
+    TMsg: MsgDataBound,
 {
     pub fn new(
         channel: broadcast::Receiver<Message<TMsg>>,
         executor_name: &str,
         executor_id: Uuid,
     ) -> Self {
-        let msg_source = MsgSource::new(executor_name, executor_id);
         Self {
             channel,
-            msg_source,
+            id: executor_id,
+            name: executor_name.into(),
         }
     }
 
-    pub(crate) fn set_component_id(&mut self, component_name: &str, component_id: Uuid) {
-        self.msg_source.set_component(component_name, component_id);
+    pub(crate) fn set_component_id(&mut self, name: &str, id: Uuid) {
+        self.id = id;
+        self.name = format!("{}::{}", self.name, name);
     }
 
-    pub(crate) fn set_session_id(&mut self, session_name: &str, session_id: Uuid) {
-        self.msg_source.set_session(session_name, session_id);
+    pub(crate) fn set_session_id(&mut self, name: &str, id: Uuid) {
+        self.id = id;
+        self.name = format!("{}::{}", self.name, name);
     }
 
     pub async fn recv(&mut self) -> Result<Option<Message<TMsg>>, ComponentError> {
@@ -43,14 +46,7 @@ where
             .recv()
             .await
             .map_err(|e| ComponentError::CmpInput(e.to_string()))?;
-        let msg_cmp_process = match &msg.process {
-            Some(cmp_process) => cmp_process,
-            None => {
-                let err = format!("cmp_process not set for message: {:?}", msg);
-                return Err(ComponentError::CmpInput(err));
-            }
-        };
-        if msg_cmp_process == &self.msg_source {
+        if msg.contains_trace_item(&self.id) {
             return Ok(None);
         }
         Ok(Some(msg))
@@ -64,7 +60,9 @@ where
     fn clone(&self) -> Self {
         Self {
             channel: self.channel.resubscribe(),
-            msg_source: self.msg_source.clone(),
+            // msg_source: self.msg_source.clone(),
+            id: self.id.clone(),
+            name: self.name.clone(),
         }
     }
 }

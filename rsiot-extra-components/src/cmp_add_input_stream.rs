@@ -4,7 +4,8 @@ use async_trait::async_trait;
 use tokio::task::JoinSet;
 
 use rsiot_component_core::{
-    cmp_set_component_id, Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
+    cmp_set_component_name, Cache, CmpInput, CmpOutput, Component, ComponentError,
+    IComponentProcess,
 };
 use rsiot_messages_core::MsgDataBound;
 
@@ -48,7 +49,7 @@ where
         mut output: CmpOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
-        cmp_set_component_id(&mut input, &mut output, "cmp_add_input_stream");
+        cmp_set_component_name(&mut input, &mut output, "cmp_add_input_stream");
         let mut task_set: JoinSet<Result<(), ComponentError>> = JoinSet::new();
 
         task_set.spawn(task_subscription(input, output.clone()));
@@ -75,7 +76,7 @@ where
         mut output: CmpOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
-        cmp_set_component_id(&mut input, &mut output, "cmp_add_input_stream");
+        cmp_set_component_name(&mut input, &mut output, "cmp_add_input_stream");
         let mut task_set: JoinSet<Result<(), ComponentError>> = JoinSet::new();
 
         task_set.spawn(task_subscription(input, output.clone()));

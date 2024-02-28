@@ -28,6 +28,7 @@ create_signal_from_msg::create(create_signal_from_msg::Config {
 }
 
 /// Создание сообщения из строки вида `Variant1-Variant2-Variant3::value`
+/// TODO - возможно, убрать value и подразумевать по-умолчанию?
 pub fn message_new(input: &str) -> String {
     let enum_variants_and_value = input.split("::").collect::<Vec<&str>>();
 

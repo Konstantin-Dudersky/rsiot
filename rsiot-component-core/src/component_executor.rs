@@ -5,7 +5,7 @@ use tokio::{
     task::JoinSet,
 };
 
-use rsiot_messages_core::{Message, MsgDataBound, MsgSource};
+use rsiot_messages_core::*;
 use tracing::{debug, error, info, trace, warn};
 
 use crate::{error::ComponentError, Cache, CmpInput, CmpOutput, IComponent};
@@ -53,7 +53,6 @@ where
     /// Создание коллекции компонентов
     pub fn new(buffer_size: usize, executor_name: &str) -> Self {
         info!("ComponentExecutor start creation");
-        let executor_id = MsgSource::generate_uuid();
         let (component_input_send, component_input) =
             broadcast::channel::<Message<TMsg>>(buffer_size);
         let (component_output, component_output_recv) = mpsc::channel::<Message<TMsg>>(buffer_size);
@@ -71,8 +70,11 @@ where
         } else {
             task_set.spawn(task_internal_handle);
         }
+
+        let executor_id = MsgTrace::generate_uuid();
         let component_input = CmpInput::new(component_input, executor_name, executor_id);
         let component_output = CmpOutput::new(component_output, executor_name, executor_id);
+
         Self {
             task_set,
             component_input,
@@ -148,14 +150,13 @@ where
         let value = msg.clone();
         {
             let mut lock = cache.write().await;
-            let value_from_cache = lock.get(&key);
-            if let Some(value_from_cache) = value_from_cache {
-                // если в кеше более новое сообщение, отбрасываем
-                if value.ts <= value_from_cache.ts {
-                    continue;
-                }
-            }
-
+            // let value_from_cache = lock.get(&key);
+            // if let Some(value_from_cache) = value_from_cache {
+            //     // если в кеше более новое сообщение, отбрасываем
+            //     if value.ts <= value_from_cache.ts {
+            //         continue;
+            //     }
+            // }
             lock.insert(key, value);
         }
         output.send(msg).map_err(|err| {

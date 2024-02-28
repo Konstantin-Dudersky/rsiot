@@ -1,7 +1,8 @@
 use async_trait::async_trait;
 
 use rsiot_component_core::{
-    cmp_set_component_id, Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
+    cmp_set_component_name, Cache, CmpInput, CmpOutput, Component, ComponentError,
+    IComponentProcess,
 };
 use rsiot_messages_core::{IMessageChannel, MsgDataBound};
 
@@ -24,7 +25,7 @@ where
         cache: Cache<TMessage>,
     ) -> Result<(), ComponentError> {
         let config = config.0;
-        cmp_set_component_id(&mut input, &mut output, "cmp_redis_client");
+        cmp_set_component_name(&mut input, &mut output, "cmp_redis_client");
         fn_process(input, output, config, cache).await
     }
 }

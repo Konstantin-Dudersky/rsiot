@@ -5,7 +5,8 @@ use tokio::time::{sleep, Duration, Instant};
 use tracing::debug;
 
 use rsiot_component_core::{
-    cmp_set_component_id, Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
+    cmp_set_component_name, Cache, CmpInput, CmpOutput, Component, ComponentError,
+    IComponentProcess,
 };
 use rsiot_messages_core::{Message, MsgDataBound};
 
@@ -36,7 +37,7 @@ where
         mut output: CmpOutput<TMsg>,
         cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
-        cmp_set_component_id(&mut input, &mut output, "cmp_inject_periodic");
+        cmp_set_component_name(&mut input, &mut output, "cmp_inject_periodic");
         process(config, input, output, cache).await
     }
 }

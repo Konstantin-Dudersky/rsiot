@@ -2,7 +2,8 @@ use async_trait::async_trait;
 use serde::Serialize;
 
 use rsiot_component_core::{
-    cmp_set_component_id, Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
+    cmp_set_component_name, Cache, CmpInput, CmpOutput, Component, ComponentError,
+    IComponentProcess,
 };
 use rsiot_messages_core::MsgDataBound;
 
@@ -30,7 +31,7 @@ where
         mut output: CmpOutput<TMsg>,
         cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
-        cmp_set_component_id(&mut input, &mut output, "cmp_plc");
+        cmp_set_component_name(&mut input, &mut output, "cmp_plc");
         fn_process(output, config, cache).await
     }
 }

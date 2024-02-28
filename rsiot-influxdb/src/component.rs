@@ -1,7 +1,8 @@
 use async_trait::async_trait;
 
 use rsiot_component_core::{
-    cmp_set_component_id, Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
+    cmp_set_component_name, Cache, CmpInput, CmpOutput, Component, ComponentError,
+    IComponentProcess,
 };
 use rsiot_messages_core::MsgDataBound;
 use tracing::{error, info};
@@ -21,7 +22,7 @@ where
         mut output: CmpOutput<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
-        cmp_set_component_id(&mut input, &mut output, "cmp_influxdb");
+        cmp_set_component_name(&mut input, &mut output, "cmp_influxdb");
         info!("Influxdb client component start execution");
         fn_process(input, output, config.0).await?;
         error!("Influxdb client component end execution");

@@ -1,12 +1,10 @@
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 
 /// Вход в систему по логину и паролю
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct AuthLoginRequest {
     login: String,
     password: String,
-    request_id: Uuid,
 }
 
 impl AuthLoginRequest {
@@ -14,7 +12,6 @@ impl AuthLoginRequest {
         Self {
             login: login.to_string(),
             password: password.to_string(),
-            request_id: Uuid::new_v4(),
         }
     }
 }

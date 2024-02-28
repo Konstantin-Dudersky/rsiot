@@ -42,3 +42,5 @@ pub fn message_new(msg: TokenStream) -> TokenStream {
         #code
     })
 }
+
+// TODO - добавить макрос для для генерации match - веток 

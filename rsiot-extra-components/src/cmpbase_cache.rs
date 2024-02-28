@@ -5,6 +5,7 @@
 use std::fmt::Debug;
 
 use rsiot_component_core::{Cache, CmpInput};
+use rsiot_messages_core::*;
 
 #[derive(Clone, Debug)]
 pub struct Config<TMessage> {
@@ -13,7 +14,7 @@ pub struct Config<TMessage> {
 
 pub async fn cmpbase_cache<TMsg>(mut input: CmpInput<TMsg>, config: Config<TMsg>)
 where
-    TMsg: Clone + Debug,
+    TMsg: MsgDataBound,
 {
     while let Ok(msg) = input.recv().await {
         {

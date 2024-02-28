@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use tokio::sync::mpsc;
 
-use rsiot_messages_core::{Message, MsgDataBound, MsgSource};
+use rsiot_messages_core::*;
 use uuid::Uuid;
 
 use crate::ComponentError;
@@ -10,7 +10,8 @@ use crate::ComponentError;
 #[derive(Clone, Debug)]
 pub struct CmpOutput<TMsg> {
     channel: mpsc::Sender<Message<TMsg>>,
-    msg_source: MsgSource,
+    id: Uuid,
+    name: String,
 }
 
 impl<TMsg> CmpOutput<TMsg>
@@ -22,22 +23,25 @@ where
         executor_name: &str,
         executor_id: Uuid,
     ) -> Self {
-        let msg_source = MsgSource::new(executor_name, executor_id);
         Self {
             channel,
-            msg_source,
+            id: executor_id,
+            name: executor_name.into(),
         }
     }
 
-    pub(crate) fn set_component_id(&mut self, component_name: &str, component_id: Uuid) {
-        self.msg_source.set_component(component_name, component_id);
+    pub(crate) fn set_component_id(&mut self, name: &str, id: Uuid) {
+        self.id = id;
+        self.name = format!("{}::{}", self.name, name);
     }
 
-    pub(crate) fn set_session_id(&mut self, session_name: &str, session_id: Uuid) {
-        self.msg_source.set_session(session_name, session_id);
+    pub(crate) fn set_session_id(&mut self, name: &str, id: Uuid) {
+        self.id = id;
+        self.name = format!("{}::{}", self.name, name);
     }
     pub async fn send(&self, mut msg: Message<TMsg>) -> Result<(), ComponentError> {
-        msg.cmp_set(&self.msg_source);
+        // msg.cmp_set(&self.msg_source);
+        msg.add_trace_item(&self.id, &self.name);
         self.channel
             .send(msg)
             .await

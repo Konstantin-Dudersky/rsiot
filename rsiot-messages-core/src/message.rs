@@ -1,11 +1,15 @@
 use std::fmt::Debug;
 
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
-use super::{MsgDataBound, MsgSource, Timestamp};
+use crate::{system_messages, MsgDataBound, MsgTrace, Timestamp};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub enum System {}
+pub enum System {
+    AuthLoginRequest(system_messages::AuthLoginRequest),
+    AuthLoginResponse(system_messages::AuthLoginResponse),
+}
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum MsgType<TCustom> {
@@ -14,12 +18,11 @@ pub enum MsgType<TCustom> {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub struct Message<TData> {
-    pub data: MsgType<TData>,
+pub struct Message<TCustom> {
+    pub data: MsgType<TCustom>,
     pub key: String,
     pub ts: Timestamp,
-    pub source: Option<MsgSource>,
-    pub process: Option<MsgSource>,
+    pub trace: MsgTrace,
 }
 
 impl<TCustom> Message<TCustom>
@@ -32,8 +35,7 @@ where
             data,
             key,
             ts: Default::default(),
-            source: None,
-            process: None,
+            trace: MsgTrace::default(),
         }
     }
 
@@ -44,16 +46,8 @@ where
             data,
             key,
             ts: Default::default(),
-            source: None,
-            process: None,
+            trace: MsgTrace::default(),
         }
-    }
-
-    pub fn cmp_set(&mut self, cmp: &MsgSource) {
-        if self.source.is_none() {
-            self.source = Some(cmp.clone());
-        }
-        self.process = Some(cmp.clone());
     }
 
     pub fn get_data(&self) -> Option<TCustom> {
@@ -61,6 +55,14 @@ where
             MsgType::System(_) => None,
             MsgType::Custom(data) => Some(data.clone()),
         }
+    }
+
+    pub fn add_trace_item(&mut self, id: &Uuid, name: &str) {
+        self.trace.insert(id.clone(), name.to_string())
+    }
+
+    pub fn contains_trace_item(&self, id: &Uuid) -> bool {
+        self.trace.contains_key(id)
     }
 }
 
