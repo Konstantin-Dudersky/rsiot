@@ -2,7 +2,7 @@
 description = "Компонент для сохранения данных в БД InfluxDB"
 name = "rsiot-influxdb"
 edition = "2021"
-version = "0.0.63"
+version = "0.0.64"
 categories.workspace = true
 keywords.workspace = true
 license.workspace = true
