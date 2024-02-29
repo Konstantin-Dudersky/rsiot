@@ -12,7 +12,7 @@ use crate::{fn_process::fn_process, Config};
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
 impl<TMsg> IComponentProcess<Config, TMsg> for Component<Config, TMsg>
 where
-    TMsg: MsgDataBound,
+    TMsg: MsgDataBound + 'static,
 {
     async fn process(
         &self,

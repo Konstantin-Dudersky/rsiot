@@ -6,7 +6,7 @@ use tokio::{
     time::{sleep, Duration},
 };
 use tokio_modbus::{client::Context, prelude::*};
-use tracing::{debug, error, info, trace};
+use tracing::{debug, error, info, trace, warn};
 
 use rsiot_component_core::{Cache, CmpInput, CmpOutput, ComponentError};
 use rsiot_messages_core::MsgDataBound;
@@ -25,9 +25,10 @@ pub async fn fn_process<TMessage>(
 where
     TMessage: MsgDataBound + 'static,
 {
-    if config.enabled {
+    if !config.enabled {
         loop {
-            sleep(Duration::from_secs(100)).await
+            warn!("Service disabled");
+            sleep(Duration::from_secs(u64::max_value())).await
         }
     }
 

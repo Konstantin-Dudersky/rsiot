@@ -13,16 +13,26 @@ version = "0.0.64"
 
 [dependencies]
 async-trait = { workspace = true }
+jwt = { workspace = true }
 serde = { workspace = true }
 thiserror = { workspace = true }
+tokio = { workspace = true }
 tracing = { workspace = true }
 uuid = { workspace = true }
+
+hmac = { version = "*" }
+sha2 = { version = "*" }
 
 rsiot-component-core = { workspace = true }
 rsiot-messages-core = { workspace = true }
 
 
 [dev-dependencies]
+anyhow = { workspace = true }
+tokio = { features = ["rt-multi-thread"] }
+tracing-subscriber = { workspace = true }
+
+rsiot-extra-components = { workspace = true }
 
 
 [features]

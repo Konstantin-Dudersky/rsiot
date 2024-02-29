@@ -25,3 +25,4 @@ networks:
 volumes:
   influxdb_data:
     name: influxdb_data
+# TODO - healhcheck

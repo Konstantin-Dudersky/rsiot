@@ -3,8 +3,8 @@ use serde::{Deserialize, Serialize};
 /// Вход в систему по логину и паролю
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct AuthLoginRequest {
-    login: String,
-    password: String,
+    pub login: String,
+    pub password: String,
 }
 
 impl AuthLoginRequest {

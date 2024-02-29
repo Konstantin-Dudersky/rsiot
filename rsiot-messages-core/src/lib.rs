@@ -11,14 +11,14 @@ mod msg_data;
 mod msg_data_bound;
 mod msg_serde;
 mod msg_trace;
-mod system_messages;
+pub mod system_messages;
 mod timestamp;
 
 pub mod eav;
 pub mod eav_helpers;
 pub mod example_message;
 
-pub use auth_roles::AuthRoles;
+pub use auth_roles::{AuthRoles, AuthTokenPayload};
 pub use error::Error;
 pub use example_message_channel::ExampleMessageChannel;
 pub use message::Message;

@@ -1,8 +1,16 @@
-use rsiot_messages_core::MsgDataBound;
+use std::collections::HashMap;
 
-pub struct Config
-// where
-//     TMsg: MsgDataBound,
-{
-    secret_key: String,
+#[derive(Clone)]
+pub struct Config {
+    pub secret_key: String,
+
+    /// Хранилище данных доступа
+    pub store: ConfigStoreKind,
+}
+
+/// Тип хранилища данных доступа
+#[derive(Clone)]
+pub enum ConfigStoreKind {
+    Hashmap(HashMap<String, String>),
+    Surrealdb,
 }
