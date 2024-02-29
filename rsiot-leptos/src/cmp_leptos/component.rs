@@ -3,7 +3,8 @@ use leptos::*;
 use tracing::info;
 
 use rsiot_component_core::{
-    cmp_set_component_id, Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
+    cmp_set_component_name, Cache, CmpInput, CmpOutput, Component, ComponentError,
+    IComponentProcess,
 };
 use rsiot_messages_core::MsgDataBound;
 
@@ -26,7 +27,7 @@ where
         cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         info!("Starting cmp_leptos");
-        cmp_set_component_id(&mut input, &mut output, "cmp_leptos");
+        cmp_set_component_name(&mut input, &mut output, "cmp_leptos");
         fn_process(config, input, output, cache).await?;
         Err(ComponentError::Execution("Stop execution".into()))
     }
