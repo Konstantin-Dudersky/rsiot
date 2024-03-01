@@ -1,9 +1,9 @@
 use std::fmt::Debug;
 
 use tokio::sync::mpsc;
+use uuid::Uuid;
 
 use rsiot_messages_core::*;
-use uuid::Uuid;
 
 use crate::ComponentError;
 
@@ -40,7 +40,6 @@ where
         self.name = format!("{}::{}", self.name, name);
     }
     pub async fn send(&self, mut msg: Message<TMsg>) -> Result<(), ComponentError> {
-        // msg.cmp_set(&self.msg_source);
         msg.add_trace_item(&self.id, &self.name);
         self.channel
             .send(msg)

@@ -6,7 +6,7 @@ use surrealdb::{
     Surreal,
 };
 
-use rsiot_component_core::{CmpInput, CmpOutput, ComponentError};
+use rsiot_component_core::{CmpInOut, ComponentError};
 use rsiot_messages_core::MsgDataBound;
 use tokio::{sync::Mutex, task::JoinSet, time::sleep};
 use tracing::{error, info};
@@ -16,8 +16,7 @@ use crate::Config;
 type Db = Arc<Mutex<Surreal<Client>>>;
 
 pub async fn fn_process<TMsg>(
-    input: CmpInput<TMsg>,
-    _output: CmpOutput<TMsg>,
+    input: CmpInOut<TMsg>,
     config: Config<TMsg>,
 ) -> Result<(), ComponentError>
 where
@@ -35,7 +34,7 @@ where
     }
 }
 
-async fn task_main<TMsg>(input: CmpInput<TMsg>, config: &Config<TMsg>) -> crate::Result<()>
+async fn task_main<TMsg>(input: CmpInOut<TMsg>, config: &Config<TMsg>) -> crate::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
@@ -83,14 +82,14 @@ async fn init_script<TMsg>(config: &Config<TMsg>, db: Db) -> crate::Result<()> {
 }
 
 async fn task_periodic_request<TMsg>(
-    mut input: CmpInput<TMsg>,
+    mut input: CmpInOut<TMsg>,
     input_config: crate::config::InputConfig<TMsg>,
     db: Db,
 ) -> crate::Result<()>
 where
     TMsg: MsgDataBound,
 {
-    while let Ok(msg) = input.recv().await {
+    while let Ok(msg) = input.recv_input().await {
         let msg = match msg {
             Some(val) => val,
             None => continue,

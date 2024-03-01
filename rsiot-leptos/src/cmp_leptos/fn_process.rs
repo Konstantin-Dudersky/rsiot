@@ -1,5 +1,5 @@
 use leptos::*;
-use rsiot_component_core::{Cache, CmpInput, CmpOutput};
+use rsiot_component_core::{Cache, CmpInOut};
 use rsiot_messages_core::MsgDataBound;
 use tokio::task::JoinSet;
 use tracing::debug;
@@ -10,8 +10,7 @@ use super::Config;
 
 pub async fn fn_process<TMsg, TView, TIntoView>(
     config: Config<TView, TIntoView>,
-    input: CmpInput<TMsg>,
-    output: CmpOutput<TMsg>,
+    in_out: CmpInOut<TMsg>,
     cache: Cache<TMsg>,
 ) -> crate::Result
 where
@@ -31,19 +30,19 @@ where
     debug!("Leptos app mounted");
 
     let mut task_set: JoinSet<crate::Result> = JoinSet::new();
-    task_set.spawn_local(task_input(input, gs.clone()));
-    task_set.spawn_local(task_output(output, gs));
+    task_set.spawn_local(task_input(in_out.clone(), gs.clone()));
+    task_set.spawn_local(task_output(in_out, gs));
     while let Some(task_result) = task_set.join_next().await {
         task_result??
     }
     Ok(())
 }
 
-async fn task_input<TMsg>(mut input: CmpInput<TMsg>, gs: GlobalState<TMsg>) -> crate::Result
+async fn task_input<TMsg>(mut input: CmpInOut<TMsg>, gs: GlobalState<TMsg>) -> crate::Result
 where
     TMsg: MsgDataBound,
 {
-    while let Ok(msg) = input.recv().await {
+    while let Ok(msg) = input.recv_input().await {
         let msg = match msg {
             Some(val) => val,
             None => continue,
@@ -53,7 +52,7 @@ where
     Ok(())
 }
 
-async fn task_output<TMsg>(output: CmpOutput<TMsg>, gs: GlobalState<TMsg>) -> crate::Result
+async fn task_output<TMsg>(output: CmpInOut<TMsg>, gs: GlobalState<TMsg>) -> crate::Result
 where
     TMsg: MsgDataBound,
 {
@@ -69,7 +68,7 @@ where
     });
 
     while let Some(msg) = rx.recv().await {
-        output.send(msg).await.map_err(Error::CmpOutput)?;
+        output.send_output(msg).await.map_err(Error::CmpOutput)?;
     }
 
     Ok(())

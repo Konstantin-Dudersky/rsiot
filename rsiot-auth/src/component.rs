@@ -1,8 +1,7 @@
 use async_trait::async_trait;
 
 use rsiot_component_core::{
-    cmp_set_component_name, Cache, CmpInput, CmpOutput, Component, ComponentError, ComponentResult,
-    IComponentProcess,
+    Cache, CmpInOut, Component, ComponentError, ComponentResult, IComponentProcess,
 };
 use rsiot_messages_core::MsgDataBound;
 
@@ -17,12 +16,11 @@ where
     async fn process(
         &self,
         config: Config,
-        mut input: CmpInput<TMsg>,
-        mut output: CmpOutput<TMsg>,
+        in_out: CmpInOut<TMsg>,
         cache: Cache<TMsg>,
     ) -> ComponentResult {
-        cmp_set_component_name(&mut input, &mut output, "cmp_auth");
-        fn_process(input, output, config, cache)
+        let in_out = in_out.clone_with_new_id("cmp_auth");
+        fn_process(config, cache, in_out)
             .await
             .map_err(|e| ComponentError::Execution(e.to_string()))
     }

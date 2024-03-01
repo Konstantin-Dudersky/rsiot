@@ -3,10 +3,7 @@
 use async_trait::async_trait;
 use tracing::{debug, error, info, trace, warn, Level};
 
-use rsiot_component_core::{
-    cmp_set_component_name, Cache, CmpInput, CmpOutput, Component, ComponentError,
-    IComponentProcess,
-};
+use rsiot_component_core::{Cache, CmpInOut, Component, ComponentError, IComponentProcess};
 use rsiot_messages_core::MsgDataBound;
 
 /// Настройки компонента логгирования
@@ -27,19 +24,16 @@ where
     async fn process(
         &self,
         config: Config,
-        mut input: CmpInput<TMessage>,
-        mut output: CmpOutput<TMessage>,
+        in_out: CmpInOut<TMessage>,
         cache: Cache<TMessage>,
     ) -> Result<(), ComponentError> {
-        cmp_set_component_name(&mut input, &mut output, "cmp_logger");
-        process(config, input, output, cache).await
+        process(config, in_out.clone_with_new_id("cmp_logger"), cache).await
     }
 }
 
 async fn process<TMessage>(
     config: Config,
-    mut input: CmpInput<TMessage>,
-    _output: CmpOutput<TMessage>,
+    mut in_out: CmpInOut<TMessage>,
     _cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>
 where
@@ -50,7 +44,7 @@ where
         "" => "".to_string(),
         _ => format!("{}: ", config.header),
     };
-    while let Ok(msg) = input.recv().await {
+    while let Ok(msg) = in_out.recv_input().await {
         let msg = match msg {
             Some(val) => val,
             None => continue,

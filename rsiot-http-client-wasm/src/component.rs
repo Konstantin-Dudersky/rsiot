@@ -1,9 +1,6 @@
 use async_trait::async_trait;
 
-use rsiot_component_core::{
-    cmp_set_component_name, Cache, CmpInput, CmpOutput, Component, ComponentError,
-    IComponentProcess,
-};
+use rsiot_component_core::{Cache, CmpInOut, Component, ComponentError, IComponentProcess};
 use rsiot_messages_core::MsgDataBound;
 
 use crate::config::ConfigAlias;
@@ -20,13 +17,12 @@ where
     async fn process(
         &self,
         _config: ConfigAlias<TMsg>,
-        _input: CmpInput<TMsg>,
-        _output: CmpOutput<TMsg>,
+        _input: CmpInOut<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         unimplemented!();
         let config = _config.0;
-        fn_process(_input, _output, config)
+        fn_process(_input, config)
             .await
             .map_err(|err| ComponentError::Execution(err.to_string()))
     }
@@ -41,13 +37,11 @@ where
     async fn process(
         &self,
         config: ConfigAlias<TMsg>,
-        mut input: CmpInput<TMsg>,
-        mut output: CmpOutput<TMsg>,
+        in_out: CmpInOut<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         let config = config.0;
-        cmp_set_component_name(&mut input, &mut output, "cmp_http_client_wasm");
-        fn_process(input, output, config)
+        fn_process(in_out.clone_with_new_id("cmp_http_client_wasm"), config)
             .await
             .map_err(|err| ComponentError::Execution(err.to_string()))
     }

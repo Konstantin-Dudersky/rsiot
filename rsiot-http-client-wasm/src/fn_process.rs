@@ -9,14 +9,13 @@ use tokio::task::JoinSet;
 use tracing::{error, info};
 use url::Url;
 
-use rsiot_component_core::{CmpInput, CmpOutput};
+use rsiot_component_core::CmpInOut;
 use rsiot_messages_core::{Message, MsgDataBound};
 
 use crate::{config::config, error::Error};
 
 pub async fn fn_process<TMessage>(
-    input: CmpInput<TMessage>,
-    output: CmpOutput<TMessage>,
+    input: CmpInOut<TMessage>,
     config: config::Config<TMessage>,
 ) -> crate::Result<()>
 where
@@ -25,7 +24,7 @@ where
     info!("Starting http-client-wasm, configuration: {:?}", config);
 
     loop {
-        let res = task_main::<TMessage>(input.clone(), output.clone(), config.clone()).await;
+        let res = task_main::<TMessage>(input.clone(), config.clone()).await;
         match res {
             Ok(_) => (),
             Err(err) => {
@@ -38,8 +37,7 @@ where
 }
 
 async fn task_main<TMessage>(
-    _input: CmpInput<TMessage>,
-    output: CmpOutput<TMessage>,
+    in_out: CmpInOut<TMessage>,
     config: config::Config<TMessage>,
 ) -> crate::Result<()>
 where
@@ -49,7 +47,7 @@ where
     // запускаем периодические запросы
     for req in config.requests_periodic {
         let future = task_periodic_request::<TMessage>(
-            output.clone(),
+            in_out.clone(),
             req,
             config.connection_config.base_url.clone(),
         );
@@ -67,7 +65,7 @@ where
 
 /// Задача обработки периодического запроса
 async fn task_periodic_request<TMessage>(
-    output: CmpOutput<TMessage>,
+    output: CmpInOut<TMessage>,
     config: config::RequestPeriodic<TMessage>,
     url: Url,
 ) -> crate::Result<()>
@@ -85,7 +83,7 @@ where
         )
         .await?;
         for msg in msgs {
-            output.send(msg).await.map_err(Error::CmpOutput)?;
+            output.send_output(msg).await.map_err(Error::CmpOutput)?;
         }
         let elapsed = begin.elapsed();
         let sleep_time = if config.period <= elapsed {

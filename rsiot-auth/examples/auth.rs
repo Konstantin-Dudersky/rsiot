@@ -1,15 +1,16 @@
 //! cargo run --package rsiot-auth --example auth
 
-use std::time::Duration;
-
-use rsiot_auth as cmp_auth;
-use rsiot_component_core::ComponentExecutor;
-use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-use rsiot_messages_core::{example_message::*, system_messages::*, *};
-use tracing::Level;
-
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    use std::time::Duration;
+
+    use rsiot_auth as cmp_auth;
+    use rsiot_component_core::ComponentExecutor;
+    use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
+    use rsiot_messages_core::{example_message::*, system_messages::*, *};
+    use tracing::Level;
+
     tracing_subscriber::fmt().init();
 
     let logger_config = cmp_logger::Config {
@@ -33,7 +34,7 @@ async fn main() -> anyhow::Result<()> {
         secret_key: "secret_key".into(),
         store: cmp_auth::ConfigStore::Local(vec![cmp_auth::ConfigStoreItem {
             login: "admin".into(),
-            password: "admin".into(),
+            password: "admin1".into(),
             role: AuthPermissions::Admin,
         }]),
     };
@@ -47,3 +48,6 @@ async fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
+
+#[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+fn main() {}

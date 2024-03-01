@@ -11,7 +11,7 @@ use tokio::{
 use tokio_util::sync::CancellationToken;
 use tracing::{error, info};
 
-use rsiot_component_core::{Cache, CmpInput, CmpOutput, ComponentError};
+use rsiot_component_core::{Cache, CmpInOut, ComponentError};
 use rsiot_messages_core::MsgDataBound;
 
 use crate::{config::Config, errors::Error};
@@ -19,8 +19,7 @@ use crate::{config::Config, errors::Error};
 use super::{async_task_utils::cancellable_task, handle_ws_connection::handle_ws_connection};
 
 pub async fn fn_process<TMessage>(
-    input: CmpInput<TMessage>,
-    output: CmpOutput<TMessage>,
+    input: CmpInOut<TMessage>,
     config: Config<TMessage>,
     cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>
@@ -35,14 +34,7 @@ where
     let cancel = CancellationToken::new();
 
     loop {
-        let result = task_main(
-            input.clone(),
-            output.clone(),
-            config.clone(),
-            cache.clone(),
-            cancel.clone(),
-        )
-        .await;
+        let result = task_main(input.clone(), config.clone(), cache.clone(), cancel.clone()).await;
         match result {
             Ok(_) => (),
             Err(err) => error!("{:?}", err),
@@ -53,8 +45,7 @@ where
 }
 
 async fn task_main<TMessage>(
-    input: CmpInput<TMessage>,
-    output: CmpOutput<TMessage>,
+    input: CmpInOut<TMessage>,
     config: Config<TMessage>,
     cache: Cache<TMessage>,
     cancel: CancellationToken,
@@ -70,7 +61,6 @@ where
     while let Ok(stream_and_addr) = listener.accept().await {
         let future = handle_ws_connection(
             input.clone(),
-            output.clone(),
             config.clone(),
             stream_and_addr,
             cache.clone(),

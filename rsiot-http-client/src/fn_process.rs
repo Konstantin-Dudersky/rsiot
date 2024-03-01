@@ -9,13 +9,12 @@ use tokio::{
 use tracing::{error, info};
 use url::Url;
 
-use rsiot_component_core::{CmpInput, CmpOutput, ComponentError};
+use rsiot_component_core::{CmpInOut, ComponentError};
 
 use crate::{config::config, error::Error};
 
 pub async fn fn_process<TMsg>(
-    input: CmpInput<TMsg>,
-    output: CmpOutput<TMsg>,
+    in_out: CmpInOut<TMsg>,
     config: config::Config<TMsg>,
 ) -> Result<(), ComponentError>
 where
@@ -24,7 +23,7 @@ where
     info!("Starting http-client, configuration: {:?}", config);
 
     loop {
-        let res = task_main::<TMsg>(input.clone(), output.clone(), config.clone()).await;
+        let res = task_main::<TMsg>(in_out.clone(), config.clone()).await;
         match res {
             Ok(_) => (),
             Err(err) => {
@@ -38,8 +37,7 @@ where
 
 /// Основная задача
 async fn task_main<TMsg>(
-    input: CmpInput<TMsg>,
-    output: CmpOutput<TMsg>,
+    in_out: CmpInOut<TMsg>,
     config: config::Config<TMsg>,
 ) -> crate::Result<(), TMsg>
 where
@@ -49,7 +47,7 @@ where
     // запускаем периодические запросы
     for req in config.requests_periodic {
         let future = task_periodic_request::<TMsg>(
-            output.clone(),
+            in_out.clone(),
             req,
             config.connection_config.base_url.clone(),
         );
@@ -58,8 +56,7 @@ where
     // Запускаем задачи запросов на основе входного потока сообщений
     for item in config.requests_input {
         let future = task_input_request(
-            input.clone(),
-            output.clone(),
+            in_out.clone(),
             config.connection_config.base_url.clone(),
             item,
         );
@@ -73,7 +70,7 @@ where
 
 /// Задача обработки периодического запроса
 async fn task_periodic_request<TMsg>(
-    output: CmpOutput<TMsg>,
+    in_out: CmpInOut<TMsg>,
     config: config::RequestPeriodic<TMsg>,
     url: Url,
 ) -> crate::Result<(), TMsg>
@@ -91,7 +88,7 @@ where
         )
         .await?;
         for msg in msgs {
-            output.send(msg).await?;
+            in_out.send_output(msg).await?;
         }
         let elapsed = begin.elapsed();
         let sleep_time = if config.period <= elapsed {
@@ -106,15 +103,14 @@ where
 
 /// Задача обработки запросов на основе входящего потока сообщений
 async fn task_input_request<TMessage>(
-    mut input: CmpInput<TMessage>,
-    output: CmpOutput<TMessage>,
+    mut in_out: CmpInOut<TMessage>,
     url: Url,
     config: config::RequestInput<TMessage>,
 ) -> crate::Result<(), TMessage>
 where
     TMessage: MsgDataBound,
 {
-    while let Ok(msg) = input.recv().await {
+    while let Ok(msg) = in_out.recv_input().await {
         let msg = match msg {
             Some(val) => val,
             None => continue,
@@ -128,7 +124,7 @@ where
             process_request_and_response(&url, &http_param, config.on_success, config.on_failure)
                 .await?;
         for msg in msgs {
-            output.send(msg).await?;
+            in_out.send_output(msg).await?;
         }
     }
     Ok(())

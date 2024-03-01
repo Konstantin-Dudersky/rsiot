@@ -46,7 +46,7 @@ where
     }
 
     pub fn add_trace_item(&mut self, id: &Uuid, name: &str) {
-        self.trace.insert(id.clone(), name.to_string())
+        self.trace.insert(*id, name.to_string())
     }
 
     pub fn contains_trace_item(&self, id: &Uuid) -> bool {

@@ -1,9 +1,6 @@
 use async_trait::async_trait;
 
-use rsiot_component_core::{
-    cmp_set_component_name, Cache, CmpInput, CmpOutput, Component, ComponentError,
-    IComponentProcess,
-};
+use rsiot_component_core::{Cache, CmpInOut, Component, ComponentError, IComponentProcess};
 use rsiot_messages_core::MsgDataBound;
 
 use crate::fn_process::fn_process;
@@ -17,12 +14,10 @@ where
     async fn process(
         &self,
         config: crate::Config<TMsg>,
-        mut input: CmpInput<TMsg>,
-        mut output: CmpOutput<TMsg>,
+        input: CmpInOut<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
-        cmp_set_component_name(&mut input, &mut output, "cmp_surrealdb");
-        fn_process(input.clone(), output.clone(), config.clone()).await?;
+        fn_process(input.clone_with_new_id("cmp_surrealdb"), config.clone()).await?;
         Ok(())
     }
 }

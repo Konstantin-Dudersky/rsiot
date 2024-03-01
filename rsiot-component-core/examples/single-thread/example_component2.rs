@@ -4,9 +4,7 @@ use async_trait::async_trait;
 use tokio::time::sleep;
 use tracing::info;
 
-use rsiot_component_core::{
-    Cache, CmpInput, CmpOutput, Component, ComponentError, IComponentProcess,
-};
+use rsiot_component_core::{Cache, CmpInOut, Component, ComponentError, IComponentProcess};
 use rsiot_messages_core::MsgDataBound;
 
 pub struct Config {}
@@ -19,8 +17,7 @@ where
     async fn process(
         &self,
         _config: Config,
-        _input: CmpInput<TMsg>,
-        _output: CmpOutput<TMsg>,
+        _input: CmpInOut<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         loop {

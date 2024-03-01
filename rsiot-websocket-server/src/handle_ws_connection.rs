@@ -6,7 +6,7 @@ use futures::{
     stream::{SplitSink, SplitStream},
     SinkExt, StreamExt,
 };
-use rsiot_component_core::{Cache, CmpInput, CmpOutput};
+use rsiot_component_core::{Cache, CmpInOut};
 use tokio::{net::TcpStream, sync::mpsc, task::JoinSet};
 use tokio_tungstenite::{
     accept_async, tungstenite::Message as TungsteniteMessage, WebSocketStream,
@@ -22,8 +22,7 @@ use crate::{
 
 /// Создание и управление подключением между сервером и клиентом
 pub async fn handle_ws_connection<TMessage>(
-    input: CmpInput<TMessage>,
-    output: CmpOutput<TMessage>,
+    input: CmpInOut<TMessage>,
     config: Config<TMessage>,
     stream_and_addr: (TcpStream, SocketAddr),
     cache: Cache<TMessage>,
@@ -31,7 +30,7 @@ pub async fn handle_ws_connection<TMessage>(
     TMessage: MsgDataBound + 'static,
 {
     let addr = stream_and_addr.1;
-    let result = _handle_ws_connection(input, output, stream_and_addr, config, cache).await;
+    let result = _handle_ws_connection(input, stream_and_addr, config, cache).await;
     match result {
         Ok(_) => (),
         Err(err) => {
@@ -42,8 +41,7 @@ pub async fn handle_ws_connection<TMessage>(
 }
 
 async fn _handle_ws_connection<TMessage>(
-    input: CmpInput<TMessage>,
-    output: CmpOutput<TMessage>,
+    input: CmpInOut<TMessage>,
     stream_and_addr: (TcpStream, SocketAddr),
     config: Config<TMessage>,
     cache: Cache<TMessage>,
@@ -63,11 +61,11 @@ where
     // Подготавливаем кеш для отправки
     set.spawn(send_prepare_cache(prepare_tx.clone(), cache.clone()));
     // Подготавливаем новые сообщения для отправки
-    set.spawn(send_prepare_new_msgs(input, prepare_tx.clone()));
+    set.spawn(send_prepare_new_msgs(input.clone(), prepare_tx.clone()));
     // Отправляем клиенту
     set.spawn(send_to_client(prepare_rx, write, config.fn_input));
     // Получаем данные от клиента
-    set.spawn(recv_from_client(read, output, config.fn_output));
+    set.spawn(recv_from_client(read, input, config.fn_output));
 
     while let Some(res) = set.join_next().await {
         let err = match res {
@@ -106,14 +104,14 @@ where
 
 /// При получении новых сообщений, отправляем клиенту
 async fn send_prepare_new_msgs<TMessage>(
-    mut input: CmpInput<TMessage>,
+    mut input: CmpInOut<TMessage>,
     output: mpsc::Sender<Message<TMessage>>,
 ) -> crate::Result<()>
 where
     TMessage: MsgDataBound,
 {
     debug!("Sending messages to client started");
-    while let Ok(msg) = input.recv().await {
+    while let Ok(msg) = input.recv_input().await {
         let msg = match msg {
             Some(val) => val,
             None => continue,
@@ -148,7 +146,7 @@ async fn send_to_client<TMessage>(
 /// Получение данных от клиента
 async fn recv_from_client<TMsg>(
     mut ws_stream_input: SplitStream<WebSocketStream<TcpStream>>,
-    output: CmpOutput<TMsg>,
+    output: CmpInOut<TMsg>,
     fn_output: FnOutput<TMsg>,
 ) -> crate::Result<()>
 where
@@ -169,7 +167,7 @@ where
                 "New message from websocket client, send to internal bus: {:?}",
                 msg
             );
-            output.send(msg).await.map_err(Error::CmpOutput)?;
+            output.send_output(msg).await.map_err(Error::CmpOutput)?;
         }
     }
     debug!("Input stream from client closed");

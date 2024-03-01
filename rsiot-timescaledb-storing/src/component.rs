@@ -1,9 +1,6 @@
 use async_trait::async_trait;
 
-use rsiot_component_core::{
-    cmp_set_component_name, Cache, CmpInput, CmpOutput, Component, ComponentError,
-    IComponentProcess,
-};
+use rsiot_component_core::{Cache, CmpInOut, Component, ComponentError, IComponentProcess};
 use rsiot_messages_core::MsgDataBound;
 
 use crate::{config::ConfigAlias, fn_process::fn_process};
@@ -17,13 +14,11 @@ where
     async fn process(
         &self,
         config: ConfigAlias,
-        mut input: CmpInput<TMsg>,
-        mut output: CmpOutput<TMsg>,
+        input: CmpInOut<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         let config = config.0;
-        cmp_set_component_name(&mut input, &mut output, "cmp_timescaledb_storing");
-        fn_process(input, config).await
+        fn_process(input.clone_with_new_id("cmp_timescaledb_storing"), config).await
     }
 }
 

@@ -1,7 +1,7 @@
 //! Запуск;
 //!
 //! ```rust
-//! cargo run -p rsiot-component-core --example multi-thread --features single-thread
+//! cargo run -p rsiot-component-core --example single-thread --features single-thread
 //! ```
 
 mod example_component1;

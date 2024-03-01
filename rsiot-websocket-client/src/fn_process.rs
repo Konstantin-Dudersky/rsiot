@@ -12,7 +12,7 @@ use tokio_tungstenite::{
 };
 use tracing::{error, info, warn};
 
-use rsiot_component_core::{CmpInput, CmpOutput, ComponentError};
+use rsiot_component_core::{CmpInOut, ComponentError};
 use rsiot_messages_core::{Message, MsgDataBound};
 
 use crate::{
@@ -21,8 +21,7 @@ use crate::{
 };
 
 pub async fn fn_process<TMessage>(
-    input: CmpInput<TMessage>,
-    output: CmpOutput<TMessage>,
+    input: CmpInOut<TMessage>,
     config: Config<TMessage>,
 ) -> Result<(), ComponentError>
 where
@@ -31,7 +30,7 @@ where
     info!("cmp_websocket_client starting");
 
     loop {
-        let res = task_connect(input.clone(), output.clone(), config.clone()).await;
+        let res = task_connect(input.clone(), config.clone()).await;
         match res {
             Ok(_) => (),
             Err(err) => error!("{:?}", err),
@@ -43,8 +42,7 @@ where
 
 /// Подключаемся к серверу и запускаем потоки получения и отправки
 async fn task_connect<TMessage>(
-    input: CmpInput<TMessage>,
-    output: CmpOutput<TMessage>,
+    in_out: CmpInOut<TMessage>,
     config: Config<TMessage>,
 ) -> Result<(), Error<TMessage>>
 where
@@ -54,8 +52,8 @@ where
     let (write, read) = ws_stream.split();
 
     let mut task_set: JoinSet<Result<(), Error<TMessage>>> = JoinSet::new();
-    task_set.spawn(task_send(input, write, config.fn_input));
-    task_set.spawn(task_recv(output, read, config.fn_output));
+    task_set.spawn(task_send(in_out.clone(), write, config.fn_input));
+    task_set.spawn(task_recv(in_out, read, config.fn_output));
 
     while let Some(task_result) = task_set.join_next().await {
         task_result??
@@ -65,14 +63,14 @@ where
 
 /// Задача отправки данных на сервер Websocket
 async fn task_send<TMessage>(
-    mut input: CmpInput<TMessage>,
+    mut input: CmpInOut<TMessage>,
     mut write: SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, TungsteniteMessage>,
     fn_send: fn(&Message<TMessage>) -> anyhow::Result<Option<String>>,
 ) -> Result<(), Error<TMessage>>
 where
     TMessage: MsgDataBound,
 {
-    while let Ok(msg) = input.recv().await {
+    while let Ok(msg) = input.recv_input().await {
         let msg = match msg {
             Some(val) => val,
             None => continue,
@@ -88,7 +86,7 @@ where
 
 /// Задача приема данных с сервера Websocket
 async fn task_recv<TMessage>(
-    output: CmpOutput<TMessage>,
+    output: CmpInOut<TMessage>,
     mut read: SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>,
     fn_recv: FnOutput<TMessage>,
 ) -> Result<(), Error<TMessage>>
@@ -103,7 +101,7 @@ where
             None => continue,
         };
         for msg in msgs {
-            output.send(msg).await.map_err(Error::CmpOutput)?;
+            output.send_output(msg).await.map_err(Error::CmpOutput)?;
         }
     }
     Ok(())

@@ -4,10 +4,7 @@ use async_trait::async_trait;
 use tokio::time::{sleep, Duration, Instant};
 use tracing::debug;
 
-use rsiot_component_core::{
-    cmp_set_component_name, Cache, CmpInput, CmpOutput, Component, ComponentError,
-    IComponentProcess,
-};
+use rsiot_component_core::{Cache, CmpInOut, Component, ComponentError, IComponentProcess};
 use rsiot_messages_core::{Message, MsgDataBound};
 
 #[derive(Clone, Debug)]
@@ -33,19 +30,21 @@ where
     async fn process(
         &self,
         config: Config<TMsg, TFnPeriodic>,
-        mut input: CmpInput<TMsg>,
-        mut output: CmpOutput<TMsg>,
+        in_out: CmpInOut<TMsg>,
         cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
-        cmp_set_component_name(&mut input, &mut output, "cmp_inject_periodic");
-        process(config, input, output, cache).await
+        fn_process(
+            config,
+            in_out.clone_with_new_id("cmp_inject_periodic"),
+            cache,
+        )
+        .await
     }
 }
 
-async fn process<TMsg, TFnPeriodic>(
+async fn fn_process<TMsg, TFnPeriodic>(
     mut config: Config<TMsg, TFnPeriodic>,
-    _input: CmpInput<TMsg>,
-    output: CmpOutput<TMsg>,
+    in_out: CmpInOut<TMsg>,
     _cache: Cache<TMsg>,
 ) -> Result<(), ComponentError>
 where
@@ -57,8 +56,8 @@ where
         let begin = Instant::now();
         let msgs = (config.fn_periodic)();
         for msg in msgs {
-            output
-                .send(msg)
+            in_out
+                .send_output(msg)
                 .await
                 .map_err(|err| ComponentError::Execution(err.to_string()))?;
         }

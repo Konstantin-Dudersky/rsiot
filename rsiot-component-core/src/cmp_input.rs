@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use tokio::sync::broadcast::{self};
+use tokio::sync::broadcast;
 use uuid::Uuid;
 
 use rsiot_messages_core::*;

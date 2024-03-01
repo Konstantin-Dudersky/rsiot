@@ -1,9 +1,6 @@
 use async_trait::async_trait;
 
-use rsiot_component_core::{
-    cmp_set_component_name, Cache, CmpInput, CmpOutput, Component, ComponentError,
-    IComponentProcess,
-};
+use rsiot_component_core::{Cache, CmpInOut, Component, ComponentError, IComponentProcess};
 use rsiot_messages_core::MsgDataBound;
 
 use crate::{config::ConfigNewType, fn_process::fn_process};
@@ -18,12 +15,15 @@ where
     async fn process(
         &self,
         config: ConfigNewType<TMessage>,
-        mut input: CmpInput<TMessage>,
-        mut output: CmpOutput<TMessage>,
+        in_out: CmpInOut<TMessage>,
         cache: Cache<TMessage>,
     ) -> Result<(), ComponentError> {
-        cmp_set_component_name(&mut input, &mut output, "cmp_modbus_client");
-        fn_process(input, output, config.0, cache).await
+        fn_process(
+            in_out.clone_with_new_id("cmp_modbus_client"),
+            config.0,
+            cache,
+        )
+        .await
     }
 }
 

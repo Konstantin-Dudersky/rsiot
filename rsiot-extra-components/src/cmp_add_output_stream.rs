@@ -1,19 +1,15 @@
 //! Компонент для отправки сообщений в побочный потока
 
 use async_trait::async_trait;
+use tokio::sync::mpsc;
 
-use rsiot_component_core::{
-    cmp_set_component_name, Cache, CmpInput, CmpOutput, Component, ComponentError,
-    IComponentProcess,
-};
-use rsiot_messages_core::MsgDataBound;
-
-use super::cmpbase_mpsc_to_many_mpsc;
+use rsiot_component_core::{Cache, CmpInOut, Component, ComponentError, IComponentProcess};
+use rsiot_messages_core::*;
 
 /// Настройки
 #[derive(Debug)]
 pub struct Cfg<TMessage> {
-    pub channel: CmpOutput<TMessage>,
+    pub channel: mpsc::Sender<Message<TMessage>>,
 }
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
@@ -25,12 +21,17 @@ where
     async fn process(
         &self,
         config: Cfg<TMsg>,
-        mut input: CmpInput<TMsg>,
-        mut output: CmpOutput<TMsg>,
+        in_out: CmpInOut<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
-        cmp_set_component_name(&mut input, &mut output, "cmp_add_output_stream");
-        cmpbase_mpsc_to_many_mpsc::new(input, vec![output, config.channel]).await;
+        let mut in_out = in_out.clone_with_new_id("cmp_add_output_stream");
+        while let Ok(msg) = in_out.recv_input().await {
+            let msg = match msg {
+                Some(val) => val,
+                None => continue,
+            };
+            config.channel.send(msg.clone()).await.unwrap();
+        }
         Ok(())
     }
 }

@@ -13,7 +13,7 @@ fn main() {
         fn_input: |msg| {
             let value = &msg.data;
             match value {
-                MsgData::Custom(Custom::ValueInstantF64(value)) => Some(value.clone()),
+                MsgData::Custom(Custom::ValueInstantF64(value)) => Some(*value),
                 _ => None,
             }
         },

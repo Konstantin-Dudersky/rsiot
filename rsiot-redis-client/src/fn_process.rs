@@ -6,7 +6,7 @@ use tokio::{
 };
 use tracing::{error, info, trace, warn};
 
-use rsiot_component_core::{Cache, CmpInput, CmpOutput, ComponentError};
+use rsiot_component_core::{Cache, CmpInOut, ComponentError};
 use rsiot_messages_core::{IMessageChannel, MsgDataBound};
 
 use crate::{config::Config, error::Error};
@@ -14,8 +14,7 @@ use crate::{config::Config, error::Error};
 type Result = std::result::Result<(), Error>;
 
 pub async fn fn_process<TMessage, TMessageChannel>(
-    input: CmpInput<TMessage>,
-    output: CmpOutput<TMessage>,
+    in_out: CmpInOut<TMessage>,
     config: Config<TMessage, TMessageChannel>,
     _cache: Cache<TMessage>,
 ) -> std::result::Result<(), ComponentError>
@@ -27,7 +26,7 @@ where
 
     loop {
         info!("Starting");
-        let result = task_main(input.clone(), output.clone(), config.clone()).await;
+        let result = task_main(in_out.clone(), config.clone()).await;
         match result {
             Ok(_) => (),
             Err(err) => error!("{}", err),
@@ -38,8 +37,7 @@ where
 }
 
 async fn task_main<TMessage, TMessageChannel>(
-    input: CmpInput<TMessage>,
-    output: CmpOutput<TMessage>,
+    in_out: CmpInOut<TMessage>,
     config: Config<TMessage, TMessageChannel>,
 ) -> Result
 where
@@ -47,9 +45,9 @@ where
     TMessageChannel: IMessageChannel + 'static,
 {
     let mut set = JoinSet::new();
-    set.spawn(task_subscription(output.clone(), config.clone()));
-    set.spawn(task_read_hash(output.clone(), config.clone()));
-    set.spawn(task_publication(input, config));
+    set.spawn(task_subscription(in_out.clone(), config.clone()));
+    set.spawn(task_read_hash(in_out.clone(), config.clone()));
+    set.spawn(task_publication(in_out, config));
     while let Some(res) = set.join_next().await {
         res??;
     }
@@ -58,7 +56,7 @@ where
 
 /// Задача публикации в канале Pub/Sub, и сохранение в кеше.
 async fn task_publication<TMessage, TMessageChannel>(
-    mut input: CmpInput<TMessage>,
+    mut input: CmpInOut<TMessage>,
     config: Config<TMessage, TMessageChannel>,
 ) -> Result
 where
@@ -67,7 +65,7 @@ where
 {
     let client = redis::Client::open(config.url.to_string())?;
     let mut connection = client.get_async_connection().await?;
-    while let Ok(msg) = input.recv().await {
+    while let Ok(msg) = input.recv_input().await {
         let msg = match msg {
             Some(val) => val,
             None => continue,
@@ -90,7 +88,7 @@ where
 
 /// Подписка на канал Pub/Sub
 async fn task_subscription<TMessage, TMessageChannel>(
-    output: CmpOutput<TMessage>,
+    output: CmpInOut<TMessage>,
     config: Config<TMessage, TMessageChannel>,
 ) -> Result
 where
@@ -114,7 +112,7 @@ where
             None => continue,
         };
         for msg in msgs {
-            output.send(msg).await.map_err(Error::CmpOutput)?
+            output.send_output(msg).await.map_err(Error::CmpOutput)?
         }
     }
     Err(Error::EndRedisSubscription)
@@ -122,7 +120,7 @@ where
 
 /// Чтение данных из хеша
 async fn task_read_hash<TMessage, TMessageChannel>(
-    output: CmpOutput<TMessage>,
+    in_out: CmpInOut<TMessage>,
     config: Config<TMessage, TMessageChannel>,
 ) -> Result
 where
@@ -151,7 +149,7 @@ where
             None => continue,
         };
         for msg in msgs {
-            output.send(msg).await.map_err(Error::CmpOutput)?
+            in_out.send_output(msg).await.map_err(Error::CmpOutput)?
         }
     }
     info!("Finish reading redis hash");

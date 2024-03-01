@@ -8,7 +8,7 @@ use tokio::{
 use tokio_modbus::{client::Context, prelude::*};
 use tracing::{debug, error, info, trace, warn};
 
-use rsiot_component_core::{Cache, CmpInput, CmpOutput, ComponentError};
+use rsiot_component_core::{Cache, CmpInOut, ComponentError};
 use rsiot_messages_core::MsgDataBound;
 
 use crate::{
@@ -17,8 +17,7 @@ use crate::{
 };
 
 pub async fn fn_process<TMessage>(
-    input: CmpInput<TMessage>,
-    output: CmpOutput<TMessage>,
+    in_out: CmpInOut<TMessage>,
     config: Config<TMessage>,
     _cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>
@@ -34,7 +33,7 @@ where
 
     loop {
         info!("Starting modbus client, configuration: {:?}", config);
-        let res = task_main::<TMessage>(input.clone(), output.clone(), config.clone()).await;
+        let res = task_main::<TMessage>(in_out.clone(), config.clone()).await;
         match res {
             Ok(_) => (),
             Err(err) => {
@@ -47,8 +46,7 @@ where
 }
 
 async fn task_main<TMessage>(
-    input: CmpInput<TMessage>,
-    output: CmpOutput<TMessage>,
+    in_out: CmpInOut<TMessage>,
     config: Config<TMessage>,
 ) -> crate::Result<()>
 where
@@ -74,19 +72,14 @@ where
     // Запускаем задачи периодических запросов
     for item in config.periodic_config {
         set.spawn(task_periodic_request::<TMessage>(
-            output.clone(),
+            in_out.clone(),
             ctx.clone(),
             item,
         ));
     }
     // Запускаем задачи запросов на основе входного потока сообщений
     for item in config.input_config {
-        set.spawn(task_input_request(
-            input.clone(),
-            output.clone(),
-            ctx.clone(),
-            item,
-        ));
+        set.spawn(task_input_request(in_out.clone(), ctx.clone(), item));
     }
     while let Some(res) = set.join_next().await {
         res??
@@ -96,7 +89,7 @@ where
 
 /// Задача обработки периодического запроса
 async fn task_periodic_request<TMessage>(
-    output: CmpOutput<TMessage>,
+    in_out: CmpInOut<TMessage>,
     ctx: Arc<Mutex<Context>>,
     periodic_config: config::PeriodicConfig<TMessage>,
 ) -> crate::Result<()>
@@ -107,7 +100,7 @@ where
         let begin = Instant::now();
         let response = modbus_request(ctx.clone(), &periodic_config.request).await;
         modbus_response(
-            output.clone(),
+            in_out.clone(),
             &periodic_config.request,
             &response,
             periodic_config.fn_on_success,
@@ -126,15 +119,14 @@ where
 
 /// Задача обработки запроса на основе входного потока сообщений
 async fn task_input_request<TMessage>(
-    mut input: CmpInput<TMessage>,
-    output: CmpOutput<TMessage>,
+    mut in_out: CmpInOut<TMessage>,
     ctx: Arc<Mutex<Context>>,
     input_config: config::InputConfig<TMessage>,
 ) -> crate::Result<()>
 where
     TMessage: MsgDataBound,
 {
-    while let Ok(msg) = input.recv().await {
+    while let Ok(msg) = in_out.recv_input().await {
         let msg = match msg {
             Some(val) => val,
             None => continue,
@@ -146,7 +138,7 @@ where
         };
         let response = modbus_request(ctx.clone(), &request).await;
         modbus_response(
-            output.clone(),
+            in_out.clone(),
             &request,
             &response,
             input_config.fn_on_success,
@@ -178,7 +170,7 @@ async fn modbus_request(
 
 /// Обратываем ответ modbus
 async fn modbus_response<TMessage>(
-    output: CmpOutput<TMessage>,
+    output: CmpInOut<TMessage>,
     request: &config::Request,
     response: &crate::Result<config::Response>,
     fn_on_success: config::FnOnSuccess<TMessage>,
@@ -200,7 +192,7 @@ where
         }
     };
     for msg in msgs {
-        output.send(msg).await.map_err(Error::CmpOutput)?;
+        output.send_output(msg).await.map_err(Error::CmpOutput)?;
     }
     Ok(())
 }

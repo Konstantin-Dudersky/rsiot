@@ -1,21 +1,19 @@
 use async_trait::async_trait;
 
-use crate::{Cache, CmpInput, CmpOutput, ComponentError};
+use crate::{Cache, CmpInOut, ComponentError};
 
-pub struct Component<TConfig, TMessage> {
-    input: Option<CmpInput<TMessage>>,
-    output: Option<CmpOutput<TMessage>>,
-    cache: Option<Cache<TMessage>>,
+pub struct Component<TConfig, TMsg> {
+    cache: Option<Cache<TMsg>>,
+    in_out: Option<CmpInOut<TMsg>>,
     config: Option<TConfig>,
 }
 
-impl<TConfig, TMessage> Component<TConfig, TMessage> {
+impl<TConfig, TMsg> Component<TConfig, TMsg> {
     pub fn new(config: impl Into<TConfig>) -> Self {
         Self {
-            input: None,
-            output: None,
             cache: None,
             config: Some(config.into()),
+            in_out: None,
         }
     }
 }
@@ -27,28 +25,12 @@ where
     Self: IComponentProcess<TConfig, TMsg>,
     TConfig: Send,
 {
-    fn set_interface(
-        &mut self,
-        input: CmpInput<TMsg>,
-        output: CmpOutput<TMsg>,
-        cache: Cache<TMsg>,
-    ) {
-        self.input = Some(input);
-        self.output = Some(output);
+    fn set_interface(&mut self, in_out: CmpInOut<TMsg>, cache: Cache<TMsg>) {
         self.cache = Some(cache);
+        self.in_out = Some(in_out);
     }
 
     async fn spawn(&mut self) -> Result<(), ComponentError> {
-        let input = self
-            .input
-            .take()
-            .ok_or(ComponentError::Initialization("input not set".into()))?;
-
-        let output = self
-            .output
-            .take()
-            .ok_or(ComponentError::Initialization("output not set".into()))?;
-
         let config = self
             .config
             .take()
@@ -59,7 +41,12 @@ where
             .take()
             .ok_or(ComponentError::Initialization("cache not set".into()))?;
 
-        self.process(config, input, output, cache).await
+        let in_out = self
+            .in_out
+            .take()
+            .ok_or(ComponentError::Initialization("in_out not set".into()))?;
+
+        self.process(config, in_out, cache).await
     }
 }
 
@@ -68,20 +55,14 @@ pub trait IComponentProcess<TConfig, TMsg> {
     async fn process(
         &self,
         config: TConfig,
-        input: CmpInput<TMsg>,
-        output: CmpOutput<TMsg>,
+        in_out: CmpInOut<TMsg>,
         cache: Cache<TMsg>,
     ) -> Result<(), ComponentError>;
 }
 
 #[async_trait]
-pub trait IComponent<TMessage> {
-    fn set_interface(
-        &mut self,
-        input: CmpInput<TMessage>,
-        output: CmpOutput<TMessage>,
-        cache: Cache<TMessage>,
-    );
+pub trait IComponent<TMsg> {
+    fn set_interface(&mut self, in_out: CmpInOut<TMsg>, cache: Cache<TMsg>);
 
     async fn spawn(&mut self) -> Result<(), ComponentError>;
 }

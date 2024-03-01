@@ -11,7 +11,7 @@ rust-version.workspace = true
 version = "0.0.64"
 
 
-[dependencies]
+[target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dependencies]
 async-trait = { workspace = true }
 jwt = { workspace = true }
 serde = { workspace = true }
@@ -27,10 +27,10 @@ rsiot-component-core = { workspace = true }
 rsiot-messages-core = { workspace = true }
 
 
-[dev-dependencies]
+[target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dev-dependencies]
 anyhow = { workspace = true }
-tokio = { workspace = true, features = ["rt-multi-thread"] }
 tracing-subscriber = { workspace = true }
+tokio = { workspace = true, features = ["rt-multi-thread"] }
 
 rsiot-extra-components = { workspace = true }
 

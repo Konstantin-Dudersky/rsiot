@@ -21,7 +21,7 @@ where
     };
     shared_state
         .output
-        .send(msg)
+        .send_output(msg)
         .await
         .map_err(Error::CmpOutput)?;
     Ok(())

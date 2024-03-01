@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use rsiot_component_core::{Cache, CmpInput, CmpOutput};
+use rsiot_component_core::{Cache, CmpInOut};
 use rsiot_messages_core::{system_messages::*, *};
 use tokio::time::sleep;
 use tracing::{info, warn};
@@ -12,31 +12,26 @@ use sha2::Sha256;
 use crate::{Config, ConfigStore, ConfigStoreItem, Error};
 
 pub async fn fn_process<TMsg>(
-    input: CmpInput<TMsg>,
-    output: CmpOutput<TMsg>,
     config: Config,
     _cache: Cache<TMsg>,
+    in_out: CmpInOut<TMsg>,
 ) -> crate::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
     loop {
-        let result = task_main(input.clone(), output.clone(), config.clone()).await;
+        let result = task_main(config.clone(), in_out.clone()).await;
         warn!("Component error: {:?}", result);
         info!("Restart");
         sleep(Duration::from_secs(2)).await;
     }
 }
 
-async fn task_main<TMsg>(
-    mut input: CmpInput<TMsg>,
-    output: CmpOutput<TMsg>,
-    config: Config,
-) -> crate::Result<()>
+async fn task_main<TMsg>(config: Config, mut in_out: CmpInOut<TMsg>) -> crate::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
-    while let Ok(msg) = input.recv().await {
+    while let Ok(msg) = in_out.recv_input().await {
         let Some(msg) = msg else { continue };
         let msg_response = match msg.data {
             MsgData::System(data) => match data {
@@ -47,7 +42,10 @@ where
             },
             _ => continue,
         };
-        output.send(msg_response).await.map_err(Error::CmpOutput)?;
+        in_out
+            .send_output(msg_response)
+            .await
+            .map_err(Error::CmpOutput)?;
     }
     Ok(())
 }
@@ -75,7 +73,7 @@ where
 
     // Пароль не подходит
     if valid_password.password != login_request.password {
-        let error = format!("Wrong password");
+        let error = "Wrong password".to_string();
         let value = AuthResponseError { error };
         let msg = message_new!("System-AuthResponseError::value");
         return Ok(msg);

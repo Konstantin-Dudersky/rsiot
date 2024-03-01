@@ -8,7 +8,7 @@ use tokio::{
 use rsiot_messages_core::*;
 use tracing::{debug, error, info, trace, warn};
 
-use crate::{error::ComponentError, Cache, CmpInput, CmpOutput, IComponent};
+use crate::{error::ComponentError, Cache, CmpInOut, IComponent};
 
 /// Запуск коллекции компонентов в работу
 ///
@@ -41,9 +41,8 @@ use crate::{error::ComponentError, Cache, CmpInput, CmpOutput, IComponent};
 /// ```
 pub struct ComponentExecutor<TMsg> {
     task_set: JoinSet<Result<(), ComponentError>>,
-    component_input: CmpInput<TMsg>,
-    component_output: CmpOutput<TMsg>,
     cache: Cache<TMsg>,
+    cmp_in_out: CmpInOut<TMsg>,
 }
 
 impl<TMsg> ComponentExecutor<TMsg>
@@ -71,26 +70,24 @@ where
             task_set.spawn(task_internal_handle);
         }
 
-        let executor_id = MsgTrace::generate_uuid();
-        let component_input = CmpInput::new(component_input, executor_name, executor_id);
-        let component_output = CmpOutput::new(component_output, executor_name, executor_id);
+        let cmp_in_out = CmpInOut::new(
+            component_input,
+            component_output,
+            executor_name,
+            AuthPermissions::Admin,
+        );
 
         Self {
             task_set,
-            component_input,
-            component_output,
             cache,
+            cmp_in_out,
         }
     }
 
     /// Добавить компонент
     #[cfg(not(feature = "single-thread"))]
     pub fn add_cmp(mut self, mut component: impl IComponent<TMsg> + Send + 'static) -> Self {
-        component.set_interface(
-            self.component_input.clone(),
-            self.component_output.clone(),
-            self.cache.clone(),
-        );
+        component.set_interface(self.cmp_in_out.clone(), self.cache.clone());
 
         self.task_set.spawn(async move { component.spawn().await });
 
@@ -99,11 +96,7 @@ where
     /// Добавить компонент (?Send)
     #[cfg(feature = "single-thread")]
     pub fn add_cmp(mut self, mut component: impl IComponent<TMsg> + 'static) -> Self {
-        component.set_interface(
-            self.component_input.clone(),
-            self.component_output.clone(),
-            self.cache.clone(),
-        );
+        component.set_interface(self.cmp_in_out.clone(), self.cache.clone());
 
         self.task_set
             .spawn_local(async move { component.spawn().await });
