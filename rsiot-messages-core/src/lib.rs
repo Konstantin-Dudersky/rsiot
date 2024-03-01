@@ -18,7 +18,7 @@ pub mod eav;
 pub mod eav_helpers;
 pub mod example_message;
 
-pub use auth_roles::{AuthRoles, AuthTokenPayload};
+pub use auth_roles::{AuthPermissions, AuthTokenPayload};
 pub use error::Error;
 pub use example_message_channel::ExampleMessageChannel;
 pub use message::Message;

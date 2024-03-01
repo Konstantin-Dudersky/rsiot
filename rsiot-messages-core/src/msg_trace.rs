@@ -1,5 +1,7 @@
 //! Структуры для представления пути сообщения
 
+use std::collections::HashSet;
+
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -28,6 +30,11 @@ impl MsgTrace {
 
     pub fn contains_key(&self, id: &Uuid) -> bool {
         self.0.iter().any(|tv| &tv.id == id)
+    }
+
+    /// Возвращает все идентификаторы пути сообщения
+    pub fn get_ids(self) -> HashSet<Uuid> {
+        self.0.iter().map(|i| i.id).collect()
     }
 }
 

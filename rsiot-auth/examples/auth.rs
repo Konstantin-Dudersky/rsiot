@@ -1,6 +1,6 @@
 //! cargo run --package rsiot-auth --example auth
 
-use std::{collections::HashMap, time::Duration};
+use std::time::Duration;
 
 use rsiot_auth as cmp_auth;
 use rsiot_component_core::ComponentExecutor;
@@ -31,10 +31,11 @@ async fn main() -> anyhow::Result<()> {
 
     let auth_config = cmp_auth::Config {
         secret_key: "secret_key".into(),
-        store: cmp_auth::ConfigStoreKind::Hashmap(HashMap::from([(
-            "admin".into(),
-            "admin".into(),
-        )])),
+        store: cmp_auth::ConfigStore::Local(vec![cmp_auth::ConfigStoreItem {
+            login: "admin".into(),
+            password: "admin".into(),
+            role: AuthPermissions::Admin,
+        }]),
     };
 
     ComponentExecutor::<Custom>::new(100, "example_auth")

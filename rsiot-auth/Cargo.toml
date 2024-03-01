@@ -29,7 +29,7 @@ rsiot-messages-core = { workspace = true }
 
 [dev-dependencies]
 anyhow = { workspace = true }
-tokio = { features = ["rt-multi-thread"] }
+tokio = { workspace = true, features = ["rt-multi-thread"] }
 tracing-subscriber = { workspace = true }
 
 rsiot-extra-components = { workspace = true }

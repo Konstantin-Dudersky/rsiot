@@ -60,7 +60,6 @@ where
     fn clone(&self) -> Self {
         Self {
             channel: self.channel.resubscribe(),
-            // msg_source: self.msg_source.clone(),
             id: self.id,
             name: self.name.clone(),
         }
