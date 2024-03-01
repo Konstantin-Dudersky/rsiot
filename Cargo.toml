@@ -38,6 +38,9 @@ rust-version = "1.75.0"
 
 [workspace.dependencies]
 jwt = { version = "0.16.0" }
+hmac = { version = "0.12.1" }
+sha2 = { version = "0.10.8" }
+
 openssl = { version = "0.10", features = ["vendored"] }
 
 # async

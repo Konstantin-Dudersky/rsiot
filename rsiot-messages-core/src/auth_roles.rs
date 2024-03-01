@@ -1,13 +1,15 @@
 use serde::{Deserialize, Serialize};
 
 /// Роли для доступа в системе
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub enum AuthPermissions {
     /// Без ограничений
     NoAccess,
     Monitoring,
     Operatoration,
     Admin,
+    #[default]
+    FullAccess,
 }
 
 #[derive(Deserialize, Serialize)]

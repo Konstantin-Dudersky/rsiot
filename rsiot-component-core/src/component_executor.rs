@@ -74,7 +74,7 @@ where
             component_input,
             component_output,
             executor_name,
-            AuthPermissions::Admin,
+            AuthPermissions::default(),
         );
 
         Self {

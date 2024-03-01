@@ -13,18 +13,18 @@ version = "0.0.65"
 
 [target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dependencies]
 async-trait = { workspace = true }
+hmac = { workspace = true }
 jwt = { workspace = true }
 serde = { workspace = true }
+sha2 = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }
 uuid = { workspace = true }
 
-hmac = { version = "*" }
-sha2 = { version = "*" }
-
 rsiot-component-core = { workspace = true }
 rsiot-messages-core = { workspace = true }
+rsiot-extra-components = { workspace = true }
 
 
 [target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dev-dependencies]
