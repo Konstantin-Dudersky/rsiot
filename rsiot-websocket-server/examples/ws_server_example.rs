@@ -12,7 +12,7 @@ async fn main() -> anyhow::Result<()> {
     use tokio::time::Duration;
     use tracing::Level;
 
-    use rsiot_component_core::ComponentExecutor;
+    use rsiot_component_core::{ComponentExecutor, ComponentExecutorConfig};
     use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
     use rsiot_messages_core::{example_message::*, *};
     use rsiot_websocket_server::cmp_websocket_server;
@@ -48,7 +48,13 @@ async fn main() -> anyhow::Result<()> {
         },
     };
 
-    ComponentExecutor::new(100, "rsiot-websocket-server")
+    let executor_config = ComponentExecutorConfig {
+        buffer_size: 100,
+        executor_name: "rsiot-websocket-server".into(),
+        fn_auth: |_| None,
+    };
+
+    ComponentExecutor::new(executor_config)
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .add_cmp(cmp_websocket_server::Cmp::new(ws_server_config))
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))

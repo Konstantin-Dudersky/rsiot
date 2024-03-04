@@ -22,7 +22,7 @@ async fn main() -> anyhow::Result<()> {
     use tracing::Level;
     use tracing_subscriber::fmt;
 
-    use rsiot_component_core::ComponentExecutor;
+    use rsiot_component_core::{ComponentExecutor, ComponentExecutorConfig};
     use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
     use rsiot_messages_core::{Message, MsgDataBound};
     use rsiot_modbus_client::cmp_modbus_client::{self, *};
@@ -68,8 +68,14 @@ async fn main() -> anyhow::Result<()> {
         }),
     };
 
+    let executor_config = ComponentExecutorConfig {
+        buffer_size: 100,
+        executor_name: "modbus_tcp_client".into(),
+        fn_auth: |_| None,
+    };
+
     let mut counter = 0.0;
-    ComponentExecutor::new(100, "modbus_tcp_client")
+    ComponentExecutor::new(executor_config)
         // Периодическое генерирование сообщения для записи счетчика на сервер
         .add_cmp(cmp_inject_periodic::Cmp::new(cmp_inject_periodic::Config {
             period: Duration::from_secs(2),

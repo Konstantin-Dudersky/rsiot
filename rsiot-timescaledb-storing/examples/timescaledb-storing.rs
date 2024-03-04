@@ -10,7 +10,7 @@ async fn main() -> anyhow::Result<()> {
     use tokio::time::Duration;
     use url::Url;
 
-    use rsiot_component_core::ComponentExecutor;
+    use rsiot_component_core::{ComponentExecutor, ComponentExecutorConfig};
     use rsiot_extra_components::cmp_inject_periodic;
     use rsiot_messages_core::{example_message::*, *};
     use rsiot_timescaledb_storing::cmp_timescaledb_storing;
@@ -32,7 +32,13 @@ async fn main() -> anyhow::Result<()> {
         connection_string: url,
     };
 
-    ComponentExecutor::new(100, "timescaledb-storing")
+    let executor_config = ComponentExecutorConfig {
+        buffer_size: 100,
+        executor_name: "timescaledb-storing".into(),
+        fn_auth: |_| None,
+    };
+
+    ComponentExecutor::new(executor_config)
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
         .add_cmp(cmp_timescaledb_storing::Cmp::new(db_config))
         .wait_result()

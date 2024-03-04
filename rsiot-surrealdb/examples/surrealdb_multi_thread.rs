@@ -10,7 +10,7 @@ async fn main() -> anyhow::Result<()> {
     use std::time::Duration;
 
     use cmp_surrealdb::InputConfig;
-    use rsiot_component_core::ComponentExecutor;
+    use rsiot_component_core::{ComponentExecutor, ComponentExecutorConfig};
     use rsiot_extra_components::cmp_inject_periodic;
     use rsiot_messages_core::{Deserialize, Message, MsgDataBound, Serialize};
     use rsiot_surrealdb as cmp_surrealdb;
@@ -62,7 +62,13 @@ async fn main() -> anyhow::Result<()> {
         },
     };
 
-    ComponentExecutor::<Custom>::new(100, "surrealdb_multi_thread")
+    let executor_config = ComponentExecutorConfig {
+        buffer_size: 100,
+        executor_name: "surrealdb_multi_thread".into(),
+        fn_auth: |_| None,
+    };
+
+    ComponentExecutor::<Custom>::new(executor_config)
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
         .add_cmp(cmp_surrealdb::Cmp::new(surrealdb_config))
         .wait_result()

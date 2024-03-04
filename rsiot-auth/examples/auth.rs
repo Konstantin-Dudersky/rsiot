@@ -39,7 +39,13 @@ async fn main() -> anyhow::Result<()> {
         }]),
     };
 
-    ComponentExecutor::<Custom>::new(100, "example_auth")
+    let executor_config = rsiot_component_core::ComponentExecutorConfig {
+        buffer_size: 100,
+        executor_name: "example_auth".into(),
+        fn_auth: |_| None,
+    };
+
+    ComponentExecutor::<Custom>::new(executor_config)
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .add_cmp(cmp_auth::Cmp::new(auth_config))
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_periodic_config))

@@ -12,7 +12,7 @@ async fn main() -> anyhow::Result<()> {
     use tracing::Level;
     use url::Url;
 
-    use rsiot_component_core::ComponentExecutor;
+    use rsiot_component_core::{ComponentExecutor, ComponentExecutorConfig};
     use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
     use rsiot_messages_core::{Message, MsgDataBound};
     use rsiot_websocket_client::cmp_websocket_client;
@@ -87,7 +87,13 @@ async fn main() -> anyhow::Result<()> {
         fn_output,
     };
 
-    ComponentExecutor::<Data>::new(100, "rsiot-websocket-client")
+    let executor_config = ComponentExecutorConfig {
+        buffer_size: 100,
+        executor_name: "rsiot-websocket-client".into(),
+        fn_auth: |_| None,
+    };
+
+    ComponentExecutor::<Data>::new(executor_config)
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
         .add_cmp(cmp_websocket_client::Cmp::new(ws_client))

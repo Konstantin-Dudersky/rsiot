@@ -18,7 +18,9 @@ use futures::future::LocalBoxFuture;
 use tokio::{main, task::LocalSet, time::sleep};
 use tracing::{info, level_filters::LevelFilter};
 
-use rsiot_component_core::{Cache, CmpInOut, ComponentExecutor, ComponentResult};
+use rsiot_component_core::{
+    Cache, CmpInOut, ComponentExecutor, ComponentExecutorConfig, ComponentResult,
+};
 use rsiot_extra_components::cmp_external_fn_process;
 use rsiot_messages_core::{example_message::*, *};
 
@@ -32,9 +34,15 @@ async fn main() {
         fn_process: Box::new(fn_process_wrapper),
     };
 
+    let executor_config = ComponentExecutorConfig {
+        buffer_size: 100,
+        executor_name: "cmp_external_fn_process_single_thread".into(),
+        fn_auth: |_| None,
+    };
+
     let task_set = LocalSet::new();
     task_set.spawn_local(async move {
-        ComponentExecutor::<Custom>::new(100, "cmp_external_fn_process_single_thread")
+        ComponentExecutor::<Custom>::new(executor_config)
             .add_cmp(cmp_external_fn_process::Cmp::new(config_external_process))
             .wait_result()
             .await

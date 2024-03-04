@@ -15,7 +15,7 @@ async fn main() -> anyhow::Result<()> {
     use tracing::{level_filters::LevelFilter, Level};
     use url::Url;
 
-    use rsiot_component_core::ComponentExecutor;
+    use rsiot_component_core::{ComponentExecutor, ComponentExecutorConfig};
     use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
     use rsiot_http_client::cmp_http_client::{self, config};
     use rsiot_messages_core::{Message, MsgDataBound};
@@ -98,7 +98,13 @@ async fn main() -> anyhow::Result<()> {
         }],
     };
 
-    ComponentExecutor::new(100, "http_client")
+    let executor_config = ComponentExecutorConfig {
+        buffer_size: 100,
+        executor_name: "http_client".into(),
+        fn_auth: |_| None,
+    };
+
+    ComponentExecutor::new(executor_config)
         .add_cmp(cmp_http_client::Cmp::new(http_config))
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
         .add_cmp(cmp_logger::Cmp::new(logger_config))

@@ -22,7 +22,7 @@ fn main() -> anyhow::Result<()> {
     #[cfg(feature = "single-thread")]
     use tokio::task::LocalSet;
 
-    use rsiot_component_core::ComponentExecutor;
+    use rsiot_component_core::{ComponentExecutor, ComponentExecutorConfig};
     use rsiot_extra_components::{
         cmp_derive::{self, DeriveItem},
         cmp_inject_periodic, cmp_logger,
@@ -74,12 +74,18 @@ fn main() -> anyhow::Result<()> {
         },
     };
 
+    let executor_config = ComponentExecutorConfig {
+        buffer_size: 100,
+        executor_name: "example_single_thread".into(),
+        fn_auth: |_| None,
+    };
+
     #[cfg(not(feature = "single-thread"))]
     runtime::Builder::new_multi_thread()
         .enable_all()
         .build()?
         .block_on(async move {
-            ComponentExecutor::new(100, "cmp_derive")
+            ComponentExecutor::new(executor_config)
                 .add_cmp(cmp_derive::Cmp::new(derive_config))
                 .add_cmp(cmp_logger::Cmp::new(logger_config))
                 .add_cmp(cmp_inject_periodic::Cmp::new(inject_periodic_config))
@@ -96,7 +102,7 @@ fn main() -> anyhow::Result<()> {
             let local_set = LocalSet::new();
 
             local_set.spawn_local(async move {
-                ComponentExecutor::new(100, "cmp_derive")
+                ComponentExecutor::new(executor_config)
                     .add_cmp(cmp_derive::Cmp::new(derive_config))
                     .add_cmp(cmp_logger::Cmp::new(logger_config))
                     .add_cmp(cmp_inject_periodic::Cmp::new(inject_periodic_config))

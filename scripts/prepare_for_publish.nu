@@ -4,13 +4,6 @@ def print_header [header: string] {
     print $"\n\n(ansi magenta_bold)($header)(ansi reset)\n\n"
 }
 
-print_header "workspace - update"
-cargo update
-
-print_header "workspace - outdated"
-cargo outdated
-
-
 # cargo clippy -------------------------------------------------------------------------------------
 
 print_header "workspace clippy - x86_64-unknown-linux-gnu / multi-thread"
@@ -53,6 +46,17 @@ cargo +nightly udeps --target="x86_64-unknown-linux-gnu" --features="single-thre
 print_header "workspace udeps - wasm32-unknown-unknown / single-thread"
 cargo +nightly udeps --target="wasm32-unknown-unknown" --features="single-thread"
 
+
+# cargo update -------------------------------------------------------------------------------------
+
+print_header "workspace - update"
+cargo update
+
+
+# cargo outdated -----------------------------------------------------------------------------------
+
+print_header "workspace - outdated"
+cargo outdated
 
 
 # cargo test ---------------------------------------------------------------------------------------

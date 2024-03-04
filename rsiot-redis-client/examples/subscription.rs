@@ -28,7 +28,7 @@ async fn main() -> anyhow::Result<()> {
     use tracing_subscriber::fmt;
     use url::Url;
 
-    use rsiot_component_core::ComponentExecutor;
+    use rsiot_component_core::{ComponentExecutor, ComponentExecutorConfig};
     use rsiot_extra_components::cmp_logger;
     use rsiot_messages_core::{example_message::*, *};
     use rsiot_redis_client as cmp_redis_client;
@@ -59,7 +59,13 @@ async fn main() -> anyhow::Result<()> {
         },
     };
 
-    ComponentExecutor::<Custom>::new(100, "redis-client-subscription")
+    let executor_config = ComponentExecutorConfig {
+        buffer_size: 100,
+        executor_name: "redis-client-subscription".into(),
+        fn_auth: |_| None,
+    };
+
+    ComponentExecutor::<Custom>::new(executor_config)
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .add_cmp(cmp_redis_client::Cmp::new(redis_config))
         .wait_result()

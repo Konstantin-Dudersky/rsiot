@@ -24,7 +24,6 @@ uuid = { workspace = true }
 
 rsiot-component-core = { workspace = true }
 rsiot-messages-core = { workspace = true }
-rsiot-extra-components = { workspace = true }
 
 
 [target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dev-dependencies]

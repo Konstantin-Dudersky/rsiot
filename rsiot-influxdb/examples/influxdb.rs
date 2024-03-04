@@ -3,7 +3,7 @@
 async fn main() {
     use std::time::Duration;
 
-    use rsiot_component_core::ComponentExecutor;
+    use rsiot_component_core::{ComponentExecutor, ComponentExecutorConfig};
     use rsiot_extra_components::cmp_inject_periodic;
     use rsiot_influxdb as cmp_influxdb;
     use rsiot_messages_core::{example_message::*, *};
@@ -44,7 +44,13 @@ async fn main() {
         },
     };
 
-    ComponentExecutor::new(100, "influxdb")
+    let executor_config = ComponentExecutorConfig {
+        buffer_size: 100,
+        executor_name: "example_single_thread".into(),
+        fn_auth: |_| None,
+    };
+
+    ComponentExecutor::new(executor_config)
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
         .add_cmp(cmp_influxdb::Cmp::new(influxdb_config))
         .wait_result()

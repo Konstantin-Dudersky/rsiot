@@ -18,7 +18,7 @@ async fn main() -> anyhow::Result<()> {
 
     use tracing::Level;
 
-    use rsiot_component_core::ComponentExecutor;
+    use rsiot_component_core::{ComponentExecutor, ComponentExecutorConfig};
     use rsiot_extra_components::cmp_logger;
     use rsiot_messages_core::Message;
     use rsiot_plc as cmp_plc;
@@ -50,7 +50,13 @@ async fn main() -> anyhow::Result<()> {
         header: "Logger: ".into(),
     };
 
-    ComponentExecutor::<message::Data>::new(100, "plc-multi-thread")
+    let executor_config = ComponentExecutorConfig {
+        buffer_size: 100,
+        executor_name: "plc-multi-thread".into(),
+        fn_auth: |_| None,
+    };
+
+    ComponentExecutor::<message::Data>::new(executor_config)
         .add_cmp(cmp_plc::Cmp::new(plc_config))
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .wait_result()

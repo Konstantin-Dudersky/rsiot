@@ -45,16 +45,37 @@ pub struct ComponentExecutor<TMsg> {
     cmp_in_out: CmpInOut<TMsg>,
 }
 
+/// Настройка исполнителя
+pub struct ComponentExecutorConfig<TMsg> {
+    /// Размер буфера канала сообщения
+    pub buffer_size: usize,
+
+    /// Название исполнителя
+    pub executor_name: String,
+
+    /// Функция фильтрации сообщений в зависимости от текущей авторизации
+    ///
+    /// # Примеры
+    ///
+    /// ## Заглушка
+    ///
+    /// ```rust
+    /// |_| None
+    /// ```
+    pub fn_auth: fn(Message<TMsg>) -> Option<TMsg>,
+}
+
 impl<TMsg> ComponentExecutor<TMsg>
 where
     TMsg: MsgDataBound + 'static,
 {
     /// Создание коллекции компонентов
-    pub fn new(buffer_size: usize, executor_name: &str) -> Self {
+    pub fn new(config: ComponentExecutorConfig<TMsg>) -> Self {
         info!("ComponentExecutor start creation");
         let (component_input_send, component_input) =
-            broadcast::channel::<Message<TMsg>>(buffer_size);
-        let (component_output, component_output_recv) = mpsc::channel::<Message<TMsg>>(buffer_size);
+            broadcast::channel::<Message<TMsg>>(config.buffer_size);
+        let (component_output, component_output_recv) =
+            mpsc::channel::<Message<TMsg>>(config.buffer_size);
         let cache: Cache<TMsg> = Cache::new();
         let mut task_set: JoinSet<Result<(), ComponentError>> = JoinSet::new();
 
@@ -73,7 +94,7 @@ where
         let cmp_in_out = CmpInOut::new(
             component_input,
             component_output,
-            executor_name,
+            &config.executor_name,
             AuthPermissions::default(),
         );
 
