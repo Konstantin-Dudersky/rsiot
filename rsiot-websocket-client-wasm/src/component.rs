@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
 use rsiot_component_core::{Cache, CmpInOut, Component, ComponentError, IComponentProcess};
-use rsiot_messages_core::MsgDataBound;
+use rsiot_messages_core::{AuthPermissions, MsgDataBound};
 
 use crate::{config::ConfigAlias, fn_process::fn_process};
 
@@ -20,7 +20,7 @@ where
     ) -> Result<(), ComponentError> {
         fn_process(
             config.0,
-            input.clone_with_new_id("cmp_websocket_client_wasm"),
+            input.clone_with_new_id("cmp_websocket_client_wasm", AuthPermissions::FullAccess),
         )
         .await
         .map_err(|err| ComponentError::Execution(err.to_string()))

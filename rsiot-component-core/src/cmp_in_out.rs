@@ -38,11 +38,16 @@ where
         }
     }
 
-    pub fn clone_with_new_id(self, name: &str) -> Self {
+    pub fn clone_with_new_id(self, name: &str, auth_perm: AuthPermissions) -> Self {
         let name = format!("{}::{}", self.name, name);
         let id = MsgTrace::generate_uuid();
         info!("Start: {}, id: {}", name, id);
-        Self { name, id, ..self }
+        Self {
+            name,
+            id,
+            auth_perm,
+            ..self
+        }
     }
 
     pub async fn recv_input(&mut self) -> Result<Option<Message<TMsg>>, ComponentError> {

@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
 use rsiot_component_core::{Cache, CmpInOut, Component, ComponentError, IComponentProcess};
-use rsiot_messages_core::MsgDataBound;
+use rsiot_messages_core::{AuthPermissions, MsgDataBound};
 
 use crate::fn_process::fn_process;
 
@@ -17,7 +17,11 @@ where
         input: CmpInOut<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
-        fn_process(input.clone_with_new_id("cmp_surrealdb"), config.clone()).await?;
+        fn_process(
+            input.clone_with_new_id("cmp_surrealdb", AuthPermissions::FullAccess),
+            config.clone(),
+        )
+        .await?;
         Ok(())
     }
 }

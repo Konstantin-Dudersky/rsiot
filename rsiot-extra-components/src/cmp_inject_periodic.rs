@@ -5,7 +5,7 @@ use tokio::time::{sleep, Duration, Instant};
 use tracing::debug;
 
 use rsiot_component_core::{Cache, CmpInOut, Component, ComponentError, IComponentProcess};
-use rsiot_messages_core::{Message, MsgDataBound};
+use rsiot_messages_core::{AuthPermissions, Message, MsgDataBound};
 
 #[derive(Clone, Debug)]
 pub struct Config<TMsg, TFnPeriodic>
@@ -35,7 +35,7 @@ where
     ) -> Result<(), ComponentError> {
         fn_process(
             config,
-            in_out.clone_with_new_id("cmp_inject_periodic"),
+            in_out.clone_with_new_id("cmp_inject_periodic", AuthPermissions::FullAccess),
             cache,
         )
         .await

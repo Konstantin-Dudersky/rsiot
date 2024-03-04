@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use rsiot_component_core::{
     Cache, CmpInOut, Component, ComponentError, ComponentResult, IComponentProcess,
 };
-use rsiot_messages_core::MsgDataBound;
+use rsiot_messages_core::{AuthPermissions, MsgDataBound};
 
 use crate::{fn_process::fn_process, Config};
 
@@ -19,7 +19,7 @@ where
         in_out: CmpInOut<TMsg>,
         cache: Cache<TMsg>,
     ) -> ComponentResult {
-        let in_out = in_out.clone_with_new_id("cmp_auth");
+        let in_out = in_out.clone_with_new_id("cmp_auth", AuthPermissions::FullAccess);
         fn_process(config, cache, in_out)
             .await
             .map_err(|e| ComponentError::Execution(e.to_string()))

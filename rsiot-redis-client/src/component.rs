@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
 use rsiot_component_core::{Cache, CmpInOut, Component, ComponentError, IComponentProcess};
-use rsiot_messages_core::{IMessageChannel, MsgDataBound};
+use rsiot_messages_core::{AuthPermissions, IMessageChannel, MsgDataBound};
 
 use crate::{config::ConfigAlias, fn_process::fn_process};
 
@@ -21,7 +21,12 @@ where
         cache: Cache<TMessage>,
     ) -> Result<(), ComponentError> {
         let config = config.0;
-        fn_process(input.clone_with_new_id("cmp_redis_client"), config, cache).await
+        fn_process(
+            input.clone_with_new_id("cmp_redis_client", AuthPermissions::FullAccess),
+            config,
+            cache,
+        )
+        .await
     }
 }
 

@@ -24,7 +24,8 @@ where
         in_out: CmpInOut<TMsg>,
         _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
-        let mut in_out = in_out.clone_with_new_id("cmp_add_output_stream");
+        let mut in_out =
+            in_out.clone_with_new_id("cmp_add_output_stream", AuthPermissions::FullAccess);
         while let Ok(msg) = in_out.recv_input().await {
             let msg = match msg {
                 Some(val) => val,

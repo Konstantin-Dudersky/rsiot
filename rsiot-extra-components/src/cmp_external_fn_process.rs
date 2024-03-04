@@ -131,7 +131,11 @@ where
         in_out: CmpInOut<TMsg>,
         cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
-        (config.fn_process)(in_out.clone_with_new_id("cmp_extrenal_fn_process"), cache).await
+        (config.fn_process)(
+            in_out.clone_with_new_id("cmp_extrenal_fn_process", AuthPermissions::FullAccess),
+            cache,
+        )
+        .await
     }
 }
 
