@@ -90,7 +90,7 @@ async fn main() -> anyhow::Result<()> {
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
         executor_name: "rsiot-websocket-client".into(),
-        fn_auth: |_| None,
+        fn_auth: |msg, _| Some(msg),
     };
 
     ComponentExecutor::<Data>::new(executor_config)

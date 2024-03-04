@@ -26,7 +26,7 @@ async fn main() -> anyhow::Result<()> {
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
         executor_name: "example_single_thread".into(),
-        fn_auth: |_| None,
+        fn_auth: |msg, _| Some(msg),
     };
 
     ComponentExecutor::<Data>::new(executor_config)

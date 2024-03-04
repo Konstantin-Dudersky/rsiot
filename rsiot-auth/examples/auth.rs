@@ -42,7 +42,7 @@ async fn main() -> anyhow::Result<()> {
     let executor_config = rsiot_component_core::ComponentExecutorConfig {
         buffer_size: 100,
         executor_name: "example_auth".into(),
-        fn_auth: |_| None,
+        fn_auth: |_, _| None,
     };
 
     ComponentExecutor::<Custom>::new(executor_config)

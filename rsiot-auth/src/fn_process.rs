@@ -90,7 +90,7 @@ where
 
     let value = AuthResponseOk {
         token,
-        role: valid_password.role,
+        perm: valid_password.role,
         trace_ids,
     };
     let msg = message_new!("System-AuthResponseOk::value");

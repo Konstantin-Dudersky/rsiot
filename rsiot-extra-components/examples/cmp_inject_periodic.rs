@@ -21,7 +21,7 @@ async fn main() -> anyhow::Result<()> {
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
         executor_name: "cmp_inject_periodic".into(),
-        fn_auth: |_| None,
+        fn_auth: |msg, _| Some(msg),
     };
 
     let logger_config = cmp_logger::Config {

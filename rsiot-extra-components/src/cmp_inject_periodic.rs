@@ -2,7 +2,6 @@
 
 use async_trait::async_trait;
 use tokio::time::{sleep, Duration, Instant};
-use tracing::debug;
 
 use rsiot_component_core::{Cache, CmpInOut, Component, ComponentError, IComponentProcess};
 use rsiot_messages_core::{AuthPermissions, Message, MsgDataBound};
@@ -51,7 +50,6 @@ where
     TMsg: MsgDataBound,
     TFnPeriodic: FnMut() -> Vec<Message<TMsg>>,
 {
-    debug!("cmp_inject_periodic started");
     loop {
         let begin = Instant::now();
         let msgs = (config.fn_periodic)();

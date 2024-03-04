@@ -8,7 +8,12 @@ use crate::AuthPermissions;
 /// Ответ на запрос на регистрацию
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct AuthResponseOk {
+    /// Сгенерированный токен
     pub token: String,
-    pub role: AuthPermissions,
+
+    /// Разрешения
+    pub perm: AuthPermissions,
+
+    /// Идентификаторы компонентов, через которые сообщение было получено
     pub trace_ids: HashSet<Uuid>,
 }

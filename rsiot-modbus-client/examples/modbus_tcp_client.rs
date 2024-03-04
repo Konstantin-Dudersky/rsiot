@@ -71,7 +71,7 @@ async fn main() -> anyhow::Result<()> {
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
         executor_name: "modbus_tcp_client".into(),
-        fn_auth: |_| None,
+        fn_auth: |msg, _| Some(msg),
     };
 
     let mut counter = 0.0;

@@ -12,7 +12,7 @@ use tokio_util::sync::CancellationToken;
 use tracing::{error, info};
 
 use rsiot_component_core::{Cache, CmpInOut, ComponentError};
-use rsiot_messages_core::MsgDataBound;
+use rsiot_messages_core::{AuthPermissions, MsgDataBound};
 
 use crate::{config::Config, errors::Error};
 
@@ -45,7 +45,7 @@ where
 }
 
 async fn task_main<TMessage>(
-    input: CmpInOut<TMessage>,
+    in_out: CmpInOut<TMessage>,
     config: Config<TMessage>,
     cache: Cache<TMessage>,
     cancel: CancellationToken,
@@ -59,8 +59,9 @@ where
 
     // слушаем порт, при получении запроса создаем новое подключение WS
     while let Ok(stream_and_addr) = listener.accept().await {
+        let session_name = format!("session_{}", stream_and_addr.1);
         let future = handle_ws_connection(
-            input.clone(),
+            in_out.clone_with_new_id(&session_name, AuthPermissions::FullAccess),
             config.clone(),
             stream_and_addr,
             cache.clone(),

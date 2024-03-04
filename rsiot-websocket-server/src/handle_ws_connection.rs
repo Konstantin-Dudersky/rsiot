@@ -13,7 +13,7 @@ use tokio_tungstenite::{
 };
 use tracing::{debug, info, trace, warn};
 
-use rsiot_messages_core::{Message, MsgDataBound};
+use rsiot_messages_core::{system_messages::*, *};
 
 use crate::{
     config::{Config, FnOutput},
@@ -41,7 +41,7 @@ pub async fn handle_ws_connection<TMessage>(
 }
 
 async fn _handle_ws_connection<TMessage>(
-    input: CmpInOut<TMessage>,
+    in_out: CmpInOut<TMessage>,
     stream_and_addr: (TcpStream, SocketAddr),
     config: Config<TMessage>,
     cache: Cache<TMessage>,
@@ -59,13 +59,17 @@ where
     let mut set = JoinSet::new();
 
     // Подготавливаем кеш для отправки
-    set.spawn(send_prepare_cache(prepare_tx.clone(), cache.clone()));
+    set.spawn(send_prepare_cache(
+        in_out.clone(),
+        prepare_tx.clone(),
+        cache.clone(),
+    ));
     // Подготавливаем новые сообщения для отправки
-    set.spawn(send_prepare_new_msgs(input.clone(), prepare_tx.clone()));
+    set.spawn(send_prepare_new_msgs(in_out.clone(), prepare_tx.clone()));
     // Отправляем клиенту
     set.spawn(send_to_client(prepare_rx, write, config.fn_input));
     // Получаем данные от клиента
-    set.spawn(recv_from_client(read, input, config.fn_output));
+    set.spawn(recv_from_client(read, in_out, config.fn_output));
 
     while let Some(res) = set.join_next().await {
         let err = match res {
@@ -83,23 +87,33 @@ where
 
 /// При подключении нового клиента отправляем все данные из кеша
 async fn send_prepare_cache<TMessage>(
+    mut in_out: CmpInOut<TMessage>,
     output: mpsc::Sender<Message<TMessage>>,
     cache: Cache<TMessage>,
 ) -> crate::Result<()>
 where
     TMessage: MsgDataBound,
 {
-    debug!("Sending cache to client started");
-    let local_cache: Vec<Message<TMessage>>;
-    {
-        let lock = cache.read().await;
-        local_cache = lock.values().cloned().collect();
+    loop {
+        debug!("Sending cache to client started");
+        let local_cache: Vec<Message<TMessage>>;
+        {
+            let lock = cache.read().await;
+            local_cache = lock.values().cloned().collect();
+        }
+        for msg in local_cache {
+            output.send(msg).await?;
+        }
+        debug!("Sending cache to client complete");
+        // При изменении доступа к системе, отправляем данные снова
+        'auth_changed: while let Ok(msg) = in_out.recv_input().await {
+            let Some(msg) = msg else { continue };
+            match msg.data {
+                MsgData::System(System::AuthResponseOk(_)) => break 'auth_changed,
+                _ => continue,
+            }
+        }
     }
-    for msg in local_cache {
-        output.send(msg).await?;
-    }
-    debug!("Sending cache to client complete");
-    Ok(())
 }
 
 /// При получении новых сообщений, отправляем клиенту

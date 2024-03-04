@@ -37,7 +37,7 @@ async fn main() {
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
         executor_name: "cmp_external_fn_process_single_thread".into(),
-        fn_auth: |_| None,
+        fn_auth: |msg, _| Some(msg),
     };
 
     let task_set = LocalSet::new();

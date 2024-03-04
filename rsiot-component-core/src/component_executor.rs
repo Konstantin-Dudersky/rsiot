@@ -8,7 +8,7 @@ use tokio::{
 use rsiot_messages_core::*;
 use tracing::{debug, error, info, trace, warn};
 
-use crate::{error::ComponentError, Cache, CmpInOut, IComponent};
+use crate::{error::ComponentError, types::FnAuth, Cache, CmpInOut, IComponent};
 
 /// Запуск коллекции компонентов в работу
 ///
@@ -57,12 +57,18 @@ pub struct ComponentExecutorConfig<TMsg> {
     ///
     /// # Примеры
     ///
-    /// ## Заглушка
+    /// ## Все сообщения блокируются
     ///
     /// ```rust
-    /// |_| None
+    /// |_, _| None
     /// ```
-    pub fn_auth: fn(Message<TMsg>) -> Option<TMsg>,
+    ///
+    /// ## Все сообщения разрешены
+    ///
+    /// ```rust
+    /// |msg, _| Some(msg)
+    /// ```
+    pub fn_auth: FnAuth<TMsg>,
 }
 
 impl<TMsg> ComponentExecutor<TMsg>
@@ -96,6 +102,7 @@ where
             component_output,
             &config.executor_name,
             AuthPermissions::default(),
+            config.fn_auth.clone(),
         );
 
         Self {

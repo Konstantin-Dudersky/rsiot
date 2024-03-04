@@ -44,7 +44,6 @@ async fn process<TMessage>(
 where
     TMessage: MsgDataBound,
 {
-    debug!("cmp_logger started");
     let header = match config.header.as_str() {
         "" => "".to_string(),
         _ => format!("{}: ", config.header),
