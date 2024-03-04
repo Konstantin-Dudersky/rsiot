@@ -13,17 +13,16 @@ use futures::future::LocalBoxFuture;
 use futures::future::BoxFuture;
 
 use rsiot_component_core::{
-    Cache, CmpInOut, Component, ComponentError, ComponentResult, IComponentProcess,
+    CmpInOut, Component, ComponentError, ComponentResult, IComponentProcess,
 };
 use rsiot_messages_core::*;
 
 #[cfg(feature = "single-thread")]
-type FnProcess<TMsg> =
-    Box<dyn Fn(CmpInOut<TMsg>, Cache<TMsg>) -> LocalBoxFuture<'static, ComponentResult>>;
+type FnProcess<TMsg> = Box<dyn Fn(CmpInOut<TMsg>) -> LocalBoxFuture<'static, ComponentResult>>;
 
 #[cfg(not(feature = "single-thread"))]
 type FnProcess<TMsg> =
-    Box<dyn Fn(CmpInOut<TMsg>, Cache<TMsg>) -> BoxFuture<'static, ComponentResult> + Send + Sync>;
+    Box<dyn Fn(CmpInOut<TMsg>) -> BoxFuture<'static, ComponentResult> + Send + Sync>;
 
 pub struct Config<TMsg> {
     /// Внешняя функция для выполнения
@@ -129,11 +128,9 @@ where
         &self,
         config: Config<TMsg>,
         in_out: CmpInOut<TMsg>,
-        cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         (config.fn_process)(
             in_out.clone_with_new_id("cmp_extrenal_fn_process", AuthPermissions::FullAccess),
-            cache,
         )
         .await
     }
@@ -160,14 +157,13 @@ mod tests {
 
         fn fn_process_wrapper<TMsg>(
             in_out: CmpInOut<TMsg>,
-            cache: Cache<TMsg>,
         ) -> LocalBoxFuture<'static, ComponentResult>
         where
             TMsg: MsgDataBound + 'static,
         {
-            Box::pin(async { fn_process(in_out, cache).await })
+            Box::pin(async { fn_process(in_out).await })
         }
-        async fn fn_process<TMsg>(_in_out: CmpInOut<TMsg>, _cache: Cache<TMsg>) -> ComponentResult {
+        async fn fn_process<TMsg>(_in_out: CmpInOut<TMsg>) -> ComponentResult {
             loop {
                 info!("External fn process");
                 sleep(Duration::from_secs(2)).await;
@@ -188,20 +184,17 @@ mod tests {
         use tokio::time::sleep;
         use tracing::info;
 
-        use rsiot_component_core::{Cache, CmpInOut, ComponentResult};
+        use rsiot_component_core::{CmpInOut, ComponentResult};
         use rsiot_messages_core::{example_message::*, *};
 
-        fn fn_process_wrapper<TMsg>(
-            in_out: CmpInOut<TMsg>,
-            cache: Cache<TMsg>,
-        ) -> BoxFuture<'static, ComponentResult>
+        fn fn_process_wrapper<TMsg>(in_out: CmpInOut<TMsg>) -> BoxFuture<'static, ComponentResult>
         where
             TMsg: MsgDataBound + 'static,
         {
-            Box::pin(async { fn_process(in_out, cache).await })
+            Box::pin(async { fn_process(in_out).await })
         }
 
-        async fn fn_process<TMsg>(_in_out: CmpInOut<TMsg>, _cache: Cache<TMsg>) -> ComponentResult {
+        async fn fn_process<TMsg>(_in_out: CmpInOut<TMsg>) -> ComponentResult {
             loop {
                 info!("External fn process");
                 sleep(Duration::from_secs(2)).await;

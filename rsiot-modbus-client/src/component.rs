@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 
-use rsiot_component_core::{Cache, CmpInOut, Component, ComponentError, IComponentProcess};
+use rsiot_component_core::{CmpInOut, Component, ComponentError, IComponentProcess};
 use rsiot_messages_core::{AuthPermissions, MsgDataBound};
 
 use crate::{config::ConfigNewType, fn_process::fn_process};
@@ -16,12 +16,10 @@ where
         &self,
         config: ConfigNewType<TMessage>,
         in_out: CmpInOut<TMessage>,
-        cache: Cache<TMessage>,
     ) -> Result<(), ComponentError> {
         fn_process(
             in_out.clone_with_new_id("cmp_modbus_client", AuthPermissions::FullAccess),
             config.0,
-            cache,
         )
         .await
     }

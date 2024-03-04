@@ -6,7 +6,7 @@ use futures::{
     stream::{SplitSink, SplitStream},
     SinkExt, StreamExt,
 };
-use rsiot_component_core::{Cache, CmpInOut};
+use rsiot_component_core::CmpInOut;
 use tokio::{net::TcpStream, sync::mpsc, task::JoinSet};
 use tokio_tungstenite::{
     accept_async, tungstenite::Message as TungsteniteMessage, WebSocketStream,
@@ -25,12 +25,11 @@ pub async fn handle_ws_connection<TMessage>(
     input: CmpInOut<TMessage>,
     config: Config<TMessage>,
     stream_and_addr: (TcpStream, SocketAddr),
-    cache: Cache<TMessage>,
 ) where
     TMessage: MsgDataBound + 'static,
 {
     let addr = stream_and_addr.1;
-    let result = _handle_ws_connection(input, stream_and_addr, config, cache).await;
+    let result = _handle_ws_connection(input, stream_and_addr, config).await;
     match result {
         Ok(_) => (),
         Err(err) => {
@@ -44,7 +43,6 @@ async fn _handle_ws_connection<TMessage>(
     in_out: CmpInOut<TMessage>,
     stream_and_addr: (TcpStream, SocketAddr),
     config: Config<TMessage>,
-    cache: Cache<TMessage>,
 ) -> crate::Result<()>
 where
     TMessage: MsgDataBound + 'static,
@@ -59,11 +57,7 @@ where
     let mut set = JoinSet::new();
 
     // Подготавливаем кеш для отправки
-    set.spawn(send_prepare_cache(
-        in_out.clone(),
-        prepare_tx.clone(),
-        cache.clone(),
-    ));
+    set.spawn(send_prepare_cache(in_out.clone(), prepare_tx.clone()));
     // Подготавливаем новые сообщения для отправки
     set.spawn(send_prepare_new_msgs(in_out.clone(), prepare_tx.clone()));
     // Отправляем клиенту
@@ -86,21 +80,16 @@ where
 }
 
 /// При подключении нового клиента отправляем все данные из кеша
-async fn send_prepare_cache<TMessage>(
-    mut in_out: CmpInOut<TMessage>,
-    output: mpsc::Sender<Message<TMessage>>,
-    cache: Cache<TMessage>,
+async fn send_prepare_cache<TMsg>(
+    mut in_out: CmpInOut<TMsg>,
+    output: mpsc::Sender<Message<TMsg>>,
 ) -> crate::Result<()>
 where
-    TMessage: MsgDataBound,
+    TMsg: MsgDataBound,
 {
     loop {
         debug!("Sending cache to client started");
-        let local_cache: Vec<Message<TMessage>>;
-        {
-            let lock = cache.read().await;
-            local_cache = lock.values().cloned().collect();
-        }
+        let local_cache = in_out.recv_cache().await;
         for msg in local_cache {
             output.send(msg).await?;
         }

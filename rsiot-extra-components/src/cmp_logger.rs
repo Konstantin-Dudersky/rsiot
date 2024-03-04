@@ -3,7 +3,7 @@
 use async_trait::async_trait;
 use tracing::{debug, error, info, trace, warn, Level};
 
-use rsiot_component_core::{Cache, CmpInOut, Component, ComponentError, IComponentProcess};
+use rsiot_component_core::{CmpInOut, Component, ComponentError, IComponentProcess};
 use rsiot_messages_core::{AuthPermissions, MsgDataBound};
 
 /// Настройки компонента логгирования
@@ -25,12 +25,10 @@ where
         &self,
         config: Config,
         in_out: CmpInOut<TMessage>,
-        cache: Cache<TMessage>,
     ) -> Result<(), ComponentError> {
         process(
             config,
             in_out.clone_with_new_id("cmp_logger", AuthPermissions::FullAccess),
-            cache,
         )
         .await
     }
@@ -39,7 +37,6 @@ where
 async fn process<TMessage>(
     config: Config,
     mut in_out: CmpInOut<TMessage>,
-    _cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>
 where
     TMessage: MsgDataBound,

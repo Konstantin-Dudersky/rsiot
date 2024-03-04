@@ -6,7 +6,7 @@ use tokio::{
 };
 use tracing::{error, info, trace, warn};
 
-use rsiot_component_core::{Cache, CmpInOut, ComponentError};
+use rsiot_component_core::{CmpInOut, ComponentError};
 use rsiot_messages_core::{IMessageChannel, MsgDataBound};
 
 use crate::{config::Config, error::Error};
@@ -16,7 +16,6 @@ type Result = std::result::Result<(), Error>;
 pub async fn fn_process<TMessage, TMessageChannel>(
     in_out: CmpInOut<TMessage>,
     config: Config<TMessage, TMessageChannel>,
-    _cache: Cache<TMessage>,
 ) -> std::result::Result<(), ComponentError>
 where
     TMessage: MsgDataBound + 'static,

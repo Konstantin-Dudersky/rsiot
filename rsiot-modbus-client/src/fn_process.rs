@@ -8,7 +8,7 @@ use tokio::{
 use tokio_modbus::{client::Context, prelude::*};
 use tracing::{debug, error, info, trace, warn};
 
-use rsiot_component_core::{Cache, CmpInOut, ComponentError};
+use rsiot_component_core::{CmpInOut, ComponentError};
 use rsiot_messages_core::MsgDataBound;
 
 use crate::{
@@ -19,7 +19,6 @@ use crate::{
 pub async fn fn_process<TMessage>(
     in_out: CmpInOut<TMessage>,
     config: Config<TMessage>,
-    _cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>
 where
     TMessage: MsgDataBound + 'static,

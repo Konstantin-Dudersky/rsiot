@@ -3,7 +3,7 @@
 use async_trait::async_trait;
 use tokio::sync::mpsc;
 
-use rsiot_component_core::{Cache, CmpInOut, Component, ComponentError, IComponentProcess};
+use rsiot_component_core::{CmpInOut, Component, ComponentError, IComponentProcess};
 use rsiot_messages_core::*;
 
 /// Настройки
@@ -22,7 +22,6 @@ where
         &self,
         config: Cfg<TMsg>,
         in_out: CmpInOut<TMsg>,
-        _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         let mut in_out =
             in_out.clone_with_new_id("cmp_add_output_stream", AuthPermissions::FullAccess);

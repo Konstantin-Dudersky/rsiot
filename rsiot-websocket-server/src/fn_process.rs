@@ -11,7 +11,7 @@ use tokio::{
 use tokio_util::sync::CancellationToken;
 use tracing::{error, info};
 
-use rsiot_component_core::{Cache, CmpInOut, ComponentError};
+use rsiot_component_core::{CmpInOut, ComponentError};
 use rsiot_messages_core::{AuthPermissions, MsgDataBound};
 
 use crate::{config::Config, errors::Error};
@@ -21,7 +21,6 @@ use super::{async_task_utils::cancellable_task, handle_ws_connection::handle_ws_
 pub async fn fn_process<TMessage>(
     input: CmpInOut<TMessage>,
     config: Config<TMessage>,
-    cache: Cache<TMessage>,
 ) -> Result<(), ComponentError>
 where
     TMessage: MsgDataBound + 'static,
@@ -34,7 +33,7 @@ where
     let cancel = CancellationToken::new();
 
     loop {
-        let result = task_main(input.clone(), config.clone(), cache.clone(), cancel.clone()).await;
+        let result = task_main(input.clone(), config.clone(), cancel.clone()).await;
         match result {
             Ok(_) => (),
             Err(err) => error!("{:?}", err),
@@ -47,7 +46,6 @@ where
 async fn task_main<TMessage>(
     in_out: CmpInOut<TMessage>,
     config: Config<TMessage>,
-    cache: Cache<TMessage>,
     cancel: CancellationToken,
 ) -> crate::Result<()>
 where
@@ -64,7 +62,6 @@ where
             in_out.clone_with_new_id(&session_name, AuthPermissions::FullAccess),
             config.clone(),
             stream_and_addr,
-            cache.clone(),
         );
         spawn(cancellable_task(future, cancel.clone()));
     }

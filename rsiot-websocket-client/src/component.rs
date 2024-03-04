@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 
-use rsiot_component_core::{Cache, CmpInOut, Component, ComponentError, IComponentProcess};
+use rsiot_component_core::{CmpInOut, Component, ComponentError, IComponentProcess};
 use rsiot_messages_core::{AuthPermissions, MsgDataBound};
 
 use crate::{config::ConfigAlias, fn_process::fn_process};
@@ -16,7 +16,6 @@ where
         &self,
         config: ConfigAlias<TMessage>,
         input: CmpInOut<TMessage>,
-        _cache: Cache<TMessage>,
     ) -> Result<(), ComponentError> {
         let config = config.0;
         fn_process(

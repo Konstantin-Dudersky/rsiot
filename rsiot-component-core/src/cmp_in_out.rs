@@ -7,13 +7,14 @@ use rsiot_messages_core::{system_messages::*, *};
 
 use crate::{
     types::{CmpInput, CmpOutput, FnAuth},
-    ComponentError,
+    Cache, ComponentError,
 };
 
 #[derive(Debug)]
 pub struct CmpInOut<TMsg> {
     input: CmpInput<TMsg>,
     output: CmpOutput<TMsg>,
+    cache: Cache<TMsg>,
     name: String,
     id: Uuid,
     auth_perm: AuthPermissions,
@@ -27,6 +28,7 @@ where
     pub fn new(
         input: CmpInput<TMsg>,
         output: CmpOutput<TMsg>,
+        cache: Cache<TMsg>,
         name: &str,
         auth_perm: AuthPermissions,
         fn_auth: FnAuth<TMsg>,
@@ -36,6 +38,7 @@ where
         Self {
             input,
             output,
+            cache,
             id,
             name: name.into(),
             auth_perm,
@@ -48,11 +51,12 @@ where
         let id = MsgTrace::generate_uuid();
         info!("Start: {}, id: {}, auth_perm: {:?}", name, id, auth_perm);
         Self {
+            input: self.input.resubscribe(),
+            output: self.output.clone(),
+            cache: self.cache.clone(),
             name,
             id,
             auth_perm,
-            input: self.input.resubscribe(),
-            output: self.output.clone(),
             fn_auth: self.fn_auth.clone(),
         }
     }
@@ -87,6 +91,19 @@ where
         Ok(Some(msg))
     }
 
+    pub async fn recv_cache(&self) -> Vec<Message<TMsg>> {
+        let local_cache: Vec<Message<TMsg>>;
+        {
+            let lock = self.cache.read().await;
+            local_cache = lock
+                .values()
+                .cloned()
+                .filter_map(|m| (self.fn_auth)(m, &self.auth_perm))
+                .collect();
+        }
+        local_cache
+    }
+
     /// Отправка сообщений на выход
     pub async fn send_output(&self, msg: Message<TMsg>) -> Result<(), ComponentError> {
         // Если нет авторизации, пропускаем
@@ -110,6 +127,7 @@ where
         Self {
             input: self.input.resubscribe(),
             output: self.output.clone(),
+            cache: self.cache.clone(),
             id: self.id,
             name: self.name.clone(),
             auth_perm: self.auth_perm.clone(),

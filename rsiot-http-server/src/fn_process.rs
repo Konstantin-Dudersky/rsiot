@@ -12,7 +12,7 @@ use tower_http::{
 };
 use tracing::{error, info, Level};
 
-use rsiot_component_core::{Cache, CmpInOut, ComponentError};
+use rsiot_component_core::{CmpInOut, ComponentError};
 use rsiot_messages_core::MsgDataBound;
 
 use crate::{config::Config, error::Error, routes, shared_state::SharedState};
@@ -21,7 +21,6 @@ use crate::{config::Config, error::Error, routes, shared_state::SharedState};
 pub async fn fn_process<TMsg>(
     output: CmpInOut<TMsg>,
     config: Config<TMsg>,
-    cache: Cache<TMsg>,
 ) -> Result<(), ComponentError>
 where
     TMsg: MsgDataBound + 'static,
@@ -29,7 +28,6 @@ where
     info!("Component started, configuration: {:?}", config);
     // общее состояние
     let shared_state = Arc::new(SharedState {
-        cache,
         output,
         config: config.clone(),
     });

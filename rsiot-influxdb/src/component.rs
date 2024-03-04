@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 
-use rsiot_component_core::{Cache, CmpInOut, Component, ComponentError, IComponentProcess};
+use rsiot_component_core::{CmpInOut, Component, ComponentError, IComponentProcess};
 use rsiot_messages_core::{AuthPermissions, MsgDataBound};
 use tracing::error;
 
@@ -16,7 +16,6 @@ where
         &self,
         config: ConfigAlias<TMsg>,
         in_out: CmpInOut<TMsg>,
-        _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         fn_process(
             in_out.clone_with_new_id("cmp_influxdb", AuthPermissions::FullAccess),

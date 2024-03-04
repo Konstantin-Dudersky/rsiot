@@ -3,7 +3,7 @@
 use async_trait::async_trait;
 use tokio::sync::broadcast;
 
-use rsiot_component_core::{Cache, CmpInOut, Component, ComponentError, IComponentProcess};
+use rsiot_component_core::{CmpInOut, Component, ComponentError, IComponentProcess};
 use rsiot_messages_core::*;
 
 /// Настройки
@@ -23,7 +23,6 @@ where
         &self,
         mut config: Cfg<TMsg>,
         in_out: CmpInOut<TMsg>,
-        _cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         while let Ok(msg) = config.channel.recv().await {
             in_out

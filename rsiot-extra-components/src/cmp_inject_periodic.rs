@@ -3,7 +3,7 @@
 use async_trait::async_trait;
 use tokio::time::{sleep, Duration, Instant};
 
-use rsiot_component_core::{Cache, CmpInOut, Component, ComponentError, IComponentProcess};
+use rsiot_component_core::{CmpInOut, Component, ComponentError, IComponentProcess};
 use rsiot_messages_core::{AuthPermissions, Message, MsgDataBound};
 
 #[derive(Clone, Debug)]
@@ -30,12 +30,10 @@ where
         &self,
         config: Config<TMsg, TFnPeriodic>,
         in_out: CmpInOut<TMsg>,
-        cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         fn_process(
             config,
             in_out.clone_with_new_id("cmp_inject_periodic", AuthPermissions::FullAccess),
-            cache,
         )
         .await
     }
@@ -44,7 +42,6 @@ where
 async fn fn_process<TMsg, TFnPeriodic>(
     mut config: Config<TMsg, TFnPeriodic>,
     in_out: CmpInOut<TMsg>,
-    _cache: Cache<TMsg>,
 ) -> Result<(), ComponentError>
 where
     TMsg: MsgDataBound,

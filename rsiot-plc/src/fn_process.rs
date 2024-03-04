@@ -28,7 +28,6 @@ type Result = std::result::Result<(), Error>;
 pub async fn fn_process<TMessage, I, Q, S>(
     output: CmpInOut<TMessage>,
     config: Config<TMessage, I, Q, S>,
-    cache: Cache<TMessage>,
 ) -> std::result::Result<(), ComponentError>
 where
     TMessage: MsgDataBound + 'static,
@@ -41,7 +40,7 @@ where
     let handle = spawn_local(task_main_loop::<TMessage, I, Q, S>(output, config, cache));
 
     #[cfg(not(feature = "single-thread"))]
-    let handle = spawn(task_main_loop::<TMessage, I, Q, S>(output, config, cache));
+    let handle = spawn(task_main_loop::<TMessage, I, Q, S>(output, config));
 
     handle
         .await
@@ -52,7 +51,6 @@ where
 async fn task_main_loop<TMessage, I, Q, S>(
     output: CmpInOut<TMessage>,
     config: Config<TMessage, I, Q, S>,
-    cache: Cache<TMessage>,
 ) -> Result
 where
     TMessage: MsgDataBound + 'static,
@@ -65,7 +63,7 @@ where
     loop {
         trace!("Start PLC cycle");
         let begin = Instant::now();
-        task_main::<TMessage, I, Q, S>(&output, &config, &mut fb_main, cache.clone()).await?;
+        task_main::<TMessage, I, Q, S>(&output, &config, &mut fb_main).await?;
         let elapsed = begin.elapsed();
         trace!("End PLC cycle, elapsed: {:?}", elapsed);
         let sleep_time = if config.period <= elapsed {
@@ -81,7 +79,6 @@ async fn task_main<TMessage, I, Q, S>(
     output: &CmpInOut<TMessage>,
     config: &Config<TMessage, I, Q, S>,
     fb_main: &mut FunctionBlockBase<I, Q, S>,
-    cache: Cache<TMessage>,
 ) -> Result
 where
     TMessage: MsgDataBound + 'static,

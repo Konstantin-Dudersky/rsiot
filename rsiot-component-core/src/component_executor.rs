@@ -41,7 +41,6 @@ use crate::{error::ComponentError, types::FnAuth, Cache, CmpInOut, IComponent};
 /// ```
 pub struct ComponentExecutor<TMsg> {
     task_set: JoinSet<Result<(), ComponentError>>,
-    cache: Cache<TMsg>,
     cmp_in_out: CmpInOut<TMsg>,
 }
 
@@ -100,6 +99,7 @@ where
         let cmp_in_out = CmpInOut::new(
             component_input,
             component_output,
+            cache.clone(),
             &config.executor_name,
             AuthPermissions::default(),
             config.fn_auth.clone(),
@@ -107,7 +107,6 @@ where
 
         Self {
             task_set,
-            cache,
             cmp_in_out,
         }
     }
@@ -115,7 +114,7 @@ where
     /// Добавить компонент
     #[cfg(not(feature = "single-thread"))]
     pub fn add_cmp(mut self, mut component: impl IComponent<TMsg> + Send + 'static) -> Self {
-        component.set_interface(self.cmp_in_out.clone(), self.cache.clone());
+        component.set_interface(self.cmp_in_out.clone());
 
         self.task_set.spawn(async move { component.spawn().await });
 

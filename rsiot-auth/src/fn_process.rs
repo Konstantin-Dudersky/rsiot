@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use rsiot_component_core::{Cache, CmpInOut};
+use rsiot_component_core::CmpInOut;
 use rsiot_messages_core::{system_messages::*, *};
 use tokio::time::sleep;
 use tracing::{info, warn};
@@ -11,11 +11,7 @@ use sha2::Sha256;
 
 use crate::{Config, ConfigStore, ConfigStoreItem, Error};
 
-pub async fn fn_process<TMsg>(
-    config: Config,
-    _cache: Cache<TMsg>,
-    in_out: CmpInOut<TMsg>,
-) -> crate::Result<()>
+pub async fn fn_process<TMsg>(config: Config, in_out: CmpInOut<TMsg>) -> crate::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
