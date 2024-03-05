@@ -8,7 +8,7 @@ name = "rsiot"
 readme = "README.md"
 repository.workspace = true
 rust-version.workspace = true
-version = "0.0.66"
+version = "0.0.67"
 
 
 [dependencies]
@@ -66,7 +66,7 @@ influxdb = ["components", "dep:rsiot-influxdb"]
 ## Компонент для создания интерфейсов на базе Leptos
 leptos = ["components", "dep:rsiot-leptos"]
 ## Хранение и загрузка сообщений используя LocalStorage браузера
-localstorage = ["components", "dep:rsiot-localstorage-wasm"]
+localstorage-wasm = ["components", "dep:rsiot-localstorage-wasm"]
 ## Компонент Modbus клиент
 modbus-client = ["components", "dep:rsiot-modbus-client"]
 # Компонент ПЛК
