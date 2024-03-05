@@ -29,6 +29,7 @@ rsiot-http-server = { workspace = true, optional = true }
 rsiot-influxdb = { workspace = true, optional = true }
 rsiot-leptos = { workspace = true, optional = true }
 rsiot-logging = { workspace = true }
+rsiot-localstorage-wasm = { workspace = true, optional = true }
 rsiot-messages-core = { workspace = true, features = ["serde-json"] }
 rsiot-modbus-client = { workspace = true, optional = true }
 rsiot-plc = { workspace = true, optional = true }
@@ -64,6 +65,8 @@ http-server = ["components", "dep:rsiot-http-server"]
 influxdb = ["components", "dep:rsiot-influxdb"]
 ## Компонент для создания интерфейсов на базе Leptos
 leptos = ["components", "dep:rsiot-leptos"]
+## Хранение и загрузка сообщений используя LocalStorage браузера
+localstorage = ["components", "dep:rsiot-localstorage-wasm"]
 ## Компонент Modbus клиент
 modbus-client = ["components", "dep:rsiot-modbus-client"]
 # Компонент ПЛК
@@ -90,6 +93,7 @@ single-thread = [
     "rsiot-http-server?/single-thread",
     "rsiot-influxdb?/single-thread",
     "rsiot-leptos?/single-thread",
+    "rsiot-localstorage-wasm?/single-thread",
     "rsiot-modbus-client?/single-thread",
     "rsiot-plc?/single-thread",
     "rsiot-redis-client?/single-thread",

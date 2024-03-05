@@ -71,10 +71,6 @@ where
     TMessage: MsgDataBound,
 {
     while let Ok(msg) = input.recv_input().await {
-        let msg = match msg {
-            Some(val) => val,
-            None => continue,
-        };
         let text = (fn_send)(&msg).map_err(Error::FnInput)?;
         if let Some(text) = text {
             let text = TungsteniteMessage::Text(text);

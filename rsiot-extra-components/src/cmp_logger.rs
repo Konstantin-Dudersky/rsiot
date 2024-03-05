@@ -46,10 +46,6 @@ where
         _ => format!("{}: ", config.header),
     };
     while let Ok(msg) = in_out.recv_input().await {
-        let msg = match msg {
-            Some(val) => val,
-            None => continue,
-        };
         match config.level {
             Level::TRACE => trace!("{}{:?}", header, msg),
             Level::DEBUG => debug!("{}{:?}", header, msg),

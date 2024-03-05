@@ -39,10 +39,6 @@ where
     TMsg: MsgDataBound + 'static,
 {
     while let Ok(msg) = input.recv_input().await {
-        let msg = match msg {
-            Some(val) => val,
-            None => continue,
-        };
         let datapoints = (config.fn_input)(&msg);
         let datapoints = match datapoints {
             Some(datapoints) => datapoints,

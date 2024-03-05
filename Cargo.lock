@@ -3612,6 +3612,7 @@ dependencies = [
  "rsiot-http-server",
  "rsiot-influxdb",
  "rsiot-leptos",
+ "rsiot-localstorage-wasm",
  "rsiot-logging",
  "rsiot-messages-core",
  "rsiot-modbus-client",
@@ -3805,7 +3806,12 @@ dependencies = [
 name = "rsiot-localstorage-wasm"
 version = "0.0.0"
 dependencies = [
+ "anyhow",
+ "async-trait",
  "gloo",
+ "rsiot-component-core",
+ "rsiot-messages-core",
+ "thiserror",
 ]
 
 [[package]]

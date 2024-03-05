@@ -126,10 +126,6 @@ where
     TMessage: MsgDataBound,
 {
     while let Ok(msg) = in_out.recv_input().await {
-        let msg = match msg {
-            Some(val) => val,
-            None => continue,
-        };
         let request = (input_config.fn_input)(&msg);
         let request = match request {
             Some(val) => val,

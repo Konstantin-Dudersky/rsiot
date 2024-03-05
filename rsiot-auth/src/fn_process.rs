@@ -28,7 +28,6 @@ where
     TMsg: MsgDataBound + 'static,
 {
     while let Ok(msg) = in_out.recv_input().await {
-        let Some(msg) = msg else { continue };
         let msg_response = match msg.data {
             MsgData::System(data) => match data {
                 System::AuthLoginRequest(value) => {

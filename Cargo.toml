@@ -11,6 +11,7 @@ members = [
     "./rsiot-http-client-wasm",
     "./rsiot-http-server",
     "./rsiot-leptos",
+    "./rsiot-localstorage-wasm",
     "./rsiot-logging",
     "./rsiot-macros",
     "./rsiot-messages-core",
@@ -22,7 +23,6 @@ members = [
     "./rsiot-websocket-client",
     "./rsiot-websocket-client-wasm",
     "./rsiot-websocket-server",
-    "rsiot-localstorage-wasm",
 ]
 exclude = ["./rsiot-esp"]
 resolver = "2"
@@ -146,6 +146,7 @@ rsiot-http-client-wasm = { version = "0.0.65", path = "./rsiot-http-client-wasm"
 rsiot-http-server = { version = "0.0.65", path = "./rsiot-http-server" }
 rsiot-influxdb = { version = "0.0.65", path = "./rsiot-influxdb" }
 rsiot-leptos = { version = "0.0.65", path = "./rsiot-leptos" }
+rsiot-localstorage-wasm = { version = "0.0.0", path = "./rsiot-localstorage-wasm" }
 rsiot-logging = { version = "0.0.62", path = "./rsiot-logging" }
 rsiot-macros = { version = "0.0.64", path = "./rsiot-macros" }
 rsiot-messages-core = { version = "0.0.65", path = "./rsiot-messages-core" }

@@ -29,7 +29,6 @@ where
     TMsg: MsgDataBound,
 {
     while let Ok(msg) = in_out.recv_input().await {
-        let Some(msg) = msg else { continue };
         let msgs = derive_item.process(&msg);
         let Some(msgs) = msgs else { continue };
         for msg in msgs {

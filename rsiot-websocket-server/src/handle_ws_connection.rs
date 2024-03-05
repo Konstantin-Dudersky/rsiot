@@ -96,7 +96,6 @@ where
         debug!("Sending cache to client complete");
         // При изменении доступа к системе, отправляем данные снова
         'auth_changed: while let Ok(msg) = in_out.recv_input().await {
-            let Some(msg) = msg else { continue };
             match msg.data {
                 MsgData::System(System::AuthResponseOk(_)) => break 'auth_changed,
                 _ => continue,
@@ -115,10 +114,6 @@ where
 {
     debug!("Sending messages to client started");
     while let Ok(msg) = input.recv_input().await {
-        let msg = match msg {
-            Some(val) => val,
-            None => continue,
-        };
         output.send(msg).await?;
     }
     warn!("Sending messages to client complete");

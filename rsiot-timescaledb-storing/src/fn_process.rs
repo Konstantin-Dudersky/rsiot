@@ -40,10 +40,6 @@ where
         .connect(connection_string.as_str())
         .await?;
     while let Ok(msg) = input.recv_input().await {
-        let msg = match msg {
-            Some(val) => val,
-            None => continue,
-        };
         // TODO
         // let msgs_eav = msg.into_eav();
         // for msg in msgs_eav {

@@ -26,10 +26,6 @@ where
         let mut in_out =
             in_out.clone_with_new_id("cmp_add_output_stream", AuthPermissions::FullAccess);
         while let Ok(msg) = in_out.recv_input().await {
-            let msg = match msg {
-                Some(val) => val,
-                None => continue,
-            };
             config.channel.send(msg.clone()).await.unwrap();
         }
         Ok(())

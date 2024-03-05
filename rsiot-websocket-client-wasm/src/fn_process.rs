@@ -62,10 +62,6 @@ where
     TMsg: MsgDataBound,
 {
     while let Ok(msg) = input.recv_input().await {
-        let msg = match msg {
-            Some(msg) => msg,
-            None => continue,
-        };
         let ws_msg = (config.fn_input)(&msg).map_err(Error::FnInput)?;
         let ws_msg = match ws_msg {
             Some(val) => val,

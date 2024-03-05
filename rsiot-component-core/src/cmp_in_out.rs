@@ -62,33 +62,35 @@ where
     }
 
     /// Получение сообщений со входа
-    pub async fn recv_input(&mut self) -> Result<Option<Message<TMsg>>, ComponentError> {
-        let msg = self
-            .input
-            .recv()
-            .await
-            .map_err(|e| ComponentError::CmpInput(e.to_string()))?;
+    pub async fn recv_input(&mut self) -> Result<Message<TMsg>, ComponentError> {
+        loop {
+            let msg = self
+                .input
+                .recv()
+                .await
+                .map_err(|e| ComponentError::CmpInput(e.to_string()))?;
 
-        // Обновляем уровень авторизации при получении системного сообщения. Пропускаем сообщение,
-        // если запрос на авторизацию не проходил через данный компонент
-        if let MsgData::System(System::AuthResponseOk(value)) = &msg.data {
-            if !value.trace_ids.contains(&self.id) {
-                return Ok(None);
+            // Обновляем уровень авторизации при получении системного сообщения. Пропускаем сообщение,
+            // если запрос на авторизацию не проходил через данный компонент
+            if let MsgData::System(System::AuthResponseOk(value)) = &msg.data {
+                if !value.trace_ids.contains(&self.id) {
+                    continue;
+                }
+                self.auth_perm = max(self.auth_perm, value.perm);
             }
-            self.auth_perm = max(self.auth_perm, value.perm);
+
+            // Если данное сообщение было сгенерировано данным сервисом, пропускаем
+            if msg.contains_trace_item(&self.id) {
+                continue;
+            }
+
+            // Если нет авторизации, пропускаем
+            let Some(msg) = (self.fn_auth)(msg, &self.auth_perm) else {
+                continue;
+            };
+
+            return Ok(msg);
         }
-
-        // Если данное сообщение было сгенерировано данным сервисом, пропускаем
-        if msg.contains_trace_item(&self.id) {
-            return Ok(None);
-        }
-
-        // Если нет авторизации, пропускаем
-        let Some(msg) = (self.fn_auth)(msg, &self.auth_perm) else {
-            return Ok(None);
-        };
-
-        Ok(Some(msg))
     }
 
     /// Возвращает копию сообщений из кеша

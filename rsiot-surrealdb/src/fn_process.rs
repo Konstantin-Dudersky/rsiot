@@ -90,10 +90,6 @@ where
     TMsg: MsgDataBound,
 {
     while let Ok(msg) = input.recv_input().await {
-        let msg = match msg {
-            Some(val) => val,
-            None => continue,
-        };
         let query = (input_config.fn_input)(&msg);
         let query = match query {
             Some(val) => val,

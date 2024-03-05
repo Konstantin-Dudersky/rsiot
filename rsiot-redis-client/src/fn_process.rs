@@ -65,10 +65,6 @@ where
     let client = redis::Client::open(config.url.to_string())?;
     let mut connection = client.get_async_connection().await?;
     while let Ok(msg) = input.recv_input().await {
-        let msg = match msg {
-            Some(val) => val,
-            None => continue,
-        };
         let data = (config.fn_input)(&msg).map_err(Error::FnInput)?;
         let data = match data {
             Some(data) => data,

@@ -111,10 +111,6 @@ where
     TMessage: MsgDataBound,
 {
     while let Ok(msg) = in_out.recv_input().await {
-        let msg = match msg {
-            Some(val) => val,
-            None => continue,
-        };
         let http_param = (config.fn_input)(&msg);
         let http_param = match http_param {
             Some(val) => val,

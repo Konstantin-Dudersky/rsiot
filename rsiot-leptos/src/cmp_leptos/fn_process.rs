@@ -1,5 +1,5 @@
 use leptos::*;
-use rsiot_component_core::{Cache, CmpInOut};
+use rsiot_component_core::CmpInOut;
 use rsiot_messages_core::MsgDataBound;
 use tokio::task::JoinSet;
 use tracing::debug;
@@ -42,10 +42,6 @@ where
     TMsg: MsgDataBound,
 {
     while let Ok(msg) = input.recv_input().await {
-        let msg = match msg {
-            Some(val) => val,
-            None => continue,
-        };
         gs.input.set(Some(msg));
     }
     Ok(())
