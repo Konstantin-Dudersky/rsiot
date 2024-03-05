@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use leptos::*;
 
-use rsiot_component_core::{Cache, CmpInOut, Component, ComponentError, IComponentProcess};
+use rsiot_component_core::{CmpInOut, Component, ComponentError, IComponentProcess};
 use rsiot_messages_core::{AuthPermissions, MsgDataBound};
 
 use super::{fn_process::fn_process, Config};
@@ -19,12 +19,10 @@ where
         &self,
         config: Config<TView, TIntoView>,
         input: CmpInOut<TMsg>,
-        cache: Cache<TMsg>,
     ) -> Result<(), ComponentError> {
         fn_process(
             config,
             input.clone_with_new_id("cmp_leptos", AuthPermissions::FullAccess),
-            cache,
         )
         .await?;
         Err(ComponentError::Execution("Stop execution".into()))

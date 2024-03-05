@@ -14,7 +14,7 @@ use crate::{
 pub struct CmpInOut<TMsg> {
     input: CmpInput<TMsg>,
     output: CmpOutput<TMsg>,
-    cache: Cache<TMsg>,
+    pub cache: Cache<TMsg>,
     name: String,
     id: Uuid,
     auth_perm: AuthPermissions,
@@ -91,17 +91,19 @@ where
         Ok(Some(msg))
     }
 
-    pub async fn recv_cache(&self) -> Vec<Message<TMsg>> {
-        let local_cache: Vec<Message<TMsg>>;
-        {
-            let lock = self.cache.read().await;
-            local_cache = lock
-                .values()
-                .cloned()
-                .filter_map(|m| (self.fn_auth)(m, &self.auth_perm))
-                .collect();
-        }
-        local_cache
+    /// Возвращает копию сообщений из кеша
+    pub async fn recv_cache_all(&self) -> Vec<Message<TMsg>> {
+        let lock = self.cache.read().await;
+        lock.values()
+            .cloned()
+            .filter_map(|m| (self.fn_auth)(m, &self.auth_perm))
+            .collect()
+    }
+
+    /// Возвращает сообщение из кеша по ключу
+    pub async fn recv_cache_msg(&self, key: &str) -> Option<Message<TMsg>> {
+        let cache = self.cache.read().await;
+        cache.get(key).map(|m| m.to_owned())
     }
 
     /// Отправка сообщений на выход

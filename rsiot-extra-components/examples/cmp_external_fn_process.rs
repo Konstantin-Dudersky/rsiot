@@ -18,9 +18,7 @@ use futures::future::LocalBoxFuture;
 use tokio::{main, task::LocalSet, time::sleep};
 use tracing::{info, level_filters::LevelFilter};
 
-use rsiot_component_core::{
-    Cache, CmpInOut, ComponentExecutor, ComponentExecutorConfig, ComponentResult,
-};
+use rsiot_component_core::{CmpInOut, ComponentExecutor, ComponentExecutorConfig, ComponentResult};
 use rsiot_extra_components::cmp_external_fn_process;
 use rsiot_messages_core::{example_message::*, *};
 
@@ -50,7 +48,7 @@ async fn main() {
     task_set.await;
 }
 
-async fn fn_process<TMsg>(_input: CmpInOut<TMsg>, _cache: Cache<TMsg>) -> ComponentResult {
+async fn fn_process<TMsg>(_input: CmpInOut<TMsg>) -> ComponentResult {
     loop {
         info!("External fn process");
         sleep(Duration::from_secs(2)).await;
@@ -58,23 +56,17 @@ async fn fn_process<TMsg>(_input: CmpInOut<TMsg>, _cache: Cache<TMsg>) -> Compon
 }
 
 #[cfg(feature = "single-thread")]
-fn fn_process_wrapper<TMsg>(
-    input: CmpInOut<TMsg>,
-    cache: Cache<TMsg>,
-) -> LocalBoxFuture<'static, ComponentResult>
+fn fn_process_wrapper<TMsg>(input: CmpInOut<TMsg>) -> LocalBoxFuture<'static, ComponentResult>
 where
     TMsg: MsgDataBound + 'static,
 {
-    Box::pin(async { fn_process(input, cache).await })
+    Box::pin(async { fn_process(input).await })
 }
 
 #[cfg(not(feature = "single-thread"))]
-fn fn_process_wrapper<TMsg>(
-    input: CmpInOut<TMsg>,
-    cache: Cache<TMsg>,
-) -> BoxFuture<'static, ComponentResult>
+fn fn_process_wrapper<TMsg>(input: CmpInOut<TMsg>) -> BoxFuture<'static, ComponentResult>
 where
     TMsg: MsgDataBound + 'static,
 {
-    Box::pin(async { fn_process(input, cache).await })
+    Box::pin(async { fn_process(input).await })
 }

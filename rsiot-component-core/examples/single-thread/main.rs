@@ -22,7 +22,7 @@ async fn main() {
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
         executor_name: "example_single_thread".into(),
-        fn_auth: |_| None,
+        fn_auth: |_, _| None,
     };
 
     local_set.spawn_local(async {

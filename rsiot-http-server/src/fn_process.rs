@@ -28,7 +28,7 @@ where
     info!("Component started, configuration: {:?}", config);
     // общее состояние
     let shared_state = Arc::new(SharedState {
-        output,
+        cmp_interface: output,
         config: config.clone(),
     });
     loop {

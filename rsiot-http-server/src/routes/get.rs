@@ -2,6 +2,8 @@ use std::sync::Arc;
 
 use axum::extract;
 
+use rsiot_messages_core::*;
+
 use crate::{error::Error, shared_state::SharedState};
 
 /// Маршрут для получения сообщений
@@ -10,14 +12,13 @@ pub async fn get<TMsg>(
     extract::State(shared_state): extract::State<Arc<SharedState<TMsg>>>,
 ) -> Result<String, Error>
 where
-    TMsg: Clone,
+    TMsg: MsgDataBound,
 {
-    let msg;
-    {
-        let lock = shared_state.cache.read().await;
-        msg = lock.get(&key).map(|m| m.to_owned());
-    }
-    let msg = msg.ok_or(Error::UnknownMessageKey(key))?;
+    let msg = shared_state
+        .cmp_interface
+        .recv_cache_msg(&key)
+        .await
+        .ok_or(Error::UnknownMessageKey(key))?;
     let json = (shared_state.config.fn_input)(&msg).map_err(Error::FnOutput)?;
     let json = match json {
         Some(json) => json,

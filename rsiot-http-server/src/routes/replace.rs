@@ -20,7 +20,7 @@ where
         None => return Ok(()),
     };
     shared_state
-        .output
+        .cmp_interface
         .send_output(msg)
         .await
         .map_err(Error::CmpOutput)?;

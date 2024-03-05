@@ -14,7 +14,7 @@ use gloo::timers::future::sleep;
 #[cfg(not(target_arch = "wasm32"))]
 use tokio::time::sleep;
 
-use rsiot_component_core::{Cache, CmpInOut, ComponentError};
+use rsiot_component_core::{CmpInOut, ComponentError};
 use rsiot_messages_core::MsgDataBound;
 
 use crate::{
@@ -37,7 +37,7 @@ where
     FunctionBlockBase<I, Q, S>: IFunctionBlock<I, Q, S>,
 {
     #[cfg(feature = "single-thread")]
-    let handle = spawn_local(task_main_loop::<TMessage, I, Q, S>(output, config, cache));
+    let handle = spawn_local(task_main_loop::<TMessage, I, Q, S>(output, config));
 
     #[cfg(not(feature = "single-thread"))]
     let handle = spawn(task_main_loop::<TMessage, I, Q, S>(output, config));
@@ -89,9 +89,9 @@ where
 {
     let mut input = I::default();
     {
-        let cache = cache.read().await;
-        for msg in cache.values() {
-            (config.fn_input)(&mut input, msg);
+        let cache = output.recv_cache_all().await;
+        for msg in cache {
+            (config.fn_input)(&mut input, &msg);
         }
     }
     fb_main.call(input);

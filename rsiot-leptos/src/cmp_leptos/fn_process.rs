@@ -11,7 +11,6 @@ use super::Config;
 pub async fn fn_process<TMsg, TView, TIntoView>(
     config: Config<TView, TIntoView>,
     in_out: CmpInOut<TMsg>,
-    cache: Cache<TMsg>,
 ) -> crate::Result
 where
     TMsg: MsgDataBound + 'static,
@@ -22,7 +21,7 @@ where
         hostname: config.hostname,
         input: create_rw_signal(None),
         output: create_rw_signal(None),
-        cache,
+        cache: in_out.cache.clone(),
     });
     let gs = use_context::<GlobalState<TMsg>>().expect("No global state");
 

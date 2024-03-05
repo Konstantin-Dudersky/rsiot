@@ -89,7 +89,7 @@ where
 {
     loop {
         debug!("Sending cache to client started");
-        let local_cache = in_out.recv_cache().await;
+        let local_cache = in_out.recv_cache_all().await;
         for msg in local_cache {
             output.send(msg).await?;
         }

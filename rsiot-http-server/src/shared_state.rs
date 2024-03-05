@@ -6,6 +6,6 @@ pub struct SharedState<TMsg>
 where
     TMsg: Clone,
 {
-    pub output: CmpInOut<TMsg>,
+    pub cmp_interface: CmpInOut<TMsg>,
     pub config: Config<TMsg>,
 }

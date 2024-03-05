@@ -123,7 +123,7 @@ where
     /// Добавить компонент (?Send)
     #[cfg(feature = "single-thread")]
     pub fn add_cmp(mut self, mut component: impl IComponent<TMsg> + 'static) -> Self {
-        component.set_interface(self.cmp_in_out.clone(), self.cache.clone());
+        component.set_interface(self.cmp_in_out.clone());
 
         self.task_set
             .spawn_local(async move { component.spawn().await });

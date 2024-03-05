@@ -152,7 +152,7 @@ mod tests {
         use tokio::time::sleep;
         use tracing::info;
 
-        use rsiot_component_core::{Cache, CmpInOut, ComponentResult};
+        use rsiot_component_core::{CmpInOut, ComponentResult};
         use rsiot_messages_core::{example_message::*, *};
 
         fn fn_process_wrapper<TMsg>(
