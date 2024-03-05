@@ -29,7 +29,6 @@ rsiot-http-server = { workspace = true, optional = true }
 rsiot-influxdb = { workspace = true, optional = true }
 rsiot-leptos = { workspace = true, optional = true }
 rsiot-logging = { workspace = true }
-rsiot-localstorage-wasm = { workspace = true, optional = true }
 rsiot-messages-core = { workspace = true, features = ["serde-json"] }
 rsiot-modbus-client = { workspace = true, optional = true }
 rsiot-plc = { workspace = true, optional = true }
@@ -39,6 +38,7 @@ rsiot-websocket-client = { workspace = true, optional = true }
 rsiot-websocket-client-wasm = { workspace = true, optional = true }
 rsiot-websocket-server = { workspace = true, optional = true }
 rsiot-timescaledb-storing = { workspace = true, optional = true }
+rsiot-webstorage = { workspace = true, optional = true }
 
 
 [dev-dependencies]
@@ -65,8 +65,6 @@ http-server = ["components", "dep:rsiot-http-server"]
 influxdb = ["components", "dep:rsiot-influxdb"]
 ## Компонент для создания интерфейсов на базе Leptos
 leptos = ["components", "dep:rsiot-leptos"]
-## Хранение и загрузка сообщений используя LocalStorage браузера
-localstorage-wasm = ["components", "dep:rsiot-localstorage-wasm"]
 ## Компонент Modbus клиент
 modbus-client = ["components", "dep:rsiot-modbus-client"]
 # Компонент ПЛК
@@ -83,6 +81,8 @@ websocket-client = ["components", "dep:rsiot-websocket-client"]
 websocket-client-wasm = ["components", "dep:rsiot-websocket-client-wasm"]
 ## Компонент websocket сервера
 websocket-server = ["components", "dep:rsiot-websocket-server"]
+## Хранение и загрузка сообщений используя Web Storage API браузера
+webstorage = ["components", "dep:rsiot-webstorage"]
 ## Работа в одном потоке, в LocalSet
 single-thread = [
     "rsiot-auth?/single-thread",
@@ -93,7 +93,6 @@ single-thread = [
     "rsiot-http-server?/single-thread",
     "rsiot-influxdb?/single-thread",
     "rsiot-leptos?/single-thread",
-    "rsiot-localstorage-wasm?/single-thread",
     "rsiot-modbus-client?/single-thread",
     "rsiot-plc?/single-thread",
     "rsiot-redis-client?/single-thread",
@@ -102,6 +101,7 @@ single-thread = [
     "rsiot-websocket-client?/single-thread",
     "rsiot-websocket-client-wasm?/single-thread",
     "rsiot-websocket-server?/single-thread",
+    "rsiot-webstorage?/single-thread",
 ]
 
 

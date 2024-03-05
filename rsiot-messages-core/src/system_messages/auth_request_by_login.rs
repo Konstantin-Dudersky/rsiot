@@ -2,12 +2,12 @@ use serde::{Deserialize, Serialize};
 
 /// Вход в систему по логину и паролю
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub struct AuthLoginRequest {
+pub struct AuthRequestByLogin {
     pub login: String,
     pub password: String,
 }
 
-impl AuthLoginRequest {
+impl AuthRequestByLogin {
     pub fn new(login: &str, password: &str) -> Self {
         Self {
             login: login.to_string(),

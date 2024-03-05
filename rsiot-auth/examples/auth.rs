@@ -21,11 +21,11 @@ async fn main() -> anyhow::Result<()> {
     let inject_periodic_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(4),
         fn_periodic: move || {
-            let value = AuthLoginRequest {
+            let value = AuthRequestByLogin {
                 login: "admin".to_string(),
                 password: "admin".to_string(),
             };
-            let msg = message_new!("System-AuthLoginRequest::value");
+            let msg = message_new!("System-AuthRequestByLogin::value");
             vec![msg]
         },
     };

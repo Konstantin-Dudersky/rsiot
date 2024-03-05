@@ -3612,7 +3612,6 @@ dependencies = [
  "rsiot-http-server",
  "rsiot-influxdb",
  "rsiot-leptos",
- "rsiot-localstorage-wasm",
  "rsiot-logging",
  "rsiot-messages-core",
  "rsiot-modbus-client",
@@ -3623,6 +3622,7 @@ dependencies = [
  "rsiot-websocket-client",
  "rsiot-websocket-client-wasm",
  "rsiot-websocket-server",
+ "rsiot-webstorage",
  "tokio",
  "url",
 ]
@@ -3800,18 +3800,6 @@ dependencies = [
  "tracing-subscriber",
  "url",
  "web-sys",
-]
-
-[[package]]
-name = "rsiot-localstorage-wasm"
-version = "0.0.66"
-dependencies = [
- "anyhow",
- "async-trait",
- "gloo",
- "rsiot-component-core",
- "rsiot-messages-core",
- "thiserror",
 ]
 
 [[package]]
@@ -3996,6 +3984,18 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "url",
+]
+
+[[package]]
+name = "rsiot-webstorage"
+version = "0.0.66"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "gloo",
+ "rsiot-component-core",
+ "rsiot-messages-core",
+ "thiserror",
 ]
 
 [[package]]

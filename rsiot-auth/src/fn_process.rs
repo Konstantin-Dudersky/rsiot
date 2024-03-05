@@ -30,7 +30,7 @@ where
     while let Ok(msg) = in_out.recv_input().await {
         let msg_response = match msg.data {
             MsgData::System(data) => match data {
-                System::AuthLoginRequest(value) => {
+                System::AuthRequestByLogin(value) => {
                     process_login_request(value, &config, msg.trace).await?
                 }
                 _ => continue,
@@ -46,7 +46,7 @@ where
 }
 
 async fn process_login_request<TMsg>(
-    login_request: AuthLoginRequest,
+    login_request: AuthRequestByLogin,
     config: &Config,
     msg_trace: MsgTrace,
 ) -> crate::Result<Message<TMsg>>

@@ -11,7 +11,7 @@ members = [
     "./rsiot-http-client-wasm",
     "./rsiot-http-server",
     "./rsiot-leptos",
-    "./rsiot-localstorage-wasm",
+    "./rsiot-webstorage",
     "./rsiot-logging",
     "./rsiot-macros",
     "./rsiot-messages-core",
@@ -146,7 +146,6 @@ rsiot-http-client-wasm = { version = "0.0.66", path = "./rsiot-http-client-wasm"
 rsiot-http-server = { version = "0.0.66", path = "./rsiot-http-server" }
 rsiot-influxdb = { version = "0.0.66", path = "./rsiot-influxdb" }
 rsiot-leptos = { version = "0.0.66", path = "./rsiot-leptos" }
-rsiot-localstorage-wasm = { version = "0.0.66", path = "./rsiot-localstorage-wasm" }
 rsiot-logging = { version = "0.0.62", path = "./rsiot-logging" }
 rsiot-macros = { version = "0.0.64", path = "./rsiot-macros" }
 rsiot-messages-core = { version = "0.0.66", path = "./rsiot-messages-core" }
@@ -158,3 +157,4 @@ rsiot-timescaledb-storing = { version = "0.0.66", path = "./rsiot-timescaledb-st
 rsiot-websocket-client = { version = "0.0.66", path = "./rsiot-websocket-client" }
 rsiot-websocket-client-wasm = { version = "0.0.66", path = "./rsiot-websocket-client-wasm" }
 rsiot-websocket-server = { version = "0.0.66", path = "./rsiot-websocket-server" }
+rsiot-webstorage = { version = "0.0.66", path = "./rsiot-webstorage" }

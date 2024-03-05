@@ -181,9 +181,6 @@ pub mod components {
     #[cfg(feature = "leptos")]
     pub use rsiot_leptos as cmp_leptos;
 
-    #[cfg(feature = "localstorage-wasm")]
-    pub use rsiot_localstorage_wasm as cmp_localstorage_wasm;
-
     #[cfg(feature = "modbus-client")]
     pub use rsiot_modbus_client::cmp_modbus_client;
 
@@ -207,6 +204,9 @@ pub mod components {
 
     #[cfg(feature = "websocket-server")]
     pub use rsiot_websocket_server::cmp_websocket_server;
+
+    #[cfg(feature = "webstorage")]
+    pub use rsiot_webstorage as cmp_webstorage;
 }
 
 #[cfg(feature = "env-vars")]
