@@ -171,7 +171,7 @@ where
     debug!("Internal task of ComponentExecutor: starting");
     while let Some(mut msg) = input.recv().await {
         trace!("Internal task of ComponentExecutor: new message: {:?}", msg);
-        msg.add_trace_item(&executor_id, &executor_name);
+        msg.add_trace_item(&executor_id, &format!("{executor_name}::internal_bus"));
         save_msg_in_cache(&msg, &cache).await;
         output.send(msg).map_err(|err| {
             let err = format!(
