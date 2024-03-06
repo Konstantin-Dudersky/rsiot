@@ -6,10 +6,10 @@ use tokio::time::sleep;
 use tracing::{info, warn};
 
 use hmac::{Hmac, Mac};
-use jwt::SignWithKey;
+use jwt::{SignWithKey, VerifyWithKey};
 use sha2::Sha256;
 
-use crate::{Config, ConfigStore, ConfigStoreItem, Error};
+use crate::{token_payload::TokenPayload, Config, ConfigStore, ConfigStoreItem, Error};
 
 pub async fn fn_process<TMsg>(config: Config, in_out: CmpInOut<TMsg>) -> crate::Result<()>
 where
@@ -31,55 +31,82 @@ where
         let msg_response = match msg.data {
             MsgData::System(data) => match data {
                 System::AuthRequestByLogin(value) => {
-                    process_login_request(value, &config, msg.trace).await?
+                    process_request_by_login(value, &config, msg.trace).await
+                }
+                System::AuthRequestByToken(value) => {
+                    process_request_by_token(value, &config, msg.trace).await
                 }
                 _ => continue,
             },
             _ => continue,
         };
-        in_out
-            .send_output(msg_response)
-            .await
-            .map_err(Error::CmpOutput)?;
+        let msg = match msg_response {
+            Ok(msg) => {
+                info!("Success login: {:?}", msg);
+                msg
+            }
+            Err(err) => {
+                warn!("Wrong login attempt: {}", err);
+                let value = AuthResponseErr {
+                    error: err.to_string(),
+                };
+                message_new!("System-AuthResponseErr::value")
+            }
+        };
+        in_out.send_output(msg).await.map_err(Error::CmpOutput)?;
     }
     Ok(())
 }
 
-async fn process_login_request<TMsg>(
-    login_request: AuthRequestByLogin,
+/// Обработка запроса по токену
+async fn process_request_by_token<TMsg>(
+    request_by_login: AuthRequestByToken,
     config: &Config,
     msg_trace: MsgTrace,
 ) -> crate::Result<Message<TMsg>>
 where
     TMsg: MsgDataBound,
 {
-    let valid_password = get_credentials(&login_request.login, config).await?;
+    let key: Hmac<Sha256> = Hmac::new_from_slice(config.secret_key.as_bytes())?;
+    let claims: TokenPayload = request_by_login.token.verify_with_key(&key)?;
+
+    let trace_ids = msg_trace.get_ids();
+    let value = AuthResponseOk {
+        token: request_by_login.token,
+        perm: claims.role,
+        trace_ids,
+        login: claims.login,
+    };
+    let msg = message_new!("System-AuthResponseOk::value");
+    Ok(msg)
+}
+
+/// Обработка запроса по логину-паролю
+async fn process_request_by_login<TMsg>(
+    request_by_login: AuthRequestByLogin,
+    config: &Config,
+    msg_trace: MsgTrace,
+) -> crate::Result<Message<TMsg>>
+where
+    TMsg: MsgDataBound,
+{
+    let valid_password = get_credentials(&request_by_login.login, config).await?;
 
     // Пользователь не найден
-    let valid_password = match valid_password {
-        Some(valid_password) => valid_password,
-        None => {
-            let error = format!("Unknown user: {}", login_request.login);
-            let value = AuthResponseErr { error };
-            let msg = message_new!("System-AuthResponseErr::value");
-            return Ok(msg);
-        }
-    };
+    let valid_password = valid_password.ok_or(Error::ProcessRequest("Unknown user".into()))?;
 
     // Пароль не подходит
-    if valid_password.password != login_request.password {
-        let error = "Wrong password".to_string();
-        let value = AuthResponseErr { error };
-        let msg = message_new!("System-AuthResponseErr::value");
-        return Ok(msg);
+    if valid_password.password != request_by_login.password {
+        return Err(Error::ProcessRequest("Wrong password".into()));
     }
 
     // Генерируем jwt
-    let key: Hmac<Sha256> = Hmac::new_from_slice(config.secret_key.as_bytes()).unwrap();
-    let claims = AuthTokenPayload {
-        role: AuthPermissions::Admin,
+    let key: Hmac<Sha256> = Hmac::new_from_slice(config.secret_key.as_bytes())?;
+    let claims = TokenPayload {
+        login: request_by_login.login.clone(),
+        role: valid_password.role,
     };
-    let token = claims.sign_with_key(&key).unwrap();
+    let token = claims.sign_with_key(&key)?;
 
     let trace_ids = msg_trace.get_ids();
 
@@ -87,7 +114,7 @@ where
         token,
         perm: valid_password.role,
         trace_ids,
-        login: login_request.login,
+        login: request_by_login.login,
     };
     let msg = message_new!("System-AuthResponseOk::value");
     Ok(msg)

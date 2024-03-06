@@ -57,7 +57,7 @@ where
             name,
             id,
             auth_perm,
-            fn_auth: self.fn_auth.clone(),
+            fn_auth: self.fn_auth,
         }
     }
 
@@ -70,8 +70,8 @@ where
                 .await
                 .map_err(|e| ComponentError::CmpInput(e.to_string()))?;
 
-            // Обновляем уровень авторизации при получении системного сообщения. Пропускаем сообщение,
-            // если запрос на авторизацию не проходил через данный компонент
+            // Обновляем уровень авторизации при получении системного сообщения. Пропускаем
+            // сообщение, если запрос на авторизацию не проходил через данный компонент
             if let MsgData::System(System::AuthResponseOk(value)) = &msg.data {
                 if !value.trace_ids.contains(&self.id) {
                     continue;
@@ -85,10 +85,11 @@ where
             }
 
             // Если нет авторизации, пропускаем
-            let Some(msg) = (self.fn_auth)(msg, &self.auth_perm) else {
+            let Some(mut msg) = (self.fn_auth)(msg, &self.auth_perm) else {
                 continue;
             };
 
+            msg.add_trace_item(&self.id, &self.name);
             return Ok(msg);
         }
     }
@@ -134,8 +135,8 @@ where
             cache: self.cache.clone(),
             id: self.id,
             name: self.name.clone(),
-            auth_perm: self.auth_perm.clone(),
-            fn_auth: self.fn_auth.clone(),
+            auth_perm: self.auth_perm,
+            fn_auth: self.fn_auth,
         }
     }
 }

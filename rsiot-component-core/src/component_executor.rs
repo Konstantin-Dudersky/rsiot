@@ -102,7 +102,7 @@ where
             cache.clone(),
             &config.executor_name,
             AuthPermissions::default(),
-            config.fn_auth.clone(),
+            config.fn_auth,
         );
 
         Self {

@@ -52,7 +52,7 @@ components = [
     "dep:rsiot-component-core",
 ]
 ## Компонент аутентификации
-auth = ["dep:rsiot-auth"]
+auth = ["components", "dep:rsiot-auth"]
 ## Конфигурирование через переменные
 env-vars = ["dep:rsiot-env-vars"]
 ## Компонент http-клиент

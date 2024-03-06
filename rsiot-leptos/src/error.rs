@@ -10,6 +10,9 @@ pub enum Error {
 
     #[error(transparent)]
     CmpOutput(rsiot_component_core::ComponentError),
+
+    #[error("Storage: {0}")]
+    Storage(#[from] gloo::storage::errors::StorageError),
 }
 
 impl From<Error> for ComponentError {

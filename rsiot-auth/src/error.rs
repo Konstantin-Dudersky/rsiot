@@ -1,3 +1,5 @@
+use hmac::digest::InvalidLength;
+
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("TokioTaskJoinError: {0}")]
@@ -5,4 +7,13 @@ pub enum Error {
 
     #[error("CmpOutput: {0}")]
     CmpOutput(rsiot_component_core::ComponentError),
+
+    #[error("ProcessRequest: {0}")]
+    ProcessRequest(String),
+
+    #[error("Hmac error: {0}")]
+    Hmac(#[from] InvalidLength),
+
+    #[error("Jwt error: {0}")]
+    Jwt(#[from] jwt::Error),
 }

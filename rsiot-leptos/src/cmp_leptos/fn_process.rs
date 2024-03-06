@@ -1,3 +1,4 @@
+use gloo::storage::{LocalStorage, Storage};
 use leptos::*;
 use tokio::task::JoinSet;
 use tracing::debug;
@@ -50,10 +51,12 @@ where
         // Разрешения
         match &msg.data {
             MsgData::System(System::AuthResponseOk(value)) => {
-                global_state.auth_perm.set(value.perm)
+                global_state.auth_perm.set(value.perm);
+                LocalStorage::set(&msg.key, &msg)?;
             }
             MsgData::System(System::AuthResponseErr(_)) => {
-                global_state.auth_perm.set(AuthPermissions::NoAccess)
+                global_state.auth_perm.set(AuthPermissions::NoAccess);
+                LocalStorage::delete(&msg.key);
             }
             _ => (),
         }
@@ -67,6 +70,10 @@ async fn task_output<TMsg>(output: CmpInOut<TMsg>, gs: GlobalState<TMsg>) -> cra
 where
     TMsg: MsgDataBound,
 {
+    if let Some(msg) = try_to_find_token() {
+        output.send_output(msg).await.map_err(Error::CmpOutput)?;
+    }
+
     let (tx, mut rx) = tokio::sync::mpsc::channel(100);
 
     create_effect(move |_| {
@@ -83,4 +90,22 @@ where
     }
 
     Ok(())
+}
+
+/// Пробуем найти токен в LocalStorage.
+///
+/// Если токен присутствует, отправляем запрос на проверку токена
+fn try_to_find_token<TMsg>() -> Option<Message<TMsg>>
+where
+    TMsg: MsgDataBound,
+{
+    let msg: Message<TMsg> = LocalStorage::get("System-AuthResponseOk").ok()?;
+    match msg.data {
+        MsgData::System(System::AuthResponseOk(value)) => {
+            let value = AuthRequestByToken { token: value.token };
+            let msg = message_new!("System-AuthRequestByToken::value");
+            Some(msg)
+        }
+        _ => None,
+    }
 }

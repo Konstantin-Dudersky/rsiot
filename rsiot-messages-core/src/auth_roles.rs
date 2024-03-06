@@ -11,8 +11,3 @@ pub enum AuthPermissions {
     #[default]
     FullAccess,
 }
-
-#[derive(Deserialize, Serialize)]
-pub struct AuthTokenPayload {
-    pub role: AuthPermissions,
-}

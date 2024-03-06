@@ -169,6 +169,9 @@ pub mod components {
     #[cfg(feature = "components")]
     pub use rsiot_extra_components::*;
 
+    #[cfg(feature = "auth")]
+    pub use rsiot_auth as cmp_auth;
+
     #[cfg(feature = "http-client")]
     pub use rsiot_http_client::cmp_http_client;
 

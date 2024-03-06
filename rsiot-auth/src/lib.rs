@@ -4,6 +4,7 @@ mod component;
 mod config;
 mod error;
 mod fn_process;
+mod token_payload;
 
 pub use component::Cmp;
 pub use config::{Config, ConfigStore, ConfigStoreItem};

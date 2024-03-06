@@ -8,14 +8,14 @@ use uuid::Uuid;
 use crate::Timestamp;
 
 #[derive(Debug, Clone, Deserialize, PartialEq, Serialize)]
-pub struct MsgTrace(Vec<TraceValue>);
-
-#[derive(Debug, Clone, Deserialize, PartialEq, Serialize)]
 struct TraceValue {
     id: Uuid,
     ts: Timestamp,
     name: String,
 }
+
+#[derive(Debug, Default, Clone, Deserialize, PartialEq, Serialize)]
+pub struct MsgTrace(Vec<TraceValue>);
 
 impl MsgTrace {
     pub fn generate_uuid() -> Uuid {
@@ -35,11 +35,5 @@ impl MsgTrace {
     /// Возвращает все идентификаторы пути сообщения
     pub fn get_ids(self) -> HashSet<Uuid> {
         self.0.iter().map(|i| i.id).collect()
-    }
-}
-
-impl Default for MsgTrace {
-    fn default() -> Self {
-        Self(Default::default())
     }
 }

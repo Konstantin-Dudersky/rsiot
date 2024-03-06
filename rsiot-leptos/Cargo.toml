@@ -18,6 +18,7 @@ tokio = { workspace = true }
 tracing = { workspace = true }
 url = { workspace = true }
 
+gloo = { workspace = true }
 leptos = { workspace = true }
 web-sys = { workspace = true }
 
