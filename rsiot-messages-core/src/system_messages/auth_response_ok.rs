@@ -16,4 +16,6 @@ pub struct AuthResponseOk {
 
     /// Идентификаторы компонентов, через которые сообщение было получено
     pub trace_ids: HashSet<Uuid>,
+
+    pub login: String,
 }

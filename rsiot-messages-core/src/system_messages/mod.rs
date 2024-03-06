@@ -5,7 +5,7 @@ mod auth_response_ok;
 
 pub use auth_request_by_login::AuthRequestByLogin;
 pub use auth_request_by_token::AuthRequestByToken;
-pub use auth_response_error::AuthResponseError;
+pub use auth_response_error::AuthResponseErr;
 pub use auth_response_ok::AuthResponseOk;
 
 use serde::{Deserialize, Serialize};
@@ -14,6 +14,6 @@ use serde::{Deserialize, Serialize};
 pub enum System {
     AuthRequestByLogin(AuthRequestByLogin),
     AuthRequestByToken(AuthRequestByToken),
-    AuthResponseError(AuthResponseError),
+    AuthResponseErr(AuthResponseErr),
     AuthResponseOk(AuthResponseOk),
 }

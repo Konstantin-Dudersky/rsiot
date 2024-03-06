@@ -60,8 +60,8 @@ where
         Some(valid_password) => valid_password,
         None => {
             let error = format!("Unknown user: {}", login_request.login);
-            let value = AuthResponseError { error };
-            let msg = message_new!("System-AuthResponseError::value");
+            let value = AuthResponseErr { error };
+            let msg = message_new!("System-AuthResponseErr::value");
             return Ok(msg);
         }
     };
@@ -69,8 +69,8 @@ where
     // Пароль не подходит
     if valid_password.password != login_request.password {
         let error = "Wrong password".to_string();
-        let value = AuthResponseError { error };
-        let msg = message_new!("System-AuthResponseError::value");
+        let value = AuthResponseErr { error };
+        let msg = message_new!("System-AuthResponseErr::value");
         return Ok(msg);
     }
 
@@ -87,6 +87,7 @@ where
         token,
         perm: valid_password.role,
         trace_ids,
+        login: login_request.login,
     };
     let msg = message_new!("System-AuthResponseOk::value");
     Ok(msg)

@@ -1,8 +1,9 @@
 use leptos::*;
-use rsiot_component_core::CmpInOut;
-use rsiot_messages_core::MsgDataBound;
 use tokio::task::JoinSet;
 use tracing::debug;
+
+use rsiot_component_core::CmpInOut;
+use rsiot_messages_core::{system_messages::*, *};
 
 use crate::{Error, GlobalState};
 
@@ -22,6 +23,7 @@ where
         input: create_rw_signal(None),
         output: create_rw_signal(None),
         cache: in_out.cache.clone(),
+        auth_perm: create_rw_signal(AuthPermissions::NoAccess),
     });
     let gs = use_context::<GlobalState<TMsg>>().expect("No global state");
 
@@ -37,12 +39,26 @@ where
     Ok(())
 }
 
-async fn task_input<TMsg>(mut input: CmpInOut<TMsg>, gs: GlobalState<TMsg>) -> crate::Result
+async fn task_input<TMsg>(
+    mut input: CmpInOut<TMsg>,
+    global_state: GlobalState<TMsg>,
+) -> crate::Result
 where
     TMsg: MsgDataBound,
 {
     while let Ok(msg) = input.recv_input().await {
-        gs.input.set(Some(msg));
+        // Разрешения
+        match &msg.data {
+            MsgData::System(System::AuthResponseOk(value)) => {
+                global_state.auth_perm.set(value.perm)
+            }
+            MsgData::System(System::AuthResponseErr(_)) => {
+                global_state.auth_perm.set(AuthPermissions::NoAccess)
+            }
+            _ => (),
+        }
+        // Пересылаем сообщение в сигнал
+        global_state.input.set(Some(msg));
     }
     Ok(())
 }

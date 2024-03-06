@@ -1,6 +1,7 @@
 use leptos::*;
+
 use rsiot_component_core::Cache;
-use rsiot_messages_core::{Message, MsgDataBound};
+use rsiot_messages_core::*;
 
 #[derive(Clone)]
 pub struct GlobalState<TMsg>
@@ -18,4 +19,7 @@ where
 
     /// Кеш сообщений
     pub cache: Cache<TMsg>,
+
+    /// Разрешения
+    pub auth_perm: RwSignal<AuthPermissions>,
 }
