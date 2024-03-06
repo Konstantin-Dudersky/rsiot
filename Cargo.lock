@@ -3599,7 +3599,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot"
-version = "0.0.69"
+version = "0.0.70"
 dependencies = [
  "chrono",
  "document-features",
@@ -3629,7 +3629,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-auth"
-version = "0.0.69"
+version = "0.0.70"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3649,7 +3649,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-component-core"
-version = "0.0.69"
+version = "0.0.70"
 dependencies = [
  "async-trait",
  "futures",
@@ -3664,7 +3664,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-components-config"
-version = "0.0.69"
+version = "0.0.70"
 dependencies = [
  "anyhow",
  "http 1.1.0",
@@ -3691,7 +3691,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-extra-components"
-version = "0.0.69"
+version = "0.0.70"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3707,7 +3707,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-http-client"
-version = "0.0.69"
+version = "0.0.70"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3728,7 +3728,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-http-client-wasm"
-version = "0.0.69"
+version = "0.0.70"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3745,7 +3745,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-http-server"
-version = "0.0.69"
+version = "0.0.70"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3765,7 +3765,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-influxdb"
-version = "0.0.69"
+version = "0.0.70"
 dependencies = [
  "async-trait",
  "reqwest",
@@ -3784,7 +3784,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-leptos"
-version = "0.0.69"
+version = "0.0.70"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3828,7 +3828,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-messages-core"
-version = "0.0.69"
+version = "0.0.70"
 dependencies = [
  "chrono",
  "rsiot-macros",
@@ -3840,7 +3840,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-modbus-client"
-version = "0.0.69"
+version = "0.0.70"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3859,7 +3859,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-plc"
-version = "0.0.69"
+version = "0.0.70"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3878,7 +3878,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-redis-client"
-version = "0.0.69"
+version = "0.0.70"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3897,7 +3897,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-surrealdb"
-version = "0.0.69"
+version = "0.0.70"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3914,7 +3914,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-timescaledb-storing"
-version = "0.0.69"
+version = "0.0.70"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3932,7 +3932,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-websocket-client"
-version = "0.0.69"
+version = "0.0.70"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3952,7 +3952,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-websocket-client-wasm"
-version = "0.0.69"
+version = "0.0.70"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3968,7 +3968,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-websocket-server"
-version = "0.0.69"
+version = "0.0.70"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3989,7 +3989,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot-webstorage"
-version = "0.0.69"
+version = "0.0.70"
 dependencies = [
  "anyhow",
  "async-trait",

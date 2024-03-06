@@ -1,6 +1,6 @@
 [package]
 name = "rsiot-redis-client"
-version = "0.0.69"
+version = "0.0.70"
 description = "Подписка и публикация сообщений в Redis"
 categories.workspace = true
 edition.workspace = true
