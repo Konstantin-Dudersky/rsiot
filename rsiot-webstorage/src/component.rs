@@ -18,7 +18,7 @@ where
     ) -> Result<(), ComponentError> {
         fn_process(
             config,
-            in_out.clone_with_new_id("cmp_localstorage_wasm", AuthPermissions::FullAccess),
+            in_out.clone_with_new_id("cmp_webstorage", AuthPermissions::FullAccess),
         )
         .await
         .map_err(|err| ComponentError::Execution(err.to_string()))

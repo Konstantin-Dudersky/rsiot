@@ -31,10 +31,10 @@ where
         let msg_response = match msg.data {
             MsgData::System(data) => match data {
                 System::AuthRequestByLogin(value) => {
-                    process_request_by_login(value, &config, msg.trace).await
+                    process_request_by_login(value, &config, msg.trace.clone()).await
                 }
                 System::AuthRequestByToken(value) => {
-                    process_request_by_token(value, &config, msg.trace).await
+                    process_request_by_token(value, &config, msg.trace.clone()).await
                 }
                 _ => continue,
             },
@@ -47,8 +47,10 @@ where
             }
             Err(err) => {
                 warn!("Wrong login attempt: {}", err);
+                let trace_ids = msg.trace.get_ids();
                 let value = AuthResponseErr {
                     error: err.to_string(),
+                    trace_ids,
                 };
                 message_new!("System-AuthResponseErr::value")
             }

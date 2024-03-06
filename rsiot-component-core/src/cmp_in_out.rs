@@ -30,10 +30,10 @@ where
         output: CmpOutput<TMsg>,
         cache: Cache<TMsg>,
         name: &str,
+        id: Uuid,
         auth_perm: AuthPermissions,
         fn_auth: FnAuth<TMsg>,
     ) -> Self {
-        let id = MsgTrace::generate_uuid();
         info!("Start: {}, id: {}, auth_perm: {:?}", name, id, auth_perm);
         Self {
             input,
@@ -77,6 +77,11 @@ where
                     continue;
                 }
                 self.auth_perm = max(self.auth_perm, value.perm);
+            }
+            if let MsgData::System(System::AuthResponseErr(value)) = &msg.data {
+                if !value.trace_ids.contains(&self.id) {
+                    continue;
+                }
             }
 
             // Если данное сообщение было сгенерировано данным сервисом, пропускаем

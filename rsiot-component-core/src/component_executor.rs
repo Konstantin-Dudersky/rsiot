@@ -1,12 +1,11 @@
-use std::fmt::Debug;
-
 use tokio::{
     sync::{broadcast, mpsc},
     task::JoinSet,
 };
 
-use rsiot_messages_core::*;
+use rsiot_messages_core::{system_messages::*, *};
 use tracing::{debug, error, info, trace, warn};
+use uuid::Uuid;
 
 use crate::{error::ComponentError, types::FnAuth, Cache, CmpInOut, IComponent};
 
@@ -77,6 +76,7 @@ where
     /// Создание коллекции компонентов
     pub fn new(config: ComponentExecutorConfig<TMsg>) -> Self {
         info!("ComponentExecutor start creation");
+        let id = MsgTrace::generate_uuid();
         let (component_input_send, component_input) =
             broadcast::channel::<Message<TMsg>>(config.buffer_size);
         let (component_output, component_output_recv) =
@@ -88,6 +88,8 @@ where
             component_output_recv,
             component_input_send.clone(),
             cache.clone(),
+            config.executor_name.clone(),
+            id,
         );
 
         if cfg!(feature = "single-thread") {
@@ -101,6 +103,7 @@ where
             component_output,
             cache.clone(),
             &config.executor_name,
+            id,
             AuthPermissions::default(),
             config.fn_auth,
         );
@@ -159,26 +162,17 @@ async fn task_internal<TMsg>(
     mut input: mpsc::Receiver<Message<TMsg>>,
     output: broadcast::Sender<Message<TMsg>>,
     cache: Cache<TMsg>,
+    executor_name: String,
+    executor_id: Uuid,
 ) -> Result<(), ComponentError>
 where
-    TMsg: Clone + Debug,
+    TMsg: MsgDataBound,
 {
     debug!("Internal task of ComponentExecutor: starting");
-    while let Some(msg) = input.recv().await {
+    while let Some(mut msg) = input.recv().await {
         trace!("Internal task of ComponentExecutor: new message: {:?}", msg);
-        let key = msg.key.clone();
-        let value = msg.clone();
-        {
-            let mut lock = cache.write().await;
-            // let value_from_cache = lock.get(&key);
-            // if let Some(value_from_cache) = value_from_cache {
-            //     // если в кеше более новое сообщение, отбрасываем
-            //     if value.ts <= value_from_cache.ts {
-            //         continue;
-            //     }
-            // }
-            lock.insert(key, value);
-        }
+        msg.add_trace_item(&executor_id, &executor_name);
+        save_msg_in_cache(&msg, &cache).await;
         output.send(msg).map_err(|err| {
             let err = format!(
                 "Internal task of ComponentExecutor: send to channel error, {:?}",
@@ -189,4 +183,34 @@ where
     }
     warn!("Internal task: stop");
     Ok(())
+}
+
+/// Сохраняем сообщение в кеше
+async fn save_msg_in_cache<TMsg>(msg: &Message<TMsg>, cache: &Cache<TMsg>)
+where
+    TMsg: MsgDataBound,
+{
+    // Фильтруем сообщения авторизации
+    match &msg.data {
+        MsgData::System(data) => match data {
+            System::AuthRequestByLogin(_) => return,
+            System::AuthRequestByToken(_) => return,
+            System::AuthResponseErr(_) => return,
+            System::AuthResponseOk(_) => return,
+        },
+        _ => (),
+    }
+    let key = msg.key.clone();
+    let value = msg.clone();
+    {
+        let mut lock = cache.write().await;
+        // let value_from_cache = lock.get(&key);
+        // if let Some(value_from_cache) = value_from_cache {
+        //     // если в кеше более новое сообщение, отбрасываем
+        //     if value.ts <= value_from_cache.ts {
+        //         continue;
+        //     }
+        // }
+        lock.insert(key, value);
+    }
 }
