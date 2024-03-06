@@ -1,6 +1,6 @@
 [package]
 name = "rsiot-surrealdb"
-version = "0.0.68"
+version = "0.0.69"
 edition = "2021"
 categories.workspace = true
 keywords.workspace = true
