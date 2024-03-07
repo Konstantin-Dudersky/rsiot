@@ -1,11 +1,19 @@
 {
-  "rust-analyzer.cargo.features": ["single-thread", "serde-json"],
-  // "rust-analyzer.cargo.features": ["serde-json"],
+  // -- x86_64, multi-thread
+  // "rust-analyzer.cargo.target": "x86_64-unknown-linux-gnu",
+  // "rust-analyzer.cargo.features": ["serde-json", "cmp_auth"],
 
+  // "rust-analyzer.cargo.features": ["single-thread", "serde-json"],
   // "rust-analyzer.cargo.target": "aarch64-unknown-linux-gnu",
   // "rust-analyzer.cargo.target": "riscv32imc-esp-espidf",
-  "rust-analyzer.cargo.target": "x86_64-unknown-linux-gnu",
-  // "rust-analyzer.cargo.target": "wasm32-unknown-unknown",
+
+  // -- wasm32
+  "rust-analyzer.cargo.target": "wasm32-unknown-unknown",
+  "rust-analyzer.cargo.features": [
+    "cmp_webstorage",
+    "single-thread",
+    "serde-json"
+  ],
 
   "rust-analyzer.showUnlinkedFileNotification": false
 }

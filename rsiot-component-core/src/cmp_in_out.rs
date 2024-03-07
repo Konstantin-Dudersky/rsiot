@@ -1,6 +1,6 @@
 use std::{cmp::max, fmt::Debug};
 
-use tracing::info;
+use tracing::{info, trace};
 use uuid::Uuid;
 
 use rsiot_messages_core::{system_messages::*, *};
@@ -116,8 +116,10 @@ where
 
     /// Отправка сообщений на выход
     pub async fn send_output(&self, msg: Message<TMsg>) -> Result<(), ComponentError> {
+        trace!("Start send to output: {msg:?}");
         // Если нет авторизации, пропускаем
         let Some(mut msg) = (self.fn_auth)(msg, &self.auth_perm) else {
+            trace!("No authorization. Auth: {:?}", self.auth_perm);
             return Ok(());
         };
 

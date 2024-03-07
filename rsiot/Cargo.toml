@@ -12,6 +12,27 @@ version = "0.0.70"
 
 
 [dependencies]
+anyhow = { version = "1.0.80" }
+async-trait = { version = "0.1.77" }
+serde = { version = "1.0.197", features = ["derive"] }
+thiserror = { version = "1.0.57" }
+tracing = { version = "0.1.40", features = ["log"] }
+tracing-subscriber = { version = "0.3.18", features = ["env-filter", "chrono"] }
+
+# cmp_auth
+jwt = { version = "0.16.0", optional = true }
+hmac = { version = "0.12.1", optional = true }
+sha2 = { version = "0.10.8", optional = true }
+
+# cmp_webstorage
+gloo = { version = "0.11.0", features = [
+    "futures",
+    "net",
+    "storage",
+    "timers",
+    "utils",
+], optional = true }
+
 document-features = { workspace = true }
 
 tokio = { workspace = true, optional = true }
@@ -19,7 +40,6 @@ chrono = { workspace = true }
 url = { workspace = true }
 
 
-rsiot-auth = { workspace = true, optional = true }
 rsiot-component-core = { workspace = true, optional = true }
 rsiot-env-vars = { workspace = true, optional = true }
 rsiot-extra-components = { workspace = true, optional = true }
@@ -38,10 +58,10 @@ rsiot-websocket-client = { workspace = true, optional = true }
 rsiot-websocket-client-wasm = { workspace = true, optional = true }
 rsiot-websocket-server = { workspace = true, optional = true }
 rsiot-timescaledb-storing = { workspace = true, optional = true }
-rsiot-webstorage = { workspace = true, optional = true }
 
 
-[dev-dependencies]
+[target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dev-dependencies]
+tokio = { workspace = true, features = ["rt-multi-thread"] }
 
 
 [features]
@@ -51,41 +71,57 @@ components = [
     "dep:rsiot-extra-components",
     "dep:rsiot-component-core",
 ]
+
 ## Компонент аутентификации
-auth = ["components", "dep:rsiot-auth"]
+cmp_auth = ["components", "dep:jwt", "dep:hmac", "dep:sha2"]
+
 ## Конфигурирование через переменные
 env-vars = ["dep:rsiot-env-vars"]
+
 ## Компонент http-клиент
 http-client = ["components", "dep:rsiot-http-client"]
+
 ## Компонент http-клиент для платформы WASM
 http-client-wasm = ["components", "dep:rsiot-http-client-wasm"]
+
 ## Компонент http-сервер
 http-server = ["components", "dep:rsiot-http-server"]
+
 ## Компонент сохранения в БД InfluxDB
 influxdb = ["components", "dep:rsiot-influxdb"]
+
 ## Компонент для создания интерфейсов на базе Leptos
 leptos = ["components", "dep:rsiot-leptos"]
+
 ## Компонент Modbus клиент
 modbus-client = ["components", "dep:rsiot-modbus-client"]
+
 # Компонент ПЛК
 plc = ["components", "dep:rsiot-plc"]
+
 ## Компонент клиента Redis
 redis-client = ["components", "dep:rsiot-redis-client"]
+
 ## Компонент доступа к БД SurrealDB
 surrealdb = ["components", "dep:rsiot-surrealdb"]
+
 ## Компонент сохранения в БД TimescaleDB
 timescaledb-storing = ["components", "dep:rsiot-timescaledb-storing"]
+
 ## Компонент websocket клиента
 websocket-client = ["components", "dep:rsiot-websocket-client"]
+
 ## Компонент websocket клиента
 websocket-client-wasm = ["components", "dep:rsiot-websocket-client-wasm"]
+
 ## Компонент websocket сервера
 websocket-server = ["components", "dep:rsiot-websocket-server"]
+
 ## Хранение и загрузка сообщений используя Web Storage API браузера
-webstorage = ["components", "dep:rsiot-webstorage"]
+cmp_webstorage = ["components", "dep:gloo"]
+
 ## Работа в одном потоке, в LocalSet
 single-thread = [
-    "rsiot-auth?/single-thread",
     "rsiot-component-core?/single-thread",
     "rsiot-extra-components?/single-thread",
     "rsiot-http-client?/single-thread",
@@ -101,7 +137,6 @@ single-thread = [
     "rsiot-websocket-client?/single-thread",
     "rsiot-websocket-client-wasm?/single-thread",
     "rsiot-websocket-server?/single-thread",
-    "rsiot-webstorage?/single-thread",
 ]
 
 

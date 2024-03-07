@@ -583,9 +583,9 @@ checksum = "c59e92b5a388f549b863a7bea62612c09f24c8393560709a54558a9abdfb3b9c"
 
 [[package]]
 name = "cc"
-version = "1.0.89"
+version = "1.0.90"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a0ba8f7aaa012f30d5b2861462f6708eccd49c3c39863fe083a308035f63d723"
+checksum = "8cd6604a82acf3039f1144f54b8eb34e91ffba622051189e71b781822d5ee1f5"
 
 [[package]]
 name = "cedar-policy"
@@ -710,9 +710,9 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.5.1"
+version = "4.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c918d541ef2913577a0f9566e9ce27cb35b6df072075769e0b26cb5a554520da"
+checksum = "b230ab84b0ffdf890d5a10abdbc8b83ae1c4918275daea1ab8801f71536b2651"
 dependencies = [
  "clap_builder",
  "clap_derive",
@@ -720,9 +720,9 @@ dependencies = [
 
 [[package]]
 name = "clap_builder"
-version = "4.5.1"
+version = "4.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9f3e7391dad68afb0c2ede1bf619f579a3dc9c2ec67f089baa397123a2f3d1eb"
+checksum = "ae129e2e766ae0ec03484e609954119f123cc1fe650337e155d03b022f24f7b4"
 dependencies = [
  "anstream",
  "anstyle",
@@ -3601,9 +3601,13 @@ dependencies = [
 name = "rsiot"
 version = "0.0.70"
 dependencies = [
+ "anyhow",
+ "async-trait",
  "chrono",
  "document-features",
- "rsiot-auth",
+ "gloo",
+ "hmac",
+ "jwt",
  "rsiot-component-core",
  "rsiot-env-vars",
  "rsiot-extra-components",
@@ -3622,29 +3626,13 @@ dependencies = [
  "rsiot-websocket-client",
  "rsiot-websocket-client-wasm",
  "rsiot-websocket-server",
- "rsiot-webstorage",
- "tokio",
- "url",
-]
-
-[[package]]
-name = "rsiot-auth"
-version = "0.0.70"
-dependencies = [
- "anyhow",
- "async-trait",
- "hmac",
- "jwt",
- "rsiot-component-core",
- "rsiot-extra-components",
- "rsiot-messages-core",
  "serde",
  "sha2",
  "thiserror",
  "tokio",
  "tracing",
  "tracing-subscriber",
- "uuid",
+ "url",
 ]
 
 [[package]]
