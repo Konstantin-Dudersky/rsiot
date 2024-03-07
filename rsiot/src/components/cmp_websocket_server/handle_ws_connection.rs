@@ -15,7 +15,7 @@ use tracing::{debug, info, trace, warn};
 
 use rsiot_messages_core::{system_messages::*, *};
 
-use crate::{
+use super::{
     config::{Config, FnOutput},
     errors::Error,
 };
@@ -43,7 +43,7 @@ async fn _handle_ws_connection<TMessage>(
     in_out: CmpInOut<TMessage>,
     stream_and_addr: (TcpStream, SocketAddr),
     config: Config<TMessage>,
-) -> crate::Result<()>
+) -> super::Result<()>
 where
     TMessage: MsgDataBound + 'static,
 {
@@ -83,7 +83,7 @@ where
 async fn send_prepare_cache<TMsg>(
     mut in_out: CmpInOut<TMsg>,
     output: mpsc::Sender<Message<TMsg>>,
-) -> crate::Result<()>
+) -> super::Result<()>
 where
     TMsg: MsgDataBound,
 {
@@ -108,7 +108,7 @@ where
 async fn send_prepare_new_msgs<TMessage>(
     mut input: CmpInOut<TMessage>,
     output: mpsc::Sender<Message<TMessage>>,
-) -> crate::Result<()>
+) -> super::Result<()>
 where
     TMessage: MsgDataBound,
 {
@@ -125,7 +125,7 @@ async fn send_to_client<TMessage>(
     mut input: mpsc::Receiver<Message<TMessage>>,
     mut ws_stream_output: SplitSink<WebSocketStream<TcpStream>, TungsteniteMessage>,
     fn_input: fn(&Message<TMessage>) -> anyhow::Result<Option<String>>,
-) -> crate::Result<()> {
+) -> super::Result<()> {
     while let Some(msg) = input.recv().await {
         let text = (fn_input)(&msg).map_err(Error::FnInput)?;
         let text = match text {
@@ -146,7 +146,7 @@ async fn recv_from_client<TMsg>(
     mut ws_stream_input: SplitStream<WebSocketStream<TcpStream>>,
     output: CmpInOut<TMsg>,
     fn_output: FnOutput<TMsg>,
-) -> crate::Result<()>
+) -> super::Result<()>
 where
     TMsg: MsgDataBound,
 {

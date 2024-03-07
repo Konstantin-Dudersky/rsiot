@@ -4,10 +4,7 @@ use tokio::select;
 use tokio_util::sync::CancellationToken;
 use tracing::warn;
 
-pub async fn cancellable_task<T>(
-    future: impl Future<Output = T>,
-    cancel: CancellationToken,
-) -> T
+pub async fn cancellable_task<T>(future: impl Future<Output = T>, cancel: CancellationToken) -> T
 where
     T: Default,
 {

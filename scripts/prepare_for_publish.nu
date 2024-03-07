@@ -7,16 +7,16 @@ def print_header [header: string] {
 # cargo clippy -------------------------------------------------------------------------------------
 
 print_header "workspace clippy - x86_64-unknown-linux-gnu / multi-thread"
-cargo clippy --all-targets --target="x86_64-unknown-linux-gnu" --features="cmp_auth"
+cargo clippy --all-targets --target="x86_64-unknown-linux-gnu" --features="cmp_auth, cmp_websocket_server"
 
 print_header "workspace clippy - x86_64-unknown-linux-gnu / single-thread"
-cargo clippy --all-targets --target="x86_64-unknown-linux-gnu" --features="cmp_auth, single-thread"
+cargo clippy --all-targets --target="x86_64-unknown-linux-gnu" --features="cmp_auth, cmp_websocket_server, single-thread"
 
 print_header "workspace clippy - aarch64-unknown-linux-gnu / multi-thread"
-cargo clippy --all-targets --target="aarch64-unknown-linux-gnu" --features="cmp_auth"
+cargo clippy --all-targets --target="aarch64-unknown-linux-gnu" --features="cmp_auth, cmp_websocket_server"
 
 print_header "workspace clippy - aarch64-unknown-linux-gnu / single-thread"
-cargo clippy --all-targets --target="aarch64-unknown-linux-gnu" --features="cmp_auth, single-thread"
+cargo clippy --all-targets --target="aarch64-unknown-linux-gnu" --features="cmp_auth, cmp_websocket_server, single-thread"
 
 # print_header "workspace clippy - wasm32-unknown-unknown / multi-thread"
 # cargo clippy --all-targets --target="wasm32-unknown-unknown" --features=""

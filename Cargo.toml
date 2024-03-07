@@ -20,7 +20,6 @@ members = [
     "./rsiot-timescaledb-storing",
     "./rsiot-websocket-client",
     "./rsiot-websocket-client-wasm",
-    "./rsiot-websocket-server",
 ]
 exclude = ["./rsiot-esp"]
 resolver = "2"
@@ -36,10 +35,6 @@ rust-version = "1.75.0"
 
 
 [workspace.dependencies]
-jwt = { version = "0.16.0" }
-hmac = { version = "0.12.1" }
-sha2 = { version = "0.10.8" }
-
 openssl = { version = "0.10", features = ["vendored"] }
 
 # async
@@ -153,4 +148,3 @@ rsiot-redis-client = { version = "0.0.71", path = "./rsiot-redis-client" }
 rsiot-timescaledb-storing = { version = "0.0.71", path = "./rsiot-timescaledb-storing" }
 rsiot-websocket-client = { version = "0.0.71", path = "./rsiot-websocket-client" }
 rsiot-websocket-client-wasm = { version = "0.0.71", path = "./rsiot-websocket-client-wasm" }
-rsiot-websocket-server = { version = "0.0.71", path = "./rsiot-websocket-server" }

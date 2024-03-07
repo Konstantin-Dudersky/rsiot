@@ -14,7 +14,7 @@ use tracing::{error, info};
 use rsiot_component_core::{CmpInOut, ComponentError};
 use rsiot_messages_core::{AuthPermissions, MsgDataBound};
 
-use crate::{config::Config, errors::Error};
+use super::{config::Config, errors::Error};
 
 use super::{async_task_utils::cancellable_task, handle_ws_connection::handle_ws_connection};
 
@@ -47,7 +47,7 @@ async fn task_main<TMessage>(
     in_out: CmpInOut<TMessage>,
     config: Config<TMessage>,
     cancel: CancellationToken,
-) -> crate::Result<()>
+) -> super::Result<()>
 where
     TMessage: MsgDataBound + 'static,
 {
@@ -69,7 +69,7 @@ where
     Ok(())
 }
 
-async fn create_tcp_listener(addr: String) -> crate::Result<TcpListener> {
+async fn create_tcp_listener(addr: String) -> super::Result<TcpListener> {
     let listener = TcpListener::bind(&addr).await;
     let listener = match listener {
         Ok(value) => value,

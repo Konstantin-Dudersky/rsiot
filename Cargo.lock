@@ -3605,6 +3605,7 @@ dependencies = [
  "async-trait",
  "chrono",
  "document-features",
+ "futures",
  "gloo",
  "hmac",
  "jwt",
@@ -3625,11 +3626,12 @@ dependencies = [
  "rsiot-timescaledb-storing",
  "rsiot-websocket-client",
  "rsiot-websocket-client-wasm",
- "rsiot-websocket-server",
  "serde",
  "sha2",
  "thiserror",
  "tokio",
+ "tokio-tungstenite 0.21.0",
+ "tokio-util",
  "tracing",
  "tracing-subscriber",
  "url",
@@ -3952,27 +3954,6 @@ dependencies = [
  "thiserror",
  "tokio",
  "tracing",
-]
-
-[[package]]
-name = "rsiot-websocket-server"
-version = "0.0.71"
-dependencies = [
- "anyhow",
- "async-trait",
- "futures",
- "rsiot-component-core",
- "rsiot-components-config",
- "rsiot-extra-components",
- "rsiot-messages-core",
- "serde",
- "thiserror",
- "tokio",
- "tokio-tungstenite 0.21.0",
- "tokio-util",
- "tracing",
- "tracing-subscriber",
- "url",
 ]
 
 [[package]]

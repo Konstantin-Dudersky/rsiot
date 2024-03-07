@@ -1,3 +1,5 @@
+mod components_config;
+
 #[cfg(feature = "components")]
 pub use rsiot_extra_components::*;
 
@@ -38,8 +40,9 @@ pub use rsiot_websocket_client::cmp_websocket_client;
 #[cfg(feature = "websocket-client-wasm")]
 pub use rsiot_websocket_client_wasm::cmp_websocket_client_wasm;
 
-#[cfg(feature = "websocket-server")]
-pub use rsiot_websocket_server::cmp_websocket_server;
+#[cfg(feature = "cmp_websocket_server")]
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+pub mod cmp_websocket_server;
 
 #[cfg(feature = "cmp_webstorage")]
 #[cfg(target_arch = "wasm32")]
