@@ -24,6 +24,11 @@ jwt = { version = "0.16.0", optional = true }
 hmac = { version = "0.12.1", optional = true }
 sha2 = { version = "0.10.8", optional = true }
 
+# cmp_modbus_client
+tokio-modbus = { version = "0.11.0", default-features = false, features = [
+    "tcp",
+], optional = true }
+
 # cmp_webstorage
 gloo = { version = "0.11.0", features = [
     "futures",
@@ -55,7 +60,6 @@ rsiot-influxdb = { workspace = true, optional = true }
 rsiot-leptos = { workspace = true, optional = true }
 rsiot-logging = { workspace = true }
 rsiot-messages-core = { workspace = true, features = ["serde-json"] }
-rsiot-modbus-client = { workspace = true, optional = true }
 rsiot-plc = { workspace = true, optional = true }
 rsiot-redis-client = { workspace = true, optional = true }
 rsiot-surrealdb = { workspace = true, optional = true }
@@ -98,7 +102,7 @@ influxdb = ["components", "dep:rsiot-influxdb"]
 leptos = ["components", "dep:rsiot-leptos"]
 
 ## Компонент Modbus клиент
-modbus-client = ["components", "dep:rsiot-modbus-client"]
+cmp_modbus_client = ["components", "dep:tokio-modbus"]
 
 # Компонент ПЛК
 plc = ["components", "dep:rsiot-plc"]
@@ -138,7 +142,6 @@ single-thread = [
     "rsiot-http-server?/single-thread",
     "rsiot-influxdb?/single-thread",
     "rsiot-leptos?/single-thread",
-    "rsiot-modbus-client?/single-thread",
     "rsiot-plc?/single-thread",
     "rsiot-redis-client?/single-thread",
     "rsiot-surrealdb?/single-thread",

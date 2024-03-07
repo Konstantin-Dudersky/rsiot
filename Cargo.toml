@@ -13,7 +13,6 @@ members = [
     "./rsiot-logging",
     "./rsiot-macros",
     "./rsiot-messages-core",
-    "./rsiot-modbus-client",
     "./rsiot-plc",
     "./rsiot-redis-client",
     "./rsiot-surrealdb",
@@ -141,7 +140,6 @@ rsiot-leptos = { version = "0.0.71", path = "./rsiot-leptos" }
 rsiot-logging = { version = "0.0.62", path = "./rsiot-logging" }
 rsiot-macros = { version = "0.0.64", path = "./rsiot-macros" }
 rsiot-messages-core = { version = "0.0.70", path = "./rsiot-messages-core" }
-rsiot-modbus-client = { version = "0.0.71", path = "./rsiot-modbus-client" }
 rsiot-plc = { version = "0.0.71", path = "./rsiot-plc" }
 rsiot-surrealdb = { version = "0.0.71", path = "./rsiot-surrealdb" }
 rsiot-redis-client = { version = "0.0.71", path = "./rsiot-redis-client" }

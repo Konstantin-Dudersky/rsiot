@@ -7,23 +7,23 @@ def print_header [header: string] {
 # cargo clippy -------------------------------------------------------------------------------------
 
 print_header "workspace clippy - x86_64-unknown-linux-gnu / multi-thread"
-cargo clippy --all-targets --target="x86_64-unknown-linux-gnu" --features="cmp_auth, cmp_websocket_server"
+cargo clippy --all-targets --target="x86_64-unknown-linux-gnu" --features="cmp_auth, cmp_modbus_client, cmp_websocket_server"
 
 print_header "workspace clippy - x86_64-unknown-linux-gnu / single-thread"
-cargo clippy --all-targets --target="x86_64-unknown-linux-gnu" --features="cmp_auth, cmp_websocket_server, single-thread"
+cargo clippy --all-targets --target="x86_64-unknown-linux-gnu" --features="cmp_auth, cmp_modbus_client, cmp_websocket_server, single-thread"
 
 print_header "workspace clippy - aarch64-unknown-linux-gnu / multi-thread"
-cargo clippy --all-targets --target="aarch64-unknown-linux-gnu" --features="cmp_auth, cmp_websocket_server"
+cargo clippy --all-targets --target="aarch64-unknown-linux-gnu" --features="cmp_auth, cmp_modbus_client, cmp_websocket_server"
 
 print_header "workspace clippy - aarch64-unknown-linux-gnu / single-thread"
-cargo clippy --all-targets --target="aarch64-unknown-linux-gnu" --features="cmp_auth, cmp_websocket_server, single-thread"
+cargo clippy --all-targets --target="aarch64-unknown-linux-gnu" --features="cmp_auth, cmp_modbus_client, cmp_websocket_server, single-thread"
 
 # print_header "workspace clippy - wasm32-unknown-unknown / multi-thread"
 # cargo clippy --all-targets --target="wasm32-unknown-unknown" --features=""
 # TODO - настроить проверки по остальным таргетам
 
 print_header "workspace clippy - wasm32-unknown-unknown / single-thread"
-cargo clippy --all-targets --target="wasm32-unknown-unknown" --features="single-thread"
+cargo clippy --all-targets --target="wasm32-unknown-unknown" --features="cmp_webstorage, single-thread"
 
 
 # cargo udeps --------------------------------------------------------------------------------------
@@ -96,12 +96,6 @@ do {
 }
 
 do {
-    print_header "rsiot-modbus-client"
-    cd rsiot-modbus-client
-    cargo rdme --force
-}
-
-do {
     print_header "rsiot-http-server"
     cd rsiot-http-server
     cargo rdme --force
@@ -110,12 +104,6 @@ do {
 do {
     print_header "rsiot-plc"
     cd rsiot-plc
-    cargo rdme --force
-}
-
-do {
-    print_header "rsiot-websocket-server"
-    cd rsiot-websocket-server
     cargo rdme --force
 }
 

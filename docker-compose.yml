@@ -46,7 +46,7 @@ services:
     ports:
       - "5020:5020"
     volumes:
-      - ./rsiot-modbus-client/modbus_server.json:/app/modbus_server.json
+      - ./modbus_server.json:/app/modbus_server.json
 
   # redis
   redis:

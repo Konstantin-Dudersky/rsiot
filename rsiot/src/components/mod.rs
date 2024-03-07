@@ -19,8 +19,9 @@ pub use rsiot_influxdb as cmp_influxdb;
 #[cfg(feature = "leptos")]
 pub use rsiot_leptos as cmp_leptos;
 
-#[cfg(feature = "modbus-client")]
-pub use rsiot_modbus_client::cmp_modbus_client;
+#[cfg(feature = "cmp_modbus_client")]
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+pub mod cmp_modbus_client;
 
 #[cfg(feature = "plc")]
 pub use rsiot_plc as cmp_plc;
