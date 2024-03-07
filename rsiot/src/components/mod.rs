@@ -7,8 +7,11 @@ pub use rsiot_extra_components::*;
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub mod cmp_auth;
 
-#[cfg(feature = "http-client")]
-pub use rsiot_http_client::cmp_http_client;
+#[cfg(feature = "cmp_http_client")]
+pub mod cmp_http_client;
+
+#[cfg(feature = "cmp_http_client_wasm")]
+pub mod cmp_http_client_wasm;
 
 #[cfg(feature = "http-server")]
 pub use rsiot_http_server as cmp_http_server;

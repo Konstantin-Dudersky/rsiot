@@ -28,12 +28,14 @@ gloo = { version = "0.11.0", features = [
     "timers",
     "utils",
 ], optional = true }
+http = { version = "1.0.0", optional = true }
 jwt = { version = "0.16.0", optional = true }
 futures = { version = "0.3.30", optional = true }
 hmac = { version = "0.12.1", optional = true }
 leptos = { version = "0.6.5", features = ["csr"], optional = true }
 leptos_router = { version = "0.6.5", features = ["csr"], optional = true }
 redis = { version = "0.24.0", features = ["tokio-comp"], optional = true }
+reqwest = { version = "0.11.23", features = ["json"], optional = true }
 palette = { version = "0.7.4", features = ["named"], optional = true }
 sha2 = { version = "0.10.8", optional = true }
 tokio = { workspace = true, optional = true }
@@ -53,8 +55,6 @@ rsiot-macros = { workspace = true }
 rsiot-component-core = { workspace = true, optional = true }
 rsiot-env-vars = { workspace = true, optional = true }
 rsiot-extra-components = { workspace = true, optional = true }
-rsiot-http-client = { workspace = true, optional = true }
-rsiot-http-client-wasm = { workspace = true, optional = true }
 rsiot-http-server = { workspace = true, optional = true }
 rsiot-influxdb = { workspace = true, optional = true }
 rsiot-logging = { workspace = true }
@@ -62,6 +62,14 @@ rsiot-messages-core = { workspace = true, features = ["serde-json"] }
 rsiot-plc = { workspace = true, optional = true }
 rsiot-surrealdb = { workspace = true, optional = true }
 rsiot-timescaledb-storing = { workspace = true, optional = true }
+
+
+[dev-dependencies]
+serde_json = { version = "1.0.114" }
+
+
+[target.'cfg(target_arch = "aarch64")'.dependencies]
+openssl = { version = "0.10", features = ["vendored"] }
 
 
 [target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dev-dependencies]
@@ -83,10 +91,10 @@ cmp_auth = ["components", "dep:jwt", "dep:hmac", "dep:sha2"]
 env-vars = ["dep:rsiot-env-vars"]
 
 ## Компонент http-клиент
-http-client = ["components", "dep:rsiot-http-client"]
+cmp_http_client = ["components", "dep:http", "dep:reqwest"]
 
 ## Компонент http-клиент для платформы WASM
-http-client-wasm = ["components", "dep:rsiot-http-client-wasm"]
+cmp_http_client_wasm = ["components", "dep:http", "dep:gloo"]
 
 ## Компонент http-сервер
 http-server = ["components", "dep:rsiot-http-server"]
@@ -140,8 +148,6 @@ cmp_webstorage = ["components", "dep:gloo"]
 single-thread = [
     "rsiot-component-core?/single-thread",
     "rsiot-extra-components?/single-thread",
-    "rsiot-http-client?/single-thread",
-    "rsiot-http-client-wasm?/single-thread",
     "rsiot-http-server?/single-thread",
     "rsiot-influxdb?/single-thread",
     "rsiot-plc?/single-thread",
@@ -153,6 +159,11 @@ single-thread = [
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+
+[[example]]
+name = "cmp_http_client"
+path = "examples/cmp_http_client/cmp_http_client.rs"
 
 
 [[example]]

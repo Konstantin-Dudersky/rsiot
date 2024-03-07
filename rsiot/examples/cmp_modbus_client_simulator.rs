@@ -12,7 +12,7 @@
 //! cargo run -p rsiot --example cmp_modbus_client_simulator --features "cmp_modbus_client"
 //! ```
 
-#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[cfg(feature = "cmp_modbus_client")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     use std::net::{IpAddr, Ipv4Addr};
@@ -101,5 +101,5 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+#[cfg(not(feature = "cmp_modbus_client"))]
 fn main() {}

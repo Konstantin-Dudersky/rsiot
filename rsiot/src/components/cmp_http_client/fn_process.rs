@@ -11,7 +11,7 @@ use url::Url;
 
 use rsiot_component_core::{CmpInOut, ComponentError};
 
-use crate::{config::config, error::Error};
+use super::{config::config, Error};
 
 pub async fn fn_process<TMsg>(
     in_out: CmpInOut<TMsg>,
@@ -39,11 +39,11 @@ where
 async fn task_main<TMsg>(
     in_out: CmpInOut<TMsg>,
     config: config::Config<TMsg>,
-) -> crate::Result<(), TMsg>
+) -> super::Result<(), TMsg>
 where
     TMsg: MsgDataBound + 'static,
 {
-    let mut set = JoinSet::<crate::Result<(), TMsg>>::new();
+    let mut set = JoinSet::<super::Result<(), TMsg>>::new();
     // запускаем периодические запросы
     for req in config.requests_periodic {
         let future = task_periodic_request::<TMsg>(
@@ -73,7 +73,7 @@ async fn task_periodic_request<TMsg>(
     in_out: CmpInOut<TMsg>,
     config: config::RequestPeriodic<TMsg>,
     url: Url,
-) -> crate::Result<(), TMsg>
+) -> super::Result<(), TMsg>
 where
     TMsg: MsgDataBound,
 {
@@ -106,7 +106,7 @@ async fn task_input_request<TMessage>(
     mut in_out: CmpInOut<TMessage>,
     url: Url,
     config: config::RequestInput<TMessage>,
-) -> crate::Result<(), TMessage>
+) -> super::Result<(), TMessage>
 where
     TMessage: MsgDataBound,
 {
@@ -132,7 +132,7 @@ async fn process_request_and_response<TMsg>(
     request_param: &config::HttpParam,
     on_success: config::CbkOnSuccess<TMsg>,
     on_failure: config::CbkOnFailure<TMsg>,
-) -> crate::Result<Vec<Message<TMsg>>, TMsg> {
+) -> super::Result<Vec<Message<TMsg>>, TMsg> {
     let response = send_request(url.clone(), request_param).await;
     let response = match response {
         Ok(val) => val,
@@ -163,7 +163,7 @@ async fn process_request_and_response<TMsg>(
 async fn send_request<TMessage>(
     url: Url,
     req: &config::HttpParam,
-) -> crate::Result<Response, TMessage> {
+) -> super::Result<Response, TMessage> {
     let endpoint = match req {
         config::HttpParam::Get(val) => val,
         config::HttpParam::Put(_) => todo!(),

@@ -1,6 +1,6 @@
 //! cargo run --package rsiot --example cmp_auth --features cmp_auth
 
-#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[cfg(feature = "cmp_auth")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     use std::time::Duration;
@@ -56,5 +56,5 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+#[cfg(not(feature = "cmp_auth"))]
 fn main() {}

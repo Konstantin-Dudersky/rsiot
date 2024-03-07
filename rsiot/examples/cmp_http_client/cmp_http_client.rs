@@ -1,10 +1,10 @@
 //! Запуск:
 //!
 //! ```bash
-//! cargo run -p rsiot-http-client --example http_client
+//! cargo run -p rsiot --example cmp_http_client --features "cmp_http_client"
 //! ```
 
-#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[cfg(feature = "cmp_http_client")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     use std::collections::HashMap;
@@ -15,10 +15,14 @@ async fn main() -> anyhow::Result<()> {
     use tracing::{level_filters::LevelFilter, Level};
     use url::Url;
 
-    use rsiot_component_core::{ComponentExecutor, ComponentExecutorConfig};
-    use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-    use rsiot_http_client::cmp_http_client::{self, config};
-    use rsiot_messages_core::{Message, MsgDataBound};
+    use rsiot::{
+        component_core::{ComponentExecutor, ComponentExecutorConfig},
+        components::{
+            cmp_http_client::{self, http_client_config},
+            cmp_inject_periodic, cmp_logger,
+        },
+        message::{Message, MsgDataBound},
+    };
 
     //------------------------------------------------------------------------------
 
@@ -62,16 +66,16 @@ async fn main() -> anyhow::Result<()> {
         header: "HTTP response".into(),
     };
 
-    let http_config = config::Config::<Data> {
-        connection_config: config::ConnectionConfig {
+    let http_config = http_client_config::Config::<Data> {
+        connection_config: http_client_config::ConnectionConfig {
             base_url: Url::parse("http://127.0.0.1:80")?,
         },
-        requests_input: vec![config::RequestInput {
+        requests_input: vec![http_client_config::RequestInput {
             fn_input: |msg| {
                 let msg = msg.get_data()?;
                 match msg {
                     Data::HttpMethodsGetOnEventRequest(_) => {
-                        let param = config::HttpParam::Get("get".to_string());
+                        let param = http_client_config::HttpParam::Get("get".to_string());
                         Some(param)
                     }
                     _ => None,
@@ -85,9 +89,9 @@ async fn main() -> anyhow::Result<()> {
             },
             on_failure: Vec::new,
         }],
-        requests_periodic: vec![config::RequestPeriodic {
+        requests_periodic: vec![http_client_config::RequestPeriodic {
             period: Duration::from_secs(5),
-            http_param: config::HttpParam::Get("get".to_string()),
+            http_param: http_client_config::HttpParam::Get("get".to_string()),
             on_success: |body| {
                 let res = from_str::<HttpMethodsGet>(body)?;
                 Ok(vec![Message::new_custom(
@@ -114,5 +118,5 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+#[cfg(not(feature = "cmp_http_client"))]
 fn main() {}

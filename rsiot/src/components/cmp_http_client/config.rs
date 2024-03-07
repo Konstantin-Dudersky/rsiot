@@ -1,4 +1,4 @@
-pub use rsiot_components_config::http_client as config;
+pub use crate::components::components_config::http_client as config;
 
 pub struct ConfigAlias<TMsg>(pub config::Config<TMsg>);
 

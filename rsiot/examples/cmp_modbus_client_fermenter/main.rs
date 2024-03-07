@@ -1,10 +1,10 @@
 //! Пример для работы с ферментером UST.
-#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[cfg(feature = "cmp_modbus_client")]
 mod config;
-#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[cfg(feature = "cmp_modbus_client")]
 mod message;
 
-#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[cfg(feature = "cmp_modbus_client")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     use tracing::{level_filters::LevelFilter, Level};
@@ -39,5 +39,5 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+#[cfg(not(feature = "cmp_modbus_client"))]
 fn main() {}

@@ -21,7 +21,7 @@
 //!
 //! - корректный перезапуск. При отключении Redis, или передачи неправильного сообщения в Pub/Sub
 
-#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[cfg(feature = "cmp_redis_client")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     use tracing::Level;
@@ -75,5 +75,5 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+#[cfg(not(feature = "cmp_redis_client"))]
 fn main() {}

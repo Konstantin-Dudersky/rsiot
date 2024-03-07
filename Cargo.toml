@@ -6,8 +6,6 @@ members = [
     "./rsiot-env-vars",
     "./rsiot-extra-components",
     "./rsiot-influxdb",
-    "./rsiot-http-client",
-    "./rsiot-http-client-wasm",
     "./rsiot-http-server",
     "./rsiot-logging",
     "./rsiot-macros",
@@ -115,8 +113,6 @@ rsiot-component-core = { version = "0.0.71", path = "./rsiot-component-core" }
 rsiot-components-config = { version = "0.0.70", path = "./rsiot-components-config" }
 rsiot-env-vars = { version = "0.0.62", path = "./rsiot-env-vars" }
 rsiot-extra-components = { version = "0.0.71", path = "./rsiot-extra-components" }
-rsiot-http-client = { version = "0.0.71", path = "./rsiot-http-client" }
-rsiot-http-client-wasm = { version = "0.0.71", path = "./rsiot-http-client-wasm" }
 rsiot-http-server = { version = "0.0.71", path = "./rsiot-http-server" }
 rsiot-influxdb = { version = "0.0.71", path = "./rsiot-influxdb" }
 rsiot-logging = { version = "0.0.62", path = "./rsiot-logging" }

@@ -1,15 +1,11 @@
 //! HTTP-клиент для платформы WASM
 
-#![cfg(target_arch = "wasm32")]
-
 mod component;
 mod config;
 mod error;
 mod fn_process;
 
-pub mod cmp_http_client_wasm {
-    pub use crate::component::Cmp;
-    pub use crate::config::config;
-}
+pub use component::Cmp;
+pub use config::config as http_client_config;
 
 type Result<T> = std::result::Result<T, error::Error>;

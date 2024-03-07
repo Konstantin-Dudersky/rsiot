@@ -6,30 +6,48 @@ def print_header [header: string] {
 
 # cargo clippy -------------------------------------------------------------------------------------
 
-print_header "workspace clippy - x86_64-unknown-linux-gnu / multi-thread"
-cargo clippy --all-targets --target="x86_64-unknown-linux-gnu" --features="cmp_auth, cmp_modbus_client, cmp_redis_client, cmp_websocket_client, cmp_websocket_server"
+let features = [
+    "cmp_auth", 
+    "cmp_http_client",
+    "cmp_modbus_client",
+    "cmp_redis_client",
+    "cmp_websocket_client",
+    "cmp_websocket_server"
+]
 
-print_header "workspace clippy - x86_64-unknown-linux-gnu / single-thread"
-cargo clippy --all-targets --target="x86_64-unknown-linux-gnu" --features="cmp_auth, cmp_modbus_client, cmp_redis_client, cmp_websocket_client, cmp_websocket_server, single-thread"
+for feat in $features {
+    print_header $"workspace clippy - x86_64-unknown-linux-gnu / ($feat) / multi-thread"
+    nu -c $'cargo clippy --all-targets --target="x86_64-unknown-linux-gnu" --features="($feat)"'
 
-print_header "workspace clippy - aarch64-unknown-linux-gnu / multi-thread"
-cargo clippy --all-targets --target="aarch64-unknown-linux-gnu" --features="cmp_auth, cmp_modbus_client, cmp_redis_client, cmp_websocket_client, cmp_websocket_server"
+    print_header $"workspace clippy - x86_64-unknown-linux-gnu / ($feat) / single-thread"
+    nu -c $'cargo clippy --all-targets --target="x86_64-unknown-linux-gnu" --features="($feat), single-thread"'
+}
 
-print_header "workspace clippy - aarch64-unknown-linux-gnu / single-thread"
-cargo clippy --all-targets --target="aarch64-unknown-linux-gnu" --features="cmp_auth, cmp_modbus_client, cmp_redis_client, cmp_websocket_client, cmp_websocket_server, single-thread"
+for feat in $features {
+    print_header $"workspace clippy - aarch64-unknown-linux-gnu / ($feat) / multi-thread"
+    nu -c $'cargo clippy --all-targets --target="aarch64-unknown-linux-gnu" --features="($feat)"'
+
+    print_header $"workspace clippy - aarch64-unknown-linux-gnu / ($feat) / single-thread"
+    nu -c $'cargo clippy --all-targets --target="aarch64-unknown-linux-gnu" --features="($feat), single-thread"'
+}
+
 
 # print_header "workspace clippy - wasm32-unknown-unknown / multi-thread"
 # cargo clippy --all-targets --target="wasm32-unknown-unknown" --features=""
 # TODO - настроить проверки по остальным таргетам
 
-print_header "workspace clippy - wasm32-unknown-unknown / single-thread / cmp_leptos"
-cargo clippy --all-targets --target="wasm32-unknown-unknown" --features="cmp_leptos, single-thread"
+let features = [
+    "cmp_leptos", 
+    "cmp_http_client_wasm",
+    "cmp_websocket_client_wasm",
+    "cmp_webstorage",
+]
 
-print_header "workspace clippy - wasm32-unknown-unknown / single-thread / cmp_websocket_client_wasm"
-cargo clippy --all-targets --target="wasm32-unknown-unknown" --features="cmp_websocket_client_wasm, single-thread"
+for feat in $features {
+    print_header $"workspace clippy - wasm32-unknown-unknown / ($feat) / single-thread"
+    nu -c $'cargo clippy --all-targets --target="wasm32-unknown-unknown" --features="($feat), single-thread"'
+}
 
-print_header "workspace clippy - wasm32-unknown-unknown / single-thread / cmp_webstorage"
-cargo clippy --all-targets --target="wasm32-unknown-unknown" --features="cmp_webstorage, single-thread"
 
 # cargo udeps --------------------------------------------------------------------------------------
 
