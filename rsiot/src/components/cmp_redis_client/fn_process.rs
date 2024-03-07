@@ -9,7 +9,7 @@ use tracing::{error, info, trace, warn};
 use rsiot_component_core::{CmpInOut, ComponentError};
 use rsiot_messages_core::{IMessageChannel, MsgDataBound};
 
-use crate::{config::Config, error::Error};
+use super::{config::Config, error::Error};
 
 type Result = std::result::Result<(), Error>;
 

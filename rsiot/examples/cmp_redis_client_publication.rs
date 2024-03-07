@@ -1,7 +1,7 @@
 //! Запуск:
 //!
 //! ```bash
-//! cargo run -p rsiot-redis-client --example publication
+//! cargo run -p rsiot --example cmp_redis_client_publication --features "cmp_redis_client"
 //! ```
 
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
@@ -12,10 +12,11 @@ async fn main() -> anyhow::Result<()> {
     use tracing_subscriber::fmt;
     use url::Url;
 
-    use rsiot_component_core::{ComponentExecutor, ComponentExecutorConfig};
-    use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-    use rsiot_messages_core::{example_message::*, *};
-    use rsiot_redis_client as cmp_redis_client;
+    use rsiot::{
+        component_core::{ComponentExecutor, ComponentExecutorConfig},
+        components::{cmp_inject_periodic, cmp_logger, cmp_redis_client},
+        message::{example_message::*, *},
+    };
 
     fmt().init();
 

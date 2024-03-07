@@ -5,6 +5,7 @@
     "serde-json",
     "cmp_auth",
     "cmp_modbus_client",
+    "cmp_redis_client",
     "cmp_websocket_server"
   ],
 

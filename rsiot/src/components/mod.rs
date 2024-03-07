@@ -26,8 +26,9 @@ pub mod cmp_modbus_client;
 #[cfg(feature = "plc")]
 pub use rsiot_plc as cmp_plc;
 
-#[cfg(feature = "redis-client")]
-pub use rsiot_redis_client as cmp_redis_client;
+#[cfg(feature = "cmp_redis_client")]
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+pub mod cmp_redis_client;
 
 #[cfg(feature = "surrealdb")]
 pub use rsiot_surrealdb as cmp_surrealdb;

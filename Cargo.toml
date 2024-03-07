@@ -14,7 +14,6 @@ members = [
     "./rsiot-macros",
     "./rsiot-messages-core",
     "./rsiot-plc",
-    "./rsiot-redis-client",
     "./rsiot-surrealdb",
     "./rsiot-timescaledb-storing",
     "./rsiot-websocket-client",
@@ -57,10 +56,6 @@ uuid = { version = "1.7.0", features = ["serde", "v4"] }
 # documentation
 document-features = { version = "0.2.8" }
 
-# database
-redis = { version = "0.24.0", features = ["tokio-comp"] }
-
-
 surrealdb = { version = "1.2.0" }
 
 # env vars
@@ -79,7 +74,6 @@ axum = { version = "0.7.4" }
 axum-test = { version = "14.2.2" }
 tower-http = { version = "0.5.1", features = ["cors", "trace"] }
 
-
 # logging
 tracing = { version = "0.1.40", features = ["log"] }
 tracing-subscriber = { version = "0.3.18", features = ["env-filter", "chrono"] }
@@ -91,11 +85,6 @@ proc-macro2 = { version = "1.0.78" }
 proc-macro-error = { version = "1.0.4" }
 quote = { version = "1.0.35" }
 syn = { version = "2.0.48" }
-
-# Modbus
-tokio-modbus = { version = "0.11.0", default-features = false, features = [
-    "tcp",
-] }
 
 # serialization / deserialization
 serde = { version = "1.0.196", features = ["derive"] }
@@ -142,7 +131,6 @@ rsiot-macros = { version = "0.0.64", path = "./rsiot-macros" }
 rsiot-messages-core = { version = "0.0.70", path = "./rsiot-messages-core" }
 rsiot-plc = { version = "0.0.71", path = "./rsiot-plc" }
 rsiot-surrealdb = { version = "0.0.71", path = "./rsiot-surrealdb" }
-rsiot-redis-client = { version = "0.0.71", path = "./rsiot-redis-client" }
 rsiot-timescaledb-storing = { version = "0.0.71", path = "./rsiot-timescaledb-storing" }
 rsiot-websocket-client = { version = "0.0.71", path = "./rsiot-websocket-client" }
 rsiot-websocket-client-wasm = { version = "0.0.71", path = "./rsiot-websocket-client-wasm" }

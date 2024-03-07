@@ -3609,6 +3609,7 @@ dependencies = [
  "gloo",
  "hmac",
  "jwt",
+ "redis",
  "rsiot-component-core",
  "rsiot-env-vars",
  "rsiot-extra-components",
@@ -3620,7 +3621,6 @@ dependencies = [
  "rsiot-logging",
  "rsiot-messages-core",
  "rsiot-plc",
- "rsiot-redis-client",
  "rsiot-surrealdb",
  "rsiot-timescaledb-storing",
  "rsiot-websocket-client",
@@ -3845,25 +3845,6 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
-]
-
-[[package]]
-name = "rsiot-redis-client"
-version = "0.0.71"
-dependencies = [
- "anyhow",
- "async-trait",
- "futures",
- "redis",
- "rsiot-component-core",
- "rsiot-components-config",
- "rsiot-extra-components",
- "rsiot-messages-core",
- "thiserror",
- "tokio",
- "tracing",
- "tracing-subscriber",
- "url",
 ]
 
 [[package]]
