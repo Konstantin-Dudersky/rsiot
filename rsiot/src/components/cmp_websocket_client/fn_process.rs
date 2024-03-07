@@ -15,7 +15,7 @@ use tracing::{error, info, warn};
 use rsiot_component_core::{CmpInOut, ComponentError};
 use rsiot_messages_core::{Message, MsgDataBound};
 
-use crate::{
+use super::{
     config::{Config, FnOutput},
     error::Error,
 };

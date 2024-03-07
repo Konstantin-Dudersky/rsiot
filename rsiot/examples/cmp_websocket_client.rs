@@ -1,7 +1,7 @@
 //! Запуск:
 //!
 //! ```bash
-//! cargo run -p rsiot-websocket-client --example websocket_client_multi_thread
+//! cargo run -p rsiot --example cmp_websocket_client --features "cmp_websocket_client"
 //! ```
 
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
@@ -12,10 +12,11 @@ async fn main() -> anyhow::Result<()> {
     use tracing::Level;
     use url::Url;
 
-    use rsiot_component_core::{ComponentExecutor, ComponentExecutorConfig};
-    use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-    use rsiot_messages_core::{Message, MsgDataBound};
-    use rsiot_websocket_client::cmp_websocket_client;
+    use rsiot::{
+        component_core::{ComponentExecutor, ComponentExecutorConfig},
+        components::{cmp_inject_periodic, cmp_logger, cmp_websocket_client},
+        message::{Message, MsgDataBound},
+    };
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     enum Data {

@@ -11,16 +11,16 @@ use gloo::{
 use tokio::task::JoinSet;
 use tracing::{info, trace, warn};
 
+use crate::components::components_config::websocket_client::Config;
 use rsiot_component_core::CmpInOut;
-use rsiot_components_config::websocket_client::Config;
 use rsiot_messages_core::MsgDataBound;
 
-use crate::error::Error;
+use super::Error;
 
 pub async fn fn_process<TMessage>(
     config: Config<TMessage>,
     input: CmpInOut<TMessage>,
-) -> crate::Result
+) -> super::Result
 where
     TMessage: MsgDataBound + 'static,
 {
@@ -33,7 +33,7 @@ where
     }
 }
 
-async fn task_main<TMessage>(config: Config<TMessage>, input: CmpInOut<TMessage>) -> crate::Result
+async fn task_main<TMessage>(config: Config<TMessage>, input: CmpInOut<TMessage>) -> super::Result
 where
     TMessage: MsgDataBound + 'static,
 {
@@ -42,7 +42,7 @@ where
     info!("Connection to websocket server established");
     let (write_stream, read_stream) = ws.split();
 
-    let mut task_set: JoinSet<crate::Result> = JoinSet::new();
+    let mut task_set: JoinSet<super::Result> = JoinSet::new();
     task_set.spawn_local(task_input(config.clone(), input.clone(), write_stream));
     task_set.spawn_local(task_output(config, input, read_stream));
 
@@ -57,7 +57,7 @@ async fn task_input<TMsg>(
     config: Config<TMsg>,
     mut input: CmpInOut<TMsg>,
     mut write_stream: SplitSink<WebSocket, Message>,
-) -> crate::Result
+) -> super::Result
 where
     TMsg: MsgDataBound,
 {
@@ -79,7 +79,7 @@ async fn task_output<TMessage>(
     config: Config<TMessage>,
     output: CmpInOut<TMessage>,
     mut read_stream: SplitStream<WebSocket>,
-) -> crate::Result
+) -> super::Result
 where
     TMessage: MsgDataBound,
 {

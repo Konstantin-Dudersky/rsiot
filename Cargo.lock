@@ -1491,11 +1491,11 @@ dependencies = [
  "gloo-events",
  "gloo-file",
  "gloo-history",
- "gloo-net",
+ "gloo-net 0.5.0",
  "gloo-render",
  "gloo-storage",
  "gloo-timers",
- "gloo-utils",
+ "gloo-utils 0.2.0",
  "gloo-worker",
 ]
 
@@ -1505,7 +1505,7 @@ version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2a17868f56b4a24f677b17c8cb69958385102fa879418052d60b50bc1727e261"
 dependencies = [
- "gloo-utils",
+ "gloo-utils 0.2.0",
  "js-sys",
  "serde",
  "wasm-bindgen",
@@ -1553,12 +1553,32 @@ checksum = "903f432be5ba34427eac5e16048ef65604a82061fe93789f2212afc73d8617d6"
 dependencies = [
  "getrandom",
  "gloo-events",
- "gloo-utils",
+ "gloo-utils 0.2.0",
  "serde",
  "serde-wasm-bindgen",
  "serde_urlencoded",
  "thiserror",
  "wasm-bindgen",
+ "web-sys",
+]
+
+[[package]]
+name = "gloo-net"
+version = "0.2.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9902a044653b26b99f7e3693a42f171312d9be8b26b5697bd1e43ad1f8a35e10"
+dependencies = [
+ "futures-channel",
+ "futures-core",
+ "futures-sink",
+ "gloo-utils 0.1.7",
+ "js-sys",
+ "pin-project",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
  "web-sys",
 ]
 
@@ -1571,7 +1591,7 @@ dependencies = [
  "futures-channel",
  "futures-core",
  "futures-sink",
- "gloo-utils",
+ "gloo-utils 0.2.0",
  "http 0.2.12",
  "js-sys",
  "pin-project",
@@ -1599,7 +1619,7 @@ version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fbc8031e8c92758af912f9bc08fbbadd3c6f3cfcbf6b64cdf3d6a81f0139277a"
 dependencies = [
- "gloo-utils",
+ "gloo-utils 0.2.0",
  "js-sys",
  "serde",
  "serde_json",
@@ -1618,6 +1638,19 @@ dependencies = [
  "futures-core",
  "js-sys",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "gloo-utils"
+version = "0.1.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "037fcb07216cb3a30f7292bd0176b050b7b9a052ba830ef7d5d65f6dc64ba58e"
+dependencies = [
+ "js-sys",
+ "serde",
+ "serde_json",
+ "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]
@@ -1641,7 +1674,7 @@ checksum = "085f262d7604911c8150162529cefab3782e91adb20202e8658f7275d2aefe5d"
 dependencies = [
  "bincode",
  "futures",
- "gloo-utils",
+ "gloo-utils 0.2.0",
  "gloo-worker-macros",
  "js-sys",
  "pinned",
@@ -2308,6 +2341,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "leptos_router"
+version = "0.6.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9460a5dc184fa05d8eb635b687ad3220d02d2d23d6f49c3bf146aa71e427f423"
+dependencies = [
+ "cfg-if",
+ "gloo-net 0.2.6",
+ "itertools 0.12.1",
+ "js-sys",
+ "lazy_static",
+ "leptos",
+ "linear-map",
+ "once_cell",
+ "percent-encoding",
+ "send_wrapper",
+ "serde",
+ "serde_json",
+ "serde_qs",
+ "thiserror",
+ "tracing",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+]
+
+[[package]]
 name = "leptos_server"
 version = "0.6.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2364,6 +2423,16 @@ dependencies = [
  "cc",
  "pkg-config",
  "vcpkg",
+]
+
+[[package]]
+name = "linear-map"
+version = "1.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bfae20f6b19ad527b550c223fddc3077a547fc70cda94b9b566575423fd303ee"
+dependencies = [
+ "serde",
+ "serde_test",
 ]
 
 [[package]]
@@ -3609,6 +3678,9 @@ dependencies = [
  "gloo",
  "hmac",
  "jwt",
+ "leptos",
+ "leptos_router",
+ "palette",
  "redis",
  "rsiot-component-core",
  "rsiot-env-vars",
@@ -3617,14 +3689,12 @@ dependencies = [
  "rsiot-http-client-wasm",
  "rsiot-http-server",
  "rsiot-influxdb",
- "rsiot-leptos",
  "rsiot-logging",
+ "rsiot-macros",
  "rsiot-messages-core",
  "rsiot-plc",
  "rsiot-surrealdb",
  "rsiot-timescaledb-storing",
- "rsiot-websocket-client",
- "rsiot-websocket-client-wasm",
  "serde",
  "sha2",
  "thiserror",
@@ -3635,6 +3705,7 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "url",
+ "web-sys",
 ]
 
 [[package]]
@@ -3773,27 +3844,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rsiot-leptos"
-version = "0.0.71"
-dependencies = [
- "anyhow",
- "async-trait",
- "gloo",
- "leptos",
- "palette",
- "rsiot-component-core",
- "rsiot-macros",
- "rsiot-messages-core",
- "serde",
- "thiserror",
- "tokio",
- "tracing",
- "tracing-subscriber",
- "url",
- "web-sys",
-]
-
-[[package]]
 name = "rsiot-logging"
 version = "0.0.62"
 dependencies = [
@@ -3880,42 +3930,6 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "url",
-]
-
-[[package]]
-name = "rsiot-websocket-client"
-version = "0.0.71"
-dependencies = [
- "anyhow",
- "async-trait",
- "futures",
- "rsiot-component-core",
- "rsiot-components-config",
- "rsiot-extra-components",
- "rsiot-messages-core",
- "serde",
- "thiserror",
- "tokio",
- "tokio-tungstenite 0.21.0",
- "tracing",
- "tracing-subscriber",
- "url",
-]
-
-[[package]]
-name = "rsiot-websocket-client-wasm"
-version = "0.0.71"
-dependencies = [
- "anyhow",
- "async-trait",
- "futures",
- "gloo",
- "rsiot-component-core",
- "rsiot-components-config",
- "rsiot-messages-core",
- "thiserror",
- "tokio",
- "tracing",
 ]
 
 [[package]]
@@ -4237,6 +4251,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde_test"
+version = "1.0.176"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5a2f49ace1498612d14f7e0b8245519584db8299541dfe31a06374a828d620ab"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "serde_urlencoded"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4289,7 +4312,7 @@ dependencies = [
  "const_format",
  "dashmap",
  "futures",
- "gloo-net",
+ "gloo-net 0.5.0",
  "http 1.1.0",
  "js-sys",
  "once_cell",

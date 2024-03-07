@@ -7,5 +7,3 @@ pub mod http_client;
 pub mod http_server;
 pub mod influxdb_v2;
 pub mod timescaledb_storing;
-pub mod websocket_client;
-pub mod websocket_common;

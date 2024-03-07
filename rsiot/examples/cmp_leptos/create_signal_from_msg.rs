@@ -1,7 +1,11 @@
-#[cfg(target_arch = "wasm32")]
+//! cargo run -p rsiot --example create_signal_from_msg --features "cmp_leptos, single-thread"
+
+#[cfg(feature = "cmp_leptos")]
 fn main() {
-    use rsiot_leptos::create_signal_from_msg;
-    use rsiot_messages_core::{example_message::*, *};
+    use rsiot::{
+        components::cmp_leptos::create_signal_from_msg,
+        message::{example_message::*, *},
+    };
 
     // Раскомментировать для cargo-expand
     // use rsiot_macros::create_signal_from_msg;
@@ -25,5 +29,5 @@ fn main() {
     });
 }
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(not(feature = "cmp_leptos"))]
 fn main() {}

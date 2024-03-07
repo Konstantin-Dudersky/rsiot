@@ -1,5 +1,3 @@
-#![cfg(all(target_arch = "wasm32", feature = "single-thread"))]
-
 mod cmp_leptos;
 pub mod components;
 pub mod create_signal_from_msg;

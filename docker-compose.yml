@@ -58,7 +58,7 @@ services:
       - "8002:8001" # порт UI
     volumes:
       - redis_data:/data
-      - ./services/redis/redis.conf:/redis-stack.conf
+      - ./rsiot-config-files/redis/redis.conf:/redis-stack.conf
 
   # surrealdb
   surrealdb:

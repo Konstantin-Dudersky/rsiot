@@ -1,7 +1,7 @@
 use leptos::*;
 use rsiot_messages_core::MsgDataBound;
 
-use crate::GlobalState;
+use super::super::GlobalState;
 
 use super::Config;
 

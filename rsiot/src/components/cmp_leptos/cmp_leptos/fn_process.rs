@@ -6,14 +6,14 @@ use tracing::debug;
 use rsiot_component_core::CmpInOut;
 use rsiot_messages_core::{system_messages::*, *};
 
-use crate::{Error, GlobalState};
+use super::super::{Error, GlobalState, Result};
 
 use super::Config;
 
 pub async fn fn_process<TMsg, TView, TIntoView>(
     config: Config<TView, TIntoView>,
     in_out: CmpInOut<TMsg>,
-) -> crate::Result
+) -> Result
 where
     TMsg: MsgDataBound + 'static,
     TView: Fn() -> TIntoView + 'static,
@@ -31,7 +31,7 @@ where
     mount_to_body(config.body_component);
     debug!("Leptos app mounted");
 
-    let mut task_set: JoinSet<crate::Result> = JoinSet::new();
+    let mut task_set: JoinSet<Result> = JoinSet::new();
     task_set.spawn_local(task_input(in_out.clone(), gs.clone()));
     task_set.spawn_local(task_output(in_out, gs));
     while let Some(task_result) = task_set.join_next().await {
@@ -40,10 +40,7 @@ where
     Ok(())
 }
 
-async fn task_input<TMsg>(
-    mut input: CmpInOut<TMsg>,
-    global_state: GlobalState<TMsg>,
-) -> crate::Result
+async fn task_input<TMsg>(mut input: CmpInOut<TMsg>, global_state: GlobalState<TMsg>) -> Result
 where
     TMsg: MsgDataBound,
 {
@@ -66,7 +63,7 @@ where
     Ok(())
 }
 
-async fn task_output<TMsg>(output: CmpInOut<TMsg>, gs: GlobalState<TMsg>) -> crate::Result
+async fn task_output<TMsg>(output: CmpInOut<TMsg>, gs: GlobalState<TMsg>) -> Result
 where
     TMsg: MsgDataBound,
 {
@@ -82,7 +79,7 @@ where
             tx.blocking_send(msg)
                 .map_err(|e| Error::TokioMpscSend(e.to_string()))?;
         }
-        Ok(()) as crate::Result
+        Ok(()) as Result
     });
 
     while let Some(msg) = rx.recv().await {
