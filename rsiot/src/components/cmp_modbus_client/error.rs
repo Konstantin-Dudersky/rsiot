@@ -10,7 +10,7 @@ pub enum Error {
     },
 
     #[error(transparent)]
-    CmpOutput(rsiot_component_core::ComponentError),
+    CmpOutput(crate::executor::ComponentError),
 
     #[error("{0}")]
     TokioTaskJoin(#[from] tokio::task::JoinError),

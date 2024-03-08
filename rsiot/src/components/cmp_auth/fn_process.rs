@@ -1,6 +1,5 @@
 use std::time::Duration;
 
-use rsiot_component_core::CmpInOut;
 use rsiot_messages_core::{system_messages::*, *};
 use tokio::time::sleep;
 use tracing::{info, warn};
@@ -8,6 +7,8 @@ use tracing::{info, warn};
 use hmac::{Hmac, Mac};
 use jwt::{SignWithKey, VerifyWithKey};
 use sha2::Sha256;
+
+use crate::executor::CmpInOut;
 
 use super::{token_payload::TokenPayload, Config, ConfigStore, ConfigStoreItem, Error};
 

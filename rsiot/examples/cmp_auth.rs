@@ -6,8 +6,8 @@ async fn main() -> anyhow::Result<()> {
     use std::time::Duration;
 
     use rsiot::{
-        component_core::ComponentExecutor,
         components::{cmp_auth, cmp_inject_periodic, cmp_logger},
+        executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{example_message::*, system_messages::*, *},
     };
     use tracing::Level;
@@ -40,7 +40,7 @@ async fn main() -> anyhow::Result<()> {
         }]),
     };
 
-    let executor_config = rsiot_component_core::ComponentExecutorConfig {
+    let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
         executor_name: "example_auth".into(),
         fn_auth: |msg, _| Some(msg),

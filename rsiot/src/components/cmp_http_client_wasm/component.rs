@@ -1,10 +1,10 @@
 use async_trait::async_trait;
 
-use rsiot_component_core::{CmpInOut, Component, ComponentError, IComponentProcess};
 use rsiot_messages_core::{AuthPermissions, MsgDataBound};
 
-use super::config::ConfigAlias;
-use super::fn_process::fn_process;
+use crate::executor::{CmpInOut, Component, ComponentError, IComponentProcess};
+
+use super::{config::ConfigAlias, fn_process::fn_process};
 
 #[allow(unreachable_code)]
 #[cfg(not(feature = "single-thread"))]

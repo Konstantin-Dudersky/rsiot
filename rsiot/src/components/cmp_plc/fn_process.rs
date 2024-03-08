@@ -14,8 +14,9 @@ use gloo::timers::future::sleep;
 #[cfg(not(target_arch = "wasm32"))]
 use tokio::time::sleep;
 
-use rsiot_component_core::{CmpInOut, ComponentError};
 use rsiot_messages_core::MsgDataBound;
+
+use crate::executor::{CmpInOut, ComponentError};
 
 use super::{
     config::Config,

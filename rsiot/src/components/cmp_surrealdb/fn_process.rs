@@ -6,10 +6,11 @@ use surrealdb::{
     Surreal,
 };
 
-use rsiot_component_core::{CmpInOut, ComponentError};
 use rsiot_messages_core::MsgDataBound;
 use tokio::{sync::Mutex, task::JoinSet, time::sleep};
 use tracing::{error, info};
+
+use crate::executor::{CmpInOut, ComponentError};
 
 use super::Config;
 

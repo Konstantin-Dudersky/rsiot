@@ -11,8 +11,8 @@ async fn main() -> anyhow::Result<()> {
     use url::Url;
 
     use rsiot::{
-        component_core::{ComponentExecutor, ComponentExecutorConfig},
         components::{cmp_inject_periodic, cmp_timescaledb},
+        executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{example_message::*, *},
     };
 

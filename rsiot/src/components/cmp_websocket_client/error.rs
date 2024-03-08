@@ -25,5 +25,5 @@ pub enum Error<TMessage> {
     FnOutput(anyhow::Error),
 
     #[error(transparent)]
-    CmpOutput(rsiot_component_core::ComponentError),
+    CmpOutput(crate::executor::ComponentError),
 }

@@ -19,8 +19,8 @@ async fn main() -> anyhow::Result<()> {
     use tracing::Level;
 
     use rsiot::{
-        component_core::{ComponentExecutor, ComponentExecutorConfig},
         components::{cmp_logger, cmp_plc},
+        executor::{ComponentExecutor, ComponentExecutorConfig},
         message::Message,
     };
 

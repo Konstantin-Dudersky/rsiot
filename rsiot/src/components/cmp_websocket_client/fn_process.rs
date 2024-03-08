@@ -12,8 +12,9 @@ use tokio_tungstenite::{
 };
 use tracing::{error, info, warn};
 
-use rsiot_component_core::{CmpInOut, ComponentError};
 use rsiot_messages_core::{Message, MsgDataBound};
+
+use crate::executor::{CmpInOut, ComponentError};
 
 use super::{
     config::{Config, FnOutput},

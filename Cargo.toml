@@ -1,9 +1,7 @@
 [workspace]
 members = [
     "./rsiot",
-    "./rsiot-component-core",
     "./rsiot-env-vars",
-    "./rsiot-extra-components",
     "./rsiot-logging",
     "./rsiot-macros",
     "./rsiot-messages-core",
@@ -72,9 +70,7 @@ toml = { version = "0.8.9" }
 
 
 # workspace packages
-rsiot-component-core = { version = "0.0.71", path = "./rsiot-component-core" }
 rsiot-env-vars = { version = "0.0.62", path = "./rsiot-env-vars" }
-rsiot-extra-components = { version = "0.0.71", path = "./rsiot-extra-components" }
 rsiot-logging = { version = "0.0.62", path = "./rsiot-logging" }
 rsiot-macros = { version = "0.0.64", path = "./rsiot-macros" }
 rsiot-messages-core = { version = "0.0.70", path = "./rsiot-messages-core" }

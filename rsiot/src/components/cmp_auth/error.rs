@@ -6,7 +6,7 @@ pub enum Error {
     TokioTaskJoinError(#[from] tokio::task::JoinError),
 
     #[error("CmpOutput: {0}")]
-    CmpOutput(rsiot_component_core::ComponentError),
+    CmpOutput(crate::executor::ComponentError),
 
     #[error("ProcessRequest: {0}")]
     ProcessRequest(String),

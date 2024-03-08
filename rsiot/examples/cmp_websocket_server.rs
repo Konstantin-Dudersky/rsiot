@@ -12,9 +12,11 @@ async fn main() -> anyhow::Result<()> {
     use tokio::time::Duration;
     use tracing::Level;
 
-    use rsiot::components::{cmp_inject_periodic, cmp_logger, cmp_websocket_server};
-    use rsiot_component_core::{ComponentExecutor, ComponentExecutorConfig};
-    use rsiot_messages_core::{example_message::*, *};
+    use rsiot::{
+        components::{cmp_inject_periodic, cmp_logger, cmp_websocket_server},
+        executor::{ComponentExecutor, ComponentExecutorConfig},
+        message::{example_message::*, *},
+    };
 
     tracing_subscriber::fmt()
         .with_env_filter("trace,tokio_tungstenite=debug,tungstenite=debug")

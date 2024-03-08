@@ -1,6 +1,6 @@
 use tokio::task::JoinSet;
 
-use rsiot_component_core::CmpInOut;
+use crate::executor::CmpInOut;
 use rsiot_messages_core::*;
 
 use super::{Config, DeriveItemProcess, Error};

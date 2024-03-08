@@ -1,0 +1,44 @@
+//! Запуск;
+//!
+//! ```rust
+//! cargo run -p rsiot-component-core --example single-thread --features single-thread
+//! ```
+
+#[cfg(feature = "single-thread")]
+mod example_component1;
+#[cfg(feature = "single-thread")]
+mod example_component2;
+#[cfg(feature = "single-thread")]
+mod message;
+
+#[cfg(feature = "single-thread")]
+#[tokio::main(flavor = "current_thread")]
+async fn main() {
+    use message::Message;
+    use tokio::task::LocalSet;
+
+    use rsiot::executor::{ComponentExecutor, ComponentExecutorConfig};
+
+    tracing_subscriber::fmt().init();
+
+    let local_set = LocalSet::new();
+
+    let executor_config = ComponentExecutorConfig {
+        buffer_size: 100,
+        executor_name: "example_single_thread".into(),
+        fn_auth: |_, _| None,
+    };
+
+    local_set.spawn_local(async {
+        let mut cmps = ComponentExecutor::<Message>::new(executor_config)
+            .add_cmp(example_component1::Cmp::new(example_component1::Config {}))
+            .add_cmp(example_component2::Cmp::new(example_component2::Config {}));
+
+        cmps.wait_result().await.unwrap();
+    });
+
+    local_set.await;
+}
+
+#[cfg(not(feature = "single-thread"))]
+fn main() {}

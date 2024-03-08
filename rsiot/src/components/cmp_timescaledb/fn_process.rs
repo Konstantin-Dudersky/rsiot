@@ -3,8 +3,9 @@ use tokio::time::{sleep, Duration};
 use tracing::{error, info, trace};
 use url::Url;
 
-use rsiot_component_core::{CmpInOut, ComponentError};
 use rsiot_messages_core::MsgDataBound;
+
+use crate::executor::{CmpInOut, ComponentError};
 
 use super::{config::Config, error::Error, model::Row};
 

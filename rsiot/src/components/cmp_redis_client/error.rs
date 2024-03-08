@@ -15,7 +15,7 @@ pub enum Error {
     RedisConnection(#[from] redis::RedisError),
 
     #[error(transparent)]
-    CmpOutput(rsiot_component_core::ComponentError),
+    CmpOutput(crate::executor::ComponentError),
 
     #[error(transparent)]
     FnInput(anyhow::Error),

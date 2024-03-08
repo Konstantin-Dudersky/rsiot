@@ -3,12 +3,14 @@ use leptos::*;
 use tokio::task::JoinSet;
 use tracing::debug;
 
-use rsiot_component_core::CmpInOut;
 use rsiot_messages_core::{system_messages::*, *};
 
-use super::super::{Error, GlobalState, Result};
+use crate::executor::CmpInOut;
 
-use super::Config;
+use super::{
+    super::{Error, GlobalState, Result},
+    Config,
+};
 
 pub async fn fn_process<TMsg, TView, TIntoView>(
     config: Config<TView, TIntoView>,

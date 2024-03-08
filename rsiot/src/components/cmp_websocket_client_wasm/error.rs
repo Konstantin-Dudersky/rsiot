@@ -19,5 +19,5 @@ pub enum Error {
     Websocket(#[from] gloo::net::websocket::WebSocketError),
 
     #[error(transparent)]
-    CmpOutput(rsiot_component_core::ComponentError),
+    CmpOutput(crate::executor::ComponentError),
 }

@@ -1,4 +1,4 @@
-use rsiot_component_core::ComponentError;
+use crate::executor::ComponentError;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {

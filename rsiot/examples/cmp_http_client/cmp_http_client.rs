@@ -16,11 +16,11 @@ async fn main() -> anyhow::Result<()> {
     use url::Url;
 
     use rsiot::{
-        component_core::{ComponentExecutor, ComponentExecutorConfig},
         components::{
             cmp_http_client::{self, http_client_config},
             cmp_inject_periodic, cmp_logger,
         },
+        executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{Message, MsgDataBound},
     };
 

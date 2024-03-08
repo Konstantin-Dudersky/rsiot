@@ -6,8 +6,8 @@ async fn main() {
     use tracing::level_filters::LevelFilter;
 
     use rsiot::{
-        component_core::{ComponentExecutor, ComponentExecutorConfig},
         components::{cmp_influxdb, cmp_inject_periodic},
+        executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{example_message::*, *},
     };
 

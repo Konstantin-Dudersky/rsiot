@@ -6,7 +6,6 @@ use futures::{
     stream::{SplitSink, SplitStream},
     SinkExt, StreamExt,
 };
-use rsiot_component_core::CmpInOut;
 use tokio::{net::TcpStream, sync::mpsc, task::JoinSet};
 use tokio_tungstenite::{
     accept_async, tungstenite::Message as TungsteniteMessage, WebSocketStream,
@@ -14,6 +13,8 @@ use tokio_tungstenite::{
 use tracing::{debug, info, trace, warn};
 
 use rsiot_messages_core::{system_messages::*, *};
+
+use crate::executor::CmpInOut;
 
 use super::{
     config::{Config, FnOutput},

@@ -11,12 +11,14 @@ use tokio::{
 use tokio_util::sync::CancellationToken;
 use tracing::{error, info};
 
-use rsiot_component_core::{CmpInOut, ComponentError};
 use rsiot_messages_core::{AuthPermissions, MsgDataBound};
 
-use super::{config::Config, errors::Error};
+use crate::executor::{CmpInOut, ComponentError};
 
-use super::{async_task_utils::cancellable_task, handle_ws_connection::handle_ws_connection};
+use super::{
+    async_task_utils::cancellable_task, config::Config, errors::Error,
+    handle_ws_connection::handle_ws_connection,
+};
 
 pub async fn fn_process<TMessage>(
     input: CmpInOut<TMessage>,

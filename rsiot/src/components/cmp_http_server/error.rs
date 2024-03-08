@@ -25,7 +25,7 @@ pub enum Error {
     FnOutput(anyhow::Error),
 
     #[error(transparent)]
-    CmpOutput(#[from] rsiot_component_core::ComponentError),
+    CmpOutput(#[from] crate::executor::ComponentError),
 }
 
 /// Преобразование ошибки в понятный пользователю ответ

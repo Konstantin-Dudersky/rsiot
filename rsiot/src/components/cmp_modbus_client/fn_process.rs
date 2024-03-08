@@ -8,8 +8,9 @@ use tokio::{
 use tokio_modbus::{client::Context, prelude::*};
 use tracing::{debug, error, info, trace, warn};
 
-use rsiot_component_core::{CmpInOut, ComponentError};
 use rsiot_messages_core::MsgDataBound;
+
+use crate::executor::{CmpInOut, ComponentError};
 
 use super::{
     config::{self, Config},

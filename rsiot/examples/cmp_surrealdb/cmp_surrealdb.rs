@@ -12,11 +12,11 @@ async fn main() -> anyhow::Result<()> {
     use tracing::info;
 
     use rsiot::{
-        component_core::{ComponentExecutor, ComponentExecutorConfig},
         components::{
             cmp_inject_periodic,
             cmp_surrealdb::{self, InputConfig},
         },
+        executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{Deserialize, Message, MsgDataBound, Serialize},
     };
 

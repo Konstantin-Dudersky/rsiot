@@ -12,8 +12,9 @@ use tower_http::{
 };
 use tracing::{error, info, Level};
 
-use rsiot_component_core::{CmpInOut, ComponentError};
 use rsiot_messages_core::MsgDataBound;
+
+use crate::executor::{CmpInOut, ComponentError};
 
 use super::{config::Config, error::Error, routes, shared_state::SharedState};
 

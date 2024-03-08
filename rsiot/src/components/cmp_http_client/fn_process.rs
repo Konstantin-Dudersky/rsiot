@@ -9,7 +9,7 @@ use tokio::{
 use tracing::{error, info};
 use url::Url;
 
-use rsiot_component_core::{CmpInOut, ComponentError};
+use crate::executor::{CmpInOut, ComponentError};
 
 use super::{config::config, Error};
 

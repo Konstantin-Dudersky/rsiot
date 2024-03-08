@@ -3687,9 +3687,7 @@ dependencies = [
  "palette",
  "redis",
  "reqwest",
- "rsiot-component-core",
  "rsiot-env-vars",
- "rsiot-extra-components",
  "rsiot-logging",
  "rsiot-macros",
  "rsiot-messages-core",
@@ -3707,22 +3705,8 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "url",
- "web-sys",
-]
-
-[[package]]
-name = "rsiot-component-core"
-version = "0.0.71"
-dependencies = [
- "async-trait",
- "futures",
- "rsiot-messages-core",
- "serde",
- "thiserror",
- "tokio",
- "tracing",
- "tracing-subscriber",
  "uuid",
+ "web-sys",
 ]
 
 [[package]]
@@ -3738,22 +3722,6 @@ dependencies = [
  "toml",
  "tracing",
  "url",
-]
-
-[[package]]
-name = "rsiot-extra-components"
-version = "0.0.71"
-dependencies = [
- "anyhow",
- "async-trait",
- "futures",
- "rsiot-component-core",
- "rsiot-messages-core",
- "serde",
- "thiserror",
- "tokio",
- "tracing",
- "tracing-subscriber",
 ]
 
 [[package]]

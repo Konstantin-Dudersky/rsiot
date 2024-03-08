@@ -13,5 +13,5 @@ pub enum Error {
     TokioTaskJoin(#[from] tokio::task::JoinError),
 
     #[error(transparent)]
-    CmpOutput(rsiot_component_core::ComponentError),
+    CmpOutput(crate::executor::ComponentError),
 }

@@ -4,77 +4,147 @@ def print_header [header: string] {
     print $"\n\n(ansi magenta_bold)($header)(ansi reset)\n\n"
 }
 
+
+let features = [
+    {
+        name: "cmp_auth",
+        targets: [
+            "x86_64-unknown-linux-gnu",
+            "aarch64-unknown-linux-gnu",
+        ],
+    },
+    {
+        name: "cmp_http_client",
+        targets: [
+            "x86_64-unknown-linux-gnu",
+            "aarch64-unknown-linux-gnu",
+        ],
+    },
+    {
+        name: "cmp_http_client_wasm",
+        targets: [
+            "wasm32-unknown-unknown",
+        ],
+    },
+    {
+        name: "cmp_http_server",
+        targets: [
+            "x86_64-unknown-linux-gnu",
+            "aarch64-unknown-linux-gnu",
+        ],
+    },
+    {
+        name: "cmp_influxdb",
+        targets: [
+            "x86_64-unknown-linux-gnu",
+            "aarch64-unknown-linux-gnu",
+        ],
+    },
+    {
+        name: "cmp_leptos",
+        targets: [
+            "wasm32-unknown-unknown",
+        ],
+    },
+    {
+        name: "cmp_modbus_client",
+        targets: [
+            "x86_64-unknown-linux-gnu",
+            "aarch64-unknown-linux-gnu",
+        ],
+    },
+    {
+        name: "cmp_plc",
+        targets: [
+            "x86_64-unknown-linux-gnu",
+            "aarch64-unknown-linux-gnu",
+            "wasm32-unknown-unknown",
+        ],
+    },
+    {
+        name: "cmp_redis_client",
+        targets: [
+            "x86_64-unknown-linux-gnu",
+            "aarch64-unknown-linux-gnu",
+        ],
+    },
+    {
+        name: "cmp_surrealdb",
+        targets: [
+            "x86_64-unknown-linux-gnu",
+            "aarch64-unknown-linux-gnu",
+        ],
+    },
+    {
+        name: "cmp_timescaledb",
+        targets: [
+            "x86_64-unknown-linux-gnu",
+            "aarch64-unknown-linux-gnu",
+        ],
+    },
+    {
+        name: "cmp_websocket_client",
+        targets: [
+            "x86_64-unknown-linux-gnu",
+            "aarch64-unknown-linux-gnu",
+        ],
+    },
+    {
+        name: "cmp_websocket_client_wasm",
+        targets: [
+            "wasm32-unknown-unknown",
+        ],
+    },
+    {
+        name: "cmp_websocket_server",
+        targets: [
+            "x86_64-unknown-linux-gnu",
+            "aarch64-unknown-linux-gnu",
+        ],
+    },
+    {
+        name: "cmp_webstorage",
+        targets: [
+            "wasm32-unknown-unknown",
+        ],
+    },
+]
+
 # cargo clippy -------------------------------------------------------------------------------------
 
-let features = [
-    "cmp_auth", 
-    "cmp_http_client",
-    "cmp_http_server",
-    "cmp_influxdb",
-    "cmp_modbus_client",
-    "cmp_plc",
-    "cmp_redis_client",
-    "cmp_surrealdb",
-    "cmp_timescaledb",
-    "cmp_websocket_client",
-    "cmp_websocket_server"
-]
-
 for feat in $features {
-    print_header $"workspace clippy - x86_64-unknown-linux-gnu / ($feat) / multi-thread"
-    nu -c $'cargo clippy --all-targets --target="x86_64-unknown-linux-gnu" --features="($feat)"'
-
-    print_header $"workspace clippy - x86_64-unknown-linux-gnu / ($feat) / single-thread"
-    nu -c $'cargo clippy --all-targets --target="x86_64-unknown-linux-gnu" --features="($feat), single-thread"'
+    for target in $feat.targets {
+        let add_feats = match $target {
+            "aarch64-unknown-linux-gnu" => ["", "single-thread"] 
+            "x86_64-unknown-linux-gnu" => ["", "single-thread"]
+            "wasm32-unknown-unknown" => ["single-thread"]
+        }
+        for add_feat in $add_feats {
+            print_header $"workspace clippy - ($feat.name) / ($target) / ($add_feat)";
+            let command = $'cargo clippy --all-targets --target="($target)" --features="($feat.name), ($add_feat)"';
+            print $"execute command: ($command)";
+            nu -c $command;
+        }
+    }
 }
-
-for feat in $features {
-    print_header $"workspace clippy - aarch64-unknown-linux-gnu / ($feat) / multi-thread"
-    nu -c $'cargo clippy --all-targets --target="aarch64-unknown-linux-gnu" --features="($feat)"'
-
-    print_header $"workspace clippy - aarch64-unknown-linux-gnu / ($feat) / single-thread"
-    nu -c $'cargo clippy --all-targets --target="aarch64-unknown-linux-gnu" --features="($feat), single-thread"'
-}
-
-
-# print_header "workspace clippy - wasm32-unknown-unknown / multi-thread"
-# cargo clippy --all-targets --target="wasm32-unknown-unknown" --features=""
-# TODO - настроить проверки по остальным таргетам
-
-let features = [
-    "cmp_leptos", 
-    "cmp_http_client_wasm",
-    "cmp_plc",
-    "cmp_websocket_client_wasm",
-    "cmp_webstorage",
-]
-
-for feat in $features {
-    print_header $"workspace clippy - wasm32-unknown-unknown / ($feat) / single-thread"
-    nu -c $'cargo clippy --all-targets --target="wasm32-unknown-unknown" --features="($feat), single-thread"'
-}
-
 
 # cargo udeps --------------------------------------------------------------------------------------
 
-# print_header "workspace udeps - x86_64-unknown-linux-gnu / multi-thread"
-# cargo +nightly udeps --target="x86_64-unknown-linux-gnu" --features="cmp_auth"
-
-# print_header "workspace udeps - x86_64-unknown-linux-gnu / single-thread"
-# cargo +nightly udeps --target="x86_64-unknown-linux-gnu" --features="cmp_auth, single-thread"
-
-# print_header "workspace udeps - aarch64-unknown-linux-gnu / multi-thread"
-# cargo +nightly udeps --target="aarch64-unknown-linux-gnu" --features=""
-
-# print_header "workspace udeps - aarch64-unknown-linux-gnu / single-thread"
-# cargo +nightly udeps --target="aarch64-unknown-linux-gnu" --features="single-thread"
-
-# print_header "workspace udeps - wasm32-unknown-unknown / multi-thread"
-# cargo +nightly udeps --target="wasm32-unknown-unknown" --features=""
-
-# print_header "workspace udeps - wasm32-unknown-unknown / single-thread"
-# cargo +nightly udeps --target="wasm32-unknown-unknown" --features="single-thread"
-
+for feat in $features {
+    for target in $feat.targets {
+        let add_feats = match $target {
+            "aarch64-unknown-linux-gnu" => ["", "single-thread"] 
+            "x86_64-unknown-linux-gnu" => ["", "single-thread"]
+            "wasm32-unknown-unknown" => ["single-thread"]
+        }
+        for add_feat in $add_feats {
+            print_header $"workspace udeps - ($feat.name) / ($target) / ($add_feat)";
+            let command = $'cargo +nightly udeps --all-targets --target="($target)" --features="($feat.name), ($add_feat)"';
+            print $"execute command: ($command)";
+            nu -c $command;
+        }
+    }
+}
 
 # cargo update -------------------------------------------------------------------------------------
 
@@ -101,38 +171,14 @@ do {
 }
 
 do {
-    print_header "rsiot-components-config"
-    cd rsiot-components-config
-    cargo rdme --force
-}
-
-do {
     print_header "rsiot-logging"
     cd rsiot-logging
     cargo rdme --force
 }
 
 do {
-    print_header "rsiot-http-client-wasm"
-    cd rsiot-http-client-wasm
-    cargo rdme --force
-}
-
-do {
     print_header "rsiot-messages-core"
     cd rsiot-messages-core
-    cargo rdme --force
-}
-
-do {
-    print_header "rsiot-http-server"
-    cd rsiot-http-server
-    cargo rdme --force
-}
-
-do {
-    print_header "rsiot-plc"
-    cd rsiot-plc
     cargo rdme --force
 }
 

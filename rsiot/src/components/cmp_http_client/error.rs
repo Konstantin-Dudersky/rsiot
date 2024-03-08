@@ -11,5 +11,5 @@ pub enum Error<TMessage> {
 
     ResponseCallback(#[from] anyhow::Error),
 
-    ComponentCore(#[from] rsiot_component_core::ComponentError),
+    ComponentCore(#[from] crate::executor::ComponentError),
 }

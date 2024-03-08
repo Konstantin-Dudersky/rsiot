@@ -1,11 +1,17 @@
 #[cfg(feature = "components")]
-pub use rsiot_extra_components::*;
+pub mod cmp_add_input_stream;
+
+pub mod cmp_add_output_stream;
 
 #[cfg(feature = "cmp_auth")]
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub mod cmp_auth;
 
 pub mod cmp_derive;
+
+pub mod cmp_external_fn_process;
+
+pub mod cmp_inject_periodic;
 
 #[cfg(feature = "cmp_http_client")]
 pub mod cmp_http_client;
@@ -22,6 +28,8 @@ pub mod cmp_influxdb;
 #[cfg(feature = "cmp_leptos")]
 #[cfg(target_arch = "wasm32")]
 pub mod cmp_leptos;
+
+pub mod cmp_logger;
 
 #[cfg(feature = "cmp_modbus_client")]
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]

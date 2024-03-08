@@ -24,11 +24,11 @@ fn main() -> anyhow::Result<()> {
     use tracing::Level;
 
     use rsiot::{
-        component_core::{ComponentExecutor, ComponentExecutorConfig},
         components::{
             cmp_derive::{self, DeriveItem},
             cmp_inject_periodic, cmp_logger,
         },
+        executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{example_message::*, *},
     };
 

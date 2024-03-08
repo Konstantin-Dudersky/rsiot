@@ -1,7 +1,7 @@
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("Component: {0}")]
-    Component(#[from] rsiot_component_core::ComponentError),
+    Component(#[from] crate::executor::ComponentError),
 
     #[error("FnInput: {0}")]
     FnInput(anyhow::Error),

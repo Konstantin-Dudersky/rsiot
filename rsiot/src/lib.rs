@@ -159,14 +159,10 @@ pub mod message {
     pub use rsiot_messages_core::*;
 }
 
-#[cfg(feature = "components")]
-pub mod component_core {
-    pub use rsiot_component_core::*;
-}
-
-pub mod component;
 pub mod components;
 mod components_config;
+#[cfg(feature = "executor")]
+pub mod executor;
 
 #[cfg(feature = "env-vars")]
 pub mod env_vars {

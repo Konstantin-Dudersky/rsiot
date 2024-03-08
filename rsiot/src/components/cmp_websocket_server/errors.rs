@@ -22,7 +22,7 @@ pub enum Error {
     ClientDisconnected,
 
     #[error(transparent)]
-    CmpOutput(rsiot_component_core::ComponentError),
+    CmpOutput(crate::executor::ComponentError),
 }
 
 impl<TMsg> From<tokio::sync::mpsc::error::SendError<TMsg>> for Error {

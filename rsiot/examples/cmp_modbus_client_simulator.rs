@@ -23,11 +23,11 @@ async fn main() -> anyhow::Result<()> {
     use tracing_subscriber::fmt;
 
     use rsiot::{
-        component_core::{ComponentExecutor, ComponentExecutorConfig},
         components::{
             cmp_inject_periodic, cmp_logger,
             cmp_modbus_client::{self, *},
         },
+        executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{Message, MsgDataBound},
     };
 

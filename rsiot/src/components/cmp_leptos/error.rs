@@ -1,5 +1,3 @@
-use rsiot_component_core::ComponentError;
-
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("{0}")]
@@ -9,14 +7,14 @@ pub enum Error {
     TokioTaskJoin(#[from] tokio::task::JoinError),
 
     #[error(transparent)]
-    CmpOutput(rsiot_component_core::ComponentError),
+    CmpOutput(crate::executor::ComponentError),
 
     #[error("Storage: {0}")]
     Storage(#[from] gloo::storage::errors::StorageError),
 }
 
-impl From<Error> for ComponentError {
+impl From<Error> for crate::executor::ComponentError {
     fn from(value: Error) -> Self {
-        ComponentError::Execution(value.to_string())
+        crate::executor::ComponentError::Execution(value.to_string())
     }
 }

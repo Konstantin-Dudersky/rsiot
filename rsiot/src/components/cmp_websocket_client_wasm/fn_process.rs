@@ -11,11 +11,11 @@ use gloo::{
 use tokio::task::JoinSet;
 use tracing::{info, trace, warn};
 
-use super::Config;
-use rsiot_component_core::CmpInOut;
 use rsiot_messages_core::MsgDataBound;
 
-use super::Error;
+use crate::executor::CmpInOut;
+
+use super::{Config, Error};
 
 pub async fn fn_process<TMessage>(
     config: Config<TMessage>,

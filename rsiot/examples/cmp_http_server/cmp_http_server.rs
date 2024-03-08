@@ -20,8 +20,8 @@ fn main() -> anyhow::Result<()> {
     use tracing_subscriber::filter::LevelFilter;
 
     use rsiot::{
-        component_core::{ComponentExecutor, ComponentExecutorConfig},
         components::{cmp_http_server, cmp_inject_periodic, cmp_logger},
+        executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{Message, MsgDataBound},
     };
 
