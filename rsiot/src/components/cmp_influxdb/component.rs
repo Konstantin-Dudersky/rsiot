@@ -4,7 +4,7 @@ use rsiot_component_core::{CmpInOut, Component, ComponentError, IComponentProces
 use rsiot_messages_core::{AuthPermissions, MsgDataBound};
 use tracing::error;
 
-use crate::{config::ConfigAlias, fn_process::fn_process};
+use super::{config::ConfigAlias, fn_process::fn_process};
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]

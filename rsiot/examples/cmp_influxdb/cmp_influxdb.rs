@@ -1,13 +1,15 @@
-#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[cfg(feature = "cmp_influxdb")]
 #[tokio::main]
 async fn main() {
     use std::time::Duration;
 
-    use rsiot_component_core::{ComponentExecutor, ComponentExecutorConfig};
-    use rsiot_extra_components::cmp_inject_periodic;
-    use rsiot_influxdb as cmp_influxdb;
-    use rsiot_messages_core::{example_message::*, *};
     use tracing::level_filters::LevelFilter;
+
+    use rsiot::{
+        component_core::{ComponentExecutor, ComponentExecutorConfig},
+        components::{cmp_influxdb, cmp_inject_periodic},
+        message::{example_message::*, *},
+    };
 
     const TOKEN: &str =
         "6ux3LH1s0wOf4z2vIec6cmYYk03GgTksvxD3OnaM71xfOfyj9NQTvKq8TZRb5iInEl_PpoVFHFQB43CyaoJMhg==";
@@ -58,5 +60,5 @@ async fn main() {
         .unwrap();
 }
 
-#[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+#[cfg(not(feature = "cmp_influxdb"))]
 fn main() {}

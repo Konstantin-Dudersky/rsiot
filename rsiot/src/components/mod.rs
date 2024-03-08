@@ -16,8 +16,8 @@ pub mod cmp_http_client_wasm;
 #[cfg(feature = "cmp_http_server")]
 pub mod cmp_http_server;
 
-#[cfg(feature = "influxdb")]
-pub use rsiot_influxdb as cmp_influxdb;
+#[cfg(feature = "cmp_influxdb")]
+pub mod cmp_influxdb;
 
 #[cfg(feature = "cmp_leptos")]
 #[cfg(target_arch = "wasm32")]

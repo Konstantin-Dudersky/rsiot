@@ -7,7 +7,7 @@ use tracing::{error, info, trace, warn};
 use rsiot_component_core::{CmpInOut, ComponentError};
 use rsiot_messages_core::MsgDataBound;
 
-use crate::{
+use super::{
     config::{Config, LineProtocolItem},
     error::Error,
 };
@@ -34,7 +34,7 @@ where
     }
 }
 
-async fn task_main<TMsg>(mut input: CmpInOut<TMsg>, config: Config<TMsg>) -> crate::Result<()>
+async fn task_main<TMsg>(mut input: CmpInOut<TMsg>, config: Config<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
@@ -52,7 +52,7 @@ where
 async fn handle_request<TMsg>(
     datapoints: Vec<LineProtocolItem>,
     config: Config<TMsg>,
-) -> crate::Result<()>
+) -> super::Result<()>
 where
     TMsg: MsgDataBound,
 {
@@ -67,7 +67,7 @@ where
         .iter()
         .map(String::try_from)
         .collect::<std::result::Result<Vec<String>, _>>()
-        .map_err(crate::Error::Config)?
+        .map_err(super::Error::Config)?
         .join("\n");
 
     let client = Client::new();

@@ -60,7 +60,6 @@ rsiot-macros = { workspace = true }
 rsiot-component-core = { workspace = true, optional = true }
 rsiot-env-vars = { workspace = true, optional = true }
 rsiot-extra-components = { workspace = true, optional = true }
-rsiot-influxdb = { workspace = true, optional = true }
 rsiot-logging = { workspace = true }
 rsiot-messages-core = { workspace = true, features = ["serde-json"] }
 rsiot-plc = { workspace = true, optional = true }
@@ -104,7 +103,7 @@ cmp_http_client_wasm = ["components", "dep:http", "dep:gloo"]
 cmp_http_server = ["components", "dep:axum", "dep:tower-http"]
 
 ## Компонент сохранения в БД InfluxDB
-influxdb = ["components", "dep:rsiot-influxdb"]
+cmp_influxdb = ["components", "dep:reqwest"]
 
 ## Компонент для создания интерфейсов на базе Leptos
 cmp_leptos = [
@@ -152,7 +151,6 @@ cmp_webstorage = ["components", "dep:gloo"]
 single-thread = [
     "rsiot-component-core?/single-thread",
     "rsiot-extra-components?/single-thread",
-    "rsiot-influxdb?/single-thread",
     "rsiot-plc?/single-thread",
     "rsiot-surrealdb?/single-thread",
     "rsiot-timescaledb-storing?/single-thread",
@@ -172,6 +170,9 @@ path = "examples/cmp_http_client/cmp_http_client.rs"
 name = "cmp_http_server"
 path = "examples/cmp_http_server/cmp_http_server.rs"
 
+[[example]]
+name = "cmp_influxdb"
+path = "examples/cmp_influxdb/cmp_influxdb.rs"
 
 [[example]]
 name = "create_signal_from_msg"

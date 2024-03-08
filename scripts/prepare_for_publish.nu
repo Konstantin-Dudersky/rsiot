@@ -9,6 +9,8 @@ def print_header [header: string] {
 let features = [
     "cmp_auth", 
     "cmp_http_client",
+    "cmp_http_server",
+    "cmp_influxdb",
     "cmp_modbus_client",
     "cmp_redis_client",
     "cmp_websocket_client",

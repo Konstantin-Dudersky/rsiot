@@ -3689,7 +3689,6 @@ dependencies = [
  "rsiot-component-core",
  "rsiot-env-vars",
  "rsiot-extra-components",
- "rsiot-influxdb",
  "rsiot-logging",
  "rsiot-macros",
  "rsiot-messages-core",
@@ -3767,25 +3766,6 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
-]
-
-[[package]]
-name = "rsiot-influxdb"
-version = "0.0.71"
-dependencies = [
- "async-trait",
- "reqwest",
- "rsiot-component-core",
- "rsiot-components-config",
- "rsiot-extra-components",
- "rsiot-messages-core",
- "serde",
- "serde_json",
- "thiserror",
- "tokio",
- "tracing",
- "tracing-subscriber",
- "url",
 ]
 
 [[package]]
