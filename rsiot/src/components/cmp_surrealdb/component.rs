@@ -3,17 +3,17 @@ use async_trait::async_trait;
 use rsiot_component_core::{CmpInOut, Component, ComponentError, IComponentProcess};
 use rsiot_messages_core::{AuthPermissions, MsgDataBound};
 
-use crate::fn_process::fn_process;
+use super::fn_process::fn_process;
 
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
-impl<TMsg> IComponentProcess<crate::Config<TMsg>, TMsg> for Component<crate::Config<TMsg>, TMsg>
+impl<TMsg> IComponentProcess<super::Config<TMsg>, TMsg> for Component<super::Config<TMsg>, TMsg>
 where
     TMsg: MsgDataBound + 'static,
 {
     async fn process(
         &self,
-        config: crate::Config<TMsg>,
+        config: super::Config<TMsg>,
         input: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
         fn_process(
@@ -25,4 +25,4 @@ where
     }
 }
 
-pub type Cmp<TMsg> = Component<crate::Config<TMsg>, TMsg>;
+pub type Cmp<TMsg> = Component<super::Config<TMsg>, TMsg>;

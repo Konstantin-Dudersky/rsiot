@@ -14,6 +14,7 @@ let features = [
     "cmp_modbus_client",
     "cmp_plc",
     "cmp_redis_client",
+    "cmp_surrealdb",
     "cmp_timescaledb",
     "cmp_websocket_client",
     "cmp_websocket_server"

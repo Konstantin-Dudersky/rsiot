@@ -4,17 +4,21 @@
 //! cargo run -p rsiot-surrealdb --example surrealdb_multi_thread
 //! ```
 
-#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[cfg(feature = "cmp_surrealdb")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     use std::time::Duration;
 
-    use cmp_surrealdb::InputConfig;
-    use rsiot_component_core::{ComponentExecutor, ComponentExecutorConfig};
-    use rsiot_extra_components::cmp_inject_periodic;
-    use rsiot_messages_core::{Deserialize, Message, MsgDataBound, Serialize};
-    use rsiot_surrealdb as cmp_surrealdb;
     use tracing::info;
+
+    use rsiot::{
+        component_core::{ComponentExecutor, ComponentExecutorConfig},
+        components::{
+            cmp_inject_periodic,
+            cmp_surrealdb::{self, InputConfig},
+        },
+        message::{Deserialize, Message, MsgDataBound, Serialize},
+    };
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     enum Custom {
@@ -77,5 +81,5 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+#[cfg(not(feature = "cmp_surrealdb"))]
 fn main() {}

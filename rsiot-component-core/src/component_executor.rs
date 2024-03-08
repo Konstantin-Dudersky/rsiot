@@ -191,14 +191,13 @@ where
     TMsg: MsgDataBound,
 {
     // Фильтруем сообщения авторизации
-    match &msg.data {
-        MsgData::System(data) => match data {
+    if let MsgData::System(data) = &msg.data {
+        match data {
             System::AuthRequestByLogin(_) => return,
             System::AuthRequestByToken(_) => return,
             System::AuthResponseErr(_) => return,
             System::AuthResponseOk(_) => return,
-        },
-        _ => (),
+        }
     }
     let key = msg.key.clone();
     let value = msg.clone();

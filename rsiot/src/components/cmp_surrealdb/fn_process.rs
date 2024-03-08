@@ -11,7 +11,7 @@ use rsiot_messages_core::MsgDataBound;
 use tokio::{sync::Mutex, task::JoinSet, time::sleep};
 use tracing::{error, info};
 
-use crate::Config;
+use super::Config;
 
 type Db = Arc<Mutex<Surreal<Client>>>;
 
@@ -34,14 +34,14 @@ where
     }
 }
 
-async fn task_main<TMsg>(input: CmpInOut<TMsg>, config: &Config<TMsg>) -> crate::Result<()>
+async fn task_main<TMsg>(input: CmpInOut<TMsg>, config: &Config<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
     let db = connect(config).await?;
     init_script(config, db.clone()).await?;
 
-    let mut tasks: JoinSet<crate::Result<()>> = JoinSet::new();
+    let mut tasks: JoinSet<super::Result<()>> = JoinSet::new();
 
     for item in &config.input_config {
         tasks.spawn(task_periodic_request(
@@ -57,7 +57,7 @@ where
 }
 
 /// Подключение к БД
-async fn connect<TMsg>(config: &Config<TMsg>) -> crate::Result<Db> {
+async fn connect<TMsg>(config: &Config<TMsg>) -> super::Result<Db> {
     let url = format!("{}:{}", config.host, config.port);
     let db = Surreal::new::<Ws>(url).await?;
 
@@ -75,7 +75,7 @@ async fn connect<TMsg>(config: &Config<TMsg>) -> crate::Result<Db> {
 }
 
 /// Выполнение первоначального скрипта
-async fn init_script<TMsg>(config: &Config<TMsg>, db: Db) -> crate::Result<()> {
+async fn init_script<TMsg>(config: &Config<TMsg>, db: Db) -> super::Result<()> {
     let db = db.lock().await;
     db.query(config.init_script.clone()).await?;
     Ok(())
@@ -83,9 +83,9 @@ async fn init_script<TMsg>(config: &Config<TMsg>, db: Db) -> crate::Result<()> {
 
 async fn task_periodic_request<TMsg>(
     mut input: CmpInOut<TMsg>,
-    input_config: crate::config::InputConfig<TMsg>,
+    input_config: super::config::InputConfig<TMsg>,
     db: Db,
-) -> crate::Result<()>
+) -> super::Result<()>
 where
     TMsg: MsgDataBound,
 {

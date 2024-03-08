@@ -7,7 +7,6 @@ members = [
     "./rsiot-logging",
     "./rsiot-macros",
     "./rsiot-messages-core",
-    "./rsiot-surrealdb",
 ]
 exclude = ["./rsiot-esp"]
 resolver = "2"
@@ -23,7 +22,6 @@ rust-version = "1.75.0"
 
 
 [workspace.dependencies]
-openssl = { version = "0.10", features = ["vendored"] }
 
 # async
 async-trait = { version = "0.1.77" }
@@ -46,7 +44,6 @@ uuid = { version = "1.7.0", features = ["serde", "v4"] }
 # documentation
 document-features = { version = "0.2.8" }
 
-surrealdb = { version = "1.2.0" }
 
 # env vars
 dotenvy = { version = "0.15.7" }
@@ -81,4 +78,3 @@ rsiot-extra-components = { version = "0.0.71", path = "./rsiot-extra-components"
 rsiot-logging = { version = "0.0.62", path = "./rsiot-logging" }
 rsiot-macros = { version = "0.0.64", path = "./rsiot-macros" }
 rsiot-messages-core = { version = "0.0.70", path = "./rsiot-messages-core" }
-rsiot-surrealdb = { version = "0.0.71", path = "./rsiot-surrealdb" }

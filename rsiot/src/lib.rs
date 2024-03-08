@@ -165,6 +165,8 @@ pub mod component_core {
 }
 
 pub mod components;
+mod components_config;
+pub mod components_executor;
 
 #[cfg(feature = "env-vars")]
 pub mod env_vars {

@@ -7,8 +7,6 @@
 
 pub mod cmp_add_input_stream;
 pub mod cmp_add_output_stream;
-// pub mod cmp_delay; TODO
-pub mod cmp_derive;
 pub mod cmp_external_fn_process;
 pub mod cmp_inject_periodic;
 pub mod cmp_logger;

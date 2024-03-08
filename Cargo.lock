@@ -3693,11 +3693,11 @@ dependencies = [
  "rsiot-logging",
  "rsiot-macros",
  "rsiot-messages-core",
- "rsiot-surrealdb",
  "serde",
  "serde_json",
  "sha2",
  "sqlx",
+ "surrealdb",
  "thiserror",
  "tokio",
  "tokio-modbus",
@@ -3789,23 +3789,6 @@ dependencies = [
  "serde_json",
  "thiserror",
  "uuid",
-]
-
-[[package]]
-name = "rsiot-surrealdb"
-version = "0.0.71"
-dependencies = [
- "anyhow",
- "async-trait",
- "rsiot-component-core",
- "rsiot-extra-components",
- "rsiot-messages-core",
- "serde",
- "surrealdb",
- "thiserror",
- "tokio",
- "tracing",
- "tracing-subscriber",
 ]
 
 [[package]]

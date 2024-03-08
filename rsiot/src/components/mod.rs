@@ -1,11 +1,11 @@
-mod components_config;
-
 #[cfg(feature = "components")]
 pub use rsiot_extra_components::*;
 
 #[cfg(feature = "cmp_auth")]
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub mod cmp_auth;
+
+pub mod cmp_derive;
 
 #[cfg(feature = "cmp_http_client")]
 pub mod cmp_http_client;
@@ -34,8 +34,8 @@ pub mod cmp_plc;
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub mod cmp_redis_client;
 
-#[cfg(feature = "surrealdb")]
-pub use rsiot_surrealdb as cmp_surrealdb;
+#[cfg(feature = "cmp_surrealdb")]
+pub mod cmp_surrealdb;
 
 #[cfg(feature = "cmp_timescaledb")]
 pub mod cmp_timescaledb;

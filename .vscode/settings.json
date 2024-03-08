@@ -2,7 +2,7 @@
   // -- x86_64, multi-thread
   "rust-analyzer.cargo.target": "x86_64-unknown-linux-gnu",
   "rust-analyzer.cargo.features": [
-    "serde-json",
+    "serde-json"
 
     // "cmp_auth",
     // "cmp_http_client",
@@ -11,7 +11,8 @@
     // "cmp_modbus_client",
     // "cmp_plc"
     // "cmp_redis_client",
-    "cmp_timescaledb"
+    // "cmp_surrealdb"
+    // "cmp_timescaledb"
     // "cmp_websocket_client",
     // "cmp_websocket_server"
   ],
