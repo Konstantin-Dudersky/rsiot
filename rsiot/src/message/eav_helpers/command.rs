@@ -1,4 +1,4 @@
-use crate::{eav, Timestamp};
+use crate::message::{eav, Timestamp};
 
 /// Команда или событие
 pub struct Command {

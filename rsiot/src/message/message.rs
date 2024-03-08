@@ -1,9 +1,11 @@
+#![allow(clippy::module_inception)]
+
 use std::fmt::Debug;
 
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::{MsgData, MsgDataBound, MsgTrace, Timestamp};
+use super::{MsgData, MsgDataBound, MsgTrace, Timestamp};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Message<TCustom> {

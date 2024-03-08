@@ -1,6 +1,6 @@
 use url::Url;
 
-use rsiot_messages_core::Message;
+use crate::message::Message;
 
 pub type FnOutput<TMsg> = fn(&str) -> anyhow::Result<Option<Vec<Message<TMsg>>>>;
 

@@ -1,5 +1,5 @@
 pub use crate::components_config::http_client as config;
-use rsiot_messages_core::MsgDataBound;
+use crate::message::MsgDataBound;
 
 pub struct ConfigAlias<TMsg>(pub config::Config<TMsg>)
 where

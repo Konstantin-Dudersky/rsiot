@@ -1,9 +1,8 @@
 use leptos::*;
-use rsiot_messages_core::MsgDataBound;
 
-use super::super::GlobalState;
+use crate::message::MsgDataBound;
 
-use super::Config;
+use super::{super::GlobalState, Config};
 
 pub fn create<TMsg, TValue>(
     config: Config<TMsg, TValue>,

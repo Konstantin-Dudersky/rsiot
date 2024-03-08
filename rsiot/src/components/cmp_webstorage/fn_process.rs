@@ -2,9 +2,7 @@ use std::collections::HashMap;
 
 use gloo::storage::{LocalStorage, SessionStorage, Storage};
 
-use rsiot_messages_core::*;
-
-use crate::executor::CmpInOut;
+use crate::{executor::CmpInOut, message::*};
 
 use super::{Config, ConfigKind};
 

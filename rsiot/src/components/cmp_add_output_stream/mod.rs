@@ -3,8 +3,10 @@
 use async_trait::async_trait;
 use tokio::sync::mpsc;
 
-use crate::executor::{CmpInOut, Component, ComponentError, IComponentProcess};
-use rsiot_messages_core::*;
+use crate::{
+    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
+    message::*,
+};
 
 /// Настройки
 #[derive(Debug)]

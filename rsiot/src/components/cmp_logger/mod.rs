@@ -3,8 +3,10 @@
 use async_trait::async_trait;
 use tracing::{debug, error, info, trace, warn, Level};
 
-use crate::executor::{CmpInOut, Component, ComponentError, IComponentProcess};
-use rsiot_messages_core::{AuthPermissions, MsgDataBound};
+use crate::{
+    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
+    message::{AuthPermissions, MsgDataBound},
+};
 
 /// Настройки компонента логгирования
 #[derive(Clone, Debug)]

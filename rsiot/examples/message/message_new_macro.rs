@@ -1,4 +1,4 @@
-use rsiot_messages_core::{example_message::*, message_new, *};
+use rsiot::message::{example_message::*, message_new, *};
 
 fn main() {
     let value = 123.4;

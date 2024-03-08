@@ -9,7 +9,7 @@ use tokio::task::JoinSet;
 use tracing::{error, info};
 use url::Url;
 
-use rsiot_messages_core::{Message, MsgDataBound};
+use crate::message::{Message, MsgDataBound};
 
 use crate::executor::CmpInOut;
 

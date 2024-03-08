@@ -11,9 +11,10 @@ use tokio::{
 use tokio_util::sync::CancellationToken;
 use tracing::{error, info};
 
-use rsiot_messages_core::{AuthPermissions, MsgDataBound};
-
-use crate::executor::{CmpInOut, ComponentError};
+use crate::{
+    executor::{CmpInOut, ComponentError},
+    message::{AuthPermissions, MsgDataBound},
+};
 
 use super::{
     async_task_utils::cancellable_task, config::Config, errors::Error,

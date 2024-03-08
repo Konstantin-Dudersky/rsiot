@@ -17,6 +17,7 @@ pub mod cmp_inject_periodic;
 pub mod cmp_http_client;
 
 #[cfg(feature = "cmp_http_client_wasm")]
+#[cfg(target_arch = "wasm32")]
 pub mod cmp_http_client_wasm;
 
 #[cfg(feature = "cmp_http_server")]

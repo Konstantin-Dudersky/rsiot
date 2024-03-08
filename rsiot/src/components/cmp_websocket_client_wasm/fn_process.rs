@@ -11,9 +11,7 @@ use gloo::{
 use tokio::task::JoinSet;
 use tracing::{info, trace, warn};
 
-use rsiot_messages_core::MsgDataBound;
-
-use crate::executor::CmpInOut;
+use crate::{executor::CmpInOut, message::MsgDataBound};
 
 use super::{Config, Error};
 

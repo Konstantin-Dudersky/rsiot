@@ -3690,7 +3690,6 @@ dependencies = [
  "rsiot-env-vars",
  "rsiot-logging",
  "rsiot-macros",
- "rsiot-messages-core",
  "serde",
  "serde_json",
  "sha2",
@@ -3745,18 +3744,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.52",
-]
-
-[[package]]
-name = "rsiot-messages-core"
-version = "0.0.70"
-dependencies = [
- "chrono",
- "rsiot-macros",
- "serde",
- "serde_json",
- "thiserror",
- "uuid",
 ]
 
 [[package]]

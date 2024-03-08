@@ -1,7 +1,7 @@
 use tokio::task::JoinSet;
 
 use crate::executor::CmpInOut;
-use rsiot_messages_core::*;
+use crate::message::*;
 
 use super::{Config, DeriveItemProcess, Error};
 

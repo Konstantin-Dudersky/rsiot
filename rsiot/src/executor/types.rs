@@ -1,6 +1,6 @@
 use tokio::sync::{broadcast, mpsc};
 
-use rsiot_messages_core::*;
+use crate::message::*;
 
 use super::ComponentError;
 

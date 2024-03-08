@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use serde::Serialize;
 
-use rsiot_messages_core::{Message, MsgDataBound};
+use crate::message::{Message, MsgDataBound};
 
 use super::plc::function_block_base::{FunctionBlockBase, IFunctionBlock};
 

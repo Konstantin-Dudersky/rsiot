@@ -1,6 +1,6 @@
 //! Конфигурация запросов, которые выполняются на основе входного потока сообщений
 
-use rsiot_messages_core::Message;
+use crate::message::Message;
 
 use super::{FnOnFailure, FnOnSuccess, Request};
 

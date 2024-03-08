@@ -1,6 +1,6 @@
 //! Пример реализации сообщения. Можно использовать для тестирования компонентов
 
-use crate::{Deserialize, MsgDataBound, Serialize};
+use super::{Deserialize, MsgDataBound, Serialize};
 
 /// Пример реализации сообщения. Можно использовать для тестирования компонентов
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -28,8 +28,8 @@ impl MsgDataBound for Custom {}
 
 #[cfg(test)]
 mod tests {
+    use super::super::Message;
     use super::*;
-    use crate::Message;
 
     #[test]
     fn test1() {

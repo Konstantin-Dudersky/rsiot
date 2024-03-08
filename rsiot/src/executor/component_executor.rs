@@ -3,9 +3,10 @@ use tokio::{
     task::JoinSet,
 };
 
-use rsiot_messages_core::{system_messages::*, *};
 use tracing::{debug, error, info, trace, warn};
 use uuid::Uuid;
+
+use crate::message::{system_messages::*, *};
 
 use super::{error::ComponentError, types::FnAuth, Cache, CmpInOut, IComponent};
 

@@ -1,5 +1,5 @@
 pub use crate::components_config::redis_client::{Config, ConfigFnInputItem};
-use rsiot_messages_core::{IMessageChannel, MsgDataBound};
+use crate::message::{IMessageChannel, MsgDataBound};
 
 pub struct ConfigAlias<TMessage, TMessageChannel>(pub Config<TMessage, TMessageChannel>)
 where

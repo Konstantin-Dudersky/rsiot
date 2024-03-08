@@ -1,4 +1,4 @@
-use rsiot_messages_core::Message;
+use crate::message::Message;
 
 #[derive(Clone, Debug)]
 pub struct Config<TMsg> {

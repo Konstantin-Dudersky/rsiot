@@ -3,8 +3,10 @@
 use async_trait::async_trait;
 use tokio::time::{sleep, Duration, Instant};
 
-use crate::executor::{CmpInOut, Component, ComponentError, IComponentProcess};
-use rsiot_messages_core::{AuthPermissions, Message, MsgDataBound};
+use crate::{
+    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
+    message::{AuthPermissions, Message, MsgDataBound},
+};
 
 #[derive(Clone, Debug)]
 pub struct Config<TMsg, TFnPeriodic>

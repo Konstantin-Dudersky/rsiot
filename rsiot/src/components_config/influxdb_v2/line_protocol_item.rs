@@ -1,4 +1,4 @@
-use rsiot_messages_core::*;
+use crate::message::*;
 
 use super::ValueType;
 

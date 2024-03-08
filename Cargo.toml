@@ -1,11 +1,5 @@
 [workspace]
-members = [
-    "./rsiot",
-    "./rsiot-env-vars",
-    "./rsiot-logging",
-    "./rsiot-macros",
-    "./rsiot-messages-core",
-]
+members = ["./rsiot", "./rsiot-env-vars", "./rsiot-logging", "./rsiot-macros"]
 exclude = ["./rsiot-esp"]
 resolver = "2"
 
@@ -73,4 +67,3 @@ toml = { version = "0.8.9" }
 rsiot-env-vars = { version = "0.0.62", path = "./rsiot-env-vars" }
 rsiot-logging = { version = "0.0.62", path = "./rsiot-logging" }
 rsiot-macros = { version = "0.0.64", path = "./rsiot-macros" }
-rsiot-messages-core = { version = "0.0.70", path = "./rsiot-messages-core" }

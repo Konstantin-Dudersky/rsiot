@@ -155,14 +155,11 @@
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 //! TODO Написать про роутинг сообщений
 
-pub mod message {
-    pub use rsiot_messages_core::*;
-}
-
 pub mod components;
 mod components_config;
 #[cfg(feature = "executor")]
 pub mod executor;
+pub mod message;
 
 #[cfg(feature = "env-vars")]
 pub mod env_vars {

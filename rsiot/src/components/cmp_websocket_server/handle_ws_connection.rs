@@ -12,9 +12,10 @@ use tokio_tungstenite::{
 };
 use tracing::{debug, info, trace, warn};
 
-use rsiot_messages_core::{system_messages::*, *};
-
-use crate::executor::CmpInOut;
+use crate::{
+    executor::CmpInOut,
+    message::{system_messages::*, *},
+};
 
 use super::{
     config::{Config, FnOutput},

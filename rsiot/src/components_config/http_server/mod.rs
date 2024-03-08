@@ -6,7 +6,7 @@
 //! cargo test -p rsiot-components-config --doc http_server
 //! ```
 
-use rsiot_messages_core::*;
+use crate::message::*;
 
 /// Конфигурация компонента http-server
 #[derive(Clone, Debug)]
@@ -89,7 +89,7 @@ where
 #[cfg(test)]
 mod tests {
     use crate::components::cmp_http_server;
-    use rsiot_messages_core::{example_message::*, *};
+    use crate::message::{example_message::*, *};
 
     #[allow(clippy::no_effect)]
     #[test]

@@ -5,7 +5,7 @@ use std::collections::HashSet;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::Timestamp;
+use super::Timestamp;
 
 #[derive(Debug, Clone, Deserialize, PartialEq, Serialize)]
 struct TraceValue {

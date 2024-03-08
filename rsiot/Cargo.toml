@@ -32,6 +32,7 @@ leptos_router = { version = "0.6.5", features = ["csr"], optional = true }
 redis = { version = "0.24.0", features = ["tokio-comp"], optional = true }
 reqwest = { version = "0.11.23", features = ["json"], optional = true }
 palette = { version = "0.7.4", features = ["named"], optional = true }
+serde_json = { version = "1.0.113", optional = true }
 sha2 = { version = "0.10.8", optional = true }
 sqlx = { version = "0.7.3", features = [
     "chrono",
@@ -60,7 +61,6 @@ document-features = { workspace = true }
 rsiot-macros = { workspace = true }
 rsiot-env-vars = { workspace = true, optional = true }
 rsiot-logging = { workspace = true }
-rsiot-messages-core = { workspace = true, features = ["serde-json"] }
 
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
@@ -87,10 +87,15 @@ tokio = { workspace = true, features = ["rt-multi-thread"] }
 
 
 [features]
+
+default = ["serde-json"]
+
 ## Базовые компоненты
 executor = ["dep:futures", "dep:tokio"]
 
 single-thread = []
+
+serde-json = ["dep:serde_json"]
 
 ## Компонент аутентификации
 cmp_auth = ["executor", "dep:jwt", "dep:hmac", "dep:sha2"]
@@ -204,3 +209,7 @@ path = "examples/executor/executor-multi-thread/main.rs"
 [[example]]
 name = "executor_single_thread"
 path = "examples/executor/executor-single-thread/main.rs"
+
+[[example]]
+name = "message_new_macro"
+path = "examples/message/message_new_macro.rs"

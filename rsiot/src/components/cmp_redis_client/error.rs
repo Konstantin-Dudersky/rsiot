@@ -8,7 +8,7 @@ pub enum Error {
 
     /// Ошибка десериализации
     #[error("Error in message serialization / deserialization: {0}")]
-    Message(#[from] rsiot_messages_core::Error),
+    Message(#[from] crate::message::Error),
 
     /// Ошибка подключения к redis
     #[error("Redis connection error: {0}")]

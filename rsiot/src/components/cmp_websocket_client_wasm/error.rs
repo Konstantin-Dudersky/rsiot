@@ -13,7 +13,7 @@ pub enum Error {
     FnOutput(anyhow::Error),
 
     #[error("Message error: {0}")]
-    Message(#[from] rsiot_messages_core::Error),
+    Message(#[from] crate::message::Error),
 
     #[error("Websocker error: {0}")]
     Websocket(#[from] gloo::net::websocket::WebSocketError),

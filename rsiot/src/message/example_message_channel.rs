@@ -1,4 +1,4 @@
-use crate::IMessageChannel;
+use super::IMessageChannel;
 
 #[derive(Clone, Debug)]
 pub enum ExampleMessageChannel {

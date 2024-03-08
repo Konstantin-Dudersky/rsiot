@@ -1,4 +1,4 @@
-use rsiot_messages_core::{Deserialize, MsgDataBound, Serialize};
+use rsiot::message::{Deserialize, MsgDataBound, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum Data {

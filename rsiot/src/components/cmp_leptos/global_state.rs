@@ -1,8 +1,6 @@
 use leptos::*;
 
-use rsiot_messages_core::*;
-
-use crate::executor::Cache;
+use crate::{executor::Cache, message::*};
 
 #[derive(Clone)]
 pub struct GlobalState<TMsg>

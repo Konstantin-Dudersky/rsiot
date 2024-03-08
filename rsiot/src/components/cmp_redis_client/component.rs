@@ -1,8 +1,9 @@
 use async_trait::async_trait;
 
-use rsiot_messages_core::{AuthPermissions, IMessageChannel, MsgDataBound};
-
-use crate::executor::{CmpInOut, Component, ComponentError, IComponentProcess};
+use crate::{
+    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
+    message::{AuthPermissions, IMessageChannel, MsgDataBound},
+};
 
 use super::{config::ConfigAlias, fn_process::fn_process};
 

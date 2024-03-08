@@ -3,7 +3,7 @@
 use chrono::{DateTime, FixedOffset};
 use sqlx::FromRow;
 
-use rsiot_messages_core::eav;
+use crate::message::eav;
 
 use super::agg_type::AggType;
 

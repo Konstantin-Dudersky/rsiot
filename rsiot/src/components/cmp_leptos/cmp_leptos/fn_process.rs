@@ -3,9 +3,10 @@ use leptos::*;
 use tokio::task::JoinSet;
 use tracing::debug;
 
-use rsiot_messages_core::{system_messages::*, *};
-
-use crate::executor::CmpInOut;
+use crate::{
+    executor::CmpInOut,
+    message::{system_messages::*, *},
+};
 
 use super::{
     super::{Error, GlobalState, Result},

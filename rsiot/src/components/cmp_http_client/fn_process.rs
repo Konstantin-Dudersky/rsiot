@@ -1,7 +1,6 @@
 use std::time::Duration;
 
 use reqwest::{Client, Response, StatusCode};
-use rsiot_messages_core::{Message, MsgDataBound};
 use tokio::{
     task::JoinSet,
     time::{sleep, Instant},
@@ -9,7 +8,10 @@ use tokio::{
 use tracing::{error, info};
 use url::Url;
 
-use crate::executor::{CmpInOut, ComponentError};
+use crate::{
+    executor::{CmpInOut, ComponentError},
+    message::{Message, MsgDataBound},
+};
 
 use super::{config::config, Error};
 

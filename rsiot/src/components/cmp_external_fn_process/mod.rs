@@ -12,8 +12,10 @@ use futures::future::LocalBoxFuture;
 #[cfg(not(feature = "single-thread"))]
 use futures::future::BoxFuture;
 
-use crate::executor::{CmpInOut, Component, ComponentError, ComponentResult, IComponentProcess};
-use rsiot_messages_core::*;
+use crate::{
+    executor::{CmpInOut, Component, ComponentError, ComponentResult, IComponentProcess},
+    message::*,
+};
 
 #[cfg(feature = "single-thread")]
 type FnProcess<TMsg> = Box<dyn Fn(CmpInOut<TMsg>) -> LocalBoxFuture<'static, ComponentResult>>;
@@ -150,7 +152,7 @@ mod tests {
         use tokio::time::sleep;
         use tracing::info;
 
-        use rsiot_messages_core::{example_message::*, *};
+        use crate::message::{example_message::*, *};
 
         use crate::executor::{CmpInOut, ComponentResult};
 
@@ -183,8 +185,10 @@ mod tests {
         use tokio::time::sleep;
         use tracing::info;
 
-        use crate::executor::{CmpInOut, ComponentResult};
-        use rsiot_messages_core::{example_message::*, *};
+        use crate::{
+            executor::{CmpInOut, ComponentResult},
+            message::{example_message::*, *},
+        };
 
         fn fn_process_wrapper<TMsg>(in_out: CmpInOut<TMsg>) -> BoxFuture<'static, ComponentResult>
         where

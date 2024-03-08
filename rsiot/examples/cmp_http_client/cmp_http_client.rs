@@ -55,8 +55,7 @@ async fn main() -> anyhow::Result<()> {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg =
-                rsiot_messages_core::Message::new_custom(Data::HttpMethodsGetOnEventRequest(()));
+            let msg = Message::new_custom(Data::HttpMethodsGetOnEventRequest(()));
             vec![msg]
         },
     };

@@ -1,4 +1,4 @@
-use rsiot_messages_core::{Message, MsgDataBound};
+use crate::message::{Message, MsgDataBound};
 
 pub struct Config<TMsg, TValue>
 where

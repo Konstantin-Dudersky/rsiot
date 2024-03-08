@@ -3,7 +3,7 @@ use std::{cmp::max, fmt::Debug};
 use tracing::{info, trace};
 use uuid::Uuid;
 
-use rsiot_messages_core::{system_messages::*, *};
+use crate::message::{system_messages::*, *};
 
 use super::{
     types::{CmpInput, CmpOutput, FnAuth},

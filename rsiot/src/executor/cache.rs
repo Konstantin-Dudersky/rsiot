@@ -1,8 +1,9 @@
 use std::{collections::HashMap, sync::Arc};
 
 use futures::Future;
-use rsiot_messages_core::Message;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
+
+use crate::message::Message;
 
 type Hash<TMsg> = HashMap<String, Message<TMsg>>;
 

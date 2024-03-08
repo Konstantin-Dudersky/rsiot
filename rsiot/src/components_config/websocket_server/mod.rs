@@ -6,7 +6,7 @@
 //! cargo test -p rsiot-components-config --doc websocket_server
 //! ```
 
-use rsiot_messages_core::*;
+use crate::message::*;
 
 /// Конфигурация Websocket-сервера
 #[derive(Clone, Debug)]

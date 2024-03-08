@@ -8,7 +8,7 @@
 
 use url::Url;
 
-use rsiot_messages_core::*;
+use crate::message::*;
 
 pub type FnInput<TMsg, TMessageChannel> =
     fn(&Message<TMsg>) -> anyhow::Result<Option<Vec<ConfigFnInputItem<TMessageChannel>>>>;
@@ -163,7 +163,7 @@ mod tests {
 
     #[test]
     pub fn stub() {
-        use rsiot_messages_core::{example_message::*, *};
+        use crate::message::{example_message::*, *};
         use url::Url;
         let _ = Config::<Custom, ExampleMessageChannel> {
             url: Url::parse("redis://redis:6379").unwrap(),
@@ -175,7 +175,7 @@ mod tests {
 
     #[test]
     pub fn fn_input_json() {
-        use rsiot_messages_core::{example_message::*, *};
+        use crate::message::{example_message::*, *};
         use url::Url;
         let _ = Config::<Custom, ExampleMessageChannel> {
             url: Url::parse("redis://redis:6379").unwrap(),
@@ -196,7 +196,7 @@ mod tests {
 
     #[test]
     pub fn fn_output_json() {
-        use rsiot_messages_core::{example_message::*, *};
+        use crate::message::{example_message::*, *};
         use url::Url;
         let _ = Config::<Custom, ExampleMessageChannel> {
             url: Url::parse("redis://redis:6379").unwrap(),

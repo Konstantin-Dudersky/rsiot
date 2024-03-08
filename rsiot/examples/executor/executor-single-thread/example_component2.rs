@@ -4,8 +4,10 @@ use async_trait::async_trait;
 use tokio::time::sleep;
 use tracing::info;
 
-use rsiot::executor::{CmpInOut, Component, ComponentError, IComponentProcess};
-use rsiot_messages_core::MsgDataBound;
+use rsiot::{
+    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
+    message::MsgDataBound,
+};
 
 pub struct Config {}
 

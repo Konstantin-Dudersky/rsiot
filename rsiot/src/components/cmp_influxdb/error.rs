@@ -10,7 +10,7 @@ pub enum Error {
     },
 
     #[error("Cannot represent timetamp as Unix time: {0:?}")]
-    WrongTimestamp(rsiot_messages_core::Timestamp),
+    WrongTimestamp(crate::message::Timestamp),
 
     #[error(transparent)]
     Config(#[from] crate::components_config::influxdb_v2::Error),

@@ -4,7 +4,7 @@
 //! cargo test -p rsiot-components-config --doc influxdb_v2
 //! ```
 
-use rsiot_messages_core::*;
+use crate::message::*;
 
 use super::LineProtocolItem;
 
@@ -78,7 +78,7 @@ mod test {
 
     #[test]
     fn stub() {
-        use rsiot_messages_core::example_message::*;
+        use crate::message::example_message::*;
         let _ = cmp_influxdb::Config::<Custom> {
             host: String::from("influxdb"),
             port: 8086,
@@ -91,7 +91,7 @@ mod test {
 
     #[test]
     fn fn_input() {
-        use rsiot_messages_core::{example_message::*, *};
+        use crate::message::{example_message::*, *};
         let _ = cmp_influxdb::Config::<Custom> {
             host: String::from("influxdb"),
             port: 8086,

@@ -16,7 +16,7 @@ pub enum Error {
     UnknownMessageKey(String),
 
     #[error(transparent)]
-    Message(#[from] rsiot_messages_core::Error),
+    Message(#[from] crate::message::Error),
 
     #[error(transparent)]
     FnInput(anyhow::Error),

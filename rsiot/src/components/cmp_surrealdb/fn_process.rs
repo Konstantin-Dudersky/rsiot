@@ -5,12 +5,13 @@ use surrealdb::{
     opt::auth::Root,
     Surreal,
 };
-
-use rsiot_messages_core::MsgDataBound;
 use tokio::{sync::Mutex, task::JoinSet, time::sleep};
 use tracing::{error, info};
 
-use crate::executor::{CmpInOut, ComponentError};
+use crate::{
+    executor::{CmpInOut, ComponentError},
+    message::MsgDataBound,
+};
 
 use super::Config;
 

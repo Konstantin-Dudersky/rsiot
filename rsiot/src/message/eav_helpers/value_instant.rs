@@ -1,15 +1,15 @@
-use crate::{eav, Timestamp};
+use crate::message::{eav, Timestamp};
 
-/// Счетчик с нарастающим итогом
-pub struct ValueCounter {
+/// Мгновенное значение
+pub struct ValueInstant {
     pub ts: Timestamp,
     pub entity: String,
     pub attr: Option<String>,
     pub value: eav::ValueType,
 }
 
-impl From<ValueCounter> for Vec<eav::EavModel> {
-    fn from(value: ValueCounter) -> Self {
+impl From<ValueInstant> for Vec<eav::EavModel> {
+    fn from(value: ValueInstant) -> Self {
         let eav_value = eav::EavModel {
             ts: value.ts,
             entity: value.entity,
@@ -17,7 +17,7 @@ impl From<ValueCounter> for Vec<eav::EavModel> {
             value: value.value,
             agg: eav::AggType::Current,
             aggts: None,
-            aggnext: vec![eav::AggType::Inc, eav::AggType::First],
+            aggnext: vec![eav::AggType::Min, eav::AggType::Max, eav::AggType::Mean],
         };
         vec![eav_value]
     }

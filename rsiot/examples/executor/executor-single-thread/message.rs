@@ -1,4 +1,4 @@
-use rsiot_messages_core::MsgDataBound;
+use rsiot::message::MsgDataBound;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]

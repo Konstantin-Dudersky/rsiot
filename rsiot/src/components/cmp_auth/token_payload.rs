@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use rsiot_messages_core::AuthPermissions;
+use crate::message::AuthPermissions;
 
 #[derive(Deserialize, Serialize)]
 pub struct TokenPayload {

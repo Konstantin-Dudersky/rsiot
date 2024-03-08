@@ -1,4 +1,4 @@
-use rsiot_messages_core::{Message, MsgDataBound};
+use crate::message::{Message, MsgDataBound};
 
 use super::derive_item_process::DeriveItemProcess;
 

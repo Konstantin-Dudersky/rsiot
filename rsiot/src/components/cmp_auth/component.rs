@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 
-use rsiot_messages_core::{AuthPermissions, MsgDataBound};
+use crate::message::{AuthPermissions, MsgDataBound};
 
 use crate::executor::{CmpInOut, Component, ComponentError, ComponentResult, IComponentProcess};
 
