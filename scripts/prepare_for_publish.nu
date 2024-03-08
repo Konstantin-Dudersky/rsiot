@@ -115,6 +115,22 @@ let features = [
             "aarch64-unknown-linux-gnu",
         ],
     },
+    {
+        name: "executor",
+        targets: [
+            "x86_64-unknown-linux-gnu",
+            "aarch64-unknown-linux-gnu",
+            "wasm32-unknown-unknown",
+        ],
+    },
+    {
+        name: "logging",
+        targets: [
+            "x86_64-unknown-linux-gnu",
+            "aarch64-unknown-linux-gnu",
+            "wasm32-unknown-unknown",
+        ],
+    },
 ]
 
 # cargo clippy -------------------------------------------------------------------------------------

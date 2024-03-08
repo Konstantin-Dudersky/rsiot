@@ -162,8 +162,6 @@ mod components_config;
 pub mod env_vars;
 #[cfg(feature = "executor")]
 pub mod executor;
+#[cfg(feature = "logging")]
+pub mod logging;
 pub mod message;
-
-pub mod logging {
-    pub use rsiot_logging::*;
-}

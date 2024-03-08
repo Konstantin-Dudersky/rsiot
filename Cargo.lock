@@ -3679,6 +3679,7 @@ dependencies = [
  "dotenvy",
  "envy",
  "futures",
+ "getrandom",
  "gloo",
  "hmac",
  "http 1.1.0",
@@ -3690,7 +3691,6 @@ dependencies = [
  "palette",
  "redis",
  "reqwest",
- "rsiot-logging",
  "rsiot-macros",
  "serde",
  "serde_json",
@@ -3705,23 +3705,12 @@ dependencies = [
  "toml",
  "tower-http",
  "tracing",
- "tracing-subscriber",
- "url",
- "uuid",
- "web-sys",
-]
-
-[[package]]
-name = "rsiot-logging"
-version = "0.0.62"
-dependencies = [
- "thiserror",
- "tokio",
- "tracing",
  "tracing-loki",
  "tracing-subscriber",
  "tracing-web",
  "url",
+ "uuid",
+ "web-sys",
 ]
 
 [[package]]

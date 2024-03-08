@@ -14,10 +14,12 @@ version = "0.0.71"
 [dependencies]
 anyhow = { version = "1.0.80" }
 async-trait = { version = "0.1.77" }
+chrono = { workspace = true }
+getrandom = { version = "0.2", features = ["js"] }
 serde = { version = "1.0.197", features = ["derive"] }
 thiserror = { version = "1.0.57" }
+tokio = { version = "^1.36.0", features = ["macros", "sync", "rt", "time"] }
 tracing = { version = "0.1.40", features = ["log"] }
-chrono = { workspace = true }
 url = { workspace = true }
 uuid = { version = "1.7.0", features = ["serde", "v4"] }
 
@@ -44,13 +46,16 @@ sqlx = { version = "0.7.3", features = [
     "runtime-tokio",
 ], optional = true }
 surrealdb = { version = "1.2.0", optional = true }
-tokio = { workspace = true, optional = true }
 tokio-modbus = { version = "0.11.0", default-features = false, features = [
     "tcp",
 ], optional = true }
 tokio-tungstenite = { version = "0.21.0", optional = true }
 tokio-util = { version = "0.7.10", optional = true }
 toml = { version = "0.8.9", optional = true }
+tracing-subscriber = { version = "0.3.18", features = [
+    "env-filter",
+    "chrono",
+], optional = true }
 tower-http = { version = "0.5.1", features = [
     "cors",
     "trace",
@@ -63,7 +68,10 @@ web-sys = { version = "0.3.68", features = [
 document-features = { workspace = true }
 
 rsiot-macros = { workspace = true }
-rsiot-logging = { workspace = true }
+
+
+[target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dependencies]
+tracing-loki = { version = "0.2.4", optional = true }
 
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
@@ -74,6 +82,7 @@ gloo = { version = "0.11.0", features = [
     "timers",
     "utils",
 ], optional = true }
+tracing-web = { version = "0.1.3", optional = true }
 
 
 [dev-dependencies]
@@ -97,8 +106,12 @@ default = ["serde-json"]
 env_vars = ["dep:clap", "dep:dotenvy", "dep:envy", "dep:toml"]
 
 ## Базовые компоненты
-executor = ["dep:futures", "dep:tokio"]
+executor = ["dep:futures"]
 
+## Настройка логгироания сообщений
+logging = ["dep:tracing-loki", "dep:tracing-subscriber", "dep:tracing-web"]
+
+## Работа в однопоточном режиме
 single-thread = []
 
 serde-json = ["dep:serde_json"]
