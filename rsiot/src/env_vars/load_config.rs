@@ -1,7 +1,7 @@
 use dotenvy::dotenv;
 use envy::from_env;
 
-use crate::{Errors, IEnvVars};
+use super::{Errors, IEnvVars};
 
 /// Загрузить настройки
 ///

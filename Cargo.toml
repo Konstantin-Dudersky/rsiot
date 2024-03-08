@@ -1,5 +1,5 @@
 [workspace]
-members = ["./rsiot", "./rsiot-env-vars", "./rsiot-logging", "./rsiot-macros"]
+members = ["./rsiot", "./rsiot-logging", "./rsiot-macros"]
 exclude = ["./rsiot-esp"]
 resolver = "2"
 
@@ -64,6 +64,5 @@ toml = { version = "0.8.9" }
 
 
 # workspace packages
-rsiot-env-vars = { version = "0.0.62", path = "./rsiot-env-vars" }
 rsiot-logging = { version = "0.0.62", path = "./rsiot-logging" }
 rsiot-macros = { version = "0.0.64", path = "./rsiot-macros" }

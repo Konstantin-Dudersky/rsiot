@@ -5,17 +5,18 @@
 //! cargo run -p rsiot-extra-components --example cmp_inject_periodic --features single-thread
 //! ```
 
-use tokio::{main, task::LocalSet, time::Duration};
-use tracing::{level_filters::LevelFilter, Level};
-
-use rsiot::{
-    components::{cmp_inject_periodic, cmp_logger},
-    executor::{ComponentExecutor, ComponentExecutorConfig},
-    message::{example_message::*, Message},
-};
-
-#[main(flavor = "current_thread")]
+#[cfg(feature = "executor")]
+#[tokio::main(flavor = "current_thread")]
 async fn main() -> anyhow::Result<()> {
+    use tokio::{task::LocalSet, time::Duration};
+    use tracing::{level_filters::LevelFilter, Level};
+
+    use rsiot::{
+        components::{cmp_inject_periodic, cmp_logger},
+        executor::{ComponentExecutor, ComponentExecutorConfig},
+        message::{example_message::*, Message},
+    };
+
     tracing_subscriber::fmt()
         .with_max_level(LevelFilter::DEBUG)
         .init();
@@ -57,3 +58,6 @@ async fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
+
+#[cfg(not(feature = "executor"))]
+fn main() {}

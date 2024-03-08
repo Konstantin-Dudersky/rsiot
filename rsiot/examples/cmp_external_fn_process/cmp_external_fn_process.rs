@@ -6,23 +6,47 @@
 //! cargo run -p rsiot-extra-components --example cmp_external_fn_process
 //! ```
 
-use std::time::Duration;
-
-#[cfg(not(feature = "single-thread"))]
-use futures::future::BoxFuture;
-#[cfg(feature = "single-thread")]
-use futures::future::LocalBoxFuture;
-use tokio::{main, task::LocalSet, time::sleep};
-use tracing::{info, level_filters::LevelFilter};
-
-use rsiot::{
-    components::cmp_external_fn_process,
-    executor::{CmpInOut, ComponentExecutor, ComponentExecutorConfig, ComponentResult},
-    message::{example_message::*, *},
-};
-
-#[main(flavor = "current_thread")]
+#[cfg(feature = "executor")]
+#[tokio::main(flavor = "current_thread")]
 async fn main() {
+    use std::time::Duration;
+
+    #[cfg(not(feature = "single-thread"))]
+    use futures::future::BoxFuture;
+    #[cfg(feature = "single-thread")]
+    use futures::future::LocalBoxFuture;
+    use tokio::{task::LocalSet, time::sleep};
+    use tracing::{info, level_filters::LevelFilter};
+
+    use rsiot::{
+        components::cmp_external_fn_process,
+        executor::{CmpInOut, ComponentExecutor, ComponentExecutorConfig, ComponentResult},
+        message::{example_message::*, *},
+    };
+
+    async fn fn_process<TMsg>(_input: CmpInOut<TMsg>) -> ComponentResult {
+        loop {
+            info!("External fn process");
+            sleep(Duration::from_secs(2)).await;
+        }
+    }
+
+    #[cfg(feature = "single-thread")]
+    fn fn_process_wrapper<TMsg>(input: CmpInOut<TMsg>) -> LocalBoxFuture<'static, ComponentResult>
+    where
+        TMsg: MsgDataBound + 'static,
+    {
+        Box::pin(async { fn_process(input).await })
+    }
+
+    #[cfg(not(feature = "single-thread"))]
+    fn fn_process_wrapper<TMsg>(input: CmpInOut<TMsg>) -> BoxFuture<'static, ComponentResult>
+    where
+        TMsg: MsgDataBound + 'static,
+    {
+        Box::pin(async { fn_process(input).await })
+    }
+
     tracing_subscriber::fmt()
         .with_max_level(LevelFilter::DEBUG)
         .init();
@@ -47,25 +71,5 @@ async fn main() {
     task_set.await;
 }
 
-async fn fn_process<TMsg>(_input: CmpInOut<TMsg>) -> ComponentResult {
-    loop {
-        info!("External fn process");
-        sleep(Duration::from_secs(2)).await;
-    }
-}
-
-#[cfg(feature = "single-thread")]
-fn fn_process_wrapper<TMsg>(input: CmpInOut<TMsg>) -> LocalBoxFuture<'static, ComponentResult>
-where
-    TMsg: MsgDataBound + 'static,
-{
-    Box::pin(async { fn_process(input).await })
-}
-
-#[cfg(not(feature = "single-thread"))]
-fn fn_process_wrapper<TMsg>(input: CmpInOut<TMsg>) -> BoxFuture<'static, ComponentResult>
-where
-    TMsg: MsgDataBound + 'static,
-{
-    Box::pin(async { fn_process(input).await })
-}
+#[cfg(not(feature = "executor"))]
+fn main() {}

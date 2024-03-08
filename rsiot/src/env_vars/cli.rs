@@ -3,7 +3,7 @@
 use clap::{Parser, Subcommand};
 use tracing::info;
 
-use crate::{create_env_file::create_env_file, load_config, Errors, IEnvVars};
+use super::{create_env_file::create_env_file, load_config, Errors, IEnvVars};
 
 const ENV_EXAMPLE_FILE: &str = ".env.example";
 

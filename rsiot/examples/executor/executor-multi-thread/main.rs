@@ -4,23 +4,14 @@
 //! cargo run -p rsiot-component-core --example multi-thread
 //! ```
 
-#[cfg(any(
-    feature = "single-thread",
-    not(any(target_arch = "x86_64", target_arch = "aarch64"))
-))]
-fn main() {
-    unimplemented!()
-}
-
-#[cfg(not(feature = "single-thread"))]
+#[cfg(all(not(feature = "single-thread"), feature = "executor"))]
 mod example_component1;
-#[cfg(not(feature = "single-thread"))]
+#[cfg(all(not(feature = "single-thread"), feature = "executor"))]
 mod example_component2;
-#[cfg(not(feature = "single-thread"))]
+#[cfg(all(not(feature = "single-thread"), feature = "executor"))]
 mod message;
 
-#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
-#[cfg(not(feature = "single-thread"))]
+#[cfg(all(not(feature = "single-thread"), feature = "executor"))]
 #[tokio::main(flavor = "multi_thread")]
 async fn main() {
     use rsiot::executor::{ComponentExecutor, ComponentExecutorConfig};
@@ -42,3 +33,6 @@ async fn main() {
         .await
         .unwrap();
 }
+
+#[cfg(not(all(not(feature = "single-thread"), feature = "executor")))]
+fn main() {}

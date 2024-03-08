@@ -4,14 +4,14 @@
 //! cargo run -p rsiot-component-core --example single-thread --features single-thread
 //! ```
 
-#[cfg(feature = "single-thread")]
+#[cfg(all(feature = "single-thread", feature = "executor"))]
 mod example_component1;
-#[cfg(feature = "single-thread")]
+#[cfg(all(feature = "single-thread", feature = "executor"))]
 mod example_component2;
-#[cfg(feature = "single-thread")]
+#[cfg(all(feature = "single-thread", feature = "executor"))]
 mod message;
 
-#[cfg(feature = "single-thread")]
+#[cfg(all(feature = "single-thread", feature = "executor"))]
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
     use message::Message;
@@ -40,5 +40,5 @@ async fn main() {
     local_set.await;
 }
 
-#[cfg(not(feature = "single-thread"))]
+#[cfg(not(all(feature = "single-thread", feature = "executor")))]
 fn main() {}

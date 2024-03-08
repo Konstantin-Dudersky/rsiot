@@ -7,7 +7,7 @@ use std::fs::write;
 
 use toml::to_string as serialize;
 
-use crate::{Errors, IEnvVars};
+use super::{Errors, IEnvVars};
 
 /// Создать файл с настройками по-умолчанию
 pub fn create_env_file<TEnvVars>(filename: &str) -> Result<(), Errors>

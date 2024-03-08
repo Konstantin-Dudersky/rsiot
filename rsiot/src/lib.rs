@@ -155,25 +155,15 @@
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 //! TODO Написать про роутинг сообщений
 
+#[cfg(feature = "executor")]
 pub mod components;
 mod components_config;
+#[cfg(feature = "env_vars")]
+pub mod env_vars;
 #[cfg(feature = "executor")]
 pub mod executor;
 pub mod message;
 
-#[cfg(feature = "env-vars")]
-pub mod env_vars {
-    pub use rsiot_env_vars::*;
-}
-
 pub mod logging {
     pub use rsiot_logging::*;
-}
-
-/// Реэкспорт необходимых модулей
-pub mod reexport {
-    pub use chrono;
-    #[cfg(feature = "components")]
-    pub use tokio;
-    pub use url;
 }

@@ -108,6 +108,13 @@ let features = [
             "wasm32-unknown-unknown",
         ],
     },
+    {
+        name: "env_vars",
+        targets: [
+            "x86_64-unknown-linux-gnu",
+            "aarch64-unknown-linux-gnu",
+        ],
+    },
 ]
 
 # cargo clippy -------------------------------------------------------------------------------------
