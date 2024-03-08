@@ -21,14 +21,16 @@ fn main() -> anyhow::Result<()> {
     use tokio::runtime;
     #[cfg(feature = "single-thread")]
     use tokio::task::LocalSet;
-
-    use rsiot_component_core::{ComponentExecutor, ComponentExecutorConfig};
-    use rsiot_extra_components::{
-        cmp_derive::{self, DeriveItem},
-        cmp_inject_periodic, cmp_logger,
-    };
-    use rsiot_messages_core::{example_message::*, *};
     use tracing::Level;
+
+    use rsiot::{
+        component_core::{ComponentExecutor, ComponentExecutorConfig},
+        components::{
+            cmp_derive::{self, DeriveItem},
+            cmp_inject_periodic, cmp_logger,
+        },
+        message::{example_message::*, *},
+    };
 
     tracing_subscriber::fmt().init();
 

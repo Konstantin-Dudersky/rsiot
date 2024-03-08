@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-pub use crate::components::components_config::modbus_client::*;
+pub use crate::components_config::modbus_client::*;
 
 pub struct ConfigNewType<TMessage>(pub Config<TMessage>);
 

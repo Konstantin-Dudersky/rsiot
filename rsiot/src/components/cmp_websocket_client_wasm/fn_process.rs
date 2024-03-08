@@ -11,7 +11,7 @@ use gloo::{
 use tokio::task::JoinSet;
 use tracing::{info, trace, warn};
 
-use crate::components::components_config::websocket_client::Config;
+use super::Config;
 use rsiot_component_core::CmpInOut;
 use rsiot_messages_core::MsgDataBound;
 

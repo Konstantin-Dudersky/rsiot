@@ -1,4 +1,4 @@
-pub use crate::components::components_config::influxdb_v2::*;
+pub use crate::components_config::influxdb_v2::*;
 
 pub struct ConfigAlias<TMsg>(pub Config<TMsg>);
 

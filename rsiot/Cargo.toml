@@ -168,6 +168,10 @@ rustdoc-args = ["--cfg", "docsrs"]
 
 
 [[example]]
+name = "cmp_derive"
+path = "examples/cmp_derive/cmp_derive.rs"
+
+[[example]]
 name = "cmp_http_client"
 path = "examples/cmp_http_client/cmp_http_client.rs"
 

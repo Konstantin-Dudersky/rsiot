@@ -13,5 +13,5 @@ pub enum Error {
     WrongTimestamp(rsiot_messages_core::Timestamp),
 
     #[error(transparent)]
-    Config(#[from] crate::components::components_config::influxdb_v2::Error),
+    Config(#[from] crate::components_config::influxdb_v2::Error),
 }

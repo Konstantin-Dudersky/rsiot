@@ -1,4 +1,4 @@
-pub use crate::components::components_config::websocket_server::*;
+pub use crate::components_config::websocket_server::*;
 use rsiot_messages_core::MsgDataBound;
 
 pub struct ConfigAlias<TMessage>(pub Config<TMessage>)

@@ -1,4 +1,4 @@
-pub use crate::components::components_config::timescaledb::Config;
+pub use crate::components_config::timescaledb::Config;
 
 pub struct ConfigAlias(pub Config);
 
