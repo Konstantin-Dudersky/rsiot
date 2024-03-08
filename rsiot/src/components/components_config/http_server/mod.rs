@@ -88,7 +88,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::http_server as cmp_http_server;
+    use crate::components::cmp_http_server;
     use rsiot_messages_core::{example_message::*, *};
 
     #[allow(clippy::no_effect)]

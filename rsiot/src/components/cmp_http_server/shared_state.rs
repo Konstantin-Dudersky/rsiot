@@ -1,4 +1,4 @@
-use crate::Config;
+use super::Config;
 use rsiot_component_core::CmpInOut;
 
 #[derive(Clone)]

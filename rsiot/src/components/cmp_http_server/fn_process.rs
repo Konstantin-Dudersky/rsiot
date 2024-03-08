@@ -15,7 +15,7 @@ use tracing::{error, info, Level};
 use rsiot_component_core::{CmpInOut, ComponentError};
 use rsiot_messages_core::MsgDataBound;
 
-use crate::{config::Config, error::Error, routes, shared_state::SharedState};
+use super::{config::Config, error::Error, routes, shared_state::SharedState};
 
 /// Компонент для получения и ввода сообщений через HTTP Server
 pub async fn fn_process<TMsg>(

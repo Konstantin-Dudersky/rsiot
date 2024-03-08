@@ -8,12 +8,12 @@
 //!
 //! - [Примеры](https://github.com/Konstantin-Dudersky/rsiot/tree/main/rsiot-http-server/examples)
 //!
-#![doc = include_str!("../doc/api_description.md")]
+#![doc = include_str!("../../../doc/api_description.md")]
 //!
 //! ## Пример
 //!
 //! ```rust
-#![doc = include_str!("../examples/http-server-example.rs")]
+#![doc = include_str!("../../../examples/cmp_http_server/cmp_http_server.rs")]
 //! ```
 //!
 //! ## Тестирование

@@ -4,7 +4,7 @@ use axum::extract;
 
 use rsiot_messages_core::MsgDataBound;
 
-use crate::{error::Error, shared_state::SharedState};
+use super::super::{error::Error, shared_state::SharedState};
 
 /// Маршрут для ввода сообщений
 pub async fn replace<TMsg>(

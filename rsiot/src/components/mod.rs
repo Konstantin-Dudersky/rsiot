@@ -13,8 +13,8 @@ pub mod cmp_http_client;
 #[cfg(feature = "cmp_http_client_wasm")]
 pub mod cmp_http_client_wasm;
 
-#[cfg(feature = "http-server")]
-pub use rsiot_http_server as cmp_http_server;
+#[cfg(feature = "cmp_http_server")]
+pub mod cmp_http_server;
 
 #[cfg(feature = "influxdb")]
 pub use rsiot_influxdb as cmp_influxdb;

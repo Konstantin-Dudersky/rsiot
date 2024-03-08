@@ -10,7 +10,7 @@
 //! {"MessageSet":{"value":24.0,"ts":"2024-02-12T18:57:16.717277474Z","source":null}}
 //! ```
 
-#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[cfg(feature = "cmp_http_server")]
 fn main() -> anyhow::Result<()> {
     use serde::{Deserialize, Serialize};
     #[cfg(feature = "single-thread")]
@@ -19,10 +19,11 @@ fn main() -> anyhow::Result<()> {
     use tracing::Level;
     use tracing_subscriber::filter::LevelFilter;
 
-    use rsiot_component_core::{ComponentExecutor, ComponentExecutorConfig};
-    use rsiot_extra_components::{cmp_inject_periodic, cmp_logger};
-    use rsiot_http_server as cmp_http_server;
-    use rsiot_messages_core::{Message, MsgDataBound};
+    use rsiot::{
+        component_core::{ComponentExecutor, ComponentExecutorConfig},
+        components::{cmp_http_server, cmp_inject_periodic, cmp_logger},
+        message::{Message, MsgDataBound},
+    };
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     enum Data {
@@ -112,5 +113,5 @@ fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[cfg(any(target_arch = "wasm32", target_arch = "riscv32"))]
+#[cfg(not(feature = "cmp_http_server"))]
 fn main() {}

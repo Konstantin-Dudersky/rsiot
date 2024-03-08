@@ -1,4 +1,4 @@
-pub use rsiot_components_config::http_server::Config;
+pub use crate::components::components_config::http_server::Config;
 
 pub struct ConfigAlias<TMsg>(pub Config<TMsg>)
 where

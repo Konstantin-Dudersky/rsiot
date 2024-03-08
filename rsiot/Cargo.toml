@@ -21,6 +21,7 @@ tracing-subscriber = { version = "0.3.18", features = ["env-filter", "chrono"] }
 chrono = { workspace = true }
 url = { workspace = true }
 
+axum = { version = "0.7.4", optional = true }
 gloo = { version = "0.11.0", features = [
     "futures",
     "net",
@@ -44,6 +45,10 @@ tokio-modbus = { version = "0.11.0", default-features = false, features = [
 ], optional = true }
 tokio-tungstenite = { version = "0.21.0", optional = true }
 tokio-util = { version = "0.7.10", optional = true }
+tower-http = { version = "0.5.1", features = [
+    "cors",
+    "trace",
+], optional = true }
 web-sys = { version = "0.3.68", features = [
     "Location",
     "Window",
@@ -55,7 +60,6 @@ rsiot-macros = { workspace = true }
 rsiot-component-core = { workspace = true, optional = true }
 rsiot-env-vars = { workspace = true, optional = true }
 rsiot-extra-components = { workspace = true, optional = true }
-rsiot-http-server = { workspace = true, optional = true }
 rsiot-influxdb = { workspace = true, optional = true }
 rsiot-logging = { workspace = true }
 rsiot-messages-core = { workspace = true, features = ["serde-json"] }
@@ -97,7 +101,7 @@ cmp_http_client = ["components", "dep:http", "dep:reqwest"]
 cmp_http_client_wasm = ["components", "dep:http", "dep:gloo"]
 
 ## Компонент http-сервер
-http-server = ["components", "dep:rsiot-http-server"]
+cmp_http_server = ["components", "dep:axum", "dep:tower-http"]
 
 ## Компонент сохранения в БД InfluxDB
 influxdb = ["components", "dep:rsiot-influxdb"]
@@ -148,7 +152,6 @@ cmp_webstorage = ["components", "dep:gloo"]
 single-thread = [
     "rsiot-component-core?/single-thread",
     "rsiot-extra-components?/single-thread",
-    "rsiot-http-server?/single-thread",
     "rsiot-influxdb?/single-thread",
     "rsiot-plc?/single-thread",
     "rsiot-surrealdb?/single-thread",
@@ -164,6 +167,10 @@ rustdoc-args = ["--cfg", "docsrs"]
 [[example]]
 name = "cmp_http_client"
 path = "examples/cmp_http_client/cmp_http_client.rs"
+
+[[example]]
+name = "cmp_http_server"
+path = "examples/cmp_http_server/cmp_http_server.rs"
 
 
 [[example]]
