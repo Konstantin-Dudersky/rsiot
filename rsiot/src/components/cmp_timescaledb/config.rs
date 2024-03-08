@@ -1,4 +1,4 @@
-pub use rsiot_components_config::timescaledb_storing::Config;
+pub use crate::components::components_config::timescaledb::Config;
 
 pub struct ConfigAlias(pub Config);
 

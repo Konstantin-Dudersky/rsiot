@@ -21,13 +21,6 @@
 //!
 //! См. [документацию](https://docs.rs/rsiot-plc/latest/)
 
-#![cfg(any(
-    target_arch = "x86_64",
-    target_arch = "aarch64",
-    all(target_arch = "wasm32", feature = "single-thread"),
-    all(target_arch = "riscv32", feature = "single-thread"),
-))]
-
 mod component;
 mod config;
 mod error;

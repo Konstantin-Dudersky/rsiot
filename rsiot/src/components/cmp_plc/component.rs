@@ -4,7 +4,7 @@ use serde::Serialize;
 use rsiot_component_core::{CmpInOut, Component, ComponentError, IComponentProcess};
 use rsiot_messages_core::{AuthPermissions, MsgDataBound};
 
-use crate::{
+use super::{
     config::Config,
     fn_process::fn_process,
     plc::function_block_base::{FunctionBlockBase, IFunctionBlock},

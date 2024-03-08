@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::plc::function_block_base::{FunctionBlockBase, IFunctionBlock};
+use super::super::super::function_block_base::{FunctionBlockBase, IFunctionBlock};
 
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct I {

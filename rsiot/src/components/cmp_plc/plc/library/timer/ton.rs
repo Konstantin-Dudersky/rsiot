@@ -1,7 +1,7 @@
 use serde::Serialize;
 
-use crate::plc::function_block_base::{FunctionBlockBase, IFunctionBlock};
-use crate::plc::{library::edge_detect::rising_edge, types};
+use super::super::super::function_block_base::{FunctionBlockBase, IFunctionBlock};
+use super::super::super::{library::edge_detect::rising_edge, types};
 
 #[derive(Clone, Default, Serialize)]
 pub struct I {

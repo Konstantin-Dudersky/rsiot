@@ -11,17 +11,18 @@ mod fb2_example;
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 mod message;
 
-#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[cfg(all(feature = "cmp_plc", not(feature = "single-thread")))]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     use std::time::Duration;
 
     use tracing::Level;
 
-    use rsiot_component_core::{ComponentExecutor, ComponentExecutorConfig};
-    use rsiot_extra_components::cmp_logger;
-    use rsiot_messages_core::Message;
-    use rsiot_plc as cmp_plc;
+    use rsiot::{
+        component_core::{ComponentExecutor, ComponentExecutorConfig},
+        components::{cmp_logger, cmp_plc},
+        message::Message,
+    };
 
     use message::Data;
 
@@ -65,5 +66,5 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+#[cfg(any(not(feature = "cmp_plc"), feature = "single-thread"))]
 fn main() {}

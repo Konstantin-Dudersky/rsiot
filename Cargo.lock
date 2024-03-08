@@ -3679,6 +3679,7 @@ dependencies = [
  "gloo",
  "hmac",
  "http 1.1.0",
+ "instant",
  "jwt",
  "leptos",
  "leptos_router",
@@ -3692,12 +3693,11 @@ dependencies = [
  "rsiot-logging",
  "rsiot-macros",
  "rsiot-messages-core",
- "rsiot-plc",
  "rsiot-surrealdb",
- "rsiot-timescaledb-storing",
  "serde",
  "serde_json",
  "sha2",
+ "sqlx",
  "thiserror",
  "tokio",
  "tokio-modbus",
@@ -3723,18 +3723,6 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "uuid",
-]
-
-[[package]]
-name = "rsiot-components-config"
-version = "0.0.70"
-dependencies = [
- "anyhow",
- "http 1.1.0",
- "rsiot-messages-core",
- "serde",
- "thiserror",
- "url",
 ]
 
 [[package]]
@@ -3804,25 +3792,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rsiot-plc"
-version = "0.0.71"
-dependencies = [
- "anyhow",
- "async-trait",
- "gloo",
- "instant",
- "rsiot-component-core",
- "rsiot-extra-components",
- "rsiot-messages-core",
- "serde",
- "serde_json",
- "thiserror",
- "tokio",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
 name = "rsiot-surrealdb"
 version = "0.0.71"
 dependencies = [
@@ -3837,24 +3806,6 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
-]
-
-[[package]]
-name = "rsiot-timescaledb-storing"
-version = "0.0.71"
-dependencies = [
- "anyhow",
- "async-trait",
- "chrono",
- "rsiot-component-core",
- "rsiot-components-config",
- "rsiot-extra-components",
- "rsiot-messages-core",
- "sqlx",
- "tokio",
- "tracing",
- "tracing-subscriber",
- "url",
 ]
 
 [[package]]

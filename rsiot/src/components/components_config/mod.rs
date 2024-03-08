@@ -1,3 +1,8 @@
+//! Структуры для конфигурации компонентов.
+//!
+//! Конфигурация описывается в элементах языка Rust, не зависит от конкретных коммуникационных
+//! библиотек. Конкретные реализации компонентов импортируют этот крейт.
+
 #[cfg(any(feature = "cmp_http_client", feature = "cmp_http_client_wasm"))]
 pub mod http_client;
 
@@ -18,6 +23,9 @@ pub mod redis_client;
     feature = "cmp_websocket_client_wasm"
 ))]
 pub mod websocket_client;
+
+#[cfg(feature = "cmp_timescaledb")]
+pub mod timescaledb;
 
 #[cfg(feature = "cmp_websocket_server")]
 pub mod websocket_server;

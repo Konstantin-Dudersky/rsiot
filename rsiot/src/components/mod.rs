@@ -27,8 +27,8 @@ pub mod cmp_leptos;
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub mod cmp_modbus_client;
 
-#[cfg(feature = "plc")]
-pub use rsiot_plc as cmp_plc;
+#[cfg(feature = "cmp_plc")]
+pub mod cmp_plc;
 
 #[cfg(feature = "cmp_redis_client")]
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
@@ -37,8 +37,8 @@ pub mod cmp_redis_client;
 #[cfg(feature = "surrealdb")]
 pub use rsiot_surrealdb as cmp_surrealdb;
 
-#[cfg(feature = "timescaledb-storing")]
-pub use rsiot_timescaledb_storing::cmp_timescaledb_storing;
+#[cfg(feature = "cmp_timescaledb")]
+pub mod cmp_timescaledb;
 
 #[cfg(feature = "cmp_websocket_client")]
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]

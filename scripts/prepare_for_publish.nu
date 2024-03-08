@@ -12,7 +12,9 @@ let features = [
     "cmp_http_server",
     "cmp_influxdb",
     "cmp_modbus_client",
+    "cmp_plc",
     "cmp_redis_client",
+    "cmp_timescaledb",
     "cmp_websocket_client",
     "cmp_websocket_server"
 ]
@@ -41,6 +43,7 @@ for feat in $features {
 let features = [
     "cmp_leptos", 
     "cmp_http_client_wasm",
+    "cmp_plc",
     "cmp_websocket_client_wasm",
     "cmp_webstorage",
 ]

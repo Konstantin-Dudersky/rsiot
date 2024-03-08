@@ -6,7 +6,7 @@ use url::Url;
 use rsiot_component_core::{CmpInOut, ComponentError};
 use rsiot_messages_core::MsgDataBound;
 
-use crate::{config::Config, error::Error, model::Row};
+use super::{config::Config, error::Error, model::Row};
 
 pub async fn fn_process<TMessage>(
     mut input: CmpInOut<TMessage>,

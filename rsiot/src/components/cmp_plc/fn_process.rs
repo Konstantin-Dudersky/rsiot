@@ -17,7 +17,7 @@ use tokio::time::sleep;
 use rsiot_component_core::{CmpInOut, ComponentError};
 use rsiot_messages_core::MsgDataBound;
 
-use crate::{
+use super::{
     config::Config,
     plc::function_block_base::{FunctionBlockBase, IFunctionBlock},
     Error,

@@ -4,16 +4,17 @@
 //! cargo run -p rsiot-timescaledb-storing --example timescaledb-storing
 //! ```
 
-#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[cfg(feature = "cmp_timescaledb")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     use tokio::time::Duration;
     use url::Url;
 
-    use rsiot_component_core::{ComponentExecutor, ComponentExecutorConfig};
-    use rsiot_extra_components::cmp_inject_periodic;
-    use rsiot_messages_core::{example_message::*, *};
-    use rsiot_timescaledb_storing::cmp_timescaledb_storing;
+    use rsiot::{
+        component_core::{ComponentExecutor, ComponentExecutorConfig},
+        components::{cmp_inject_periodic, cmp_timescaledb},
+        message::{example_message::*, *},
+    };
 
     tracing_subscriber::fmt().init();
 
@@ -28,7 +29,7 @@ async fn main() -> anyhow::Result<()> {
     };
 
     let url = Url::parse("postgres://postgres:postgres@localhost:5432/db_data_test")?;
-    let db_config = cmp_timescaledb_storing::Config {
+    let db_config = cmp_timescaledb::Config {
         connection_string: url,
     };
 
@@ -40,12 +41,12 @@ async fn main() -> anyhow::Result<()> {
 
     ComponentExecutor::new(executor_config)
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
-        .add_cmp(cmp_timescaledb_storing::Cmp::new(db_config))
+        .add_cmp(cmp_timescaledb::Cmp::new(db_config))
         .wait_result()
         .await?;
 
     Ok(())
 }
 
-#[cfg(not(any(target_arch = "x86_64", target_arch = "aarch64")))]
+#[cfg(not(feature = "cmp_timescaledb"))]
 fn main() {}

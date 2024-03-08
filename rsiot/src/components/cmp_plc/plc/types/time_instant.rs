@@ -7,7 +7,7 @@ use std::time::Instant;
 
 use serde::Serialize;
 
-use crate::plc::types;
+use super::TimeDuration;
 
 #[derive(Clone)]
 pub struct TimeInstant {
@@ -21,11 +21,11 @@ impl TimeInstant {
         }
     }
 
-    pub fn duration_since(&self, earlier: Self) -> types::TimeDuration {
+    pub fn duration_since(&self, earlier: Self) -> TimeDuration {
         self.inst.duration_since(earlier.inst)
     }
 
-    pub fn elapsed(&self) -> types::TimeDuration {
+    pub fn elapsed(&self) -> TimeDuration {
         self.inst.elapsed()
     }
 }

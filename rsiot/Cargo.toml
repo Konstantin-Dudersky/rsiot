@@ -22,14 +22,8 @@ chrono = { workspace = true }
 url = { workspace = true }
 
 axum = { version = "0.7.4", optional = true }
-gloo = { version = "0.11.0", features = [
-    "futures",
-    "net",
-    "storage",
-    "timers",
-    "utils",
-], optional = true }
 http = { version = "1.0.0", optional = true }
+instant = { version = "0.1.12", features = ["wasm-bindgen"], optional = true }
 jwt = { version = "0.16.0", optional = true }
 futures = { version = "0.3.30", optional = true }
 hmac = { version = "0.12.1", optional = true }
@@ -39,6 +33,12 @@ redis = { version = "0.24.0", features = ["tokio-comp"], optional = true }
 reqwest = { version = "0.11.23", features = ["json"], optional = true }
 palette = { version = "0.7.4", features = ["named"], optional = true }
 sha2 = { version = "0.10.8", optional = true }
+sqlx = { version = "0.7.3", features = [
+    "chrono",
+    "macros",
+    "postgres",
+    "runtime-tokio",
+], optional = true }
 tokio = { workspace = true, optional = true }
 tokio-modbus = { version = "0.11.0", default-features = false, features = [
     "tcp",
@@ -62,9 +62,17 @@ rsiot-env-vars = { workspace = true, optional = true }
 rsiot-extra-components = { workspace = true, optional = true }
 rsiot-logging = { workspace = true }
 rsiot-messages-core = { workspace = true, features = ["serde-json"] }
-rsiot-plc = { workspace = true, optional = true }
 rsiot-surrealdb = { workspace = true, optional = true }
-rsiot-timescaledb-storing = { workspace = true, optional = true }
+
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+gloo = { version = "0.11.0", features = [
+    "futures",
+    "net",
+    "storage",
+    "timers",
+    "utils",
+], optional = true }
 
 
 [dev-dependencies]
@@ -119,7 +127,7 @@ cmp_leptos = [
 cmp_modbus_client = ["components", "dep:tokio-modbus"]
 
 # Компонент ПЛК
-plc = ["components", "dep:rsiot-plc"]
+cmp_plc = ["components", "dep:instant", "dep:gloo"]
 
 ## Компонент клиента Redis
 cmp_redis_client = ["components", "dep:futures", "dep:redis"]
@@ -128,7 +136,7 @@ cmp_redis_client = ["components", "dep:futures", "dep:redis"]
 surrealdb = ["components", "dep:rsiot-surrealdb"]
 
 ## Компонент сохранения в БД TimescaleDB
-timescaledb-storing = ["components", "dep:rsiot-timescaledb-storing"]
+cmp_timescaledb = ["components", "dep:sqlx"]
 
 ## Компонент websocket клиента
 cmp_websocket_client = ["components", "dep:futures", "dep:tokio-tungstenite"]
@@ -151,9 +159,7 @@ cmp_webstorage = ["components", "dep:gloo"]
 single-thread = [
     "rsiot-component-core?/single-thread",
     "rsiot-extra-components?/single-thread",
-    "rsiot-plc?/single-thread",
     "rsiot-surrealdb?/single-thread",
-    "rsiot-timescaledb-storing?/single-thread",
 ]
 
 
@@ -177,3 +183,11 @@ path = "examples/cmp_influxdb/cmp_influxdb.rs"
 [[example]]
 name = "create_signal_from_msg"
 path = "examples/cmp_leptos/create_signal_from_msg.rs"
+
+[[example]]
+name = "cmp_plc"
+path = "examples/cmp_plc/cmp_plc/main.rs"
+
+[[example]]
+name = "cmp_timescaledb"
+path = "examples/cmp_timescaledb/cmp_timescaledb.rs"
