@@ -54,4 +54,4 @@ serde_json = { version = "1.0.113" }
 
 
 # workspace packages
-rsiot-macros = { version = "0.0.64", path = "./rsiot-macros" }
+rsiot-macros = { version = "0.0.72", path = "./rsiot-macros" }
