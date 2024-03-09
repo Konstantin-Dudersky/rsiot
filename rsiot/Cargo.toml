@@ -34,6 +34,7 @@ futures = { version = "0.3.30", optional = true }
 hmac = { version = "0.12.1", optional = true }
 leptos = { version = "0.6.5", features = ["csr"], optional = true }
 leptos_router = { version = "0.6.5", features = ["csr"], optional = true }
+postcard = { version = "1.0.8", features = ["use-std"], optional = true }
 redis = { version = "0.24.0", features = ["tokio-comp"], optional = true }
 reqwest = { version = "0.11.23", features = ["json"], optional = true }
 palette = { version = "0.7.4", features = ["named"], optional = true }
@@ -95,8 +96,8 @@ openssl = { version = "0.10", features = ["vendored"] }
 
 
 [target.'cfg(target_arch = "riscv32")'.dependencies]
-esp-idf-svc = { version = "0.48.1", features = ["std"] }
-embedded-svc = { version = "0.27.1" }
+esp-idf-svc = { version = "0.48.1", features = ["std"], optional = true }
+embedded-svc = { version = "0.27.1", optional = true }
 
 
 [target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dev-dependencies]
@@ -157,6 +158,9 @@ cmp_plc = ["executor", "dep:instant", "dep:gloo"]
 
 ## Компонент клиента Redis
 cmp_redis_client = ["executor", "dep:futures", "dep:redis"]
+
+## Сохранение данных в хранилище ESP32
+cmp_storage_esp = ["executor", "dep:esp-idf-svc", "dep:postcard"]
 
 ## Компонент доступа к БД SurrealDB
 cmp_surrealdb = ["executor", "dep:surrealdb"]

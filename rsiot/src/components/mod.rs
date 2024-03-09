@@ -43,6 +43,9 @@ pub mod cmp_plc;
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub mod cmp_redis_client;
 
+#[cfg(feature = "cmp_storage_esp")]
+pub mod cmp_storage_esp;
+
 #[cfg(feature = "cmp_surrealdb")]
 pub mod cmp_surrealdb;
 

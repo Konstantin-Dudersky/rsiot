@@ -36,12 +36,6 @@ document-features = { version = "0.2.8" }
 anyhow = { version = "1.0.79" }
 thiserror = { version = "1.0.56" }
 
-# logging
-tracing = { version = "0.1.40", features = ["log"] }
-tracing-subscriber = { version = "0.3.18", features = ["env-filter", "chrono"] }
-tracing-loki = { version = "0.2.4" }
-tracing-web = { version = "0.1.3" }
-
 # macro
 proc-macro2 = { version = "1.0.78" }
 proc-macro-error = { version = "1.0.4" }

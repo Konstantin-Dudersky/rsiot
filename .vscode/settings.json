@@ -1,5 +1,5 @@
 {
-  // -- x86_64, multi-thread
+  // ---- x86_64, multi-thread ---------------------------------------------------------------------
   // "rust-analyzer.cargo.target": "x86_64-unknown-linux-gnu",
   // "rust-analyzer.cargo.features": [
   //   // "executor",
@@ -20,7 +20,7 @@
   //   "cmp_websocket_server"
   // ],
 
-  // -- wasm32
+  // ---- wasm32 -----------------------------------------------------------------------------------
   // "rust-analyzer.cargo.target": "wasm32-unknown-unknown",
   // "rust-analyzer.cargo.features": [
   //   "single-thread",
@@ -33,8 +33,14 @@
   // "cmp_webstorage"
   // ],
 
-  // -- esp32
+  // ---- esp32 ------------------------------------------------------------------------------------
   "rust-analyzer.cargo.target": "riscv32imc-esp-espidf",
+  "rust-analyzer.cargo.features": [
+    "single-thread",
+    "executor",
+
+    "cmp_storage_esp"
+  ],
 
   "rust-analyzer.showUnlinkedFileNotification": false
 }

@@ -69,6 +69,12 @@ let features = [
         ],
     },
     {
+        name: "cmp_storage_esp",
+        targets: [
+            "riscv32imc-esp-espidf",
+        ],
+    },
+    {
         name: "cmp_surrealdb",
         targets: [
             "x86_64-unknown-linux-gnu",
@@ -138,13 +144,21 @@ let features = [
 for feat in $features {
     for target in $feat.targets {
         let add_feats = match $target {
-            "aarch64-unknown-linux-gnu" => ["", "single-thread"] 
-            "x86_64-unknown-linux-gnu" => ["", "single-thread"]
-            "wasm32-unknown-unknown" => ["single-thread"]
+            "aarch64-unknown-linux-gnu" => ["", "single-thread"], 
+            "riscv32imc-esp-espidf" => ["single-thread"],
+            "x86_64-unknown-linux-gnu" => ["", "single-thread"],
+            "wasm32-unknown-unknown" => ["single-thread"],
         }
+        let toolchain = match $target {
+            "aarch64-unknown-linux-gnu" => "+stable",
+            "riscv32imc-esp-espidf" => "+nightly-2024-02-01-x86_64-unknown-linux-gnu",
+            "x86_64-unknown-linux-gnu" => "+stable",
+            "wasm32-unknown-unknown" => "+stable",
+            _ => "",
+        };
         for add_feat in $add_feats {
             print_header $"workspace clippy - ($feat.name) / ($target) / ($add_feat)";
-            let command = $'cargo clippy --all-targets --target="($target)" --features="($feat.name), ($add_feat)"';
+            let command = $'cargo ($toolchain) clippy --all-targets --target="($target)" --features="($feat.name), ($add_feat)"';
             print $"execute command: ($command)";
             nu -c $command;
         }
@@ -160,9 +174,16 @@ for feat in $features {
             "x86_64-unknown-linux-gnu" => ["", "single-thread"]
             "wasm32-unknown-unknown" => ["single-thread"]
         }
+        let toolchain = match $target {
+            "aarch64-unknown-linux-gnu" => "+nightly",
+            "riscv32imc-esp-espidf" => "+nightly-2024-02-01-x86_64-unknown-linux-gnu",
+            "x86_64-unknown-linux-gnu" => "+nightly-2024-02-01-x86_64-unknown-linux-gnu",
+            "wasm32-unknown-unknown" => "+nightly",
+            _ => "",
+        };
         for add_feat in $add_feats {
             print_header $"workspace udeps - ($feat.name) / ($target) / ($add_feat)";
-            let command = $'cargo +nightly udeps --all-targets --target="($target)" --features="($feat.name), ($add_feat)"';
+            let command = $'cargo ($toolchain) udeps --all-targets --target="($target)" --features="($feat.name), ($add_feat)"';
             print $"execute command: ($command)";
             nu -c $command;
         }
