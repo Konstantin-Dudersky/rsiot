@@ -1264,9 +1264,9 @@ dependencies = [
 
 [[package]]
 name = "rsiot-component-core"
-version = "0.0.62"
+version = "0.0.71"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d32833f42f3d011d9757ca92fa71c27c0cfad2b53b0698679b149ed1f84719b0"
+checksum = "eae9e3d64e94f8456a90e32631faf9c18143d5c33eb800bb1abb291aa6a961c9"
 dependencies = [
  "async-trait",
  "futures",
@@ -1296,9 +1296,9 @@ dependencies = [
 
 [[package]]
 name = "rsiot-macros"
-version = "0.0.62"
+version = "0.0.64"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7654347f518408196db36891d736e4d93a70951ab8e19cf1980cb1e52ceaa807"
+checksum = "3b6c10df6697835deab1b6c59245b1c3634138c1263b72c7d7bb5de4ece72fe3"
 dependencies = [
  "proc-macro-error",
  "proc-macro2",
@@ -1308,9 +1308,9 @@ dependencies = [
 
 [[package]]
 name = "rsiot-messages-core"
-version = "0.0.62"
+version = "0.0.70"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2ff21c22bca27ccc0206deba456fe6351a2133249dee347132ffae3c19afb6bd"
+checksum = "eb6064ce11e5c23ca8d4a8f32c8111d4c7acbc1f7935a3069ed52cb82a54ceb4"
 dependencies = [
  "chrono",
  "rsiot-macros",

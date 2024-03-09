@@ -4,6 +4,8 @@ def print_header [header: string] {
     print $"\n\n(ansi magenta_bold)($header)(ansi reset)\n\n"
 }
 
+cd rsiot
+
 
 let features = [
     {
@@ -170,15 +172,16 @@ for feat in $features {
 for feat in $features {
     for target in $feat.targets {
         let add_feats = match $target {
-            "aarch64-unknown-linux-gnu" => ["", "single-thread"] 
-            "x86_64-unknown-linux-gnu" => ["", "single-thread"]
-            "wasm32-unknown-unknown" => ["single-thread"]
+            "aarch64-unknown-linux-gnu" => ["", "single-thread"], 
+            "riscv32imc-esp-espidf" => ["single-thread"],
+            "x86_64-unknown-linux-gnu" => ["", "single-thread"],
+            "wasm32-unknown-unknown" => ["single-thread"],
         }
         let toolchain = match $target {
-            "aarch64-unknown-linux-gnu" => "+nightly",
+            "aarch64-unknown-linux-gnu" => "+nightly-2024-02-01-x86_64-unknown-linux-gnu",
             "riscv32imc-esp-espidf" => "+nightly-2024-02-01-x86_64-unknown-linux-gnu",
             "x86_64-unknown-linux-gnu" => "+nightly-2024-02-01-x86_64-unknown-linux-gnu",
-            "wasm32-unknown-unknown" => "+nightly",
+            "wasm32-unknown-unknown" => "+nightly-2024-02-01-x86_64-unknown-linux-gnu",
             _ => "",
         };
         for add_feat in $add_feats {

@@ -21,10 +21,8 @@ where
 {
     async fn process(
         &self,
-        _config: Config<TMsg, TStorageData>,
-        _input: CmpInput<TMsg>,
-        _output: CmpOutput<TMsg>,
-        _cache: Cache<TMsg>,
+        config: Config<TMsg, TStorageData>,
+        input: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
         unimplemented!();
     }

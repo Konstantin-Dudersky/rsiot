@@ -44,6 +44,7 @@ pub mod cmp_plc;
 pub mod cmp_redis_client;
 
 #[cfg(feature = "cmp_storage_esp")]
+#[cfg(target_arch = "riscv32")]
 pub mod cmp_storage_esp;
 
 #[cfg(feature = "cmp_surrealdb")]

@@ -1,14 +1,17 @@
+[build]
+target = "riscv32imc-esp-espidf"
+
+[target.aarch64-unknown-linux-gnu]
+linker = "aarch64-linux-gnu-gcc"
+
 [target.riscv32imc-esp-espidf]
 linker = "ldproxy"
 runner = "espflash flash --monitor"
 rustflags = ["--cfg", "espidf_time64"]
-
-[target.aarch64-unknown-linux-gnu]
-linker = "aarch64-linux-gnu-gcc"
 
 [unstable]
 build-std = ["std", "panic_abort"]
 
 [env]
 MCU = "esp32c3"
-ESP_IDF_VERSION = "v5.2.1"
+ESP_IDF_VERSION = "v5.1.2"

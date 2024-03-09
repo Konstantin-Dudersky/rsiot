@@ -25,8 +25,8 @@ postcard = { version = "1.0.8", features = ["use-std"] }
 serde = { version = "1.0.196" }
 thiserror = { version = "1.0.46" }
 
-rsiot-component-core = { version = "0.0.62" }
-rsiot-messages-core = { version = "0.0.62" }
+rsiot-component-core = { version = "0.0.71" }
+rsiot-messages-core = { version = "0.0.70" }
 
 
 [build-dependencies]

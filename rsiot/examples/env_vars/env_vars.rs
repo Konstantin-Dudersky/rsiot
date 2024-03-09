@@ -1,5 +1,6 @@
 #[cfg(feature = "env_vars")]
-fn main() {
+#[tokio::main]
+async fn main() {
     use serde::{Deserialize, Serialize};
     use url::Url;
 
@@ -40,6 +41,8 @@ fn main() {
     impl IEnvVars for Config {}
 
     use rsiot::env_vars::{load_config, IEnvVars};
+
+    tracing_subscriber::fmt().init();
     let config = load_config::<Config>();
     println!("{:#?}", config);
 }

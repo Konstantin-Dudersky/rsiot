@@ -22,15 +22,12 @@ tokio = { version = "^1.36.0", features = ["macros", "sync", "rt", "time"] }
 tokio-util = { version = "0.7.10" }
 
 # datatypes
-chrono = { version = "0.4.33", features = ["serde"] }
 http = { version = "1.0.0" }
 rgb = { version = "0.8.37", features = ["serde"] }
 palette = { version = "0.7.4", features = ["named"] }
 url = { version = "2.5.0" }
 uuid = { version = "1.7.0", features = ["serde", "v4"] }
 
-# documentation
-document-features = { version = "0.2.8" }
 
 # errors
 anyhow = { version = "1.0.79" }
@@ -45,7 +42,3 @@ syn = { version = "2.0.48" }
 # serialization / deserialization
 serde = { version = "1.0.196", features = ["derive"] }
 serde_json = { version = "1.0.113" }
-
-
-# workspace packages
-rsiot-macros = { version = "0.0.72", path = "./rsiot-macros" }

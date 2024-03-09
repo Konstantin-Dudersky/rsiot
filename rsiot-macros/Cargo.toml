@@ -1,22 +1,21 @@
 [package]
 description = "Макросы"
 name = "rsiot-macros"
-edition.workspace = true
-categories.workspace = true
-keywords.workspace = true
-license.workspace = true
+categories = ["api-bindings", "gui", "network-programming"]
+edition = "2021"
+keywords = ["iot", "scada"]
+license = "MIT OR Apache-2.0"
 readme = "README.md"
-repository.workspace = true
-rust-version.workspace = true
-version = "0.0.72"
-
+repository = "https://github.com/Konstantin-Dudersky/rsiot"
+rust-version = "1.75.0"
+versio = "0.0.72"
 
 [lib]
 proc-macro = true
 
 
 [dependencies]
-syn = { workspace = true }
-quote = { workspace = true }
-proc-macro2 = { workspace = true }
-proc-macro-error = { workspace = true }
+proc-macro2 = { version = "1.0.78" }
+proc-macro-error = { version = "1.0.4" }
+quote = { version = "1.0.35" }
+syn = { version = "2.0.48" }
