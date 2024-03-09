@@ -9,6 +9,8 @@ rustup target add wasm32-unknown-unknown;
 rustup target add wasm32-unknown-unknown --toolchain nightly;
 ```
 
+sudo apt install clang
+
 ## Разработка
 
 Для запуска необходимых docker-образов:

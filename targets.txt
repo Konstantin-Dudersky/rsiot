@@ -1,0 +1,2010 @@
+[
+  {
+    "target": "aarch64-apple-darwin",
+    "arch": "aarch64",
+    "vendor": "apple",
+    "os": "macos",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64-apple-ios",
+    "arch": "aarch64",
+    "vendor": "apple",
+    "os": "ios",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64-apple-ios-macabi",
+    "arch": "aarch64",
+    "vendor": "apple",
+    "os": "ios",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64-apple-ios-sim",
+    "arch": "aarch64",
+    "vendor": "apple",
+    "os": "ios",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64-apple-tvos",
+    "arch": "aarch64",
+    "vendor": "apple",
+    "os": "tvos",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64-apple-tvos-sim",
+    "arch": "aarch64",
+    "vendor": "apple",
+    "os": "tvos",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64-apple-watchos",
+    "arch": "aarch64",
+    "vendor": "apple",
+    "os": "watchos",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64-apple-watchos-sim",
+    "arch": "aarch64",
+    "vendor": "apple",
+    "os": "watchos",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64-fuchsia",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": "fuchsia",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64-kmc-solid_asp3",
+    "arch": "aarch64",
+    "vendor": "kmc",
+    "os": "solid_asp3",
+    "target-family": null
+  },
+  {
+    "target": "aarch64-linux-android",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": "android",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64-nintendo-switch-freestanding",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": "horizon",
+    "target-family": null
+  },
+  {
+    "target": "aarch64-pc-windows-gnullvm",
+    "arch": "aarch64",
+    "vendor": "pc",
+    "os": "windows",
+    "target-family": [
+      "windows"
+    ]
+  },
+  {
+    "target": "aarch64-pc-windows-msvc",
+    "arch": "aarch64",
+    "vendor": "pc",
+    "os": "windows",
+    "target-family": [
+      "windows"
+    ]
+  },
+  {
+    "target": "aarch64-unknown-freebsd",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": "freebsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64-unknown-fuchsia",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": "fuchsia",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64-unknown-hermit",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": "hermit",
+    "target-family": null
+  },
+  {
+    "target": "aarch64-unknown-illumos",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": "illumos",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64-unknown-linux-gnu",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64-unknown-linux-gnu_ilp32",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64-unknown-linux-musl",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64-unknown-linux-ohos",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64-unknown-netbsd",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": "netbsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64-unknown-none",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "aarch64-unknown-none-softfloat",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "aarch64-unknown-nto-qnx710",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": "nto",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64-unknown-openbsd",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": "openbsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64-unknown-redox",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": "redox",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64-unknown-teeos",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": "teeos",
+    "target-family": null
+  },
+  {
+    "target": "aarch64-unknown-uefi",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": "uefi",
+    "target-family": null
+  },
+  {
+    "target": "aarch64-uwp-windows-msvc",
+    "arch": "aarch64",
+    "vendor": "uwp",
+    "os": "windows",
+    "target-family": [
+      "windows"
+    ]
+  },
+  {
+    "target": "aarch64-wrs-vxworks",
+    "arch": "aarch64",
+    "vendor": "wrs",
+    "os": "vxworks",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64_be-unknown-linux-gnu",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64_be-unknown-linux-gnu_ilp32",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "aarch64_be-unknown-netbsd",
+    "arch": "aarch64",
+    "vendor": null,
+    "os": "netbsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "arm-linux-androideabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": "android",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "arm-unknown-linux-gnueabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "arm-unknown-linux-gnueabihf",
+    "arch": "arm",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "arm-unknown-linux-musleabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "arm-unknown-linux-musleabihf",
+    "arch": "arm",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "arm64_32-apple-watchos",
+    "arch": "aarch64",
+    "vendor": "apple",
+    "os": "watchos",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "arm64e-apple-darwin",
+    "arch": "aarch64",
+    "vendor": "apple",
+    "os": "macos",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "arm64e-apple-ios",
+    "arch": "aarch64",
+    "vendor": "apple",
+    "os": "ios",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "arm64ec-pc-windows-msvc",
+    "arch": "arm64ec",
+    "vendor": "pc",
+    "os": "windows",
+    "target-family": [
+      "windows"
+    ]
+  },
+  {
+    "target": "armeb-unknown-linux-gnueabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armebv7r-none-eabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "armebv7r-none-eabihf",
+    "arch": "arm",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "armv4t-none-eabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "armv4t-unknown-linux-gnueabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armv5te-none-eabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "armv5te-unknown-linux-gnueabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armv5te-unknown-linux-musleabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armv5te-unknown-linux-uclibceabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armv6-unknown-freebsd",
+    "arch": "arm",
+    "vendor": null,
+    "os": "freebsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armv6-unknown-netbsd-eabihf",
+    "arch": "arm",
+    "vendor": null,
+    "os": "netbsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armv6k-nintendo-3ds",
+    "arch": "arm",
+    "vendor": "nintendo",
+    "os": "horizon",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armv7-linux-androideabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": "android",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armv7-sony-vita-newlibeabihf",
+    "arch": "arm",
+    "vendor": "sony",
+    "os": "vita",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armv7-unknown-freebsd",
+    "arch": "arm",
+    "vendor": null,
+    "os": "freebsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armv7-unknown-linux-gnueabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armv7-unknown-linux-gnueabihf",
+    "arch": "arm",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armv7-unknown-linux-musleabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armv7-unknown-linux-musleabihf",
+    "arch": "arm",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armv7-unknown-linux-ohos",
+    "arch": "arm",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armv7-unknown-linux-uclibceabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armv7-unknown-linux-uclibceabihf",
+    "arch": "arm",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armv7-unknown-netbsd-eabihf",
+    "arch": "arm",
+    "vendor": null,
+    "os": "netbsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armv7-wrs-vxworks-eabihf",
+    "arch": "arm",
+    "vendor": "wrs",
+    "os": "vxworks",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armv7a-kmc-solid_asp3-eabi",
+    "arch": "arm",
+    "vendor": "kmc",
+    "os": "solid_asp3",
+    "target-family": null
+  },
+  {
+    "target": "armv7a-kmc-solid_asp3-eabihf",
+    "arch": "arm",
+    "vendor": "kmc",
+    "os": "solid_asp3",
+    "target-family": null
+  },
+  {
+    "target": "armv7a-none-eabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "armv7a-none-eabihf",
+    "arch": "arm",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "armv7k-apple-watchos",
+    "arch": "arm",
+    "vendor": "apple",
+    "os": "watchos",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armv7r-none-eabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "armv7r-none-eabihf",
+    "arch": "arm",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "armv7s-apple-ios",
+    "arch": "arm",
+    "vendor": "apple",
+    "os": "ios",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "armv8r-none-eabihf",
+    "arch": "arm",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "avr-unknown-gnu-atmega328",
+    "arch": "avr",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "bpfeb-unknown-none",
+    "arch": "bpf",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "bpfel-unknown-none",
+    "arch": "bpf",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "csky-unknown-linux-gnuabiv2",
+    "arch": "csky",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "csky-unknown-linux-gnuabiv2hf",
+    "arch": "csky",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "hexagon-unknown-linux-musl",
+    "arch": "hexagon",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "hexagon-unknown-none-elf",
+    "arch": "hexagon",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "i386-apple-ios",
+    "arch": "x86",
+    "vendor": "apple",
+    "os": "ios",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "i586-pc-nto-qnx700",
+    "arch": "x86",
+    "vendor": null,
+    "os": "nto",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "i586-pc-windows-msvc",
+    "arch": "x86",
+    "vendor": "pc",
+    "os": "windows",
+    "target-family": [
+      "windows"
+    ]
+  },
+  {
+    "target": "i586-unknown-linux-gnu",
+    "arch": "x86",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "i586-unknown-linux-musl",
+    "arch": "x86",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "i586-unknown-netbsd",
+    "arch": "x86",
+    "vendor": null,
+    "os": "netbsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "i686-apple-darwin",
+    "arch": "x86",
+    "vendor": "apple",
+    "os": "macos",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "i686-linux-android",
+    "arch": "x86",
+    "vendor": null,
+    "os": "android",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "i686-pc-windows-gnu",
+    "arch": "x86",
+    "vendor": "pc",
+    "os": "windows",
+    "target-family": [
+      "windows"
+    ]
+  },
+  {
+    "target": "i686-pc-windows-gnullvm",
+    "arch": "x86",
+    "vendor": "pc",
+    "os": "windows",
+    "target-family": [
+      "windows"
+    ]
+  },
+  {
+    "target": "i686-pc-windows-msvc",
+    "arch": "x86",
+    "vendor": "pc",
+    "os": "windows",
+    "target-family": [
+      "windows"
+    ]
+  },
+  {
+    "target": "i686-unknown-freebsd",
+    "arch": "x86",
+    "vendor": null,
+    "os": "freebsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "i686-unknown-haiku",
+    "arch": "x86",
+    "vendor": null,
+    "os": "haiku",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "i686-unknown-hurd-gnu",
+    "arch": "x86",
+    "vendor": null,
+    "os": "hurd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "i686-unknown-linux-gnu",
+    "arch": "x86",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "i686-unknown-linux-musl",
+    "arch": "x86",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "i686-unknown-netbsd",
+    "arch": "x86",
+    "vendor": null,
+    "os": "netbsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "i686-unknown-openbsd",
+    "arch": "x86",
+    "vendor": null,
+    "os": "openbsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "i686-unknown-uefi",
+    "arch": "x86",
+    "vendor": null,
+    "os": "uefi",
+    "target-family": null
+  },
+  {
+    "target": "i686-uwp-windows-gnu",
+    "arch": "x86",
+    "vendor": "uwp",
+    "os": "windows",
+    "target-family": [
+      "windows"
+    ]
+  },
+  {
+    "target": "i686-uwp-windows-msvc",
+    "arch": "x86",
+    "vendor": "uwp",
+    "os": "windows",
+    "target-family": [
+      "windows"
+    ]
+  },
+  {
+    "target": "i686-win7-windows-msvc",
+    "arch": "x86",
+    "vendor": "win7",
+    "os": "windows",
+    "target-family": [
+      "windows"
+    ]
+  },
+  {
+    "target": "i686-wrs-vxworks",
+    "arch": "x86",
+    "vendor": "wrs",
+    "os": "vxworks",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "loongarch64-unknown-linux-gnu",
+    "arch": "loongarch64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "loongarch64-unknown-none",
+    "arch": "loongarch64",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "loongarch64-unknown-none-softfloat",
+    "arch": "loongarch64",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "m68k-unknown-linux-gnu",
+    "arch": "m68k",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "mips-unknown-linux-gnu",
+    "arch": "mips",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "mips-unknown-linux-musl",
+    "arch": "mips",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "mips-unknown-linux-uclibc",
+    "arch": "mips",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "mips64-openwrt-linux-musl",
+    "arch": "mips64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "mips64-unknown-linux-gnuabi64",
+    "arch": "mips64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "mips64-unknown-linux-muslabi64",
+    "arch": "mips64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "mips64el-unknown-linux-gnuabi64",
+    "arch": "mips64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "mips64el-unknown-linux-muslabi64",
+    "arch": "mips64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "mipsel-sony-psp",
+    "arch": "mips",
+    "vendor": "sony",
+    "os": "psp",
+    "target-family": null
+  },
+  {
+    "target": "mipsel-sony-psx",
+    "arch": "mips",
+    "vendor": "sony",
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "mipsel-unknown-linux-gnu",
+    "arch": "mips",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "mipsel-unknown-linux-musl",
+    "arch": "mips",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "mipsel-unknown-linux-uclibc",
+    "arch": "mips",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "mipsel-unknown-netbsd",
+    "arch": "mips",
+    "vendor": null,
+    "os": "netbsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "mipsel-unknown-none",
+    "arch": "mips",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "mipsisa32r6-unknown-linux-gnu",
+    "arch": "mips32r6",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "mipsisa32r6el-unknown-linux-gnu",
+    "arch": "mips32r6",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "mipsisa64r6-unknown-linux-gnuabi64",
+    "arch": "mips64r6",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "mipsisa64r6el-unknown-linux-gnuabi64",
+    "arch": "mips64r6",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "msp430-none-elf",
+    "arch": "msp430",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "nvptx64-nvidia-cuda",
+    "arch": "nvptx64",
+    "vendor": "nvidia",
+    "os": "cuda",
+    "target-family": null
+  },
+  {
+    "target": "powerpc-unknown-freebsd",
+    "arch": "powerpc",
+    "vendor": null,
+    "os": "freebsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "powerpc-unknown-linux-gnu",
+    "arch": "powerpc",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "powerpc-unknown-linux-gnuspe",
+    "arch": "powerpc",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "powerpc-unknown-linux-musl",
+    "arch": "powerpc",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "powerpc-unknown-netbsd",
+    "arch": "powerpc",
+    "vendor": null,
+    "os": "netbsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "powerpc-unknown-openbsd",
+    "arch": "powerpc",
+    "vendor": null,
+    "os": "openbsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "powerpc-wrs-vxworks",
+    "arch": "powerpc",
+    "vendor": "wrs",
+    "os": "vxworks",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "powerpc-wrs-vxworks-spe",
+    "arch": "powerpc",
+    "vendor": "wrs",
+    "os": "vxworks",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "powerpc64-ibm-aix",
+    "arch": "powerpc64",
+    "vendor": "ibm",
+    "os": "aix",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "powerpc64-unknown-freebsd",
+    "arch": "powerpc64",
+    "vendor": null,
+    "os": "freebsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "powerpc64-unknown-linux-gnu",
+    "arch": "powerpc64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "powerpc64-unknown-linux-musl",
+    "arch": "powerpc64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "powerpc64-unknown-openbsd",
+    "arch": "powerpc64",
+    "vendor": null,
+    "os": "openbsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "powerpc64-wrs-vxworks",
+    "arch": "powerpc64",
+    "vendor": "wrs",
+    "os": "vxworks",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "powerpc64le-unknown-freebsd",
+    "arch": "powerpc64",
+    "vendor": null,
+    "os": "freebsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "powerpc64le-unknown-linux-gnu",
+    "arch": "powerpc64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "powerpc64le-unknown-linux-musl",
+    "arch": "powerpc64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "riscv32gc-unknown-linux-gnu",
+    "arch": "riscv32",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "riscv32gc-unknown-linux-musl",
+    "arch": "riscv32",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "riscv32i-unknown-none-elf",
+    "arch": "riscv32",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "riscv32im-risc0-zkvm-elf",
+    "arch": "riscv32",
+    "vendor": "risc0",
+    "os": "zkvm",
+    "target-family": null
+  },
+  {
+    "target": "riscv32im-unknown-none-elf",
+    "arch": "riscv32",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "riscv32imac-esp-espidf",
+    "arch": "riscv32",
+    "vendor": "espressif",
+    "os": "espidf",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "riscv32imac-unknown-none-elf",
+    "arch": "riscv32",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "riscv32imac-unknown-xous-elf",
+    "arch": "riscv32",
+    "vendor": null,
+    "os": "xous",
+    "target-family": null
+  },
+  {
+    "target": "riscv32imafc-esp-espidf",
+    "arch": "riscv32",
+    "vendor": "espressif",
+    "os": "espidf",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "riscv32imafc-unknown-none-elf",
+    "arch": "riscv32",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "riscv32imc-esp-espidf",
+    "arch": "riscv32",
+    "vendor": "espressif",
+    "os": "espidf",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "riscv32imc-unknown-none-elf",
+    "arch": "riscv32",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "riscv64-linux-android",
+    "arch": "riscv64",
+    "vendor": null,
+    "os": "android",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "riscv64gc-unknown-freebsd",
+    "arch": "riscv64",
+    "vendor": null,
+    "os": "freebsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "riscv64gc-unknown-fuchsia",
+    "arch": "riscv64",
+    "vendor": null,
+    "os": "fuchsia",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "riscv64gc-unknown-hermit",
+    "arch": "riscv64",
+    "vendor": null,
+    "os": "hermit",
+    "target-family": null
+  },
+  {
+    "target": "riscv64gc-unknown-linux-gnu",
+    "arch": "riscv64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "riscv64gc-unknown-linux-musl",
+    "arch": "riscv64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "riscv64gc-unknown-netbsd",
+    "arch": "riscv64",
+    "vendor": null,
+    "os": "netbsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "riscv64gc-unknown-none-elf",
+    "arch": "riscv64",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "riscv64gc-unknown-openbsd",
+    "arch": "riscv64",
+    "vendor": null,
+    "os": "openbsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "riscv64imac-unknown-none-elf",
+    "arch": "riscv64",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "s390x-unknown-linux-gnu",
+    "arch": "s390x",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "s390x-unknown-linux-musl",
+    "arch": "s390x",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "sparc-unknown-linux-gnu",
+    "arch": "sparc",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "sparc-unknown-none-elf",
+    "arch": "sparc",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "sparc64-unknown-linux-gnu",
+    "arch": "sparc64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "sparc64-unknown-netbsd",
+    "arch": "sparc64",
+    "vendor": null,
+    "os": "netbsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "sparc64-unknown-openbsd",
+    "arch": "sparc64",
+    "vendor": null,
+    "os": "openbsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "sparcv9-sun-solaris",
+    "arch": "sparc64",
+    "vendor": "sun",
+    "os": "solaris",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "thumbv4t-none-eabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "thumbv5te-none-eabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "thumbv6m-none-eabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "thumbv7a-pc-windows-msvc",
+    "arch": "arm",
+    "vendor": "pc",
+    "os": "windows",
+    "target-family": [
+      "windows"
+    ]
+  },
+  {
+    "target": "thumbv7a-uwp-windows-msvc",
+    "arch": "arm",
+    "vendor": "uwp",
+    "os": "windows",
+    "target-family": [
+      "windows"
+    ]
+  },
+  {
+    "target": "thumbv7em-none-eabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "thumbv7em-none-eabihf",
+    "arch": "arm",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "thumbv7m-none-eabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "thumbv7neon-linux-androideabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": "android",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "thumbv7neon-unknown-linux-gnueabihf",
+    "arch": "arm",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "thumbv7neon-unknown-linux-musleabihf",
+    "arch": "arm",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "thumbv8m.base-none-eabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "thumbv8m.main-none-eabi",
+    "arch": "arm",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "thumbv8m.main-none-eabihf",
+    "arch": "arm",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "wasm32-unknown-emscripten",
+    "arch": "wasm32",
+    "vendor": null,
+    "os": "emscripten",
+    "target-family": [
+      "unix",
+      "wasm"
+    ]
+  },
+  {
+    "target": "wasm32-unknown-unknown",
+    "arch": "wasm32",
+    "vendor": null,
+    "os": "unknown",
+    "target-family": [
+      "wasm"
+    ]
+  },
+  {
+    "target": "wasm32-wasi",
+    "arch": "wasm32",
+    "vendor": null,
+    "os": "wasi",
+    "target-family": [
+      "wasm"
+    ]
+  },
+  {
+    "target": "wasm32-wasi-preview1-threads",
+    "arch": "wasm32",
+    "vendor": null,
+    "os": "wasi",
+    "target-family": [
+      "wasm"
+    ]
+  },
+  {
+    "target": "wasm32-wasip1",
+    "arch": "wasm32",
+    "vendor": null,
+    "os": "wasi",
+    "target-family": [
+      "wasm"
+    ]
+  },
+  {
+    "target": "wasm32-wasip2",
+    "arch": "wasm32",
+    "vendor": null,
+    "os": "wasi",
+    "target-family": [
+      "wasm"
+    ]
+  },
+  {
+    "target": "wasm64-unknown-unknown",
+    "arch": "wasm64",
+    "vendor": null,
+    "os": "unknown",
+    "target-family": [
+      "wasm"
+    ]
+  },
+  {
+    "target": "x86_64-apple-darwin",
+    "arch": "x86_64",
+    "vendor": "apple",
+    "os": "macos",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-apple-ios",
+    "arch": "x86_64",
+    "vendor": "apple",
+    "os": "ios",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-apple-ios-macabi",
+    "arch": "x86_64",
+    "vendor": "apple",
+    "os": "ios",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-apple-tvos",
+    "arch": "x86_64",
+    "vendor": "apple",
+    "os": "tvos",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-apple-watchos-sim",
+    "arch": "x86_64",
+    "vendor": "apple",
+    "os": "watchos",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-fortanix-unknown-sgx",
+    "arch": "x86_64",
+    "vendor": "fortanix",
+    "os": "unknown",
+    "target-family": null
+  },
+  {
+    "target": "x86_64-fuchsia",
+    "arch": "x86_64",
+    "vendor": null,
+    "os": "fuchsia",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-linux-android",
+    "arch": "x86_64",
+    "vendor": null,
+    "os": "android",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-pc-nto-qnx710",
+    "arch": "x86_64",
+    "vendor": null,
+    "os": "nto",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-pc-solaris",
+    "arch": "x86_64",
+    "vendor": "pc",
+    "os": "solaris",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-pc-windows-gnu",
+    "arch": "x86_64",
+    "vendor": "pc",
+    "os": "windows",
+    "target-family": [
+      "windows"
+    ]
+  },
+  {
+    "target": "x86_64-pc-windows-gnullvm",
+    "arch": "x86_64",
+    "vendor": "pc",
+    "os": "windows",
+    "target-family": [
+      "windows"
+    ]
+  },
+  {
+    "target": "x86_64-pc-windows-msvc",
+    "arch": "x86_64",
+    "vendor": "pc",
+    "os": "windows",
+    "target-family": [
+      "windows"
+    ]
+  },
+  {
+    "target": "x86_64-unikraft-linux-musl",
+    "arch": "x86_64",
+    "vendor": "unikraft",
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-unknown-dragonfly",
+    "arch": "x86_64",
+    "vendor": null,
+    "os": "dragonfly",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-unknown-freebsd",
+    "arch": "x86_64",
+    "vendor": null,
+    "os": "freebsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-unknown-fuchsia",
+    "arch": "x86_64",
+    "vendor": null,
+    "os": "fuchsia",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-unknown-haiku",
+    "arch": "x86_64",
+    "vendor": null,
+    "os": "haiku",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-unknown-hermit",
+    "arch": "x86_64",
+    "vendor": null,
+    "os": "hermit",
+    "target-family": null
+  },
+  {
+    "target": "x86_64-unknown-illumos",
+    "arch": "x86_64",
+    "vendor": null,
+    "os": "illumos",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-unknown-l4re-uclibc",
+    "arch": "x86_64",
+    "vendor": null,
+    "os": "l4re",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-unknown-linux-gnu",
+    "arch": "x86_64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-unknown-linux-gnux32",
+    "arch": "x86_64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-unknown-linux-musl",
+    "arch": "x86_64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-unknown-linux-ohos",
+    "arch": "x86_64",
+    "vendor": null,
+    "os": "linux",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-unknown-netbsd",
+    "arch": "x86_64",
+    "vendor": null,
+    "os": "netbsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-unknown-none",
+    "arch": "x86_64",
+    "vendor": null,
+    "os": null,
+    "target-family": null
+  },
+  {
+    "target": "x86_64-unknown-openbsd",
+    "arch": "x86_64",
+    "vendor": null,
+    "os": "openbsd",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-unknown-redox",
+    "arch": "x86_64",
+    "vendor": null,
+    "os": "redox",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64-unknown-uefi",
+    "arch": "x86_64",
+    "vendor": null,
+    "os": "uefi",
+    "target-family": null
+  },
+  {
+    "target": "x86_64-uwp-windows-gnu",
+    "arch": "x86_64",
+    "vendor": "uwp",
+    "os": "windows",
+    "target-family": [
+      "windows"
+    ]
+  },
+  {
+    "target": "x86_64-uwp-windows-msvc",
+    "arch": "x86_64",
+    "vendor": "uwp",
+    "os": "windows",
+    "target-family": [
+      "windows"
+    ]
+  },
+  {
+    "target": "x86_64-win7-windows-msvc",
+    "arch": "x86_64",
+    "vendor": "win7",
+    "os": "windows",
+    "target-family": [
+      "windows"
+    ]
+  },
+  {
+    "target": "x86_64-wrs-vxworks",
+    "arch": "x86_64",
+    "vendor": "wrs",
+    "os": "vxworks",
+    "target-family": [
+      "unix"
+    ]
+  },
+  {
+    "target": "x86_64h-apple-darwin",
+    "arch": "x86_64",
+    "vendor": "apple",
+    "os": "macos",
+    "target-family": [
+      "unix"
+    ]
+  }
+]

@@ -194,18 +194,6 @@ do {
 }
 
 do {
-    print_header "rsiot-logging"
-    cd rsiot-logging
-    cargo rdme --force
-}
-
-do {
-    print_header "rsiot-messages-core"
-    cd rsiot-messages-core
-    cargo rdme --force
-}
-
-do {
     print_header "rsiot-esp"
     cd rsiot-esp
     cargo update

@@ -94,8 +94,17 @@ tracing-subscriber = { version = "0.3.18", features = ["env-filter", "chrono"] }
 openssl = { version = "0.10", features = ["vendored"] }
 
 
+[target.'cfg(target_arch = "riscv32")'.dependencies]
+esp-idf-svc = { version = "0.48.1", features = ["std"] }
+embedded-svc = { version = "0.27.1" }
+
+
 [target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dev-dependencies]
 tokio = { workspace = true, features = ["rt-multi-thread"] }
+
+
+[target.'cfg(target_arch = "riscv32")'.build-dependencies]
+embuild = "0.31.3"
 
 
 [features]
