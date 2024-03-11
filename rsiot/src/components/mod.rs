@@ -1,3 +1,5 @@
+//! Компоненты
+
 #[cfg(feature = "components")]
 pub mod cmp_add_input_stream;
 
@@ -21,6 +23,7 @@ pub mod cmp_http_client;
 pub mod cmp_http_client_wasm;
 
 #[cfg(feature = "cmp_http_server")]
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub mod cmp_http_server;
 
 #[cfg(feature = "cmp_influxdb")]
