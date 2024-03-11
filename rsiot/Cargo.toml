@@ -115,7 +115,7 @@ tokio = { version = "^1.36.0", features = [
 
 
 [build-dependencies]
-embuild = { version = "0.31.3" }
+embuild = { version = "0.31.3", features = ["espidf"] }
 
 [features]
 
