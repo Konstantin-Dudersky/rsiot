@@ -13,6 +13,7 @@ pub mod cmp_derive;
 pub mod cmp_external_fn_process;
 
 #[cfg(feature = "cmp_http_client")]
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub mod cmp_http_client;
 
 #[cfg(feature = "cmp_http_client_wasm")]
@@ -24,6 +25,7 @@ pub mod cmp_http_client_wasm;
 pub mod cmp_http_server;
 
 #[cfg(feature = "cmp_influxdb")]
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub mod cmp_influxdb;
 
 pub mod cmp_inject_periodic;
@@ -50,9 +52,11 @@ pub mod cmp_redis_client;
 pub mod cmp_storage_esp;
 
 #[cfg(feature = "cmp_surrealdb")]
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub mod cmp_surrealdb;
 
 #[cfg(feature = "cmp_timescaledb")]
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub mod cmp_timescaledb;
 
 #[cfg(feature = "cmp_websocket_client")]

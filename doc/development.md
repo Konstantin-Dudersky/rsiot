@@ -36,6 +36,15 @@ cargo doc --open
 }
 ```
 
+## Генерация документации
+
+```bash
+cargo doc --target wasm32-unknown-unknown --features="executor, cmp_http_client_wasm" --no-deps
+rm -rf ./doc/wasm32-unknown-unknown
+mkdir ./doc/wasm32-unknown-unknown
+cp -r target/wasm32-unknown-unknown/doc/* ./doc/wasm32-unknown-unknown
+```
+
 ## Публикация версии на crates.io
 
 Проверяем, что все компилируется без ошибок:

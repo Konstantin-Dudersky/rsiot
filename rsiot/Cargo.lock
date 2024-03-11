@@ -4376,7 +4376,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot"
-version = "0.0.73"
+version = "0.0.77"
 dependencies = [
  "anyhow",
  "async-trait",
