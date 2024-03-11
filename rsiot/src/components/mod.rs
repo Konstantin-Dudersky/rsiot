@@ -1,6 +1,5 @@
 //! Компоненты
 
-#[cfg(feature = "components")]
 pub mod cmp_add_input_stream;
 
 pub mod cmp_add_output_stream;
@@ -12,8 +11,6 @@ pub mod cmp_auth;
 pub mod cmp_derive;
 
 pub mod cmp_external_fn_process;
-
-pub mod cmp_inject_periodic;
 
 #[cfg(feature = "cmp_http_client")]
 pub mod cmp_http_client;
@@ -28,6 +25,8 @@ pub mod cmp_http_server;
 
 #[cfg(feature = "cmp_influxdb")]
 pub mod cmp_influxdb;
+
+pub mod cmp_inject_periodic;
 
 #[cfg(feature = "cmp_leptos")]
 #[cfg(target_arch = "wasm32")]

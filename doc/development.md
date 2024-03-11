@@ -46,19 +46,14 @@ nu scripts/prepare_for_publish.nu
 
 Коммитим все изменения в git.
 
-Изменяем номер версии проекта:
+### rsiot-macros
 
-```bash
-cargo ws version patch --no-git-push
-# или major, minor, patch
-```
+### rsiot
+
+Изменяем номер версии проекта в Cargo.toml.
 
 Публикуем на `crates.io`:
 
 ```bash
-cargo ws publish --from-git --allow-dirty
+cargo publish --allow-dirty
 ```
-
-После этого публикуем связанные проекты:
-
-- [rsiot-esp](../rsiot-esp/README.md)

@@ -8,12 +8,12 @@ name = "rsiot"
 readme = "README.md"
 repository = "https://github.com/Konstantin-Dudersky/rsiot"
 rust-version = "1.75.0"
-version = "0.0.72"
+version = "0.0.73"
 
 
 [dependencies]
 anyhow = { version = "1.0.80" }
-chrono = { version = "0.4.33", features = ["serde"] }
+chrono = { version = "0.4.35", features = ["serde"] }
 document-features = { version = "0.2.8" }
 getrandom = { version = "0.2", features = ["js"] }
 serde = { version = "1.0.197", features = ["derive"] }
@@ -34,7 +34,7 @@ hmac = { version = "0.12.1", optional = true }
 leptos = { version = "0.6.5", features = ["csr"], optional = true }
 leptos_router = { version = "0.6.5", features = ["csr"], optional = true }
 postcard = { version = "1.0.8", features = ["use-std"], optional = true }
-redis = { version = "0.24.0", features = ["tokio-comp"], optional = true }
+redis = { version = "0.25.0", features = ["tokio-comp"], optional = true }
 reqwest = { version = "0.11.23", features = ["json"], optional = true }
 palette = { version = "0.7.4", features = ["named"], optional = true }
 serde_json = { version = "1.0.113", optional = true }
@@ -217,6 +217,12 @@ cmp_webstorage = ["executor", "dep:gloo"]
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+targets = [
+    "aarch64-unknown-linux-gnu",
+    "riscv32imc-esp-espidf",
+    "wasm32-unknown-unknown",
+    "x86_64-unknown-linux-gnu",
+]
 
 
 [[example]]
