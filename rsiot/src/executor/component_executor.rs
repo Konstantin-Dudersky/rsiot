@@ -199,6 +199,8 @@ where
             System::AuthRequestByToken(_) => return,
             System::AuthResponseErr(_) => return,
             System::AuthResponseOk(_) => return,
+            System::Ping(_) => (),
+            System::Pong(_) => (),
         }
     }
     let key = msg.key.clone();

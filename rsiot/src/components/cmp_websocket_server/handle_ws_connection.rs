@@ -23,12 +23,12 @@ use super::{
 };
 
 /// Создание и управление подключением между сервером и клиентом
-pub async fn handle_ws_connection<TMessage>(
-    input: CmpInOut<TMessage>,
-    config: Config<TMessage>,
+pub async fn handle_ws_connection<TMsg>(
+    input: CmpInOut<TMsg>,
+    config: Config<TMsg>,
     stream_and_addr: (TcpStream, SocketAddr),
 ) where
-    TMessage: MsgDataBound + 'static,
+    TMsg: MsgDataBound + 'static,
 {
     let addr = stream_and_addr.1;
     let result = _handle_ws_connection(input, stream_and_addr, config).await;
@@ -41,31 +41,46 @@ pub async fn handle_ws_connection<TMessage>(
     info!("Connection closed");
 }
 
-async fn _handle_ws_connection<TMessage>(
-    in_out: CmpInOut<TMessage>,
+async fn _handle_ws_connection<TMsg>(
+    in_out: CmpInOut<TMsg>,
     stream_and_addr: (TcpStream, SocketAddr),
-    config: Config<TMessage>,
+    config: Config<TMsg>,
 ) -> super::Result<()>
 where
-    TMessage: MsgDataBound + 'static,
+    TMsg: MsgDataBound + 'static,
 {
     info!("Incoming TCP connection from: {}", stream_and_addr.1);
     let ws_stream = accept_async(stream_and_addr.0).await?;
-    let (write, read) = ws_stream.split();
+    let (ws_stream_write, ws_stream_read) = ws_stream.split();
     info!("WebSocket connection established: {:?}", stream_and_addr.1);
 
-    let (prepare_tx, prepare_rx) = mpsc::channel::<Message<TMessage>>(100);
+    let (send_to_client_tx, send_to_client_rx) = mpsc::channel::<Message<TMsg>>(100);
 
     let mut set = JoinSet::new();
 
     // Подготавливаем кеш для отправки
-    set.spawn(send_prepare_cache(in_out.clone(), prepare_tx.clone()));
+    set.spawn(send_prepare_cache(
+        in_out.clone(),
+        send_to_client_tx.clone(),
+    ));
     // Подготавливаем новые сообщения для отправки
-    set.spawn(send_prepare_new_msgs(in_out.clone(), prepare_tx.clone()));
+    set.spawn(send_prepare_new_msgs(
+        in_out.clone(),
+        send_to_client_tx.clone(),
+    ));
     // Отправляем клиенту
-    set.spawn(send_to_client(prepare_rx, write, config.fn_input));
+    set.spawn(send_to_client(
+        send_to_client_rx,
+        ws_stream_write,
+        config.fn_input,
+    ));
     // Получаем данные от клиента
-    set.spawn(recv_from_client(read, in_out, config.fn_output));
+    set.spawn(recv_from_client(
+        ws_stream_read,
+        in_out,
+        config.fn_output,
+        send_to_client_tx.clone(),
+    ));
 
     while let Some(res) = set.join_next().await {
         let err = match res {
@@ -107,12 +122,12 @@ where
 }
 
 /// При получении новых сообщений, отправляем клиенту
-async fn send_prepare_new_msgs<TMessage>(
-    mut input: CmpInOut<TMessage>,
-    output: mpsc::Sender<Message<TMessage>>,
+async fn send_prepare_new_msgs<TMsg>(
+    mut input: CmpInOut<TMsg>,
+    output: mpsc::Sender<Message<TMsg>>,
 ) -> super::Result<()>
 where
-    TMessage: MsgDataBound,
+    TMsg: MsgDataBound,
 {
     debug!("Sending messages to client started");
     while let Ok(msg) = input.recv_input().await {
@@ -123,10 +138,10 @@ where
 }
 
 /// Отправляем данные клиенту
-async fn send_to_client<TMessage>(
-    mut input: mpsc::Receiver<Message<TMessage>>,
+async fn send_to_client<TMsg>(
+    mut input: mpsc::Receiver<Message<TMsg>>,
     mut ws_stream_output: SplitSink<WebSocketStream<TcpStream>, TungsteniteMessage>,
-    fn_input: fn(&Message<TMessage>) -> anyhow::Result<Option<String>>,
+    fn_input: fn(&Message<TMsg>) -> anyhow::Result<Option<String>>,
 ) -> super::Result<()> {
     while let Some(msg) = input.recv().await {
         let text = (fn_input)(&msg).map_err(Error::FnInput)?;
@@ -145,29 +160,34 @@ async fn send_to_client<TMessage>(
 
 /// Получение данных от клиента
 async fn recv_from_client<TMsg>(
-    mut ws_stream_input: SplitStream<WebSocketStream<TcpStream>>,
-    output: CmpInOut<TMsg>,
+    mut ws_stream_read: SplitStream<WebSocketStream<TcpStream>>,
+    in_out: CmpInOut<TMsg>,
     fn_output: FnOutput<TMsg>,
+    send_to_client_tx: mpsc::Sender<Message<TMsg>>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
 {
-    while let Some(data) = ws_stream_input.next().await {
+    while let Some(data) = ws_stream_read.next().await {
         let data = data?.into_text()?;
         if data.is_empty() {
             return Err(Error::ClientDisconnected);
         }
         let msgs = (fn_output)(&data).map_err(|err| Error::FnOutput { err, data })?;
-        let msgs = match msgs {
-            Some(val) => val,
-            None => continue,
-        };
+        let Some(msgs) = msgs else { continue };
         for msg in msgs {
             trace!(
                 "New message from websocket client, send to internal bus: {:?}",
                 msg
             );
-            output.send_output(msg).await.map_err(Error::CmpOutput)?;
+            // Отправляем клиенту сообщение Pong для контроля связи
+            if let MsgData::System(System::Ping(value)) = &msg.data {
+                let value = Pong { count: value.count };
+                let pong_msg = message_new! {"System-Pong::value"};
+                send_to_client_tx.send(pong_msg).await.unwrap();
+                continue;
+            }
+            in_out.send_output(msg).await.map_err(Error::CmpOutput)?;
         }
     }
     debug!("Input stream from client closed");
