@@ -1,0 +1,38 @@
+[package]
+name = "redundancy"
+version = "0.1.0"
+edition = "2021"
+
+
+[dependencies]
+anyhow = "*"
+tokio = { version = "*", features = ["rt-multi-thread", "macros"] }
+tracing = "*"
+tracing-subscriber = "*"
+rsiot = { path = "../../rsiot" }
+url = "*"
+
+
+[features]
+server1 = ["rsiot/cmp_redis_client", "rsiot/cmp_websocket_server"]
+server2 = ["rsiot/cmp_redis_client", "rsiot/cmp_websocket_server"]
+device = ["rsiot/cmp_redis_client"]
+client = ["rsiot/cmp_websocket_client"]
+
+
+[[bin]]
+name = "server1"
+required-features = ["server1"]
+
+
+[[bin]]
+name = "server2"
+required-features = ["server2"]
+
+[[bin]]
+name = "device"
+required-features = ["device"]
+
+[[bin]]
+name = "client"
+required-features = ["client"]

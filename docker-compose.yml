@@ -30,7 +30,7 @@ services:
       - "80:80"
 
   # для тестирования websocket
-  websocket-client-testing:
+  websocket-server:
     container_name: rsiot-websocket-server
     hostname: websocket-server
     image: crossbario/autobahn-testsuite
@@ -78,7 +78,7 @@ services:
       - surrealdb_data:/data/
 
   influxdb:
-    container_name: influxdb
+    container_name: rsiot-influxdb
     hostname: influxdb
     image: influxdb:2.7.5
     ports:

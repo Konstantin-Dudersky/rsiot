@@ -5,7 +5,7 @@
     // "executor",
     // "single-thread",
     // "env_vars",
-    "logging",
+    // "logging",
 
     //   "cmp_auth",
     //   "cmp_http_client",
@@ -13,23 +13,23 @@
     //   "cmp_influxdb",
     //   "cmp_modbus_client",
     //   "cmp_plc",
-    //   "cmp_redis_client",
+    "cmp_redis_client"
     //   "cmp_surrealdb",
     //   "cmp_timescaledb",
-    //   "cmp_websocket_client",
-    "cmp_websocket_server"
+    // "cmp_websocket_client"
+    // "cmp_websocket_server"
   ],
 
   // ---- wasm32 -----------------------------------------------------------------------------------
   // "rust-analyzer.cargo.target": "wasm32-unknown-unknown",
   // "rust-analyzer.cargo.features": [
-  //   "single-thread",
+  // "single-thread", // Активировать обязательно !
   //   "executor",
   //   "logging"
 
   // "cmp_http_client_wasm",
   // "cmp_leptos",
-  // "cmp_websocket_client_wasm",
+  // "cmp_websocket_client_wasm"
   // "cmp_webstorage"
   // ],
 

@@ -258,6 +258,14 @@ name = "cmp_plc"
 path = "examples/cmp_plc/cmp_plc/main.rs"
 
 [[example]]
+name = "cmp_redis_client_publication"
+path = "examples/cmp_redis_client/publication.rs"
+
+[[example]]
+name = "cmp_redis_client_subscription"
+path = "examples/cmp_redis_client/subscription.rs"
+
+[[example]]
 name = "cmp_storage_esp"
 path = "examples/cmp_storage_esp/cmp_storage_esp.rs"
 
@@ -268,6 +276,14 @@ path = "examples/cmp_surrealdb/cmp_surrealdb.rs"
 [[example]]
 name = "cmp_timescaledb"
 path = "examples/cmp_timescaledb/cmp_timescaledb.rs"
+
+[[example]]
+name = "cmp_websocket_client"
+path = "examples/cmp_websocket_client/cmp_websocket_client.rs"
+
+[[example]]
+name = "cmp_websocket_client_wasm"
+path = "examples/cmp_websocket_client_wasm/cmp_websocket_client_wasm.rs"
 
 [[example]]
 name = "executor_multi_thread"

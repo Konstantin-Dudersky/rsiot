@@ -1,0 +1,7 @@
+{
+  // ---- x86_64 -----------------------------------------------------------------------------------
+  "rust-analyzer.cargo.target": "x86_64-unknown-linux-gnu",
+  "rust-analyzer.cargo.features": ["device", "server1", "server2", "client"],
+
+  "rust-analyzer.showUnlinkedFileNotification": false
+}

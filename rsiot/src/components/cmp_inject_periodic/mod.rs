@@ -16,7 +16,10 @@ where
 {
     /// Период вызова
     pub period: Duration,
+
     /// Функция для генерирования сообщений
+    ///
+    /// Тип данных - `FnMut() -> Vec<Message<TMsg>>`
     pub fn_periodic: TFnPeriodic,
 }
 

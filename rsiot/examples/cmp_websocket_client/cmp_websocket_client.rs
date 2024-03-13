@@ -1,7 +1,7 @@
 //! Запуск:
 //!
 //! ```bash
-//! cargo run -p rsiot --example cmp_websocket_client --features "cmp_websocket_client"
+//! cargo run --example cmp_websocket_client --features "cmp_websocket_client" --target="x86_64-unknown-linux-gnu"
 //! ```
 
 #[cfg(feature = "cmp_websocket_client")]

@@ -1,0 +1,49 @@
+services:
+  example_redundancy_redis_1:
+    container_name: example_redundancy_redis_1
+    healthcheck:
+      test: redis-cli --raw incr ping
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    hostname: example_redundancy_redis_1
+    image: redis/redis-stack:latest
+    networks:
+      - network_internal
+    ports:
+      - "8012:6379" # порт Redis
+      - "8013:8001" # порт UI
+    volumes:
+      - redis_data_1:/data # для сохранения данных
+      - ./redis.conf:/redis-stack.conf # путь к файлу конфигурации
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
+  example_redundancy_redis_2:
+    container_name: example_redundancy_redis_2
+    healthcheck:
+      test: redis-cli --raw incr ping
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    hostname: example_redundancy_redis_2
+    image: redis/redis-stack:latest
+    networks:
+      - network_internal
+    ports:
+      - "8014:6379" # порт Redis
+      - "8015:8001" # порт UI
+    volumes:
+      - redis_data_2:/data # для сохранения данных
+      - ./redis.conf:/redis-stack.conf # путь к файлу конфигурации
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
+networks:
+  network_internal:
+
+volumes:
+  redis_data_1:
+    name: redis_data_1
+  redis_data_2:
+    name: redis_data_2

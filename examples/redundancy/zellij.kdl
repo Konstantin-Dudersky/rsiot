@@ -1,0 +1,52 @@
+layout {
+    default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+        children
+        pane size=2 borderless=true {
+            plugin location="zellij:status-bar"
+        }
+    }
+
+    tab name="executors" cwd="." {
+        pane split_direction="vertical" {
+            pane {
+                name "device"
+                command "cargo"
+                args "run" "--bin" "device" "--features" "device" "--target" "x86_64-unknown-linux-gnu"
+                start_suspended true
+            }
+            pane {
+                name "client"
+                command "cargo"
+                args "run" "--bin" "client" "--features" "client" "--target" "x86_64-unknown-linux-gnu"
+                start_suspended true
+            }
+        }
+
+        pane split_direction="vertical" {
+            pane {
+                name "server1"
+                command "cargo"
+                args "run" "--bin" "server1" "--features" "server1" "--target" "x86_64-unknown-linux-gnu"
+                start_suspended true
+            }
+            pane {
+                    name "server2"
+                    command "cargo"
+                    args "run" "--bin" "server2" "--features" "server2" "--target" "x86_64-unknown-linux-gnu"
+                    start_suspended true
+                }
+            }
+    }
+
+    tab name="docker" cwd="." {
+        pane {
+            name "docker compose"
+            command "docker"
+            args "compose" "up" "-d"
+            start_suspended true
+        }
+    }
+}

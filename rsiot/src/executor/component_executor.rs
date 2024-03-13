@@ -174,7 +174,8 @@ where
     while let Some(mut msg) = input.recv().await {
         trace!("ComponentExecutor: new message: {:?}", msg);
         msg.add_trace_item(&executor_id, &format!("{executor_name}::internal_bus"));
-        save_msg_in_cache(&msg, &cache).await;
+        let msg = save_msg_in_cache(msg, &cache).await;
+        let Some(msg) = msg else { continue };
         output.send(msg).map_err(|err| {
             let err = format!(
                 "Internal task of ComponentExecutor: send to channel error, {:?}",
@@ -188,32 +189,37 @@ where
 }
 
 /// Сохраняем сообщение в кеше
-async fn save_msg_in_cache<TMsg>(msg: &Message<TMsg>, cache: &Cache<TMsg>)
+///
+/// Возвращает Option<Message>:
+/// - None - сообщение не нужно отправлять дальше
+/// - Some(Message) - сообщение нужно отправить на вход всех компонентов
+async fn save_msg_in_cache<TMsg>(msg: Message<TMsg>, cache: &Cache<TMsg>) -> Option<Message<TMsg>>
 where
     TMsg: MsgDataBound,
 {
     // Фильтруем сообщения авторизации
     if let MsgData::System(data) = &msg.data {
         match data {
-            System::AuthRequestByLogin(_) => return,
-            System::AuthRequestByToken(_) => return,
-            System::AuthResponseErr(_) => return,
-            System::AuthResponseOk(_) => return,
-            System::Ping(_) => (),
-            System::Pong(_) => (),
+            System::AuthRequestByLogin(_) => return Some(msg),
+            System::AuthRequestByToken(_) => return Some(msg),
+            System::AuthResponseErr(_) => return Some(msg),
+            System::AuthResponseOk(_) => return Some(msg),
+            System::Ping(_) => return None,
+            System::Pong(_) => return None,
         }
     }
     let key = msg.key.clone();
     let value = msg.clone();
     {
         let mut lock = cache.write().await;
-        // let value_from_cache = lock.get(&key);
-        // if let Some(value_from_cache) = value_from_cache {
-        //     // если в кеше более новое сообщение, отбрасываем
-        //     if value.ts <= value_from_cache.ts {
-        //         continue;
-        //     }
-        // }
+        let value_from_cache = lock.get(&key);
+        if let Some(value_from_cache) = value_from_cache {
+            // если в кеше более новое сообщение, отбрасываем
+            if value.ts <= value_from_cache.ts {
+                return None;
+            }
+        }
         lock.insert(key, value);
     }
+    Some(msg)
 }
