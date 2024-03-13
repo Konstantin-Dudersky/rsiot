@@ -1,5 +1,8 @@
 use futures::StreamExt;
-use redis::{AsyncCommands, Client};
+use redis::{
+    aio::{MultiplexedConnection, PubSub},
+    AsyncCommands,
+};
 use tokio::{
     task::JoinSet,
     time::{sleep, Duration},
@@ -45,10 +48,22 @@ where
     TMessage: MsgDataBound + 'static,
     TMessageChannel: IMessageChannel + 'static,
 {
+    let client = redis::Client::open(config.url.to_string())?;
+    let redis_connection = client.get_multiplexed_tokio_connection().await?;
+    let redis_pubsub_connection = client.get_async_pubsub().await?;
+
     let mut set = JoinSet::new();
-    set.spawn(task_subscription(in_out.clone(), config.clone()));
-    set.spawn(task_read_hash(in_out.clone(), config.clone()));
-    set.spawn(task_publication(in_out, config));
+    set.spawn(task_subscription(
+        in_out.clone(),
+        config.clone(),
+        redis_pubsub_connection,
+    ));
+    set.spawn(task_read_hash(
+        in_out.clone(),
+        config.clone(),
+        redis_connection.clone(),
+    ));
+    set.spawn(task_publication(in_out, config, redis_connection.clone()));
     while let Some(res) = set.join_next().await {
         res??;
     }
@@ -59,13 +74,12 @@ where
 async fn task_publication<TMessage, TMessageChannel>(
     mut input: CmpInOut<TMessage>,
     config: Config<TMessage, TMessageChannel>,
+    mut redis_connection: MultiplexedConnection,
 ) -> Result
 where
     TMessage: MsgDataBound,
     TMessageChannel: IMessageChannel,
 {
-    let client = redis::Client::open(config.url.to_string())?;
-    let mut connection = client.get_async_connection().await?;
     while let Ok(msg) = input.recv_input().await {
         let data = (config.fn_input)(&msg).map_err(Error::FnInput)?;
         let data = match data {
@@ -76,8 +90,8 @@ where
             let channel = item.channel.to_string();
             let key = item.key;
             let value = item.value;
-            connection.hset(&channel, key, &value).await?;
-            connection.publish(&channel, &value).await?;
+            redis_connection.hset(&channel, key, &value).await?;
+            redis_connection.publish(&channel, &value).await?;
         }
     }
     Ok(())
@@ -87,15 +101,13 @@ where
 async fn task_subscription<TMessage, TMessageChannel>(
     output: CmpInOut<TMessage>,
     config: Config<TMessage, TMessageChannel>,
+    mut pubsub: PubSub,
 ) -> Result
 where
     TMessage: MsgDataBound,
     TMessageChannel: IMessageChannel,
 {
     info!("Start redis subscription");
-    let client = Client::open(config.url.to_string())?;
-    let connection = client.get_async_connection().await?;
-    let mut pubsub = connection.into_pubsub();
     pubsub
         .subscribe(config.subscription_channel.to_string())
         .await?;
@@ -119,6 +131,7 @@ where
 async fn task_read_hash<TMessage, TMessageChannel>(
     in_out: CmpInOut<TMessage>,
     config: Config<TMessage, TMessageChannel>,
+    mut redis_connection: MultiplexedConnection,
 ) -> Result
 where
     TMessage: MsgDataBound,
@@ -126,12 +139,9 @@ where
 {
     info!("Start reading redis hash");
 
-    let url = config.url.to_string();
     let redis_channel = config.subscription_channel.to_string();
 
-    let client = Client::open(url)?;
-    let mut connection = client.get_async_connection().await?;
-    let values: Vec<String> = connection.hvals(redis_channel).await?;
+    let values: Vec<String> = redis_connection.hvals(redis_channel).await?;
     for value in values {
         let msgs = (config.fn_output)(&value).map_err(Error::FnOutput);
         let msgs = match msgs {

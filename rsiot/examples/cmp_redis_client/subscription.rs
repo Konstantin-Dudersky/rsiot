@@ -1,19 +1,35 @@
+//! Пример для проверки компонента
+//!
 //! Запуск:
 //!
 //! ```bash
-//! cargo run -p rsiot --example cmp_redis_client_publication --features "cmp_redis_client"
+//! cargo run --example cmp_redis_client_subscription --features "cmp_redis_client" --target="x86_64-unknown-linux-gnu"
 //! ```
+//!
+//! Проверки:
+//!
+//! - через веб-интрефейс, в Pub/Sub, в канал `Output` записать сообщение
+//!
+//! ```json
+//! {"ValueInstantF64":{"value":123.0,"ts":"2000-01-01T00:00:00.000000000Z","source":"c13064d3-9460-4e82-b96c-c4d889f706c6"}}
+//! ```
+//!
+//! В консолидолжно прочитаться это сообщение
+//!
+//! - через веб-интерфейс, перед запуском примера создать хеш с названием `rsiot-redis-client`,
+//! задать ключ `Output`. После запуска примера в консоли должно прочитаться это сообщение
+//!
+//! - корректный перезапуск. При отключении Redis, или передачи неправильного сообщения в Pub/Sub
 
 #[cfg(feature = "cmp_redis_client")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    use tokio::time::Duration;
     use tracing::Level;
     use tracing_subscriber::fmt;
     use url::Url;
 
     use rsiot::{
-        components::{cmp_inject_periodic, cmp_logger, cmp_redis_client},
+        components::{cmp_logger, cmp_redis_client},
         executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{example_message::*, *},
     };
@@ -44,27 +60,15 @@ async fn main() -> anyhow::Result<()> {
         },
     };
 
-    let mut counter = 0;
-    let inject_config = cmp_inject_periodic::Config {
-        period: Duration::from_secs(2),
-        fn_periodic: move || {
-            let msg = Message::new_custom(Custom::ValueInstantF64(counter as f64));
-
-            counter += 1;
-            vec![msg]
-        },
-    };
-
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "redis-client-publication".into(),
+        executor_name: "redis-client-subscription".into(),
         fn_auth: |msg, _| Some(msg),
     };
 
-    ComponentExecutor::new(executor_config)
+    ComponentExecutor::<Custom>::new(executor_config)
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .add_cmp(cmp_redis_client::Cmp::new(redis_config))
-        .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
         .wait_result()
         .await?;
 
