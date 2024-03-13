@@ -1,0 +1,12 @@
+[package]
+name = "test_slint"
+version = "0.1.0"
+edition = "2021"
+
+
+[dependencies]
+futures = "*"
+slint = "1.4.1"
+slint-interpreter = { version = "*", features = ["display-diagnostics"] }
+tokio = { version = "*", features = ["rt-multi-thread", "macros", "time"] }
+rsiot = { path = "../rsiot", features = ["executor"] }

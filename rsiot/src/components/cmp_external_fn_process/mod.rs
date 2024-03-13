@@ -1,7 +1,11 @@
 //! Тестирование документации:
 //!
 //! ```bash
-//! cargo test -p rsiot-extra-components --doc cmp_external_fn_process; cargo test -p rsiot-extra-components --doc cmp_external_fn_process --features single-thread
+//! cargo test components::cmp_external_fn_process --features="executor" --target="x86_64-unknown-linux-gnu";
+//! cargo test --doc components::cmp_external_fn_process --features="executor" --target="x86_64-unknown-linux-gnu";
+//!
+//! cargo test components::cmp_external_fn_process --features="executor, single-thread" --target="x86_64-unknown-linux-gnu";
+//! cargo test --doc components::cmp_external_fn_process --features="executor, single-thread" --target="x86_64-unknown-linux-gnu";
 //! ```
 
 use async_trait::async_trait;
@@ -29,33 +33,30 @@ pub struct Config<TMsg> {
     ///
     /// Выполняемую асинхронную функцию `fn_external` необходимо обернуть в функцию.
     ///
+    /// # Пример
+    ///
     /// ```rust
-    /// # use rsiot_extra_components::cmp_external_fn_process;
-    /// # // insert-start test single_thread
     /// use std::time::Duration;
     ///
     /// use futures::future::LocalBoxFuture;
     /// use tokio::time::sleep;
     /// use tracing::info;
     ///
-    /// use rsiot_component_core::{Cache, CmpInput, CmpOutput, ComponentResult};
-    /// use rsiot_messages_core::{example_message::*, *};
+    /// use rsiot::{
+    ///     components::cmp_external_fn_process,
+    ///     executor::{CmpInOut, ComponentResult},
+    ///     message::{example_message::*, *},
+    /// };
     ///
     /// fn fn_process_wrapper<TMsg>(
-    ///     input: CmpInput<TMsg>,
-    ///     output: CmpOutput<TMsg>,
-    ///     cache: Cache<TMsg>,
+    ///     in_out: CmpInOut<TMsg>,
     /// ) -> LocalBoxFuture<'static, ComponentResult>
     /// where
     ///     TMsg: MsgDataBound + 'static,
     /// {
-    ///     Box::pin(async { fn_process(input, output, cache).await })
+    ///     Box::pin(async { fn_process(in_out).await })
     /// }
-    /// async fn fn_process<TMsg>(
-    ///     _input: CmpInput<TMsg>,
-    ///     _output: CmpOutput<TMsg>,
-    ///     _cache: Cache<TMsg>,
-    /// ) -> ComponentResult {
+    /// async fn fn_process<TMsg>(_in_out: CmpInOut<TMsg>) -> ComponentResult {
     ///     loop {
     ///         info!("External fn process");
     ///         sleep(Duration::from_secs(2)).await;
@@ -74,8 +75,9 @@ pub struct Config<TMsg> {
     ///
     /// Выполняемую асинхронную функцию `fn_external` необходимо обернуть в функцию.
     ///
+    /// # Пример
+    ///
     /// ```rust
-    /// # use rsiot_extra_components::cmp_external_fn_process;
     /// # // insert-start test multi_thread
     /// use std::time::Duration;
     ///
@@ -83,25 +85,20 @@ pub struct Config<TMsg> {
     /// use tokio::time::sleep;
     /// use tracing::info;
     ///
-    /// use rsiot_component_core::{Cache, CmpInput, CmpOutput, ComponentResult};
-    /// use rsiot_messages_core::{example_message::*, *};
+    /// use rsiot::{
+    ///     components::cmp_external_fn_process,
+    ///     executor::{CmpInOut, ComponentResult},
+    ///     message::{example_message::*, *},
+    /// };
     ///
-    /// fn fn_process_wrapper<TMsg>(
-    ///     input: CmpInput<TMsg>,
-    ///     output: CmpOutput<TMsg>,
-    ///     cache: Cache<TMsg>,
-    /// ) -> BoxFuture<'static, ComponentResult>
+    /// fn fn_process_wrapper<TMsg>(in_out: CmpInOut<TMsg>) -> BoxFuture<'static, ComponentResult>
     /// where
     ///     TMsg: MsgDataBound + 'static,
     /// {
-    ///     Box::pin(async { fn_process(input, output, cache).await })
+    ///     Box::pin(async { fn_process(in_out).await })
     /// }
     ///
-    /// async fn fn_process<TMsg>(
-    ///     _input: CmpInput<TMsg>,
-    ///     _output: CmpOutput<TMsg>,
-    ///     _cache: Cache<TMsg>,
-    /// ) -> ComponentResult {
+    /// async fn fn_process<TMsg>(_in_out: CmpInOut<TMsg>) -> ComponentResult {
     ///     loop {
     ///         info!("External fn process");
     ///         sleep(Duration::from_secs(2)).await;
@@ -141,8 +138,6 @@ pub type Cmp<TMsg> = Component<Config<TMsg>, TMsg>;
 #[cfg(test)]
 mod tests {
 
-    use super::super::cmp_external_fn_process;
-
     #[cfg(feature = "single-thread")]
     #[test]
     fn single_thread() {
@@ -152,9 +147,11 @@ mod tests {
         use tokio::time::sleep;
         use tracing::info;
 
-        use crate::message::{example_message::*, *};
-
-        use crate::executor::{CmpInOut, ComponentResult};
+        use crate::{
+            components::cmp_external_fn_process,
+            executor::{CmpInOut, ComponentResult},
+            message::{example_message::*, *},
+        };
 
         fn fn_process_wrapper<TMsg>(
             in_out: CmpInOut<TMsg>,
@@ -186,6 +183,7 @@ mod tests {
         use tracing::info;
 
         use crate::{
+            components::cmp_external_fn_process,
             executor::{CmpInOut, ComponentResult},
             message::{example_message::*, *},
         };

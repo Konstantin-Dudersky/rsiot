@@ -2,8 +2,8 @@
   // ---- x86_64 -----------------------------------------------------------------------------------
   "rust-analyzer.cargo.target": "x86_64-unknown-linux-gnu",
   "rust-analyzer.cargo.features": [
-    // "executor",
-    // "single-thread",
+    "executor",
+    "single-thread"
     // "env_vars",
     // "logging",
 
@@ -13,7 +13,7 @@
     //   "cmp_influxdb",
     //   "cmp_modbus_client",
     //   "cmp_plc",
-    "cmp_redis_client"
+    // "cmp_redis_client"
     //   "cmp_surrealdb",
     //   "cmp_timescaledb",
     // "cmp_websocket_client"
