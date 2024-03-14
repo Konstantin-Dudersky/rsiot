@@ -6,7 +6,14 @@ edition = "2021"
 
 [dependencies]
 futures = "*"
-slint = "1.4.1"
-slint-interpreter = { version = "*", features = ["display-diagnostics"] }
+rsiot = { path = "../rsiot", features = [
+    "executor",
+    # "single-thread",
+    "cmp_slint",
+] }
 tokio = { version = "*", features = ["rt-multi-thread", "macros", "time"] }
-rsiot = { path = "../rsiot", features = ["executor"] }
+tracing = "*"
+tracing-subscriber = "*"
+
+slint = { version = "*" }
+slint-interpreter = { version = "1.4.1", features = ["display-diagnostics"] }

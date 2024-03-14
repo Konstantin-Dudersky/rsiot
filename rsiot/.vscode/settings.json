@@ -3,7 +3,7 @@
   "rust-analyzer.cargo.target": "x86_64-unknown-linux-gnu",
   "rust-analyzer.cargo.features": [
     "executor",
-    "single-thread"
+    // "single-thread",
     // "env_vars",
     // "logging",
 
@@ -14,6 +14,7 @@
     //   "cmp_modbus_client",
     //   "cmp_plc",
     // "cmp_redis_client"
+    "cmp_slint"
     //   "cmp_surrealdb",
     //   "cmp_timescaledb",
     // "cmp_websocket_client"

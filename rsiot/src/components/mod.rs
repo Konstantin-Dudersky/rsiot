@@ -47,6 +47,10 @@ pub mod cmp_plc;
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub mod cmp_redis_client;
 
+#[cfg(feature = "cmp_slint")]
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+pub mod cmp_slint;
+
 #[cfg(feature = "cmp_storage_esp")]
 #[cfg(target_arch = "riscv32")]
 pub mod cmp_storage_esp;

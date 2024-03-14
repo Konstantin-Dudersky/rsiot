@@ -39,6 +39,10 @@ reqwest = { version = "0.11.23", features = ["json"], optional = true }
 palette = { version = "0.7.4", features = ["named"], optional = true }
 serde_json = { version = "1.0.113", optional = true }
 sha2 = { version = "0.10.8", optional = true }
+slint = { version = "1.4.1", optional = true }
+slint-interpreter = { version = "1.4.1", features = [
+    "display-diagnostics",
+], optional = true }
 sqlx = { version = "0.7.3", features = [
     "chrono",
     "macros",
@@ -181,6 +185,9 @@ cmp_plc = ["executor", "dep:instant", "dep:gloo"]
 
 ## Компонент клиента Redis
 cmp_redis_client = ["executor", "dep:futures", "dep:redis", "dep:url"]
+
+## Компонент пользовательского интерфейса, реализованного с помощью библиотеки Slint
+cmp_slint = ["executor", "dep:slint", "dep:slint-interpreter"]
 
 ## Сохранение данных в хранилище ESP32
 cmp_storage_esp = ["executor", "dep:esp-idf-svc", "dep:postcard"]
