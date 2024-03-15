@@ -50,6 +50,7 @@ sqlx = { version = "0.7.3", features = [
     "runtime-tokio",
 ], optional = true }
 surrealdb = { version = "1.2.0", optional = true }
+sysinfo = { version = "0.30.7", optional = true }
 tokio = { version = "^1.36.0", features = [
     "macros",
     "sync",
@@ -195,6 +196,9 @@ cmp_storage_esp = ["executor", "dep:esp-idf-svc", "dep:postcard"]
 ## Компонент доступа к БД SurrealDB
 cmp_surrealdb = ["executor", "dep:surrealdb"]
 
+## Компонент получает системную информацию
+cmp_system_info = ["executor", "dep:sysinfo"]
+
 ## Компонент сохранения в БД TimescaleDB
 cmp_timescaledb = ["executor", "dep:sqlx", "dep:url"]
 
@@ -271,6 +275,10 @@ path = "examples/cmp_redis_client/publication.rs"
 [[example]]
 name = "cmp_redis_client_subscription"
 path = "examples/cmp_redis_client/subscription.rs"
+
+[[example]]
+name = "cmp_system_info"
+path = "examples/cmp_system_info/cmp_system_info.rs"
 
 [[example]]
 name = "cmp_storage_esp"

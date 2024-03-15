@@ -59,6 +59,10 @@ pub mod cmp_storage_esp;
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub mod cmp_surrealdb;
 
+#[cfg(feature = "cmp_system_info")]
+#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+pub mod cmp_system_info;
+
 #[cfg(feature = "cmp_timescaledb")]
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub mod cmp_timescaledb;
