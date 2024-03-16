@@ -12,7 +12,7 @@ pub mod influxdb_v2;
 #[cfg(feature = "cmp_modbus_client")]
 pub mod modbus_client;
 
-#[cfg(feature = "cmp_http_server")]
+#[cfg(any(feature = "cmp_http_server", feature = "cmp_esp"))]
 pub mod http_server;
 
 #[cfg(feature = "cmp_redis_client")]

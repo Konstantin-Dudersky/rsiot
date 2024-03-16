@@ -10,6 +10,14 @@ pub mod cmp_auth;
 
 pub mod cmp_derive;
 
+#[cfg(feature = "cmp_esp")]
+#[cfg(target_arch = "riscv32")]
+pub mod cmp_esp_gpio_input;
+
+#[cfg(feature = "cmp_esp")]
+#[cfg(target_arch = "riscv32")]
+pub mod cmp_esp_wifi;
+
 pub mod cmp_external_fn_process;
 
 #[cfg(feature = "cmp_http_client")]
@@ -23,6 +31,10 @@ pub mod cmp_http_client_wasm;
 #[cfg(feature = "cmp_http_server")]
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub mod cmp_http_server;
+
+#[cfg(feature = "cmp_esp")]
+#[cfg(target_arch = "riscv32")]
+pub mod cmp_http_server_esp;
 
 #[cfg(feature = "cmp_influxdb")]
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
@@ -51,7 +63,7 @@ pub mod cmp_redis_client;
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub mod cmp_slint;
 
-#[cfg(feature = "cmp_storage_esp")]
+#[cfg(feature = "cmp_esp")]
 #[cfg(target_arch = "riscv32")]
 pub mod cmp_storage_esp;
 
@@ -82,3 +94,7 @@ pub mod cmp_websocket_server;
 #[cfg(feature = "cmp_webstorage")]
 #[cfg(target_arch = "wasm32")]
 pub mod cmp_webstorage;
+
+#[allow(dead_code)]
+#[allow(unused_imports)]
+mod _cmp_template;

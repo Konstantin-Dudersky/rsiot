@@ -88,13 +88,13 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::components::cmp_http_server;
+    use super::Config;
     use crate::message::{example_message::*, *};
 
     #[allow(clippy::no_effect)]
     #[test]
     fn stub() {
-        cmp_http_server::Config::<Custom> {
+        Config::<Custom> {
             port: 8000,
             fn_input: |_| Ok(None),
             fn_output: |_| Ok(None),
@@ -104,7 +104,7 @@ mod tests {
     #[allow(clippy::no_effect)]
     #[test]
     fn fn_input_json() {
-        cmp_http_server::Config::<Custom> {
+        Config::<Custom> {
             port: 8000,
             fn_input: |msg: &Message<Custom>| {
                 let text = msg.serialize()?;
@@ -117,7 +117,7 @@ mod tests {
     #[allow(clippy::no_effect)]
     #[test]
     fn fn_output_json() {
-        cmp_http_server::Config::<Custom> {
+        Config::<Custom> {
             port: 8000,
             fn_input: |_| Ok(None),
             fn_output: |text: &str| {

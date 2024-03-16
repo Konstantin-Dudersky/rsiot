@@ -6357,6 +6357,7 @@ dependencies = [
  "futures",
  "getrandom",
  "gloo",
+ "heapless 0.8.0",
  "hmac",
  "http 1.1.0",
  "instant",

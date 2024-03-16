@@ -26,6 +26,7 @@ axum = { version = "0.7.4", optional = true }
 clap = { version = "^4.4.18", features = ["derive"], optional = true }
 dotenvy = { version = "0.15.7", optional = true }
 envy = { version = "0.4.2", optional = true }
+heapless = { version = "0.8.0", optional = true }
 http = { version = "1.0.0", optional = true }
 instant = { version = "0.1.12", features = ["wasm-bindgen"], optional = true }
 jwt = { version = "0.16.0", optional = true }
@@ -165,6 +166,15 @@ cmp_http_client_wasm = ["executor", "dep:http", "dep:gloo", "dep:url"]
 ## Компонент http-сервер
 cmp_http_server = ["executor", "dep:axum", "dep:tower-http"]
 
+## Компоненты для работы с микроконтроллером ESP
+cmp_esp = [
+    "executor",
+    "single-thread",
+    "dep:esp-idf-svc",
+    "dep:heapless",    # TODO - может не нужно
+    "dep:postcard",
+]
+
 ## Компонент сохранения в БД InfluxDB
 cmp_influxdb = ["executor", "dep:openssl", "dep:reqwest"]
 
@@ -189,14 +199,6 @@ cmp_redis_client = ["executor", "dep:futures", "dep:redis", "dep:url"]
 
 ## Компонент пользовательского интерфейса, реализованного с помощью библиотеки Slint
 cmp_slint = ["executor", "dep:slint", "dep:slint-interpreter"]
-
-## Сохранение данных в хранилище ESP32
-cmp_storage_esp = [
-    "executor",
-    "single-thread",
-    "dep:esp-idf-svc",
-    "dep:postcard",
-]
 
 ## Компонент доступа к БД SurrealDB
 cmp_surrealdb = ["executor", "dep:surrealdb"]
@@ -260,6 +262,10 @@ path = "examples/cmp_http_client/cmp_http_client.rs"
 [[example]]
 name = "cmp_http_server"
 path = "examples/cmp_http_server/cmp_http_server.rs"
+
+[[example]]
+name = "cmp_esp"
+path = "examples/cmp_esp/cmp_esp.rs"
 
 [[example]]
 name = "cmp_influxdb"

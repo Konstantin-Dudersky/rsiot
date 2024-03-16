@@ -38,10 +38,10 @@
   // ---- esp32 ------------------------------------------------------------------------------------
   "rust-analyzer.cargo.target": "riscv32imc-esp-espidf",
   "rust-analyzer.cargo.features": [
-    "single-thread",
+    // "single-thread",
     "executor",
 
-    "cmp_storage_esp"
+    "cmp_esp"
   ],
 
   "rust-analyzer.showUnlinkedFileNotification": false
