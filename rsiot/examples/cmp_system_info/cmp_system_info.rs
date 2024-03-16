@@ -34,6 +34,6 @@ async fn main() {
 }
 
 #[cfg(not(feature = "cmp_system_info"))]
-fn mian() {
+fn main() {
     unimplemented!()
 }

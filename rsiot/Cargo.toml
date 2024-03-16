@@ -191,7 +191,12 @@ cmp_redis_client = ["executor", "dep:futures", "dep:redis", "dep:url"]
 cmp_slint = ["executor", "dep:slint", "dep:slint-interpreter"]
 
 ## Сохранение данных в хранилище ESP32
-cmp_storage_esp = ["executor", "dep:esp-idf-svc", "dep:postcard"]
+cmp_storage_esp = [
+    "executor",
+    "single-thread",
+    "dep:esp-idf-svc",
+    "dep:postcard",
+]
 
 ## Компонент доступа к БД SurrealDB
 cmp_surrealdb = ["executor", "dep:surrealdb"]

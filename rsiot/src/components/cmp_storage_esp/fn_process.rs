@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use esp_idf_svc::nvs::{EspDefaultNvsPartition, EspNvs, EspNvsPartition, NvsDefault};
 use postcard::{from_bytes, to_stdvec};
 use serde::{de::DeserializeOwned, Serialize};
-use tracing::{info, warn};
+use tracing::{debug, info, warn};
 
 use crate::{
     executor::{CmpInOut, ComponentError},
@@ -75,10 +75,7 @@ where
     let mut data = data;
     while let Ok(msg) = input.recv_input().await {
         let new_data = (config.fn_input)(&data, &msg);
-        let new_data = match new_data {
-            Some(data) => data,
-            None => continue,
-        };
+        let Some(new_data) = new_data else { continue };
         if new_data == data {
             continue;
         }
@@ -131,5 +128,6 @@ where
 {
     let data = to_stdvec::<TStorageData>(data)?;
     nvs.set_raw("data", &data).map_err(Error::SaveToEsp)?;
+    debug!("Data saved to storage");
     Ok(())
 }
