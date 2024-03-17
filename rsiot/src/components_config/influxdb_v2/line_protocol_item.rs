@@ -35,6 +35,13 @@ impl TryFrom<&LineProtocolItem> for String {
         let value = match line_protocol_item.value {
             ValueType::bool(value) => value.to_string(),
             ValueType::f64(value) => value.to_string(),
+            ValueType::f32(value) => value.to_string(),
+            ValueType::i8(value) => value.to_string(),
+            ValueType::i16(value) => value.to_string(),
+            ValueType::i32(value) => value.to_string(),
+            ValueType::u8(value) => value.to_string(),
+            ValueType::u16(value) => value.to_string(),
+            ValueType::u32(value) => value.to_string(),
         };
         let ts = line_protocol_item
             .ts

@@ -1,3 +1,5 @@
+//! Исполнитель - структура для запуска компонентов
+
 mod cache;
 mod cmp_in_out;
 mod component;

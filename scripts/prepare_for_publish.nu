@@ -6,161 +6,82 @@ def print_header [header: string] {
 
 cd rsiot
 
-
-let features = [
+let targets = [
     {
-        name: "cmp_auth",
-        targets: [
-            "x86_64-unknown-linux-gnu",
-            "aarch64-unknown-linux-gnu",
+        name: "x86_64-unknown-linux-gnu",
+        toolchain: "+stable",
+        features: [
+            "cmp_auth",
+            "cmp_http_client",
+            "cmp_http_server",
+            "cmp_influxdb",
+            "cmp_modbus_client",
+            "cmp_plc",
+            "cmp_redis_client",
+            "cmp_surrealdb",
+            "cmp_timescaledb",
+            "cmp_websocket_client",
+            "cmp_websocket_server",
+            "env_vars",
+            "executor",
+            "logging",
         ],
+        add_feat: ["", "single-thread"],
     },
     {
-        name: "cmp_http_client",
-        targets: [
-            "x86_64-unknown-linux-gnu",
-            "aarch64-unknown-linux-gnu",
+        name: "aarch64-unknown-linux-gnu",
+        toolchain: "+stable",
+        features: [
+            "cmp_auth",
+            "cmp_http_client",
+            "cmp_http_server",
+            "cmp_influxdb",
+            "cmp_modbus_client",
+            "cmp_plc",
+            "cmp_redis_client",
+            "cmp_surrealdb",
+            "cmp_timescaledb",
+            "cmp_websocket_client",
+            "cmp_websocket_server",
+            "env_vars",
+            "executor",
+            "logging",
         ],
+        add_feat: ["", "single-thread"],
     },
     {
-        name: "cmp_http_client_wasm",
-        targets: [
-            "wasm32-unknown-unknown",
+        name: "riscv32imc-esp-espidf",
+        toolchain: "+nightly-2024-02-01-x86_64-unknown-linux-gnu",
+        features: [
+            "cmp_esp",
+            "cmp_plc",
+            "executor",
         ],
+        add_feat: ["single-thread"],
     },
     {
-        name: "cmp_http_server",
-        targets: [
-            "x86_64-unknown-linux-gnu",
-            "aarch64-unknown-linux-gnu",
+        name: "wasm32-unknown-unknown",
+        toolchain: "+stable",
+        features: [
+            "cmp_http_client_wasm",
+            "cmp_leptos",
+            "cmp_plc",
+            "cmp_websocket_client_wasm",
+            "cmp_webstorage",
+            "executor",
+            "logging",
         ],
-    },
-    {
-        name: "cmp_influxdb",
-        targets: [
-            "x86_64-unknown-linux-gnu",
-            "aarch64-unknown-linux-gnu",
-        ],
-    },
-    {
-        name: "cmp_leptos",
-        targets: [
-            "wasm32-unknown-unknown",
-        ],
-    },
-    {
-        name: "cmp_modbus_client",
-        targets: [
-            "x86_64-unknown-linux-gnu",
-            "aarch64-unknown-linux-gnu",
-        ],
-    },
-    {
-        name: "cmp_plc",
-        targets: [
-            "x86_64-unknown-linux-gnu",
-            "aarch64-unknown-linux-gnu",
-            "wasm32-unknown-unknown",
-        ],
-    },
-    {
-        name: "cmp_redis_client",
-        targets: [
-            "x86_64-unknown-linux-gnu",
-            "aarch64-unknown-linux-gnu",
-        ],
-    },
-    {
-        name: "cmp_storage_esp",
-        targets: [
-            "riscv32imc-esp-espidf",
-        ],
-    },
-    {
-        name: "cmp_surrealdb",
-        targets: [
-            "x86_64-unknown-linux-gnu",
-            "aarch64-unknown-linux-gnu",
-        ],
-    },
-    {
-        name: "cmp_timescaledb",
-        targets: [
-            "x86_64-unknown-linux-gnu",
-            "aarch64-unknown-linux-gnu",
-        ],
-    },
-    {
-        name: "cmp_websocket_client",
-        targets: [
-            "x86_64-unknown-linux-gnu",
-            "aarch64-unknown-linux-gnu",
-        ],
-    },
-    {
-        name: "cmp_websocket_client_wasm",
-        targets: [
-            "wasm32-unknown-unknown",
-        ],
-    },
-    {
-        name: "cmp_websocket_server",
-        targets: [
-            "x86_64-unknown-linux-gnu",
-            "aarch64-unknown-linux-gnu",
-        ],
-    },
-    {
-        name: "cmp_webstorage",
-        targets: [
-            "wasm32-unknown-unknown",
-        ],
-    },
-    {
-        name: "env_vars",
-        targets: [
-            "x86_64-unknown-linux-gnu",
-            "aarch64-unknown-linux-gnu",
-        ],
-    },
-    {
-        name: "executor",
-        targets: [
-            "x86_64-unknown-linux-gnu",
-            "aarch64-unknown-linux-gnu",
-            "wasm32-unknown-unknown",
-        ],
-    },
-    {
-        name: "logging",
-        targets: [
-            "x86_64-unknown-linux-gnu",
-            "aarch64-unknown-linux-gnu",
-            "wasm32-unknown-unknown",
-        ],
+        add_feat: ["single-thread"],
     },
 ]
 
 # cargo clippy -------------------------------------------------------------------------------------
 
-for feat in $features {
-    for target in $feat.targets {
-        let add_feats = match $target {
-            "aarch64-unknown-linux-gnu" => ["", "single-thread"], 
-            "riscv32imc-esp-espidf" => ["single-thread"],
-            "x86_64-unknown-linux-gnu" => ["", "single-thread"],
-            "wasm32-unknown-unknown" => ["single-thread"],
-        }
-        let toolchain = match $target {
-            "aarch64-unknown-linux-gnu" => "+stable",
-            "riscv32imc-esp-espidf" => "+nightly-2024-02-01-x86_64-unknown-linux-gnu",
-            "x86_64-unknown-linux-gnu" => "+stable",
-            "wasm32-unknown-unknown" => "+stable",
-            _ => "",
-        };
-        for add_feat in $add_feats {
-            print_header $"workspace clippy - ($feat.name) / ($target) / ($add_feat)";
-            let command = $'cargo ($toolchain) clippy --all-targets --target="($target)" --features="($feat.name), ($add_feat)"';
+for target in $targets {
+    for feat in $target.features {
+        for add_feat in $target.add_feat {
+            print_header $"workspace clippy - ($target.name) / ($feat) / ($add_feat)";
+            let command = $'cargo ($target.toolchain) clippy --all-targets --target="($target.name)" --features="($feat), ($add_feat)"';
             print $"execute command: ($command)";
             nu -c $command;
         }
@@ -169,12 +90,32 @@ for feat in $features {
 
 # cargo doc ----------------------------------------------------------------------------------------
 
-rm -rf ../../rsiot-docs/rustdoc; mkdir ../../rsiot-docs/rustdoc/riscv32imc-esp-espidf
-cargo doc --target riscv32imc-esp-espidf --features="cmp_esp" --no-deps -Zunstable-options -Zrustdoc-scrape-examples
-cp -r target/riscv32imc-esp-espidf/doc/* ../../rsiot-docs/rustdoc/riscv32imc-esp-espidf
+rm -rf ../../rsiot-docs/rustdoc
+
+for target in $targets {
+    print_header $"cargo doc - ($target.name)"
+    
+    # create folder
+    let command = $"mkdir ../../rsiot-docs/rustdoc/($target.name)"
+    nu -c $command;
+    
+    # combine features
+    let features = $target.features | append $target.add_feat | str join ', '
+
+    # generate doc
+    let command = $"cargo doc --target ($target.name) --features="($features)"  --no-deps --document-private-items -Zunstable-options -Zrustdoc-scrape-examples"
+    nu -c $command;
+
+    # copy files
+    let command = $"cp -r target/($target.name)/doc/* ../../rsiot-docs/rustdoc/($target.name)"
+    nu -c $command;
+}
+
+return; # TODO - доделать
 
 # cargo udeps --------------------------------------------------------------------------------------
 
+let features = [];
 for feat in $features {
     for target in $feat.targets {
         let add_feats = match $target {
