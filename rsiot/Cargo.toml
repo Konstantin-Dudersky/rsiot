@@ -241,6 +241,7 @@ targets = [
     # "riscv32imc-esp-espidf",
     "wasm32-unknown-unknown",
 ]
+cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples"]
 
 
 [[example]]
@@ -266,6 +267,7 @@ path = "examples/cmp_http_server/cmp_http_server.rs"
 [[example]]
 name = "cmp_esp"
 path = "examples/cmp_esp/cmp_esp.rs"
+doc-scrape-examples = true
 
 [[example]]
 name = "cmp_influxdb"

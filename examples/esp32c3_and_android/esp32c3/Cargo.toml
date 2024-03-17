@@ -1,0 +1,16 @@
+[package]
+name = "esp32c3"
+version = "0.1.0"
+edition = "2021"
+
+
+[dependencies]
+rsiot = { path = "../../../rsiot", features = ["cmp_esp"] }
+esp-idf-svc = { version = "*" }
+tokio = { version = "*", features = ["macros", "rt"] }
+tracing = { version = "*" }
+
+message = { path = "../message" }
+
+[build-dependencies]
+embuild = { version = "0.31.3", features = ["espidf"] }

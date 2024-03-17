@@ -2,14 +2,10 @@ use std::time::Duration;
 
 use esp_idf_svc::{
     http::{
-        server::{
-            ws::EspHttpWsConnection, Configuration as HttpServerConfiguration, EspHttpServer,
-        },
+        server::{Configuration as HttpServerConfiguration, EspHttpServer},
         Method,
     },
     io::Write,
-    sys::EspError,
-    ws::FrameType,
 };
 use tokio::time::sleep;
 
@@ -17,7 +13,7 @@ use crate::{executor::CmpInOut, message::MsgDataBound};
 
 use super::Config;
 
-pub async fn fn_process<TMsg>(in_out: CmpInOut<TMsg>, config: Config<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg>(in_out: CmpInOut<TMsg>, _config: Config<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound,
 {

@@ -13,5 +13,4 @@ where
     loop {
         sleep(Duration::from_secs(2)).await;
     }
-    Ok(())
 }

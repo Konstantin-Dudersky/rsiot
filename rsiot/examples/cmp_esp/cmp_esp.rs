@@ -1,4 +1,6 @@
-//! cargo run  --example cmp_esp --target="riscv32imc-esp-espidf" --features="cmp_esp" --release
+//! Example based on developer board ESP32-C3
+//!
+//! cargo run --example cmp_esp --target="riscv32imc-esp-espidf" --features="cmp_esp" --release
 
 #[cfg(feature = "cmp_esp")]
 #[tokio::main(flavor = "current_thread")]

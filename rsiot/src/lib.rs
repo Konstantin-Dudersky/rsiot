@@ -155,9 +155,12 @@
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 //! TODO Написать про роутинг сообщений
 
+#![warn(missing_docs)]
+
 #[cfg(feature = "executor")]
 pub mod components;
 mod components_config;
+pub mod doc;
 #[cfg(feature = "env_vars")]
 pub mod env_vars;
 #[cfg(feature = "executor")]
