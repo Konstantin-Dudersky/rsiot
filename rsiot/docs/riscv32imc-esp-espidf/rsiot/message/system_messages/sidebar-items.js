@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["System"],"struct":["AuthRequestByLogin","AuthRequestByToken","AuthResponseErr","AuthResponseOk","Ping","Pong"]};

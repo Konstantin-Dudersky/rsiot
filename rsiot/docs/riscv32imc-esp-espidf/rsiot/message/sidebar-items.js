@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"derive":["Deserialize","Serialize"],"enum":["AuthPermissions","Error","ExampleMessageChannel","MsgData"],"macro":["message_new"],"mod":["eav","eav_helpers","example_message","system_messages"],"struct":["Message","MsgTrace","Timestamp"],"trait":["Deserialize","IMessageChannel","MsgDataBound","Serialize"]};

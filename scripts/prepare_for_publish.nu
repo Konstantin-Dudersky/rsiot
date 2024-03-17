@@ -169,9 +169,9 @@ for feat in $features {
 
 # cargo doc ----------------------------------------------------------------------------------------
 
-rm -rf docs
-cargo doc --target riscv32imc-esp-espidf --features="cmp_esp" --no-deps -Zunstable-options -Zrustdoc-scrape-examples --open
-cp -r target/riscv32imc-esp-espidf/doc/ docs/riscv32imc-esp-espidf
+rm -rf ../../rsiot-docs/rustdoc; mkdir ../../rsiot-docs/rustdoc/riscv32imc-esp-espidf
+cargo doc --target riscv32imc-esp-espidf --features="cmp_esp" --no-deps -Zunstable-options -Zrustdoc-scrape-examples
+cp -r target/riscv32imc-esp-espidf/doc/* ../../rsiot-docs/rustdoc/riscv32imc-esp-espidf
 
 # cargo udeps --------------------------------------------------------------------------------------
 

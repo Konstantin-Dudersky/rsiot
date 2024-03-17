@@ -11,6 +11,7 @@ use crate::{
 /// Настройки
 #[derive(Debug)]
 pub struct Cfg<TMessage> {
+    /// Внешний канал broadcast, на который происходит подписка
     pub channel: broadcast::Receiver<Message<TMessage>>,
 }
 
