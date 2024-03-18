@@ -2,7 +2,12 @@
 #[derive(Clone, Debug)]
 pub enum HttpParam {
     /// (endpoint)
-    Get(String),
-    Put(String),
+    Get {
+        endpoint: String,
+    },
+    Put {
+        endpoint: String,
+        body: String,
+    },
     Post(String),
 }

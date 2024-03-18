@@ -25,6 +25,7 @@ async-trait = { version = "0.1.77", optional = true }
 axum = { version = "0.7.4", optional = true }
 clap = { version = "^4.4.18", features = ["derive"], optional = true }
 dotenvy = { version = "0.15.7", optional = true }
+embedded-svc = { version = "0.27.1", optional = true }
 envy = { version = "0.4.2", optional = true }
 heapless = { version = "0.8.0", optional = true }
 http = { version = "1.0.0", optional = true }
@@ -56,7 +57,7 @@ tokio = { version = "^1.36.0", features = [
     "macros",
     "sync",
     "rt",
-    "time",
+    # "time",
 ], optional = true }
 tokio-modbus = { version = "0.11.0", default-features = false, features = [
     "tcp",
@@ -75,6 +76,7 @@ tower-http = { version = "0.5.1", features = [
 url = { version = "2.5.0", optional = true }
 web-sys = { version = "0.3.68", features = [
     "Location",
+    "RequestMode",
     "Window",
 ], optional = true }
 
@@ -133,7 +135,7 @@ env_vars = ["dep:clap", "dep:dotenvy", "dep:envy", "dep:toml", "dep:url"]
 ## Базовые компоненты
 executor = ["dep:async-trait", "dep:futures", "dep:tokio"]
 
-## Настройка логгироания сообщений
+## Настройка логгирования сообщений
 logging = [
     "dep:openssl",
     "dep:tokio",
@@ -161,7 +163,14 @@ cmp_http_client = [
 ]
 
 ## Компонент http-клиент для платформы WASM
-cmp_http_client_wasm = ["executor", "dep:http", "dep:gloo", "dep:url"]
+cmp_http_client_wasm = [
+    "executor",
+    "dep:http",
+    "dep:instant",
+    "dep:gloo",
+    "dep:url",
+    "dep:web-sys",
+]
 
 ## Компонент http-сервер
 cmp_http_server = ["executor", "dep:axum", "dep:tower-http"]
@@ -170,9 +179,11 @@ cmp_http_server = ["executor", "dep:axum", "dep:tower-http"]
 cmp_esp = [
     "executor",
     "single-thread",
+    "dep:embedded-svc",
     "dep:esp-idf-svc",
-    "dep:heapless",    # TODO - может не нужно
+    "dep:heapless",     # TODO - может не нужно
     "dep:postcard",
+    "tokio?/time",
 ]
 
 ## Компонент сохранения в БД InfluxDB

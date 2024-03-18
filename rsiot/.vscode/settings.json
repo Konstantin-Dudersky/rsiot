@@ -1,39 +1,39 @@
 {
   // ---- x86_64 -----------------------------------------------------------------------------------
-  "rust-analyzer.cargo.target": "x86_64-unknown-linux-gnu",
-  "rust-analyzer.cargo.features": [
-    //   "executor",
-    // "single-thread",
-    // "env_vars",
-    // "logging",
+  // "rust-analyzer.cargo.target": "x86_64-unknown-linux-gnu",
+  // "rust-analyzer.cargo.features": [
+  //   "executor",
+  // "single-thread",
+  // "env_vars",
+  // "logging"
 
-    //   "cmp_auth",
-    //   "cmp_http_client",
-    //   "cmp_http_server",
-    "cmp_influxdb"
-    //   "cmp_modbus_client",
-    //   "cmp_plc",
-    // "cmp_redis_client"
-    // "cmp_slint"
-    //   "cmp_surrealdb",
-    // "cmp_system_info"
-    //   "cmp_timescaledb",
-    // "cmp_websocket_client"
-    // "cmp_websocket_server"
-  ],
+  //   "cmp_auth",
+  //   "cmp_http_client",
+  //   "cmp_http_server",
+  // "cmp_influxdb"
+  //   "cmp_modbus_client",
+  //   "cmp_plc",
+  // "cmp_redis_client"
+  // "cmp_slint"
+  //   "cmp_surrealdb",
+  // "cmp_system_info"
+  //   "cmp_timescaledb",
+  // "cmp_websocket_client"
+  // "cmp_websocket_server"
+  // ],
 
   // ---- wasm32 -----------------------------------------------------------------------------------
-  // "rust-analyzer.cargo.target": "wasm32-unknown-unknown",
-  // "rust-analyzer.cargo.features": [
-  // "single-thread", // Активировать обязательно !
-  //   "executor",
-  //   "logging"
+  "rust-analyzer.cargo.target": "wasm32-unknown-unknown",
+  "rust-analyzer.cargo.features": [
+    "single-thread", // Активировать обязательно !
+    //   "executor",
+    // "logging",
 
-  // "cmp_http_client_wasm",
-  // "cmp_leptos",
-  // "cmp_websocket_client_wasm"
-  // "cmp_webstorage"
-  // ],
+    "cmp_http_client_wasm"
+    // "cmp_leptos",
+    // "cmp_websocket_client_wasm"
+    // "cmp_webstorage"
+  ],
 
   // ---- esp32 ------------------------------------------------------------------------------------
   // "rust-analyzer.cargo.target": "riscv32imc-esp-espidf",

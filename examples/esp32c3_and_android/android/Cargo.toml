@@ -1,0 +1,29 @@
+[package]
+name = "android-ui"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+leptos = { version = "0.6.9", features = ["csr"] }
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+js-sys = "0.3"
+serde = { version = "1", features = ["derive"] }
+serde-wasm-bindgen = "0.6"
+tokio = { version = "*", features = ["macros", "rt"] }
+rsiot = { path = "../../../rsiot", features = [
+    "single-thread",
+    "logging",
+    "cmp_http_client_wasm",
+    "cmp_leptos",
+    "cmp_webstorage",
+] }
+console_error_panic_hook = "0.1.7"
+url = { version = "*" }
+tracing = { version = "*" }
+serde_json = { version = "*" }
+
+message = { path = "../message" }
+
+[workspace]
+members = ["src-tauri"]

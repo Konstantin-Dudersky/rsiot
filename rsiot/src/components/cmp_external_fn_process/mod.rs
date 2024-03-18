@@ -144,7 +144,12 @@ mod tests {
         use std::time::Duration;
 
         use futures::future::LocalBoxFuture;
+
+        #[cfg(target_arch = "wasm32")]
+        use gloo::timers::future::sleep;
+        #[cfg(not(target_arch = "wasm32"))]
         use tokio::time::sleep;
+
         use tracing::info;
 
         use crate::{

@@ -1,13 +1,15 @@
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 use gloo::{
     net::http::{Request, Response},
     timers::future::sleep,
 };
 use http::StatusCode;
+use instant::Instant;
 use tokio::task::JoinSet;
-use tracing::{error, info};
+use tracing::{error, info, warn};
 use url::Url;
+use web_sys::RequestMode;
 
 use crate::message::{Message, MsgDataBound};
 
@@ -54,12 +56,43 @@ where
         );
         task_set.spawn_local(future);
     }
-    // TODO - запросы на основе входящих сообщений
-    //
+    for item in config.requests_input {
+        let future = task_input_request(
+            in_out.clone(),
+            config.connection_config.base_url.clone(),
+            item,
+        );
+        task_set.spawn_local(future);
+    }
     // TODO - пересмотреть http-client. Может объединить код по-максимуму? NewType на основе
     // JoineSet - с возможностью выбора spawn или spawn_local
     while let Some(res) = task_set.join_next().await {
         res??
+    }
+    Ok(())
+}
+
+/// Задача обработки запросов на основе входящего потока сообщений
+async fn task_input_request<TMessage>(
+    mut in_out: CmpInOut<TMessage>,
+    url: Url,
+    config: config::RequestInput<TMessage>,
+) -> super::Result<()>
+where
+    TMessage: MsgDataBound,
+{
+    while let Ok(msg) = in_out.recv_input().await {
+        let http_param = (config.fn_input)(&msg);
+        let http_param = match http_param {
+            Some(val) => val,
+            None => continue,
+        };
+        let msgs =
+            process_request_and_response(&url, &http_param, config.on_success, config.on_failure)
+                .await?;
+        for msg in msgs {
+            in_out.send_output(msg).await.map_err(Error::CmpOutput)?;
+        }
     }
     Ok(())
 }
@@ -124,8 +157,8 @@ where
     if status != StatusCode::OK {
         let msgs = (on_failure)();
         error!(
-            "Error on request.\nRequest params: {:?}\nResponse text: {:?}",
-            request_param, text
+            "Error on request.\nRequest params: {:?}\nResponse text: {:?}\nStatus: {:?}",
+            request_param, text, status
         );
         return Ok(msgs);
     }
@@ -136,16 +169,20 @@ where
 /// Выполнение HTTP запроса
 async fn send_request(url: Url, req: &config::HttpParam) -> super::Result<Response> {
     let endpoint = match req {
-        config::HttpParam::Get(val) => val,
-        config::HttpParam::Put(_) => todo!(),
+        config::HttpParam::Get { endpoint } => endpoint,
+        config::HttpParam::Put { endpoint, body: _ } => endpoint,
         config::HttpParam::Post(_) => todo!(),
     };
     let url = url
         .join(endpoint)
         .map_err(|err| Error::Configuration(err.to_string()))?;
+    info!("url: {:?}", url.as_ref());
     let response = match req {
-        config::HttpParam::Get(_) => Request::get(url.as_ref()).send().await?,
-        config::HttpParam::Put(_) => todo!(),
+        config::HttpParam::Get { endpoint: _ } => Request::get(url.as_ref()).send().await?,
+        config::HttpParam::Put { endpoint: _, body } => {
+            warn!("New put request");
+            Request::post(url.as_ref()).body(body)?.send().await?
+        }
         config::HttpParam::Post(_) => todo!(),
     };
     Ok(response)

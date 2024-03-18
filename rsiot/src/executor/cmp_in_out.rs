@@ -129,6 +129,21 @@ where
             .await
             .map_err(|e| ComponentError::CmpOutput(e.to_string()))
     }
+
+    /// Отправка исходящих сообщений, в синхронном окружении
+    pub fn send_output_blocking(&self, msg: Message<TMsg>) -> Result<(), ComponentError> {
+        trace!("Start send to output: {msg:?}");
+        // Если нет авторизации, пропускаем
+        let Some(mut msg) = (self.fn_auth)(msg, &self.auth_perm) else {
+            trace!("No authorization. Auth: {:?}", self.auth_perm);
+            return Ok(());
+        };
+
+        msg.add_trace_item(&self.id, &self.name);
+        self.output
+            .blocking_send(msg)
+            .map_err(|e| ComponentError::CmpOutput(e.to_string()))
+    }
 }
 
 impl<TMsg> Clone for CmpInOut<TMsg>
