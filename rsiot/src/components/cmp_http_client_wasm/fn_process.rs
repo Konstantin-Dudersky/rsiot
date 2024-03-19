@@ -176,11 +176,9 @@ async fn send_request(url: Url, req: &config::HttpParam) -> super::Result<Respon
     let url = url
         .join(endpoint)
         .map_err(|err| Error::Configuration(err.to_string()))?;
-    info!("url: {:?}", url.as_ref());
     let response = match req {
         config::HttpParam::Get { endpoint: _ } => Request::get(url.as_ref()).send().await?,
         config::HttpParam::Put { endpoint: _, body } => {
-            warn!("New put request");
             Request::post(url.as_ref()).body(body)?.send().await?
         }
         config::HttpParam::Post(_) => todo!(),

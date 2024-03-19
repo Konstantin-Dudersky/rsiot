@@ -35,6 +35,7 @@ where
     let cache_clone = in_out.cache.clone();
     server
         .fn_handler("/messages", Method::Get, move |request| {
+            info!("new request for messages");
             let mut msgs_json: Vec<String> = vec![];
             {
                 let lock = cache_clone.blocking_read();

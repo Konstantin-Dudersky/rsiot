@@ -7,4 +7,21 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
+futures = "*"
+rsiot = { path = "../rsiot", features = [
+    "executor",
+    "cmp_slint",
+    "cmp_http_client",
+] }
+tokio = { version = "*", features = ["rt-multi-thread", "macros", "time"] }
+tracing = "*"
+tracing-subscriber = "*"
+openssl = { version = "*", features = ["vendored"] }
+serde_json = { version = "*" }
+url = { version = "*" }
+serde = { version = "*", features = ["derive"] }
+
 slint = { version = "1.5", features = ["backend-android-activity-05"] }
+
+[build-dependencies]
+slint-build = "1.5.0"

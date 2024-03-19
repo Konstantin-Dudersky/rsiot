@@ -167,8 +167,8 @@ async fn send_request<TMessage>(
     req: &config::HttpParam,
 ) -> super::Result<Response, TMessage> {
     let endpoint = match req {
-        config::HttpParam::Get(val) => val,
-        config::HttpParam::Put(_) => todo!(),
+        config::HttpParam::Get { endpoint } => endpoint,
+        config::HttpParam::Put { endpoint, body: _ } => endpoint,
         config::HttpParam::Post(_) => todo!(),
     };
     let url = url.join(endpoint).map_err(|err| {
@@ -177,8 +177,11 @@ async fn send_request<TMessage>(
     })?;
     let client = Client::new();
     let response = match req {
-        config::HttpParam::Get(_) => client.get(url).send().await?,
-        config::HttpParam::Put(_) => todo!(),
+        config::HttpParam::Get { endpoint: _ } => client.get(url).send().await?,
+        config::HttpParam::Put {
+            endpoint: _,
+            body: _,
+        } => todo!(),
         config::HttpParam::Post(_) => todo!(),
     };
     Ok(response)

@@ -1,0 +1,33 @@
+import { Button } from "std-widgets.slint";
+
+export global GlobalData {
+    in property <string> primary: "1235";
+    in property <string> secondary: "456";
+
+    pure callback button(int);
+}
+
+global Style {
+    in property <length> font-size: 20pt;
+    in property <color> TEXT_COLOR: white;
+}
+
+export component MainWindow inherits Window {
+    width: 400px;
+    height: 480px;
+    Text {
+        text: GlobalData.primary;
+    }
+
+    Button {
+        width: 160px;
+        x: 256px;
+        y: 322px;
+
+        text: "Кнопка";
+
+        clicked => {
+            GlobalData.button(42)
+        }
+    }
+}

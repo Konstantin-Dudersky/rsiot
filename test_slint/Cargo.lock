@@ -1736,12 +1736,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "generativity"
-version = "1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5881e4c3c2433fe4905bb19cfd2b5d49d4248274862b68c27c33d9ba4e13f9ec"
-
-[[package]]
 name = "generic-array"
 version = "0.14.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3386,7 +3380,6 @@ dependencies = [
  "serde",
  "serde_json",
  "slint",
- "slint-interpreter",
  "thiserror",
  "tokio",
  "tracing",
@@ -3716,26 +3709,6 @@ dependencies = [
  "spin_on",
  "thiserror",
  "toml_edit 0.22.7",
-]
-
-[[package]]
-name = "slint-interpreter"
-version = "1.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "342dc3c655272538ea86f3687dc3f119943e92f80ba9f8f822e047a35f6f2817"
-dependencies = [
- "derive_more",
- "generativity",
- "i-slint-backend-qt",
- "i-slint-backend-selector",
- "i-slint-backend-winit",
- "i-slint-common",
- "i-slint-compiler",
- "i-slint-core",
- "lyon_path",
- "once_cell",
- "thiserror",
- "vtable",
 ]
 
 [[package]]

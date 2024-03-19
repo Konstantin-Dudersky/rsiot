@@ -7,11 +7,7 @@ build = "build.rs"
 
 [dependencies]
 futures = "*"
-rsiot = { path = "../rsiot", features = [
-    "executor",
-    # "single-thread",
-    "cmp_slint",
-] }
+rsiot = { path = "../rsiot", features = ["executor", "cmp_slint"] }
 tokio = { version = "*", features = ["rt-multi-thread", "macros", "time"] }
 tracing = "*"
 tracing-subscriber = "*"
