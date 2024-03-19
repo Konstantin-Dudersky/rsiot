@@ -1,27 +1,53 @@
-use std::time::Duration;
-
-use slint::SharedString;
-use slint_interpreter::Value;
-use tokio::time::sleep;
+use slint::ComponentHandle;
+use tokio::{sync::mpsc, task::JoinSet};
 
 use crate::{executor::CmpInOut, message::MsgDataBound};
 
 use super::{Config, Result};
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, input: CmpInOut<TMsg>) -> Result<()>
+pub async fn fn_process<TMainWindow, TMsg>(
+    config: Config<TMainWindow, TMsg>,
+    input: CmpInOut<TMsg>,
+) -> Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TMainWindow: ComponentHandle + 'static,
 {
-    let mut counter = 0;
-    loop {
+    let mut task_set = JoinSet::new();
+    task_set.spawn(fn_input(config.clone(), input.clone()));
+    task_set.spawn(fn_output(config.clone(), input));
+
+    while let Some(res) = task_set.join_next().await {
+        res.unwrap();
+    }
+
+    Ok(())
+}
+
+async fn fn_input<TMainWindow, TMsg>(config: Config<TMainWindow, TMsg>, mut input: CmpInOut<TMsg>)
+where
+    TMsg: MsgDataBound + 'static,
+    TMainWindow: ComponentHandle,
+{
+    while let Ok(msg) = input.recv_input().await {
         let lock = config.instance.lock().await;
-        counter += 1;
-        lock.upgrade_in_event_loop(move |handle| {
-            let s = format!("{}", counter);
-            let value = Value::String(SharedString::from(s));
-            handle.set_property("text_content", value).unwrap();
-        })
-        .unwrap();
-        sleep(Duration::from_secs(2)).await;
+        (config.fn_input)(msg, lock);
+    }
+}
+
+async fn fn_output<TMainWindow, TMsg>(config: Config<TMainWindow, TMsg>, mut input: CmpInOut<TMsg>)
+where
+    TMsg: MsgDataBound + 'static,
+    TMainWindow: ComponentHandle,
+{
+    let (tx, mut rx) = mpsc::channel(100);
+
+    {
+        let lock = config.instance.lock().await;
+        (config.fn_output)(lock, tx);
+    }
+
+    while let Some(msg) = rx.recv().await {
+        input.send_output(msg).await.unwrap();
     }
 }

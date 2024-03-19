@@ -2884,12 +2884,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "generativity"
-version = "1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5881e4c3c2433fe4905bb19cfd2b5d49d4248274862b68c27c33d9ba4e13f9ec"
-
-[[package]]
 name = "generic-array"
 version = "0.14.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6374,7 +6368,6 @@ dependencies = [
  "serde_json",
  "sha2",
  "slint",
- "slint-interpreter",
  "sqlx",
  "surrealdb",
  "sysinfo",
@@ -7063,25 +7056,6 @@ dependencies = [
  "once_cell",
  "pin-weak",
  "slint-macros",
- "vtable",
-]
-
-[[package]]
-name = "slint-interpreter"
-version = "1.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2a656832a329cf19019ee0b57b0cb5b6edee52a289886e0eeeb043e6c9257c81"
-dependencies = [
- "derive_more",
- "generativity",
- "i-slint-backend-selector",
- "i-slint-backend-winit",
- "i-slint-common",
- "i-slint-compiler",
- "i-slint-core",
- "lyon_path",
- "once_cell",
- "thiserror",
  "vtable",
 ]
 

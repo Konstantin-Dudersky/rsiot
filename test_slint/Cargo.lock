@@ -4006,7 +4006,6 @@ dependencies = [
  "rsiot",
  "slint",
  "slint-build",
- "slint-interpreter",
  "tokio",
  "tracing",
  "tracing-subscriber",

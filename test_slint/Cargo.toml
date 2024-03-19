@@ -16,12 +16,11 @@ tokio = { version = "*", features = ["rt-multi-thread", "macros", "time"] }
 tracing = "*"
 tracing-subscriber = "*"
 
+# slint = "*"
 slint = { version = "*", features = [
     "backend-linuxkms-noseat",
     "renderer-skia",
 ] }
-slint-interpreter = { version = "1.4.1", features = ["display-diagnostics"] }
-
 
 [build-dependencies]
 slint-build = "1.5.0"

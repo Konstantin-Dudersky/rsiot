@@ -1,3 +1,3 @@
 fn main() {
-    slint_build::compile("test.slint").unwrap();
+    slint_build::compile("main.slint").unwrap();
 }
