@@ -1,3 +1,4 @@
+use std::env;
 use std::{sync::Arc, time::Duration};
 
 use rsiot::{
@@ -21,23 +22,33 @@ use tracing::Level;
 //     }
 // }
 
-#[tokio::main]
-async fn main() {
-    tracing_subscriber::fmt()
-        .with_max_level(Level::TRACE)
-        .init();
+// #[tokio::main]
+// async fn main() {
+//     tracing_subscriber::fmt()
+//         .with_max_level(Level::TRACE)
+//         .init();
 
-    let mut compiler = ComponentCompiler::default();
-    let definition = compiler.build_from_path("test.slint").await;
-    slint_interpreter::print_diagnostics(&compiler.diagnostics());
-    if let Some(definition) = definition {
-        let instance = definition.create().unwrap();
-        let instance_copy = instance.as_weak();
+//     let mut compiler = ComponentCompiler::default();
+//     let definition = compiler.build_from_path("./test.slint").await;
+//     slint_interpreter::print_diagnostics(&compiler.diagnostics());
+//     if let Some(definition) = definition {
+//         let instance = definition.create().unwrap();
+//         let instance_copy = instance.as_weak();
 
-        std::thread::spawn(move || main_executor(instance_copy));
+//         std::thread::spawn(move || main_executor(instance_copy));
 
-        instance.run().unwrap();
-    }
+//         instance.run().unwrap();
+//     }
+// }
+
+slint::include_modules!();
+fn main() {
+    let main_window = MainWindow::new().unwrap();
+
+    let main_window_link = main_window.as_weak();
+
+    std::thread::spawn(move || main_executor(main_window_link.into()));
+    main_window.run().unwrap();
 }
 
 #[tokio::main]
@@ -57,7 +68,6 @@ async fn main_executor(slint_inst: Weak<ComponentInstance>) {
             vec![msg]
         },
     };
-
 
     let slint_config = cmp_slint::Config {
         instance: Arc::new(Mutex::new(slint_inst)),

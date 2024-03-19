@@ -49,8 +49,7 @@ pub mod cmp_http_server_esp;
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub mod cmp_influxdb;
 
-// TODO - раскомментировать !!!
-// pub mod cmp_inject_periodic;
+pub mod cmp_inject_periodic;
 
 #[cfg(feature = "cmp_leptos")]
 #[cfg(target_arch = "wasm32")]

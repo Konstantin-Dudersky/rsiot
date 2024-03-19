@@ -15,4 +15,3 @@ where
     pub instance: Arc<Mutex<Weak<ComponentInstance>>>,
     pub fn_input: fn(Message<TMsg>) -> Vec<(String, Value)>,
 }
- 
