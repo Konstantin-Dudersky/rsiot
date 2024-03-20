@@ -1,5 +1,6 @@
 use super::derive_item_process::DeriveItemProcess;
 
+/// Настройки cmp_derive
 pub struct Config<TMsg> {
     /// Вектор структур `DeriveItem`
     ///

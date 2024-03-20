@@ -73,7 +73,6 @@ tower-http = { version = "0.5.1", features = [
 url = { version = "2.5.0", optional = true }
 web-sys = { version = "0.3.68", features = [
     "Location",
-    "RequestMode",
     "Window",
 ], optional = true }
 
@@ -121,6 +120,8 @@ tokio = { version = "^1.36.0", features = [
 
 [build-dependencies]
 embuild = { version = "0.31.3", features = ["espidf"] }
+cfg_aliases = "0.2.0"
+
 
 [features]
 
@@ -166,7 +167,6 @@ cmp_http_client_wasm = [
     "dep:instant",
     "dep:gloo",
     "dep:url",
-    "dep:web-sys",
 ]
 
 ## Компонент http-сервер

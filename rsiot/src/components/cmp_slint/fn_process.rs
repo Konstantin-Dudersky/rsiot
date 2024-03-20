@@ -35,7 +35,7 @@ where
     }
 }
 
-async fn fn_output<TMainWindow, TMsg>(config: Config<TMainWindow, TMsg>, mut input: CmpInOut<TMsg>)
+async fn fn_output<TMainWindow, TMsg>(config: Config<TMainWindow, TMsg>, input: CmpInOut<TMsg>)
 where
     TMsg: MsgDataBound + 'static,
     TMainWindow: ComponentHandle,

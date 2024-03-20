@@ -27,4 +27,5 @@ where
     }
 }
 
+/// Компонент cmp_derive
 pub type Cmp<TMsg> = Component<Config<TMsg>, TMsg>;

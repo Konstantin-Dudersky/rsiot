@@ -139,6 +139,7 @@ pub type Cmp<TMsg> = Component<Config<TMsg>, TMsg>;
 mod tests {
 
     #[cfg(feature = "single-thread")]
+    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn single_thread() {
         use std::time::Duration;

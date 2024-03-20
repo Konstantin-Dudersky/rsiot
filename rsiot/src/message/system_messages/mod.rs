@@ -1,3 +1,5 @@
+//! Типы системных сообщений
+
 mod auth_request_by_login;
 mod auth_request_by_token;
 mod auth_response_error;
@@ -12,12 +14,24 @@ pub use ping_pong::{Ping, Pong};
 
 use serde::{Deserialize, Serialize};
 
+/// Типы системных сообщений
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum System {
+    /// Запрос авторизации по логину и паролю
     AuthRequestByLogin(AuthRequestByLogin),
+
+    /// Запрос авторизации по токену
     AuthRequestByToken(AuthRequestByToken),
+
+    /// Отказ в авторизации
     AuthResponseErr(AuthResponseErr),
+
+    /// Подтверждение авторизации
     AuthResponseOk(AuthResponseOk),
+
+    /// Проверка связи - запрос партнера по коммуникации
     Ping(Ping),
+
+    /// Проверка связи - ответ от партнера по коммуникации
     Pong(Pong),
 }

@@ -7,9 +7,8 @@ use gloo::{
 use http::StatusCode;
 use instant::Instant;
 use tokio::task::JoinSet;
-use tracing::{error, info, warn};
+use tracing::{error, info};
 use url::Url;
-use web_sys::RequestMode;
 
 use crate::message::{Message, MsgDataBound};
 
@@ -171,7 +170,7 @@ async fn send_request(url: Url, req: &config::HttpParam) -> super::Result<Respon
     let endpoint = match req {
         config::HttpParam::Get { endpoint } => endpoint,
         config::HttpParam::Put { endpoint, body: _ } => endpoint,
-        config::HttpParam::Post(_) => todo!(),
+        config::HttpParam::Post { endpoint, body: _ } => endpoint,
     };
     let url = url
         .join(endpoint)
@@ -179,9 +178,11 @@ async fn send_request(url: Url, req: &config::HttpParam) -> super::Result<Respon
     let response = match req {
         config::HttpParam::Get { endpoint: _ } => Request::get(url.as_ref()).send().await?,
         config::HttpParam::Put { endpoint: _, body } => {
+            Request::put(url.as_ref()).body(body)?.send().await?
+        }
+        config::HttpParam::Post { endpoint: _, body } => {
             Request::post(url.as_ref()).body(body)?.send().await?
         }
-        config::HttpParam::Post(_) => todo!(),
     };
     Ok(response)
 }

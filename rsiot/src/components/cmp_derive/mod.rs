@@ -1,3 +1,5 @@
+//! Компонент для создания сообщений на основе других сообщений
+
 mod component;
 mod config;
 mod derive_item;

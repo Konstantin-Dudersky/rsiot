@@ -1,3 +1,5 @@
+//! HTTP-сервер в микроконтроллере ESP32
+
 mod component;
 mod config;
 mod error;

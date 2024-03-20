@@ -1,9 +1,8 @@
 //! Компоненты
 
-// TODO - раскомментировать !!!
-// #[allow(dead_code)]
-// #[allow(unused_imports)]
-// mod _cmp_template;
+#[allow(dead_code)]
+#[allow(unused_imports)]
+mod _cmp_template;
 
 pub mod cmp_add_input_stream;
 
@@ -16,15 +15,15 @@ pub mod cmp_auth;
 pub mod cmp_derive;
 
 #[cfg(feature = "cmp_esp")]
-#[cfg(target_arch = "riscv32")]
+#[cfg(riscv32imc__esp__espidf)]
 pub mod cmp_esp_gpio_input;
 
 #[cfg(feature = "cmp_esp")]
-#[cfg(target_arch = "riscv32")]
+#[cfg(riscv32imc__esp__espidf)]
 pub mod cmp_esp_gpio_output;
 
 #[cfg(feature = "cmp_esp")]
-#[cfg(target_arch = "riscv32")]
+#[cfg(riscv32imc__esp__espidf)]
 pub mod cmp_esp_wifi;
 
 pub mod cmp_external_fn_process;
@@ -42,11 +41,11 @@ pub mod cmp_http_client_wasm;
 pub mod cmp_http_server;
 
 #[cfg(feature = "cmp_esp")]
-#[cfg(target_arch = "riscv32")]
+#[cfg(riscv32imc__esp__espidf)]
 pub mod cmp_http_server_esp;
 
 #[cfg(feature = "cmp_influxdb")]
-#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+// #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub mod cmp_influxdb;
 
 pub mod cmp_inject_periodic;
@@ -69,11 +68,11 @@ pub mod cmp_plc;
 pub mod cmp_redis_client;
 
 #[cfg(feature = "cmp_slint")]
-#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[cfg(any(x86_64__unknown__linux__gnu, aarch64__unknown__linux__gnu))]
 pub mod cmp_slint;
 
 #[cfg(feature = "cmp_esp")]
-#[cfg(target_arch = "riscv32")]
+#[cfg(riscv32imc__esp__espidf)]
 pub mod cmp_storage_esp;
 
 #[cfg(feature = "cmp_surrealdb")]

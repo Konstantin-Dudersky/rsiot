@@ -5,7 +5,7 @@ use uuid::Uuid;
 
 use crate::message::AuthPermissions;
 
-/// Ответ на запрос на регистрацию
+/// Подтверждение авторизации
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct AuthResponseOk {
     /// Сгенерированный токен
@@ -17,5 +17,6 @@ pub struct AuthResponseOk {
     /// Идентификаторы компонентов, через которые сообщение было получено
     pub trace_ids: HashSet<Uuid>,
 
+    /// Логин для входа
     pub login: String,
 }

@@ -48,4 +48,5 @@ where
     }
 }
 
+/// Компонент cmp_http_client_wasm
 pub type Cmp<TMsg> = Component<ConfigAlias<TMsg>, TMsg>;
