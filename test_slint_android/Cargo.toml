@@ -25,3 +25,20 @@ slint = { version = "1.5", features = ["backend-android-activity-05"] }
 
 [build-dependencies]
 slint-build = "1.5.0"
+
+
+[package.metadata.android]
+# Specifies the array of targets to build for.
+build_targets = [
+    # "armv7-linux-androideabi",
+    "aarch64-linux-android",
+    # "i686-linux-android",
+    "x86_64-linux-android",
+]
+
+
+[[package.metadata.android.uses_permission]]
+name = "android.permission.INTERNET"
+
+[[package.metadata.android.uses_permission]]
+name = "android.permission.ACCESS_NETWORK_STATE"

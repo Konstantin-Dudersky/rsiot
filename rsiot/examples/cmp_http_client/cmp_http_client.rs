@@ -74,7 +74,9 @@ async fn main() -> anyhow::Result<()> {
                 let msg = msg.get_data()?;
                 match msg {
                     Data::HttpMethodsGetOnEventRequest(_) => {
-                        let param = http_client_config::HttpParam::Get("get".to_string());
+                        let param = http_client_config::HttpParam::Get {
+                            endpoint: "get".to_string(),
+                        };
                         Some(param)
                     }
                     _ => None,
@@ -90,7 +92,9 @@ async fn main() -> anyhow::Result<()> {
         }],
         requests_periodic: vec![http_client_config::RequestPeriodic {
             period: Duration::from_secs(5),
-            http_param: http_client_config::HttpParam::Get("get".to_string()),
+            http_param: http_client_config::HttpParam::Get {
+                endpoint: "get".to_string(),
+            },
             on_success: |body| {
                 let res = from_str::<HttpMethodsGet>(body)?;
                 Ok(vec![Message::new_custom(

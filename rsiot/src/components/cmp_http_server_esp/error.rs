@@ -1,5 +1,6 @@
 use crate::executor::ComponentError;
 
+/// Ошибки cmp_http_server_esp
 #[derive(Debug, thiserror::Error)]
 pub enum Error {}
 

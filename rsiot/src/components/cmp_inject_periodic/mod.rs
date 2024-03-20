@@ -8,6 +8,7 @@ use crate::{
     message::{AuthPermissions, Message, MsgDataBound},
 };
 
+/// Конфигурация cmp_inject_periodic
 #[derive(Clone, Debug)]
 pub struct Config<TMsg, TFnPeriodic>
 where
@@ -71,4 +72,5 @@ where
     }
 }
 
+/// Компонент cmp_inject_periodic
 pub type Cmp<TMessage, TFnPeriodic> = Component<Config<TMessage, TFnPeriodic>, TMessage>;

@@ -12,8 +12,11 @@ async fn main() {
     use rsiot::{
         components::cmp_system_info,
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_message::*, *},
+        message::example_message::*,
     };
+    use tracing::info;
+
+    tracing_subscriber::fmt().init();
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
@@ -23,7 +26,10 @@ async fn main() {
 
     let system_info_config = cmp_system_info::Config {
         period: Duration::from_secs(2),
-        fn_output: || vec![],
+        fn_output: |info| {
+            info!("{:?}", info);
+            vec![]
+        },
     };
 
     ComponentExecutor::<Custom>::new(executor_config)

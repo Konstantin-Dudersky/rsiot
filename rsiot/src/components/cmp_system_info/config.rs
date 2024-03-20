@@ -2,9 +2,13 @@ use std::time::Duration;
 
 use crate::message::Message;
 
-pub struct Config<TMsg> {
-    pub period: Duration,
-    pub fn_output: fn() -> Vec<Message<TMsg>>,
-}
+use super::SystemInfo;
 
-pub struct SystemInfo {}
+/// Конфигурация cmp_system_info
+pub struct Config<TMsg> {
+    /// Период обновления данных
+    pub period: Duration,
+
+    /// Функция создания исходящих сообщений на основе данных системы
+    pub fn_output: fn(&SystemInfo) -> Vec<Message<TMsg>>,
+}

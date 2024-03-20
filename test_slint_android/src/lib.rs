@@ -1,6 +1,7 @@
 use slint::android::{init, AndroidApp};
 use std::env;
 use std::{sync::Arc, time::Duration};
+use tokio::time::sleep;
 
 use message::*;
 use rsiot::{
@@ -33,6 +34,9 @@ fn android_main(app: AndroidApp) {
 
 #[tokio::main]
 async fn main_executor(slint_inst: Weak<MainWindow>) {
+    // Ждем пока откроется окно
+    sleep(Duration::from_secs(1)).await;
+
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
         executor_name: "test_slint".into(),
@@ -62,16 +66,15 @@ async fn main_executor(slint_inst: Weak<MainWindow>) {
             _ => (),
         },
         fn_output: |window, tx| {
-            // window
-            //     .upgrade_in_event_loop(move |handle| {
-            //         let global = handle.global::<GlobalData>();
-            //         global.on_button(move |value| {
-            //             let msg =
-            //                 Message::new_custom(Custom::ValueInstantString(value.to_string()));
-            //             tx.blocking_send(msg).unwrap();
-            //         });
-            //     })
-            //     .unwrap();
+            window
+                .upgrade_in_event_loop(move |handle| {
+                    let global = handle.global::<GlobalData>();
+                    global.on_relay_control(move |value| {
+                        let msg = Message::new_custom(Custom::SetRelayState(value));
+                        tx.blocking_send(msg).unwrap();
+                    });
+                })
+                .unwrap();
         },
     };
 
@@ -87,8 +90,8 @@ async fn main_executor(slint_inst: Weak<MainWindow>) {
         requests_input: vec![cmp_http_client::http_client_config::RequestInput {
             fn_input: |msg| match msg.data {
                 MsgData::Custom(Custom::SetRelayState(_)) => {
-                    let param = cmp_http_client::http_client_config::HttpParam::Put {
-                        endpoint: "messages1".into(),
+                    let param = cmp_http_client::http_client_config::HttpParam::Post {
+                        endpoint: "messages".into(),
                         body: msg.serialize().unwrap(),
                     };
                     Some(param)

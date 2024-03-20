@@ -169,7 +169,7 @@ async fn send_request<TMessage>(
     let endpoint = match req {
         config::HttpParam::Get { endpoint } => endpoint,
         config::HttpParam::Put { endpoint, body: _ } => endpoint,
-        config::HttpParam::Post(_) => todo!(),
+        config::HttpParam::Post { endpoint, body: _ } => endpoint,
     };
     let url = url.join(endpoint).map_err(|err| {
         let err = err.to_string();
@@ -178,11 +178,12 @@ async fn send_request<TMessage>(
     let client = Client::new();
     let response = match req {
         config::HttpParam::Get { endpoint: _ } => client.get(url).send().await?,
-        config::HttpParam::Put {
-            endpoint: _,
-            body: _,
-        } => todo!(),
-        config::HttpParam::Post(_) => todo!(),
+        config::HttpParam::Put { endpoint: _, body } => {
+            client.put(url).body(body.to_string()).send().await?
+        }
+        config::HttpParam::Post { endpoint: _, body } => {
+            client.post(url).body(body.to_string()).send().await?
+        }
     };
     Ok(response)
 }

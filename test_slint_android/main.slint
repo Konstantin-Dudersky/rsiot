@@ -1,10 +1,10 @@
-import { Button } from "std-widgets.slint";
+import { Button, LineEdit } from "std-widgets.slint";
 
 export global GlobalData {
     in property <string> primary: "1235";
     in property <string> secondary: "456";
 
-    pure callback button(int);
+    pure callback relay_control(bool);
 }
 
 global Style {
@@ -14,20 +14,38 @@ global Style {
 
 export component MainWindow inherits Window {
     width: 400px;
-    height: 480px;
+    height: 800px;
     Text {
         text: GlobalData.primary;
     }
 
     Button {
         width: 160px;
-        x: 256px;
-        y: 322px;
+        x: 13px;
+        y: 273px;
 
-        text: "Кнопка";
+        text: "Включить";
 
         clicked => {
-            GlobalData.button(42)
+            GlobalData.relay_control(true)
         }
+    }
+
+    Button {
+        width: 160px;
+        x: 203px;
+        y: 272px;
+
+        text: "Отключить";
+
+        clicked => {
+            GlobalData.relay_control(false)
+        }
+    }
+
+    LineEdit {
+        x: 114px;
+        y: 600px;
+        placeholder-text: "Enter text here";
     }
 }

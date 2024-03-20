@@ -27,4 +27,5 @@ where
     }
 }
 
+/// Компонент cmp_system_info
 pub type Cmp<TMsg> = Component<Config<TMsg>, TMsg>;

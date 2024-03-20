@@ -1,3 +1,28 @@
+// Пробовал для настройки CORS вместо
+//
+// ```rust
+// let mut response = request.into_ok_response().unwrap();
+// ```
+//
+// использовать
+//
+// ```rust
+// let mut response = request
+//     .into_response(
+//         200,
+//         None,
+//         &[
+//             ("Access-Control-Allow-Origin", "*"),
+//             ("Access-Control-Max-Age", "600"),
+//             ("Access-Control-Allow-Methods", "PUT,POST,GET,OPTIONS"),
+//             ("Access-Control-Allow-Headers", "*"),
+//         ],
+//     )
+//     .unwrap();
+// ```
+//
+// Работает или нет, непонятно
+
 use std::time::Duration;
 
 use embedded_svc::{http::Headers, io::Read};
@@ -46,27 +71,16 @@ where
             }
             let json = msgs_json.join(",");
             let json = format!("[{}]", json);
-            // let mut response = request.into_ok_response().unwrap();
-            let mut response = request
-                .into_response(
-                    200,
-                    None,
-                    &[
-                        ("Access-Control-Allow-Origin", "*"),
-                        ("Access-Control-Max-Age", "600"),
-                        ("Access-Control-Allow-Methods", "PUT,POST,GET,OPTIONS"),
-                        ("Access-Control-Allow-Headers", "*"),
-                    ],
-                )
-                .unwrap();
+            let mut response = request.into_ok_response().unwrap();
             response.write_all(json.as_bytes()).unwrap();
             Ok(()) as super::Result<()>
         })
         .unwrap();
 
     // Запись одного сообщения
+    let in_out_clone = in_out.clone();
     server
-        .fn_handler("/messages1", Method::Post, move |mut request| {
+        .fn_handler("/messages", Method::Put, move |mut request| {
             info!("Put request");
 
             let len = request.content_len().unwrap_or(0) as usize;
@@ -74,23 +88,35 @@ where
             request.read_exact(&mut buf).unwrap();
             let buf_str = String::from_utf8_lossy(&buf);
 
-            // let mut response = request.into_ok_response().unwrap();
-            let mut response = request
-                .into_response(
-                    200,
-                    None,
-                    &[
-                        ("Access-Control-Allow-Origin", "*"),
-                        ("Access-Control-Max-Age", "600"),
-                        ("Access-Control-Allow-Methods", "PUT,POST,GET,OPTIONS"),
-                        ("Access-Control-Allow-Headers", "*"),
-                    ],
-                )
-                .unwrap();
-
+            let mut response = request.into_ok_response().unwrap();
             let msg = Message::deserialize(&buf_str);
             match msg {
-                Ok(val) => in_out.send_output_blocking(val).unwrap(),
+                Ok(val) => in_out_clone.send_output_blocking(val).unwrap(),
+                Err(err) => {
+                    let err = format!("{:?}", err);
+                    response.write_all(err.as_bytes()).unwrap();
+                }
+            }
+
+            Ok(()) as super::Result<()>
+        })
+        .unwrap();
+
+    // Запись одного сообщения (копия PUT)
+    let in_out_clone = in_out.clone();
+    server
+        .fn_handler("/messages", Method::Post, move |mut request| {
+            info!("Post request");
+
+            let len = request.content_len().unwrap_or(0) as usize;
+            let mut buf = vec![0; len];
+            request.read_exact(&mut buf).unwrap();
+            let buf_str = String::from_utf8_lossy(&buf);
+
+            let mut response = request.into_ok_response().unwrap();
+            let msg = Message::deserialize(&buf_str);
+            match msg {
+                Ok(val) => in_out_clone.send_output_blocking(val).unwrap(),
                 Err(err) => {
                     let err = format!("{:?}", err);
                     response.write_all(err.as_bytes()).unwrap();

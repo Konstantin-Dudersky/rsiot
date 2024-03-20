@@ -24,4 +24,5 @@ where
     }
 }
 
+/// Компонент cmp_http_server_esp
 pub type Cmp<TMsg> = Component<Config<TMsg>, TMsg>;

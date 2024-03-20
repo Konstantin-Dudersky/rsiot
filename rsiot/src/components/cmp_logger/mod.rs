@@ -59,4 +59,5 @@ where
     Ok(())
 }
 
+/// Компонент cmp_logger
 pub type Cmp<TMessage> = Component<Config, TMessage>;

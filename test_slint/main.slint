@@ -1,14 +1,17 @@
 import { Button } from "std-widgets.slint";
 
 export global GlobalData {
-    in property <string> primary: "1235";
-    in property <string> secondary: "456";
+    in property <string> os_version: "OS";
+    in property <string> host_name: "hostname";
+
+    in property <string> eth0_mac: "nw_0_mac";
+    in property <string> wlan0_mac: "nw_0_mac";
 
     pure callback button(int);
 }
 
 global Style {
-    in property <length> font-size: 20pt;
+    in property <length> font-size: 16pt;
     in property <color> TEXT_COLOR: white;
 }
 
@@ -16,21 +19,86 @@ export component MainWindow inherits Window {
     width: 800px;
     height: 480px;
     background: black;
-    Text {
-        font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
-        text: GlobalData.primary;
+
+    Image {
+        x: 0px;
+        y: 416px;
+        width: 64px;
+        source: @image-url("./assets/logo_color.svg");
     }
 
-    Button {
-        width: 160px;
-        x: 256px;
-        y: 322px;
+    // host_name -----------------------------------------------------------------------------------
+    Text {
+        x: 8px;
+        y: 8px;
+        font-size: Style.font-size;
+        color: Style.TEXT_COLOR;
+        text: "Host:";
+    }
 
-        text: "Кнопка";
+    Text {
+        x: 72px;
+        y: 8px;
+        font-size: Style.font-size;
+        color: Style.TEXT_COLOR;
+        text: GlobalData.host_name;
+    }
 
-        clicked => {
-            GlobalData.button(42)
-        }
+    // os_version ----------------------------------------------------------------------------------
+    Text {
+        x: 8px;
+        y: 40px;
+        font-size: Style.font-size;
+        color: Style.TEXT_COLOR;
+        text: "OS:";
+    }
+
+    Text {
+        x: 72px;
+        y: 40px;
+        font-size: Style.font-size;
+        color: Style.TEXT_COLOR;
+        text: GlobalData.os_version;
+    }
+
+    // Networks ------------------------------------------------------------------------------------
+    Text {
+        x: 8px;
+        y: 72px;
+        font-size: Style.font-size;
+        color: Style.TEXT_COLOR;
+        text: "Networks:";
+    }
+
+    Text {
+        x: 40px;
+        y: 104px;
+        font-size: Style.font-size;
+        color: Style.TEXT_COLOR;
+        text: "eth0:";
+    }
+
+    Text {
+        x: 72px;
+        y: 136px;
+        font-size: Style.font-size;
+        color: Style.TEXT_COLOR;
+        text: GlobalData.eth0_mac;
+    }
+
+    Text {
+        x: 40px;
+        y: 168px;
+        font-size: Style.font-size;
+        color: Style.TEXT_COLOR;
+        text: "wlan0:";
+    }
+
+    Text {
+        x: 72px;
+        y: 200px;
+        font-size: Style.font-size;
+        color: Style.TEXT_COLOR;
+        text: GlobalData.wlan0_mac;
     }
 }

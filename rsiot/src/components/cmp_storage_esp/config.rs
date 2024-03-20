@@ -10,6 +10,7 @@ use serde::{de::DeserializeOwned, Serialize};
 
 use crate::message::{Message, MsgDataBound};
 
+/// Конфигурация cmp_storage_esp
 #[derive(Debug)]
 pub struct Config<TMsg, TStorageData>
 where

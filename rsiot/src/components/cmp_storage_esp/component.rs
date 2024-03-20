@@ -3,7 +3,7 @@ use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{
     executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::MsgDataBound,
+    message::{AuthPermissions, MsgDataBound},
 };
 
 use super::config::Config;
@@ -39,12 +39,14 @@ where
     async fn process(
         &self,
         config: Config<TMsg, TStorageData>,
-        input: CmpInOut<TMsg>,
+        in_out: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
-        fn_process(input, config)
+        let in_out = in_out.clone_with_new_id("cmp_storage_esp", AuthPermissions::FullAccess);
+        fn_process(in_out, config)
             .await
             .map_err(|err| ComponentError::Execution(err.to_string()))
     }
 }
 
+/// Компонент cmp_storage_esp
 pub type Cmp<TMsg, TStorageData> = Component<Config<TMsg, TStorageData>, TMsg>;
