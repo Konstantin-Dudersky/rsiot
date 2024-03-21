@@ -7,6 +7,14 @@ pub enum Custom {
     OsVesion(String),
     Eth0Mac(String),
     Wlan0Mac(String),
+    CpuUsage(String),
+    CpuTemp(String),
+
+    Memory(String),
+    Swap(String),
+
+    DiskDevSda1(String),
+    DiskDevSda2(String),
 }
 
 impl MsgDataBound for Custom {}

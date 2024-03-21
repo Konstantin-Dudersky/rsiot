@@ -3,7 +3,11 @@ use tokio::time::sleep;
 
 use crate::{executor::CmpInOut, message::MsgDataBound};
 
-use super::{Config, Error, SystemInfo, SystemInfoNetwork};
+use super::{Config, Error, SystemInfo, SystemInfoDisk, SystemInfoNetwork};
+
+const B_IN_MB: f32 = 1048576.0;
+
+const B_IN_GB: f32 = 1073741824.0;
 
 pub async fn fn_process<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> super::Result<()>
 where
@@ -36,31 +40,39 @@ where
     loop {
         sys.refresh_all();
 
-        println!("=> system:");
-        // RAM and swap information:
-        println!("total memory: {} bytes", sys.total_memory());
-        println!("used memory : {} bytes", sys.used_memory());
-        println!("total swap  : {} bytes", sys.total_swap());
-        println!("used swap   : {} bytes", sys.used_swap());
+        // Memory
+        system_info.memory.total_memory_mb = sys.total_memory() as f32 / B_IN_MB;
+        system_info.memory.used_memory_mb = sys.used_memory() as f32 / B_IN_MB;
+        system_info.memory.total_swap_mb = sys.total_swap() as f32 / B_IN_MB;
+        system_info.memory.used_swap_mb = sys.used_swap() as f32 / B_IN_MB;
 
-        // Number of CPUs:
-        println!("NB CPUs: {}", sys.cpus().len());
+        // CPU usage
+        let cpus = sys
+            .cpus()
+            .iter()
+            .map(|c| c.cpu_usage())
+            .collect::<Vec<f32>>();
+        system_info.cpu_usage = cpus;
 
-        // We display all disks' information:
-        println!("=> disks:");
-        let disks = Disks::new_with_refreshed_list();
-        for disk in &disks {
-            println!("{disk:?}");
+        for disk in Disks::new_with_refreshed_list().iter() {
+            let used_space_gb = (disk.total_space() - disk.available_space()) as f32 / B_IN_GB;
+            let total_space_gb = disk.total_space() as f32 / B_IN_GB;
+            let name = disk.name().to_str().unwrap().to_string();
+            system_info.disks.insert(
+                name.clone(),
+                SystemInfoDisk {
+                    name,
+                    used_space_gb,
+                    total_space_gb,
+                },
+            );
         }
 
-        // Network interfaces name, total data received and total data transmitted:
-
-        // Components temperature:
-        let components = Components::new_with_refreshed_list();
-        println!("=> components:");
-        for component in &components {
-            println!("{component:?}");
-        }
+        // температура компонентов
+        system_info.temperatures = Components::new_with_refreshed_list()
+            .iter()
+            .map(|c| (c.label().to_string(), c.temperature()))
+            .collect();
 
         let msgs = (config.fn_output)(&system_info);
         for msg in msgs {

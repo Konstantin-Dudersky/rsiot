@@ -3380,6 +3380,7 @@ version = "0.0.77"
 dependencies = [
  "anyhow",
  "async-trait",
+ "cfg_aliases 0.2.0",
  "chrono",
  "document-features",
  "embuild",

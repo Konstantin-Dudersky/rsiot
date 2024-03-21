@@ -61,6 +61,43 @@ async fn main_executor(slint_inst: Weak<MainWindow>) {
                             .set_wlan0_mac(SharedString::from(value.to_string()));
                     })
                     .unwrap(),
+                Custom::CpuUsage(value) => window
+                    .upgrade_in_event_loop(move |h| {
+                        h.global::<GlobalData>()
+                            .set_cpu_load(SharedString::from(value));
+                    })
+                    .unwrap(),
+                Custom::CpuTemp(value) => window
+                    .upgrade_in_event_loop(move |h| {
+                        h.global::<GlobalData>()
+                            .set_cpu_temp(SharedString::from(value));
+                    })
+                    .unwrap(),
+                // память
+                Custom::Memory(value) => window
+                    .upgrade_in_event_loop(move |h| {
+                        h.global::<GlobalData>()
+                            .set_memory(SharedString::from(value));
+                    })
+                    .unwrap(),
+                Custom::Swap(value) => window
+                    .upgrade_in_event_loop(move |h| {
+                        h.global::<GlobalData>().set_swap(SharedString::from(value));
+                    })
+                    .unwrap(),
+                // диски
+                Custom::DiskDevSda1(value) => window
+                    .upgrade_in_event_loop(move |h| {
+                        h.global::<GlobalData>()
+                            .set_dev_sda_1(SharedString::from(value));
+                    })
+                    .unwrap(),
+                Custom::DiskDevSda2(value) => window
+                    .upgrade_in_event_loop(move |h| {
+                        h.global::<GlobalData>()
+                            .set_dev_sda_2(SharedString::from(value));
+                    })
+                    .unwrap(),
             },
             _ => (),
         },
@@ -79,6 +116,34 @@ async fn main_executor(slint_inst: Weak<MainWindow>) {
                 Message::new_custom(Custom::Wlan0Mac(
                     info.networks.get("wlan0").unwrap().mac_address.clone(),
                 )),
+                Message::new_custom(Custom::CpuUsage(format!(
+                    "{:.1} | {:.1} | {:.1} | {:.1} %",
+                    info.cpu_usage[0], info.cpu_usage[1], info.cpu_usage[2], info.cpu_usage[3],
+                ))),
+                Message::new_custom(Custom::CpuTemp(format!(
+                    "{:.1} ℃",
+                    info.temperatures.get("cpu_thermal temp1").unwrap()
+                ))),
+                // память
+                Message::new_custom(Custom::Memory(format!(
+                    "{:.0} MB / {:.0} MB",
+                    info.memory.used_memory_mb, info.memory.total_memory_mb
+                ))),
+                Message::new_custom(Custom::Swap(format!(
+                    "{:.0} MB / {:.0} MB",
+                    info.memory.used_swap_mb, info.memory.total_swap_mb
+                ))),
+                // диски
+                Message::new_custom(Custom::DiskDevSda1(format!(
+                    "{:.1} GB / {:.1} GB",
+                    info.disks.get("/dev/sda1").unwrap().used_space_gb,
+                    info.disks.get("/dev/sda1").unwrap().total_space_gb
+                ))),
+                Message::new_custom(Custom::DiskDevSda2(format!(
+                    "{:.1} GB / {:.1} GB",
+                    info.disks.get("/dev/sda2").unwrap().used_space_gb,
+                    info.disks.get("/dev/sda2").unwrap().total_space_gb
+                ))),
             ]
         },
     };

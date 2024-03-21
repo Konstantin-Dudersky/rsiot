@@ -9,6 +9,6 @@ mod system_info;
 pub use component::Cmp;
 pub use config::Config;
 pub use error::Error;
-pub use system_info::{SystemInfo, SystemInfoNetwork};
+pub use system_info::{SystemInfo, SystemInfoDisk, SystemInfoMemory, SystemInfoNetwork};
 
 type Result<T> = std::result::Result<T, Error>;
