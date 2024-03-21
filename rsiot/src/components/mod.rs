@@ -63,6 +63,10 @@ pub mod cmp_modbus_client;
 #[cfg(feature = "cmp_plc")]
 pub mod cmp_plc;
 
+#[cfg(feature = "cmp_raspberrypi")]
+#[cfg(aarch64__unknown__linux__gnu)]
+pub mod cmp_raspberrypi_gpio;
+
 #[cfg(feature = "cmp_redis_client")]
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub mod cmp_redis_client;

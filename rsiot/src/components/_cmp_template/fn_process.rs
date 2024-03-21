@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use crate::{executor::CmpInOut, message::MsgDataBound};
 
 use super::Config;
