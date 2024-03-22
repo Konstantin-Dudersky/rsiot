@@ -15,7 +15,7 @@ tracing-subscriber = "*"
 
 # slint = "*"
 slint = { version = "*", features = [
-    "backend-linuxkms-noseat",
+    "backend-linuxkms",
     "renderer-skia",
 ] }
 

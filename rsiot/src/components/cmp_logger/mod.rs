@@ -61,3 +61,5 @@ where
 
 /// Компонент cmp_logger
 pub type Cmp<TMessage> = Component<Config, TMessage>;
+
+// TODO - функция фильтрации fn_input

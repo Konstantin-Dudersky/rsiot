@@ -1,8 +1,16 @@
 //! Пример работы с GPIO компьютера Raspberry Pi
 //!
+//! Скомпилировать и загрузить на целевую систему:
+//!
 //! ```bash
 //! cargo build --example cmp_raspberrypi --target="aarch64-unknown-linux-gnu" --features="cmp_raspberrypi" --release; scp target/aarch64-unknown-linux-gnu/release/examples/cmp_raspberrypi user@target:/home/user/
-//! ````
+//! ```
+//!
+//! Запустить на целевой системе:
+//!
+//! ```bash
+//! sudo ./cmp_raspberry
+//! ```
 
 mod message;
 
@@ -52,7 +60,7 @@ async fn main() {
 
     let mut flag = false;
     let config_inject_periodic = cmp_inject_periodic::Config {
-        period: Duration::from_secs(2),
+        period: Duration::from_secs(5),
         fn_periodic: move || {
             let msg = Message::new_custom(Custom::SetOutput2(flag));
             flag = !flag;
