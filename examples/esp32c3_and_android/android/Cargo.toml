@@ -1,29 +1,44 @@
 [package]
-name = "android-ui"
-version = "0.0.0"
+name = "test_slint_android"
+version = "0.1.0"
 edition = "2021"
 
+[lib]
+crate-type = ["cdylib"]
+
 [dependencies]
-leptos = { version = "0.6.9", features = ["csr"] }
-wasm-bindgen = "0.2"
-wasm-bindgen-futures = "0.4"
-js-sys = "0.3"
-serde = { version = "1", features = ["derive"] }
-serde-wasm-bindgen = "0.6"
-tokio = { version = "*", features = ["macros", "rt"] }
-rsiot = { path = "../../../rsiot", features = [
-    "single-thread",
-    "logging",
-    "cmp_http_client_wasm",
-    "cmp_leptos",
-    "cmp_webstorage",
+futures = "*"
+rsiot = { path = "../rsiot", features = [
+    "executor",
+    "cmp_slint",
+    "cmp_http_client",
 ] }
-console_error_panic_hook = "0.1.7"
-url = { version = "*" }
-tracing = { version = "*" }
+tokio = { version = "*", features = ["rt-multi-thread", "macros", "time"] }
+tracing = "*"
+tracing-subscriber = "*"
+openssl = { version = "*", features = ["vendored"] }
 serde_json = { version = "*" }
+url = { version = "*" }
+serde = { version = "*", features = ["derive"] }
 
-message = { path = "../message" }
+slint = { version = "1.5", features = ["backend-android-activity-05"] }
 
-[workspace]
-members = ["src-tauri"]
+[build-dependencies]
+slint-build = "1.5.0"
+
+
+[package.metadata.android]
+# Specifies the array of targets to build for.
+build_targets = [
+    # "armv7-linux-androideabi",
+    "aarch64-linux-android",
+    # "i686-linux-android",
+    "x86_64-linux-android",
+]
+
+
+[[package.metadata.android.uses_permission]]
+name = "android.permission.INTERNET"
+
+[[package.metadata.android.uses_permission]]
+name = "android.permission.ACCESS_NETWORK_STATE"

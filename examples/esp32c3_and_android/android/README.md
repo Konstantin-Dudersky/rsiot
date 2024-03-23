@@ -1,7 +1,7 @@
-# Tauri + Leptos
+Пример связи приложения на Android и микроконтроллера ESP32-C3.
 
-This template should help get you started developing with Tauri and Leptos.
+Сборка Android:
 
-## Recommended IDE Setup
-
-[VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer).
+```bash
+cargo apk run --target aarch64-linux-android --lib
+```
