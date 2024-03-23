@@ -8,7 +8,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 futures = "*"
-rsiot = { path = "../rsiot", features = [
+rsiot = { path = "../../../rsiot", features = [
     "executor",
     "cmp_slint",
     "cmp_http_client",
@@ -33,7 +33,7 @@ build_targets = [
     # "armv7-linux-androideabi",
     "aarch64-linux-android",
     # "i686-linux-android",
-    "x86_64-linux-android",
+    # "x86_64-linux-android",
 ]
 
 
@@ -42,3 +42,6 @@ name = "android.permission.INTERNET"
 
 [[package.metadata.android.uses_permission]]
 name = "android.permission.ACCESS_NETWORK_STATE"
+
+[package.metadata.android.sdk]
+target_sdk_version = 34

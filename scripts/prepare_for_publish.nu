@@ -30,6 +30,17 @@ let targets = [
         add_feat: ["", "single-thread"],
     },
     {
+        name: "aarch64-linux-android",
+        toolchain: "+stable",
+        features: [
+            "cmp_http_client",
+            "cmp_slint",
+            "executor",
+            "logging",
+        ],
+        add_feat: ["", "single-thread"],
+    },
+    {
         name: "aarch64-unknown-linux-gnu",
         toolchain: "+stable",
         features: [
@@ -53,6 +64,7 @@ let targets = [
     },
     {
         name: "riscv32imc-esp-espidf",
+        # TODO - https://github.com/rust-lang/libc/issues/3615
         toolchain: "+nightly-2024-02-01-x86_64-unknown-linux-gnu",
         features: [
             "cmp_esp",
@@ -92,13 +104,13 @@ for target in $targets {
 
 # cargo doc ----------------------------------------------------------------------------------------
 
-rm -rf ../../rsiot-docs/rustdoc
+rm -rf ../../rsiot-docs/src/rustdoc
 
 for target in $targets {
     print_header $"cargo doc - ($target.name)"
     
     # create folder
-    let command = $"mkdir ../../rsiot-docs/rustdoc/($target.name)"
+    let command = $"mkdir ../../rsiot-docs/src/rustdoc/($target.name)"
     nu -c $command;
     
     # combine features
@@ -109,7 +121,7 @@ for target in $targets {
     nu -c $command;
 
     # copy files
-    let command = $"cp -r target/($target.name)/doc/* ../../rsiot-docs/rustdoc/($target.name)"
+    let command = $"cp -r target/($target.name)/doc/* ../../rsiot-docs/src/rustdoc/($target.name)"
     nu -c $command;
 }
 

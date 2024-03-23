@@ -29,7 +29,11 @@ pub mod cmp_esp_wifi;
 pub mod cmp_external_fn_process;
 
 #[cfg(feature = "cmp_http_client")]
-#[cfg(any(aarch64__unknown__linux__gnu, x86_64__unknown__linux__gnu))]
+#[cfg(any(
+    aarch64_linux_android,
+    aarch64__unknown__linux__gnu,
+    x86_64__unknown__linux__gnu
+))]
 pub mod cmp_http_client;
 
 #[cfg(feature = "cmp_http_client_wasm")]
@@ -72,7 +76,11 @@ pub mod cmp_raspberrypi_gpio;
 pub mod cmp_redis_client;
 
 #[cfg(feature = "cmp_slint")]
-#[cfg(any(aarch64__unknown__linux__gnu, x86_64__unknown__linux__gnu))]
+#[cfg(any(
+    aarch64_linux_android,
+    aarch64__unknown__linux__gnu,
+    x86_64__unknown__linux__gnu
+))]
 pub mod cmp_slint;
 
 #[cfg(feature = "cmp_esp")]
