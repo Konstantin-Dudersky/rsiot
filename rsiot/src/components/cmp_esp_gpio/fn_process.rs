@@ -28,7 +28,7 @@ async fn gpio_input<TMsg>(config_input: ConfigGpioInput<TMsg>, in_out: CmpInOut<
 where
     TMsg: MsgDataBound,
 {
-    let mut pin = PinDriver::input(config_input.driver).unwrap();
+    let mut pin = PinDriver::input(config_input.peripherals).unwrap();
     loop {
         let level = pin.get_level();
         let level = gpio_level_to_bool(&level);
@@ -42,7 +42,7 @@ async fn gpio_output<TMsg>(config_output: ConfigGpioOutput<TMsg>, mut in_out: Cm
 where
     TMsg: MsgDataBound,
 {
-    let mut pin = PinDriver::output(config_output.driver).unwrap();
+    let mut pin = PinDriver::output(config_output.peripherals).unwrap();
     while let Ok(msg) = in_out.recv_input().await {
         let level = (config_output.fn_input)(msg);
         let Some(level) = level else { continue };

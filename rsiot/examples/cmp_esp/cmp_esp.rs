@@ -9,7 +9,7 @@ async fn main() {
 
     use esp_idf_svc::{
         eventloop::EspSystemEventLoop, hal::peripherals::Peripherals, log::EspLogger,
-        sys::link_patches, wifi::EspWifi,
+        sys::link_patches,
     };
     use tokio::task::LocalSet;
     use tracing::Level;
@@ -70,18 +70,18 @@ async fn main() {
 
     // wifi
     let wifi_config = cmp_esp_wifi::Config {
+        peripherals: peripherals.modem,
         event_loop: event_loop.clone(),
-        driver: EspWifi::new(peripherals.modem, event_loop.clone(), None).unwrap(),
     };
 
     // GPIO
     let gpio_config = cmp_esp_gpio::Config {
         inputs: vec![cmp_esp_gpio::ConfigGpioInput {
-            driver: peripherals.pins.gpio9.into(),
+            peripherals: peripherals.pins.gpio9.into(),
             fn_output: |value| Message::new_custom(Custom::BootButton(value)),
         }],
         outputs: vec![cmp_esp_gpio::ConfigGpioOutput {
-            driver: peripherals.pins.gpio0.into(),
+            peripherals: peripherals.pins.gpio0.into(),
             fn_input: |msg| match msg.data {
                 MsgData::Custom(Custom::Relay0(value)) => Some(value),
                 _ => None,

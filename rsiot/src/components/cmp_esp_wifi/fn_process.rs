@@ -7,12 +7,14 @@ use crate::{executor::CmpInOut, message::MsgDataBound};
 
 use super::Config;
 
-pub async fn fn_process<TMsg>(mut config: Config, _in_out: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg>(config: Config, _in_out: CmpInOut<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound,
 {
+    let mut driver = EspWifi::new(config.peripherals, config.event_loop.clone(), None).unwrap();
+
     wifi_setup(
-        &mut config.driver,
+        &mut driver,
         config.event_loop,
         // Configuration::Mixed(
         //     ClientConfiguration {

@@ -20,7 +20,7 @@ where
     TMsg: MsgDataBound,
 {
     /// Пин
-    pub driver: AnyInputPin,
+    pub peripherals: AnyInputPin,
 
     /// Функция преобразования значения пина в сообщение
     pub fn_output: fn(bool) -> Message<TMsg>,
@@ -32,7 +32,7 @@ where
     TMsg: MsgDataBound,
 {
     /// Пин
-    pub driver: AnyOutputPin,
+    pub peripherals: AnyOutputPin,
 
     /// Функция преобразования входящих сообщений в сигналы управления
     ///
