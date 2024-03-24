@@ -1,5 +1,6 @@
 use url::Url;
 
+/// Конфигурация Timescaledb
 #[derive(Clone, Debug)]
 pub struct Config {
     /// Строка подключения к БД

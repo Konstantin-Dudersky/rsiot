@@ -26,4 +26,5 @@ where
     }
 }
 
+/// Компонент cmp_esp_wifi
 pub type Cmp<TPin, TMsg> = Component<Config<TPin, TMsg>, TMsg>;

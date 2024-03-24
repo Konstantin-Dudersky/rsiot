@@ -26,4 +26,5 @@ where
     }
 }
 
+/// Компонент cmp_timescaledb
 pub type Cmp<TMsg> = Component<ConfigAlias, TMsg>;

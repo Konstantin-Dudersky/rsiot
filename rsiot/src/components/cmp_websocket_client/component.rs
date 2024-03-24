@@ -29,4 +29,5 @@ where
     }
 }
 
+/// Компонент cmp_websocket_client
 pub type Cmp<TMessage> = Component<ConfigAlias<TMessage>, TMessage>;

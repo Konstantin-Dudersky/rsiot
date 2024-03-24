@@ -14,6 +14,7 @@ pub type FnInput<TMsg, TMessageChannel> =
     fn(&Message<TMsg>) -> anyhow::Result<Option<Vec<ConfigFnInputItem<TMessageChannel>>>>;
 pub type FnOutput<TMsg> = fn(&str) -> anyhow::Result<Option<Vec<Message<TMsg>>>>;
 
+/// Конфигурация cmp_redis_client
 #[derive(Clone, Debug)]
 pub struct Config<TMsg, TMessageChannel>
 where
@@ -146,12 +147,16 @@ where
     pub fn_output: FnOutput<TMsg>,
 }
 
+/// Структура с информацией для отправки данных в Redis
 pub struct ConfigFnInputItem<TMessageChannel>
 where
     TMessageChannel: IMessageChannel,
 {
+    /// Канал Pub/Sub, в котором опубликовать сообщение
     pub channel: TMessageChannel,
+    /// Ключ для сохранения в кеше Redis
     pub key: String,
+    /// Значение для сохранения - само сообщение
     pub value: String,
 }
 

@@ -1,13 +1,9 @@
 use esp_idf_svc::{eventloop::EspSystemEventLoop, wifi::EspWifi};
 
-use crate::message::{Message, MsgDataBound};
-
-pub struct Config<TMsg>
-where
-    TMsg: MsgDataBound,
-{
-    pub fn_input: fn(Message<TMsg>) -> Option<String>,
-    pub fn_output: fn(String) -> Vec<Message<TMsg>>,
+/// Конфигурация cmp_esp_wifi
+pub struct Config {
+    /// Ссылка на драйвер для подключения
     pub driver: EspWifi<'static>,
+    /// Ссылка на цикл событий
     pub event_loop: EspSystemEventLoop,
 }

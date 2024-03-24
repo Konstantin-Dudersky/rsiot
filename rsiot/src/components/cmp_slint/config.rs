@@ -30,8 +30,8 @@ where
     fn clone(&self) -> Self {
         Self {
             instance: self.instance.clone(),
-            fn_input: self.fn_input.clone(),
-            fn_output: self.fn_output.clone(),
+            fn_input: self.fn_input,
+            fn_output: self.fn_output,
         }
     }
 }

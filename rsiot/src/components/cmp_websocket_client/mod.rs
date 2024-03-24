@@ -1,3 +1,5 @@
+//!  Компонент клиента websocket
+
 mod component;
 mod config;
 mod error;

@@ -1,5 +1,6 @@
 use crate::message::Message;
 
+/// Конфигурация cmp_surrealdb
 #[derive(Clone, Debug)]
 pub struct Config<TMsg> {
     /// localhost

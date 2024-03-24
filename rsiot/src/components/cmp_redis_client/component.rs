@@ -30,5 +30,6 @@ where
     }
 }
 
+/// Компонент cmp_redis_client
 pub type Cmp<TMessage, TMessageChannel> =
     Component<ConfigAlias<TMessage, TMessageChannel>, TMessage>;

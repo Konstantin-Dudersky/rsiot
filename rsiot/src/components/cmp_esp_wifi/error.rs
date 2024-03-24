@@ -1,5 +1,6 @@
 use crate::executor::ComponentError;
 
+/// Ошибки cmp_esp_wifi
 #[derive(Debug, thiserror::Error)]
 pub enum Error {}
 

@@ -56,9 +56,7 @@ async fn main() {
     let event_loop = EspSystemEventLoop::take().unwrap();
 
     // wifi
-    let wifi_config = cmp_esp_wifi::Config::<Custom> {
-        fn_input: |_| None,
-        fn_output: |_| vec![],
+    let wifi_config = cmp_esp_wifi::Config {
         event_loop: event_loop.clone(),
         driver: EspWifi::new(peripherals.modem, event_loop.clone(), None).unwrap(),
     };

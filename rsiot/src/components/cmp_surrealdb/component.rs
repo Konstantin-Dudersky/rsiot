@@ -27,4 +27,5 @@ where
     }
 }
 
+/// Компонент cmp_surrealdb
 pub type Cmp<TMsg> = Component<super::Config<TMsg>, TMsg>;

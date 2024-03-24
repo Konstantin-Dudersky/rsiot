@@ -27,4 +27,5 @@ where
     }
 }
 
+/// Компонент cmp_websocker_server
 pub type Cmp<TMessage> = Component<ConfigAlias<TMessage>, TMessage>;

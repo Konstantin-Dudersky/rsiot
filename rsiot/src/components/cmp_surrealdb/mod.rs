@@ -1,3 +1,5 @@
+//! Компонент для взаимодействия с базой данных SurrealDB
+
 mod component;
 mod config;
 mod error;
