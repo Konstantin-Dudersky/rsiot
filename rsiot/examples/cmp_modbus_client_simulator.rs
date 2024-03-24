@@ -59,14 +59,14 @@ async fn main() -> anyhow::Result<()> {
             request: Request::ReadHoldingRegisters(0, 1),
             fn_on_success: |data| {
                 let mut msgs = vec![];
-                if let Response::U16(data) = data {
+                if let Response::WordVector(data) = data {
                     msgs.push(Message::new_custom(Messages::ValueRead(data[0] as f64)));
                 }
                 msgs
             },
             fn_on_failure: Vec::new,
         }],
-        client_type: ClientType::Tcp(TcpClientType {
+        connection_config: ClientType::Tcp(TcpClientType {
             host: IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)),
             port: 5020,
         }),

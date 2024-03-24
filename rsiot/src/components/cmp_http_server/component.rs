@@ -23,4 +23,5 @@ where
     }
 }
 
+/// Компонент cmp_http_server
 pub type Cmp<TMsg> = Component<ConfigAlias<TMsg>, TMsg>;

@@ -53,7 +53,7 @@ async fn task_main<TMessage>(
 where
     TMessage: MsgDataBound + 'static,
 {
-    let ctx = match config.client_type {
+    let ctx = match config.connection_config {
         config::ClientType::Tcp(tcp_config) => {
             let socket_addr = SocketAddr::new(tcp_config.host, tcp_config.port);
             debug!("Try to establish connection to socket: {:?}", socket_addr);
@@ -156,7 +156,7 @@ async fn modbus_request(
         config::Request::ReadCoils(_, _) => todo!(),
         config::Request::ReadHoldingRegisters(start_address, count) => {
             let response = lock.read_holding_registers(*start_address, *count).await?;
-            Ok(config::Response::U16(response))
+            Ok(config::Response::WordVector(response))
         }
         config::Request::WriteSingleRegister(start_address, value) => {
             lock.write_single_register(*start_address, *value).await?;

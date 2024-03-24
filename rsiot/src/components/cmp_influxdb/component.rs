@@ -30,4 +30,5 @@ where
     }
 }
 
+/// Компонент cmp_influxdb
 pub type Cmp<TMsg> = Component<ConfigAlias<TMsg>, TMsg>;

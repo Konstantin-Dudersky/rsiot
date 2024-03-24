@@ -8,6 +8,7 @@ use crate::message::*;
 
 use super::LineProtocolItem;
 
+/// Конфигурация cmp_influxdb
 #[derive(Clone, Debug)]
 pub struct Config<TMsg> {
     /// # Примеры
@@ -16,9 +17,17 @@ pub struct Config<TMsg> {
     /// host: String::from("influxdb"),
     /// ```
     pub host: String,
+
+    /// Порт базы данных
     pub port: u16,
+
+    /// Огранизация
     pub org: String,
+
+    /// Bucket
     pub bucket: String,
+
+    /// Токен
     pub token: String,
 
     /// Функция преобразования сообщения в строки протокола InfluxDB

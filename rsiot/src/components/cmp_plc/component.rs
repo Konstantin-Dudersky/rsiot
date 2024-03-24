@@ -36,4 +36,5 @@ where
     }
 }
 
+/// Компонент cmp_plc
 pub type Cmp<TMsg, I, Q, S> = Component<Config<TMsg, I, Q, S>, TMsg>;

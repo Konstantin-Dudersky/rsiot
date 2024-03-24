@@ -2,12 +2,14 @@ use std::net::IpAddr;
 
 use super::{InputConfig, PeriodicConfig};
 
+/// Конфигурация cmp_modbus_client
 #[derive(Clone, Debug)]
 pub struct Config<TMessage> {
     /// true - разрешение работы
     pub enabled: bool,
 
-    pub client_type: ClientType,
+    /// Настройки подключения к опрашиваемому устройтву
+    pub connection_config: ClientType,
 
     /// Адрес подчиненного устройства (обычно 1)
     pub unit_id: u8,

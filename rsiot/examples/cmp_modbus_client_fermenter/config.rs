@@ -29,7 +29,7 @@ pub fn config() -> Config<Data> {
             fn_on_success: fn_on_success_1,
             fn_on_failure: || vec![Message::new_custom(Data::rTempCSSensorTValue_Get(0.0))],
         }],
-        client_type: ClientType::Tcp(TcpClientType {
+        connection_config: ClientType::Tcp(TcpClientType {
             host: IpAddr::V4(Ipv4Addr::new(10, 0, 6, 10)),
             port: 502,
         }),
@@ -39,7 +39,7 @@ pub fn config() -> Config<Data> {
 #[allow(non_snake_case)]
 fn fn_on_success_1(data: &Response) -> Vec<Message<Data>> {
     let data = match data {
-        Response::U16(data) => data,
+        Response::WordVector(data) => data,
         _ => return vec![],
     };
     let wWordState1_Get = data[0];

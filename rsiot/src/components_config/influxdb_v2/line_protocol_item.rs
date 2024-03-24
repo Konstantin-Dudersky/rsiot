@@ -4,12 +4,18 @@ use super::ValueType;
 
 /// Строка записи в данных в базу через HTTP API
 pub struct LineProtocolItem {
+    /// measurement
     pub measurement: String,
+
+    /// value
     pub value: ValueType,
+
+    /// Метка времени
     pub ts: Timestamp,
 }
 
 impl LineProtocolItem {
+    /// Новая строка записи
     pub fn new(measurement: &str, value: ValueType, ts: &Timestamp) -> Self {
         Self {
             measurement: measurement.into(),

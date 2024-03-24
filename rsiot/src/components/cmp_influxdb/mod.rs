@@ -1,3 +1,5 @@
+//! Компонент для взаимодействия с InfluxDB
+
 mod component;
 mod config;
 mod error;

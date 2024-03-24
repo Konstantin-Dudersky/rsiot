@@ -1,7 +1,9 @@
 use crate::executor::ComponentError;
 
+/// Ошибки cmp_plc
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    /// CmpOutput
     #[error(transparent)]
     CmpOutput(ComponentError),
 }

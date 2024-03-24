@@ -1,4 +1,5 @@
 #[allow(non_camel_case_types)]
+#[allow(missing_docs)]
 pub enum ValueType {
     bool(bool),
     f32(f32),
