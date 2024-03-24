@@ -38,7 +38,7 @@ async fn main() -> anyhow::Result<()> {
         database: "rsiot".into(),
         init_script: include_str!("./init.surql").into(),
         input_config: vec![InputConfig {
-            fn_input: |msg| match msg.get_data()? {
+            fn_input: |msg| match msg.get_custom_data()? {
                 Custom::Request(content) => {
                     let value = content;
                     let query = include_str!("./new_value_int.surql");

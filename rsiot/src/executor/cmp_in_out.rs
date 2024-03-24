@@ -10,10 +10,13 @@ use super::{
     Cache, ComponentError,
 };
 
+/// Подключение компонента к внутренней шине сообщений исполнителя
 #[derive(Debug)]
 pub struct CmpInOut<TMsg> {
     input: CmpInput<TMsg>,
     output: CmpOutput<TMsg>,
+    /// Ссылка на кэш
+    /// TODO - проверить, скорее всего можно сделать приватным
     pub cache: Cache<TMsg>,
     name: String,
     id: Uuid,
@@ -25,6 +28,7 @@ impl<TMsg> CmpInOut<TMsg>
 where
     TMsg: MsgDataBound,
 {
+    /// Создание подключения к внутренней шине сообщений исполнителя
     pub fn new(
         input: CmpInput<TMsg>,
         output: CmpOutput<TMsg>,
@@ -46,6 +50,10 @@ where
         }
     }
 
+    /// Клонировать и присвоить новый идентификатор
+    ///
+    /// Необходимо вызывать в начале исполнения компонента, чтобы у каждого компонента был
+    /// уникальный id
     pub fn clone_with_new_id(&self, name: &str, auth_perm: AuthPermissions) -> Self {
         let name = format!("{}::{}", self.name, name);
         let id = MsgTrace::generate_uuid();

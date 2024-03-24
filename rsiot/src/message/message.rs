@@ -7,11 +7,16 @@ use uuid::Uuid;
 
 use super::{MsgData, MsgDataBound, MsgTrace, Timestamp};
 
+/// Сообщение
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Message<TCustom> {
+    /// Данные
     pub data: MsgData<TCustom>,
+    /// Ключ
     pub key: String,
+    /// Метка времени
     pub ts: Timestamp,
+    /// Путь, по котором передавалось сообщение
     pub trace: MsgTrace,
 }
 
@@ -19,6 +24,7 @@ impl<TCustom> Message<TCustom>
 where
     TCustom: MsgDataBound,
 {
+    /// Создать новое сообщение
     pub fn new(data: MsgData<TCustom>) -> Self {
         let key = define_key(&data);
         Self {
@@ -29,6 +35,7 @@ where
         }
     }
 
+    /// Создать новое сообщение типа `MsgData::Custom`
     pub fn new_custom(custom_data: TCustom) -> Self {
         let data = MsgData::Custom(custom_data);
         let key = define_key(&data);
@@ -40,15 +47,17 @@ where
         }
     }
 
-    pub fn get_data(&self) -> Option<TCustom> {
+    /// Возвращает данные сообщения, если тип сообщения `MsgData::Custom`
+    pub fn get_custom_data(&self) -> Option<TCustom> {
         match &self.data {
             MsgData::System(_) => None,
             MsgData::Custom(data) => Some(data.clone()),
         }
     }
 
+    /// Добавить запись пути
     pub fn add_trace_item(&mut self, id: &Uuid, name: &str) {
-        self.trace.insert(*id, name.to_string())
+        self.trace.add_trace_item(*id, name.to_string())
     }
 
     /// Проверяем, что в трейсе сообщения присутсвует компонент с заданным id.
@@ -56,7 +65,7 @@ where
     /// Полезно для предотварщения зацикливания сообщений, чтобы данный компонент не обрабатывал
     /// сообщения, которые он же и сгенерировал
     pub fn contains_trace_item(&self, id: &Uuid) -> bool {
-        self.trace.contains_key(id)
+        self.trace.contains_trace_item(id)
     }
 }
 

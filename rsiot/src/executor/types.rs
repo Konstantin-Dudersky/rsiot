@@ -4,7 +4,8 @@ use crate::message::*;
 
 use super::ComponentError;
 
-pub type ComponentResult = Result<(), ComponentError>;
+/// Тип возвращаемого значения функции `process` компонента
+pub type CmpResult = Result<(), ComponentError>;
 pub(crate) type CmpInput<TMsg> = broadcast::Receiver<Message<TMsg>>;
 pub(crate) type CmpOutput<TMsg> = mpsc::Sender<Message<TMsg>>;
 

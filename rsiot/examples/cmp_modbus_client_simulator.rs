@@ -47,7 +47,7 @@ async fn main() -> anyhow::Result<()> {
         enabled: true,
         unit_id: 1,
         input_config: vec![InputConfig {
-            fn_input: |msg| match msg.get_data()? {
+            fn_input: |msg| match msg.get_custom_data()? {
                 Messages::ValueWrite(val) => Some(Request::WriteSingleRegister(0, val as u16)),
                 Messages::ValueRead(_) => None,
             },

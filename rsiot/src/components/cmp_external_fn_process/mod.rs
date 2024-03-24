@@ -17,16 +17,15 @@ use futures::future::LocalBoxFuture;
 use futures::future::BoxFuture;
 
 use crate::{
-    executor::{CmpInOut, Component, ComponentError, ComponentResult, IComponentProcess},
+    executor::{CmpInOut, CmpResult, Component, ComponentError, IComponentProcess},
     message::*,
 };
 
 #[cfg(feature = "single-thread")]
-type FnProcess<TMsg> = Box<dyn Fn(CmpInOut<TMsg>) -> LocalBoxFuture<'static, ComponentResult>>;
+type FnProcess<TMsg> = Box<dyn Fn(CmpInOut<TMsg>) -> LocalBoxFuture<'static, CmpResult>>;
 
 #[cfg(not(feature = "single-thread"))]
-type FnProcess<TMsg> =
-    Box<dyn Fn(CmpInOut<TMsg>) -> BoxFuture<'static, ComponentResult> + Send + Sync>;
+type FnProcess<TMsg> = Box<dyn Fn(CmpInOut<TMsg>) -> BoxFuture<'static, CmpResult> + Send + Sync>;
 
 pub struct Config<TMsg> {
     /// Внешняя функция для выполнения
@@ -155,19 +154,17 @@ mod tests {
 
         use crate::{
             components::cmp_external_fn_process,
-            executor::{CmpInOut, ComponentResult},
+            executor::{CmpInOut, CmpResult},
             message::{example_message::*, *},
         };
 
-        fn fn_process_wrapper<TMsg>(
-            in_out: CmpInOut<TMsg>,
-        ) -> LocalBoxFuture<'static, ComponentResult>
+        fn fn_process_wrapper<TMsg>(in_out: CmpInOut<TMsg>) -> LocalBoxFuture<'static, CmpResult>
         where
             TMsg: MsgDataBound + 'static,
         {
             Box::pin(async { fn_process(in_out).await })
         }
-        async fn fn_process<TMsg>(_in_out: CmpInOut<TMsg>) -> ComponentResult {
+        async fn fn_process<TMsg>(_in_out: CmpInOut<TMsg>) -> CmpResult {
             loop {
                 info!("External fn process");
                 sleep(Duration::from_secs(2)).await;
@@ -190,18 +187,18 @@ mod tests {
 
         use crate::{
             components::cmp_external_fn_process,
-            executor::{CmpInOut, ComponentResult},
+            executor::{CmpInOut, CmpResult},
             message::{example_message::*, *},
         };
 
-        fn fn_process_wrapper<TMsg>(in_out: CmpInOut<TMsg>) -> BoxFuture<'static, ComponentResult>
+        fn fn_process_wrapper<TMsg>(in_out: CmpInOut<TMsg>) -> BoxFuture<'static, CmpResult>
         where
             TMsg: MsgDataBound + 'static,
         {
             Box::pin(async { fn_process(in_out).await })
         }
 
-        async fn fn_process<TMsg>(_in_out: CmpInOut<TMsg>) -> ComponentResult {
+        async fn fn_process<TMsg>(_in_out: CmpInOut<TMsg>) -> CmpResult {
             loop {
                 info!("External fn process");
                 sleep(Duration::from_secs(2)).await;

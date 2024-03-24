@@ -71,7 +71,7 @@ async fn main() -> anyhow::Result<()> {
         },
         requests_input: vec![http_client_config::RequestInput {
             fn_input: |msg| {
-                let msg = msg.get_data()?;
+                let msg = msg.get_custom_data()?;
                 match msg {
                     Data::HttpMethodsGetOnEventRequest(_) => {
                         let param = http_client_config::HttpParam::Get {

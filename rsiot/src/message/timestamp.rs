@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 pub struct Timestamp(pub DateTime<FixedOffset>);
 
 impl Timestamp {
+    /// Преобразовать в строку с заданным форматом
     pub fn format(&self, fmt: &str) -> String {
         self.0.format(fmt).to_string()
     }
@@ -17,6 +18,7 @@ impl Timestamp {
         self.0.to_rfc3339()
     }
 
+    /// Возвращает время Unix с наносекундной точностью
     pub fn timestamp_nanos_opt(&self) -> Option<i64> {
         self.0.timestamp_nanos_opt()
     }

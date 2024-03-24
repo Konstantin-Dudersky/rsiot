@@ -5,6 +5,7 @@ pub trait IMessageChannel
 where
     Self: Clone + Debug + Send,
 {
+    /// Преобразование в строку
     fn to_string(&self) -> String {
         format!("{:?}", self)
     }

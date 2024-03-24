@@ -8,7 +8,7 @@ use uuid::Uuid;
 
 use crate::message::{system_messages::*, *};
 
-use super::{error::ComponentError, types::FnAuth, Cache, CmpInOut, IComponent};
+use super::{component::IComponent, error::ComponentError, types::FnAuth, Cache, CmpInOut};
 
 /// Запуск коллекции компонентов в работу
 ///
@@ -190,7 +190,7 @@ where
 
 /// Сохраняем сообщение в кеше
 ///
-/// Возвращает Option<Message>:
+/// Возвращает `Option<Message>`:
 /// - None - сообщение не нужно отправлять дальше
 /// - Some(Message) - сообщение нужно отправить на вход всех компонентов
 async fn save_msg_in_cache<TMsg>(msg: Message<TMsg>, cache: &Cache<TMsg>) -> Option<Message<TMsg>>

@@ -1,9 +1,17 @@
+/// Тип сохраняемого значения
 #[allow(non_camel_case_types)]
 #[derive(Debug, Clone)]
 pub enum ValueType {
+    /// bool
     bool(bool),
+
+    /// f64
     f64(f64),
+
+    /// String
     String(String),
+
+    /// u64
     u64(u64),
 }
 

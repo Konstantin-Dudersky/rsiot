@@ -20,11 +20,11 @@ async fn main() {
 
     use rsiot::{
         components::cmp_external_fn_process,
-        executor::{CmpInOut, ComponentExecutor, ComponentExecutorConfig, ComponentResult},
+        executor::{CmpInOut, CmpResult, ComponentExecutor, ComponentExecutorConfig},
         message::{example_message::*, *},
     };
 
-    async fn fn_process<TMsg>(_input: CmpInOut<TMsg>) -> ComponentResult {
+    async fn fn_process<TMsg>(_input: CmpInOut<TMsg>) -> CmpResult {
         loop {
             info!("External fn process");
             sleep(Duration::from_secs(2)).await;
@@ -32,7 +32,7 @@ async fn main() {
     }
 
     #[cfg(feature = "single-thread")]
-    fn fn_process_wrapper<TMsg>(input: CmpInOut<TMsg>) -> LocalBoxFuture<'static, ComponentResult>
+    fn fn_process_wrapper<TMsg>(input: CmpInOut<TMsg>) -> LocalBoxFuture<'static, CmpResult>
     where
         TMsg: MsgDataBound + 'static,
     {
@@ -40,7 +40,7 @@ async fn main() {
     }
 
     #[cfg(not(feature = "single-thread"))]
-    fn fn_process_wrapper<TMsg>(input: CmpInOut<TMsg>) -> BoxFuture<'static, ComponentResult>
+    fn fn_process_wrapper<TMsg>(input: CmpInOut<TMsg>) -> BoxFuture<'static, CmpResult>
     where
         TMsg: MsgDataBound + 'static,
     {

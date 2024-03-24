@@ -9,7 +9,7 @@ mod types;
 
 pub use cache::Cache;
 pub use cmp_in_out::CmpInOut;
-pub use component::{Component, IComponent, IComponentProcess};
+pub use component::{Component, IComponentProcess};
 pub use component_executor::{ComponentExecutor, ComponentExecutorConfig};
 pub use error::ComponentError;
-pub use types::ComponentResult;
+pub use types::CmpResult;

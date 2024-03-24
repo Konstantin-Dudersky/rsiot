@@ -1,5 +1,3 @@
-//! Структуры для представления пути сообщения
-
 use std::collections::HashSet;
 
 use serde::{Deserialize, Serialize};
@@ -7,28 +5,33 @@ use uuid::Uuid;
 
 use super::Timestamp;
 
+/// Запись пути
 #[derive(Debug, Clone, Deserialize, PartialEq, Serialize)]
-struct TraceValue {
+struct MsgTraceItem {
     id: Uuid,
     ts: Timestamp,
     name: String,
 }
 
+/// Структура для представления пути, по которому передавалось сообщение
 #[derive(Debug, Default, Clone, Deserialize, PartialEq, Serialize)]
-pub struct MsgTrace(Vec<TraceValue>);
+pub struct MsgTrace(Vec<MsgTraceItem>);
 
 impl MsgTrace {
+    /// Создать новый уникальный идентификатор
     pub fn generate_uuid() -> Uuid {
         Uuid::new_v4()
     }
 
-    pub fn insert(&mut self, id: Uuid, name: String) {
+    /// Добавить запись пути
+    pub fn add_trace_item(&mut self, id: Uuid, name: String) {
         let ts = Timestamp::default();
-        let value = TraceValue { ts, name, id };
+        let value = MsgTraceItem { ts, name, id };
         self.0.push(value);
     }
 
-    pub fn contains_key(&self, id: &Uuid) -> bool {
+    /// Определяет, есть ли в пути запись с заданным id
+    pub fn contains_trace_item(&self, id: &Uuid) -> bool {
         self.0.iter().any(|tv| &tv.id == id)
     }
 

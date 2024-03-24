@@ -38,7 +38,7 @@ async fn main() -> anyhow::Result<()> {
             return Ok(Some(vec![val]));
         }
         let msg = Message::deserialize(text)?;
-        let msg = match msg.get_data() {
+        let msg = match msg.get_custom_data() {
             Some(msg) => msg,
             None => return Ok(None),
         };

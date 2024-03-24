@@ -4,6 +4,7 @@
 
 mod auth_roles;
 mod error;
+pub mod example_message;
 mod example_message_channel;
 mod message;
 mod message_channel;
@@ -14,9 +15,10 @@ mod msg_trace;
 pub mod system_messages;
 mod timestamp;
 
+/// Пока эти модули не нужны, в будущем скорее всего можно удалить
 pub mod eav;
-pub mod eav_helpers;
-pub mod example_message;
+#[allow(unused_imports)]
+mod eav_helpers;
 
 pub use auth_roles::AuthPermissions;
 pub use error::Error;

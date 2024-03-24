@@ -2,7 +2,7 @@ use async_trait::async_trait;
 
 use crate::message::{AuthPermissions, MsgDataBound};
 
-use crate::executor::{CmpInOut, Component, ComponentError, ComponentResult, IComponentProcess};
+use crate::executor::{CmpInOut, CmpResult, Component, ComponentError, IComponentProcess};
 
 use super::{fn_process::fn_process, Config};
 
@@ -12,7 +12,7 @@ impl<TMsg> IComponentProcess<Config, TMsg> for Component<Config, TMsg>
 where
     TMsg: MsgDataBound + 'static,
 {
-    async fn process(&self, config: Config, in_out: CmpInOut<TMsg>) -> ComponentResult {
+    async fn process(&self, config: Config, in_out: CmpInOut<TMsg>) -> CmpResult {
         let in_out = in_out.clone_with_new_id("cmp_auth", AuthPermissions::FullAccess);
         fn_process(config, in_out)
             .await

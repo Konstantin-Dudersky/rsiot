@@ -30,7 +30,7 @@ async fn main() -> anyhow::Result<()> {
 
     let plc_config = cmp_plc::Config {
         fn_input: |_input: &mut fb1_example::I, msg: &Message<Data>| {
-            let msg = match msg.get_data() {
+            let msg = match msg.get_custom_data() {
                 Some(val) => val,
                 None => return,
             };

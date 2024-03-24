@@ -5,9 +5,17 @@ use serde::{Deserialize, Serialize};
 pub enum AuthPermissions {
     /// Без ограничений
     NoAccess,
+
+    /// Только просмотр
     Monitoring,
+
+    /// Управление
     Operatoration,
+
+    /// Администрирование
     Admin,
     #[default]
+
+    /// Полный доступ
     FullAccess,
 }
