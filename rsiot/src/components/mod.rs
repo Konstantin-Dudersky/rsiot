@@ -16,11 +16,7 @@ pub mod cmp_derive;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc__esp__espidf)]
-pub mod cmp_esp_gpio_input;
-
-#[cfg(feature = "cmp_esp")]
-#[cfg(riscv32imc__esp__espidf)]
-pub mod cmp_esp_gpio_output;
+pub mod cmp_esp_gpio;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc__esp__espidf)]

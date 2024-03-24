@@ -1,5 +1,4 @@
 use async_trait::async_trait;
-use esp_idf_svc::hal::gpio::OutputPin;
 
 use crate::{
     executor::{CmpInOut, Component, ComponentError, IComponentProcess},
@@ -10,20 +9,20 @@ use super::{config::Config, fn_process::fn_process};
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
-impl<TPin, TMsg> IComponentProcess<Config<TPin, TMsg>, TMsg> for Component<Config<TPin, TMsg>, TMsg>
+impl<TMsg> IComponentProcess<Config<TMsg>, TMsg> for Component<Config<TMsg>, TMsg>
 where
     TMsg: MsgDataBound + 'static,
-    TPin: OutputPin,
 {
     async fn process(
         &self,
-        config: Config<TPin, TMsg>,
+        config: Config<TMsg>,
         in_out: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
-        let in_out = in_out.clone_with_new_id("cmp_esp_gpio_output", AuthPermissions::FullAccess);
+        let in_out = in_out.clone_with_new_id("cmp_esp_gpio_input", AuthPermissions::FullAccess);
         fn_process(config, in_out).await?;
         Ok(())
     }
 }
 
-pub type Cmp<TPin, TMsg> = Component<Config<TPin, TMsg>, TMsg>;
+/// Компонент cmp_esp_wifi
+pub type Cmp<TMsg> = Component<Config<TMsg>, TMsg>;
