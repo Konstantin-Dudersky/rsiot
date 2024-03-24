@@ -5,20 +5,19 @@ use crate::{
     message::{AuthPermissions, MsgDataBound},
 };
 
-use super::{config::ConfigAlias, fn_process::fn_process};
+use super::{config::Config, fn_process::fn_process};
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
-impl<TMsg> IComponentProcess<ConfigAlias<TMsg>, TMsg> for Component<ConfigAlias<TMsg>, TMsg>
+impl<TMsg> IComponentProcess<Config<TMsg>, TMsg> for Component<Config<TMsg>, TMsg>
 where
     TMsg: MsgDataBound + 'static,
 {
     async fn process(
         &self,
-        config: ConfigAlias<TMsg>,
+        config: Config<TMsg>,
         in_out: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
-        let config = config.0;
         fn_process(
             in_out.clone_with_new_id("cmp_http_client", AuthPermissions::FullAccess),
             config,
@@ -27,4 +26,5 @@ where
     }
 }
 
-pub type Cmp<TMsg> = Component<ConfigAlias<TMsg>, TMsg>;
+/// Компонент cmp_http_client
+pub type Cmp<TMsg> = Component<Config<TMsg>, TMsg>;

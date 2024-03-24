@@ -1,16 +1,13 @@
+/// Ошибки логгирования
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    /// Loki error
     #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
-    #[error("{source}")]
-    Loki {
-        #[from]
-        source: tracing_loki::Error,
-    },
+    #[error("Loki error: {0}")]
+    Loki(#[from] tracing_loki::Error),
 
+    /// Parse error
     #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
-    #[error("{source}")]
-    Parse {
-        #[from]
-        source: url::ParseError,
-    },
+    #[error("Parse error: {0}")]
+    Parse(#[from] url::ParseError),
 }

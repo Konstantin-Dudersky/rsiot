@@ -33,7 +33,7 @@ async fn main() -> anyhow::Result<()> {
 
     let auth_config = cmp_auth::Config {
         secret_key: "secret_key".into(),
-        store: cmp_auth::ConfigStore::Local(vec![cmp_auth::ConfigStoreItem {
+        store: cmp_auth::ConfigStore::Local(vec![cmp_auth::ConfigStoreLocalItem {
             login: "admin".into(),
             password: "admin1".into(),
             role: AuthPermissions::Admin,

@@ -6,5 +6,5 @@ pub async fn fn_process<TMsg>(_config: Config<TMsg>, _in_out: CmpInOut<TMsg>) ->
 where
     TMsg: MsgDataBound,
 {
-    loop {}
+    unimplemented!()
 }

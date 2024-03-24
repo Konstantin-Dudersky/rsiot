@@ -27,6 +27,7 @@ type FnProcess<TMsg> = Box<dyn Fn(CmpInOut<TMsg>) -> LocalBoxFuture<'static, Cmp
 #[cfg(not(feature = "single-thread"))]
 type FnProcess<TMsg> = Box<dyn Fn(CmpInOut<TMsg>) -> BoxFuture<'static, CmpResult> + Send + Sync>;
 
+/// Настройки cmp_external_fn_process
 pub struct Config<TMsg> {
     /// Внешняя функция для выполнения
     ///
@@ -132,6 +133,7 @@ where
     }
 }
 
+/// Компонент cmp_external_fn_process
 pub type Cmp<TMsg> = Component<Config<TMsg>, TMsg>;
 
 #[cfg(test)]

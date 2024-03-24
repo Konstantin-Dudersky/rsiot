@@ -2,6 +2,7 @@ use crate::message::{Message, MsgDataBound};
 
 use super::derive_item_process::DeriveItemProcess;
 
+/// Хранение данных для преобразования
 pub struct DeriveItem<TMsg, TStore>
 where
     TStore: Default + Send + Sync,
@@ -29,7 +30,6 @@ where
             return None;
         }
         let msgs_content_data = (self.fn_output)(&self.store)?;
-        // let msgs_vec = msgs_content_data.into_iter().map(Message::new).collect();
         Some(msgs_content_data)
     }
 }

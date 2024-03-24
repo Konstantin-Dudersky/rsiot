@@ -37,4 +37,5 @@ where
     }
 }
 
+/// Компонент cmp_add_input_stream
 pub type Cmp<TMsg> = Component<Cfg<TMsg>, TMsg>;

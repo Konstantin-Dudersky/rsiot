@@ -12,7 +12,7 @@ use crate::{
     message::{system_messages::*, *},
 };
 
-use super::{token_payload::TokenPayload, Config, ConfigStore, ConfigStoreItem, Error};
+use super::{token_payload::TokenPayload, Config, ConfigStore, ConfigStoreLocalItem, Error};
 
 pub async fn fn_process<TMsg>(config: Config, in_out: CmpInOut<TMsg>) -> super::Result<()>
 where
@@ -126,7 +126,10 @@ where
     Ok(msg)
 }
 
-async fn get_credentials(login: &str, config: &Config) -> super::Result<Option<ConfigStoreItem>> {
+async fn get_credentials(
+    login: &str,
+    config: &Config,
+) -> super::Result<Option<ConfigStoreLocalItem>> {
     match &config.store {
         ConfigStore::Local(local) => {
             let item = local.iter().find(|e| e.login == login).cloned();

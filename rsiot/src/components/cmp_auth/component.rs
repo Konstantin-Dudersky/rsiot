@@ -20,4 +20,5 @@ where
     }
 }
 
+/// Компонент cmp_auth
 pub type Cmp<TMsg> = Component<Config, TMsg>;

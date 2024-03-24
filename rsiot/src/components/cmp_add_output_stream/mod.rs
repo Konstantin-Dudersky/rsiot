@@ -11,6 +11,7 @@ use crate::{
 /// Настройки
 #[derive(Debug)]
 pub struct Cfg<TMessage> {
+    /// Внешний канал mpsc, в который пересылаются исходящие сообщения
     pub channel: mpsc::Sender<Message<TMessage>>,
 }
 
@@ -34,4 +35,5 @@ where
     }
 }
 
+/// Компонент cmp_add_output_stream
 pub type Cmp<TMsg> = Component<Cfg<TMsg>, TMsg>;

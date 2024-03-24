@@ -13,7 +13,7 @@ use crate::{
     message::{Message, MsgDataBound},
 };
 
-use super::{config::config, Error};
+use super::{config, Error};
 
 pub async fn fn_process<TMsg>(
     in_out: CmpInOut<TMsg>,

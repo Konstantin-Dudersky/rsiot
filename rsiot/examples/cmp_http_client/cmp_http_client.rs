@@ -17,7 +17,7 @@ async fn main() -> anyhow::Result<()> {
 
     use rsiot::{
         components::{
-            cmp_http_client::{self, http_client_config},
+            cmp_http_client::{self},
             cmp_inject_periodic, cmp_logger,
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
@@ -65,16 +65,16 @@ async fn main() -> anyhow::Result<()> {
         header: "HTTP response".into(),
     };
 
-    let http_config = http_client_config::Config::<Data> {
-        connection_config: http_client_config::ConnectionConfig {
+    let http_config = cmp_http_client::Config::<Data> {
+        connection_config: cmp_http_client::ConnectionConfig {
             base_url: Url::parse("http://127.0.0.1:80")?,
         },
-        requests_input: vec![http_client_config::RequestInput {
+        requests_input: vec![cmp_http_client::RequestInput {
             fn_input: |msg| {
                 let msg = msg.get_custom_data()?;
                 match msg {
                     Data::HttpMethodsGetOnEventRequest(_) => {
-                        let param = http_client_config::HttpParam::Get {
+                        let param = cmp_http_client::HttpParam::Get {
                             endpoint: "get".to_string(),
                         };
                         Some(param)
@@ -90,9 +90,9 @@ async fn main() -> anyhow::Result<()> {
             },
             on_failure: Vec::new,
         }],
-        requests_periodic: vec![http_client_config::RequestPeriodic {
+        requests_periodic: vec![cmp_http_client::RequestPeriodic {
             period: Duration::from_secs(5),
-            http_param: http_client_config::HttpParam::Get {
+            http_param: cmp_http_client::HttpParam::Get {
                 endpoint: "get".to_string(),
             },
             on_success: |body| {

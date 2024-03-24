@@ -53,6 +53,7 @@ pub trait IComponentProcess<TConfig, TMsg> {
     async fn process(&self, config: TConfig, in_out: CmpInOut<TMsg>) -> CmpResult;
 }
 
+/// Интерфейс компонента, который используется исполнитель при добавлении компонентов
 #[async_trait]
 pub trait IComponent<TMsg> {
     fn set_interface(&mut self, in_out: CmpInOut<TMsg>);

@@ -1,3 +1,5 @@
+//! Компонент HTTP-клиент для платформы wasm
+
 use async_trait::async_trait;
 
 use crate::{

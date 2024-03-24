@@ -1,13 +1,15 @@
 use async_trait::async_trait;
 
-use super::super::{CmpInOut, ComponentError};
+use super::super::{CmpInOut, CmpResult, ComponentError};
 
+/// Представление обобщенного компонента
 pub struct Component<TConfig, TMessage> {
     in_out: Option<CmpInOut<TMessage>>,
     config: Option<TConfig>,
 }
 
 impl<TConfig, TMsg> Component<TConfig, TMsg> {
+    /// Создание компонента
     pub fn new(config: impl Into<TConfig>) -> Self {
         Self {
             in_out: None,
@@ -25,7 +27,7 @@ where
         self.in_out = Some(in_out);
     }
 
-    async fn spawn(&mut self) -> Result<(), ComponentError> {
+    async fn spawn(&mut self) -> CmpResult {
         let in_out = self
             .in_out
             .take()
@@ -40,14 +42,19 @@ where
     }
 }
 
+/// Трейт основной функции компонента
+///
+/// Каждый компонент должен определить данный трейт
 #[async_trait(?Send)]
 pub trait IComponentProcess<TConfig, TMsg> {
-    async fn process(&self, config: TConfig, in_out: CmpInOut<TMsg>) -> Result<(), ComponentError>;
+    /// Основная функция компонента
+    async fn process(&self, config: TConfig, in_out: CmpInOut<TMsg>) -> CmpResult;
 }
 
+/// Интерфейс компонента, который используется исполнитель при добавлении компонентов
 #[async_trait(?Send)]
 pub trait IComponent<TMsg> {
     fn set_interface(&mut self, in_out: CmpInOut<TMsg>);
 
-    async fn spawn(&mut self) -> Result<(), ComponentError>;
+    async fn spawn(&mut self) -> CmpResult;
 }
