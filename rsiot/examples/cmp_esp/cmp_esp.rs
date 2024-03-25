@@ -16,7 +16,8 @@ async fn main() {
 
     use rsiot::{
         components::{
-            cmp_esp_gpio, cmp_esp_wifi, cmp_http_server_esp, cmp_inject_periodic, cmp_logger,
+            cmp_esp_adc, cmp_esp_gpio, cmp_esp_wifi, cmp_http_server_esp, cmp_inject_periodic,
+            cmp_logger,
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
         message::*,
@@ -90,6 +91,19 @@ async fn main() {
         }],
     };
 
+    // ADC
+    let config_esp_adc = cmp_esp_adc::Config::<Custom> {
+        adc1: peripherals.adc1,
+        adc2: peripherals.adc2,
+        inputs: vec![cmp_esp_adc::ConfigItem {
+            peripherals: cmp_esp_adc::ConfigInput::Gpio3(peripherals.pins.gpio3),
+            fn_output: |value| {
+                println!("{value}");
+                vec![]
+            },
+        }],
+    };
+
     // executor ------------------------------------------------------------------------------------
 
     let executor_config = ComponentExecutorConfig {
@@ -107,6 +121,7 @@ async fn main() {
             .add_cmp(cmp_esp_wifi::Cmp::new(wifi_config))
             .add_cmp(cmp_esp_gpio::Cmp::new(gpio_config))
             .add_cmp(cmp_inject_periodic::Cmp::new(config_inject_periodic))
+            .add_cmp(cmp_esp_adc::Cmp::new(config_esp_adc))
             .wait_result()
             .await
             .unwrap()
