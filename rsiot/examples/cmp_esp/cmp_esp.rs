@@ -31,6 +31,7 @@ async fn main() {
     pub enum Custom {
         BootButton(bool),
         Relay0(bool),
+        Analog3(f32),
     }
 
     impl MsgDataBound for Custom {}
@@ -95,11 +96,13 @@ async fn main() {
     let config_esp_adc = cmp_esp_adc::Config::<Custom> {
         adc1: peripherals.adc1,
         adc2: peripherals.adc2,
-        inputs: vec![cmp_esp_adc::ConfigItem {
-            peripherals: cmp_esp_adc::ConfigInput::Gpio3(peripherals.pins.gpio3),
+        inputs: vec![cmp_esp_adc::ConfigInput {
+            peripherals: cmp_esp_adc::ConfigInputType::Gpio3(peripherals.pins.gpio3),
+            attenuation: cmp_esp_adc::ConfigInputAttenuation::Db11,
+            update_period: Duration::from_secs(1),
             fn_output: |value| {
-                println!("{value}");
-                vec![]
+                let value = value as f32 / 1000.0;
+                Message::new_custom(Custom::Analog3(value))
             },
         }],
     };
