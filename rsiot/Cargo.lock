@@ -6408,6 +6408,7 @@ dependencies = [
  "jwt",
  "leptos",
  "leptos_router",
+ "log",
  "openssl",
  "palette",
  "postcard",

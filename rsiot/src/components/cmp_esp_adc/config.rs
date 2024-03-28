@@ -12,7 +12,7 @@ pub struct Config<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    /// Ссылка на ADC
+    /// Ссылка на ADC1
     ///
     /// Пример:
     ///
@@ -21,6 +21,13 @@ where
     /// ```
     pub adc1: ADC1,
 
+    /// Ссылка на ADC2
+    ///
+    /// Пример:
+    ///
+    /// ```rust
+    /// adc2: peripherals.adc2
+    /// ```
     pub adc2: ADC2,
 
     /// Конфигурация входов
@@ -81,6 +88,7 @@ pub enum ConfigInputType {
 }
 
 /// Коэффициент усиления
+#[allow(missing_docs)]
 pub enum ConfigInputAttenuation {
     DB6,
     Db11,

@@ -1,4 +1,5 @@
 /// Ошибки логгирования
+#[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     /// Loki error
@@ -10,4 +11,8 @@ pub enum Error {
     #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
     #[error("Parse error: {0}")]
     Parse(#[from] url::ParseError),
+
+    #[cfg(riscv32imc_esp_espidf)]
+    #[error("Log initialization error: {0}")]
+    Log(#[from] esp_idf_svc::sys::EspError),
 }

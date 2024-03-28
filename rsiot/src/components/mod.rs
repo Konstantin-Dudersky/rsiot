@@ -15,15 +15,15 @@ pub mod cmp_auth;
 pub mod cmp_derive;
 
 #[cfg(feature = "cmp_esp")]
-#[cfg(riscv32imc__esp__espidf)]
+#[cfg(riscv32imc_esp_espidf)]
 pub mod cmp_esp_adc;
 
 #[cfg(feature = "cmp_esp")]
-#[cfg(riscv32imc__esp__espidf)]
+#[cfg(riscv32imc_esp_espidf)]
 pub mod cmp_esp_gpio;
 
 #[cfg(feature = "cmp_esp")]
-#[cfg(riscv32imc__esp__espidf)]
+#[cfg(riscv32imc_esp_espidf)]
 pub mod cmp_esp_wifi;
 
 pub mod cmp_external_fn_process;
@@ -45,7 +45,7 @@ pub mod cmp_http_client_wasm;
 pub mod cmp_http_server;
 
 #[cfg(feature = "cmp_esp")]
-#[cfg(riscv32imc__esp__espidf)]
+#[cfg(riscv32imc_esp_espidf)]
 pub mod cmp_http_server_esp;
 
 #[cfg(feature = "cmp_influxdb")]
@@ -84,7 +84,7 @@ pub mod cmp_redis_client;
 pub mod cmp_slint;
 
 #[cfg(feature = "cmp_esp")]
-#[cfg(riscv32imc__esp__espidf)]
+#[cfg(riscv32imc_esp_espidf)]
 pub mod cmp_storage_esp;
 
 #[cfg(feature = "cmp_surrealdb")]

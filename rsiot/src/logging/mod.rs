@@ -63,3 +63,10 @@ pub use target_wasm32::configure_logging;
 mod target_x86_64;
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 pub use target_x86_64::configure_logging;
+
+#[cfg(riscv32imc_esp_espidf)]
+mod target_esp;
+#[cfg(riscv32imc_esp_espidf)]
+pub use target_esp::configure_logging;
+
+type Result<T> = std::result::Result<T, Error>;

@@ -8,11 +8,10 @@ async fn main() {
     use std::time::Duration;
 
     use esp_idf_svc::{
-        eventloop::EspSystemEventLoop, hal::peripherals::Peripherals, log::EspLogger,
-        sys::link_patches,
+        eventloop::EspSystemEventLoop, hal::peripherals::Peripherals, sys::link_patches,
     };
     use tokio::task::LocalSet;
-    use tracing::Level;
+    use tracing::{level_filters::LevelFilter, Level};
 
     use rsiot::{
         components::{
@@ -20,11 +19,12 @@ async fn main() {
             cmp_logger,
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
+        logging::configure_logging,
         message::*,
     };
 
     link_patches();
-    EspLogger::initialize_default();
+    configure_logging(LevelFilter::INFO).unwrap();
 
     // message
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]

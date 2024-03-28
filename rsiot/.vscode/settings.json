@@ -51,7 +51,7 @@
 
   // ---- esp32 ------------------------------------------------------------------------------------
   "rust-analyzer.cargo.target": "riscv32imc-esp-espidf",
-  "rust-analyzer.cargo.features": ["executor", "cmp_esp"],
+  "rust-analyzer.cargo.features": ["executor", "logging", "cmp_esp"],
 
   "rust-analyzer.showUnlinkedFileNotification": false
 }

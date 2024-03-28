@@ -1,6 +1,7 @@
 use cfg_aliases::cfg_aliases;
 
 fn main() {
+    // riscv32imc-esp-espidf
     embuild::espidf::sysenv::output();
 
     cfg_aliases! {
@@ -15,7 +16,7 @@ fn main() {
             target_os = "linux",
             target_env = "gnu"
         ) },
-        riscv32imc__esp__espidf: { all (
+        riscv32imc_esp_espidf: { all (
             target_arch = "riscv32",
             target_vendor = "espressif",
             target_os = "espidf"
