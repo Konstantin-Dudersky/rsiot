@@ -33,6 +33,7 @@ where
             config,
         )
         .await
+        .map_err(|e| ComponentError::Execution(e.to_string()))
     }
 }
 

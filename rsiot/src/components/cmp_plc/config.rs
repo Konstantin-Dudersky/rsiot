@@ -7,11 +7,6 @@ use crate::message::{Message, MsgDataBound};
 use super::plc::function_block_base::{FunctionBlockBase, IFunctionBlock};
 
 /// Конфигурация компонента ПЛК
-///
-/// # Шаблон функционального блока
-///
-#[doc = include_str!("./template.rs")]
-///
 #[derive(Clone)]
 pub struct Config<TMessage, I, Q, S>
 where
@@ -21,12 +16,21 @@ where
     S: Clone + Default + Serialize,
     FunctionBlockBase<I, Q, S>: IFunctionBlock<I, Q, S>,
 {
+    /// Функция инициализации входной структуры в начале цикла ПЛК
+    ///
+    /// # Примеры
+    ///
+    /// ```rust
+    /// fn_cycle_init: |_input: &mut fb_main::I| {}
+    /// ```
+    pub fn_cycle_init: fn(&mut I) -> (),
+
     /// Функция преобразования входящих сообщений во входную структуру ПЛК.
     ///
     /// # Примеры
     ///
     /// ```rust
-    /// fn_input: |input: &mut fb_main::I, msg: &TMessage| match msg {}
+    /// fn_input: |input: &mut fb_main::I, msg: &Message<Custom>| match msg {}
     /// ```
     pub fn_input: fn(&mut I, &Message<TMessage>) -> (),
 

@@ -29,6 +29,7 @@ async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt().init();
 
     let plc_config = cmp_plc::Config {
+        fn_cycle_init: |_input: &mut fb1_example::I| {},
         fn_input: |_input: &mut fb1_example::I, msg: &Message<Data>| {
             let msg = match msg.get_custom_data() {
                 Some(val) => val,

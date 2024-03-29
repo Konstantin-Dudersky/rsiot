@@ -3,7 +3,7 @@ use std::{collections::HashMap, sync::Arc};
 use futures::Future;
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-use crate::message::Message;
+use crate::message::{Message, MsgDataBound};
 
 type Hash<TMsg> = HashMap<String, Message<TMsg>>;
 
@@ -11,7 +11,10 @@ type Hash<TMsg> = HashMap<String, Message<TMsg>>;
 #[derive(Debug)]
 pub struct Cache<TMsg>(Arc<RwLock<Hash<TMsg>>>);
 
-impl<TMsg> Cache<TMsg> {
+impl<TMsg> Cache<TMsg>
+where
+    TMsg: MsgDataBound,
+{
     /// Создаем новый пустой кеш
     pub fn new() -> Self {
         Self(Arc::new(RwLock::new(HashMap::new())))
@@ -31,6 +34,19 @@ impl<TMsg> Cache<TMsg> {
     pub fn write(&self) -> impl Future<Output = RwLockWriteGuard<'_, Hash<TMsg>>> {
         self.0.write()
     }
+
+    /// Очистить кеш
+    pub async fn clear(&mut self) {
+        let mut lock = self.0.write().await;
+        lock.clear()
+    }
+
+    /// Вставить сообщение в кеш
+    pub async fn insert(&mut self, msg: Message<TMsg>) {
+        let mut lock = self.0.write().await;
+        let key = msg.key.clone();
+        lock.insert(key, msg);
+    }
 }
 
 impl<TMessage> Clone for Cache<TMessage> {
@@ -39,7 +55,10 @@ impl<TMessage> Clone for Cache<TMessage> {
     }
 }
 
-impl<TMessage> Default for Cache<TMessage> {
+impl<TMessage> Default for Cache<TMessage>
+where
+    TMessage: MsgDataBound,
+{
     fn default() -> Self {
         Self::new()
     }

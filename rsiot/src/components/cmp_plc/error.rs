@@ -6,6 +6,10 @@ pub enum Error {
     /// CmpOutput
     #[error(transparent)]
     CmpOutput(ComponentError),
+
+    /// TokioTaskJoin
+    #[error("TokioTaskJoin: {0}")]
+    TokioTaskJoin(#[from] tokio::task::JoinError),
 }
 
 impl From<Error> for ComponentError {

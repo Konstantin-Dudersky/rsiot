@@ -2,7 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use super::plc::function_block_base::{FunctionBlockBase, IFunctionBlock};
+use crate::components::cmp_plc::plc::function_block_base::{FunctionBlockBase, IFunctionBlock};
 
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct I {}
