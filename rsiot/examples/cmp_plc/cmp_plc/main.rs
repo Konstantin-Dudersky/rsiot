@@ -1,7 +1,7 @@
 //! Запуск:
 //!
 //! ```bash
-//! cargo run -p rsiot-plc --example plc-multi-thread
+//! cargo run --example cmp_plc --target x86_64-unknown-linux-gnu --features="cmp_plc"
 //! ```
 
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
