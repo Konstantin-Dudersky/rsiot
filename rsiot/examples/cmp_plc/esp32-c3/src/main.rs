@@ -29,7 +29,7 @@ async fn main() {
 
     let logger_config = cmp_logger::Config {
         level: Level::INFO,
-        header: "".into(),
+        fn_input: |msg| Ok(Some(msg.serialize()?)),
     };
 
     let plc_config = cmp_plc::Config {

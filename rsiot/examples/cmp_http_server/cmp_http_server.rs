@@ -42,7 +42,7 @@ fn main() -> anyhow::Result<()> {
 
     let logger_config = cmp_logger::Config {
         level: Level::INFO,
-        header: "".into(),
+        fn_input: |msg| Ok(Some(msg.serialize()?)),
     };
 
     let http_server_config = cmp_http_server::Config {

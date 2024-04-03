@@ -94,7 +94,7 @@ async fn main() -> anyhow::Result<()> {
         // Вывод сообщений в лог
         .add_cmp(cmp_logger::Cmp::new(cmp_logger::Config {
             level: Level::INFO,
-            header: "".into(),
+            fn_input: |msg| Ok(Some(msg.serialize()?)),
         }))
         .wait_result()
         .await?;

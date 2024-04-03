@@ -32,7 +32,7 @@ async fn main() {
 
     let logger_config = cmp_logger::Config {
         level: Level::INFO,
-        header: "".into(),
+        fn_input: |msg| Ok(Some(msg.serialize()?)),
     };
 
     let config_raspberrypi_gpio = cmp_raspberrypi_gpio::Config {

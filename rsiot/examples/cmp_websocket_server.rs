@@ -24,7 +24,7 @@ async fn main() -> anyhow::Result<()> {
 
     let logger_config = cmp_logger::Config {
         level: Level::INFO,
-        header: "".into(),
+        fn_input: |msg| Ok(Some(msg.serialize()?)),
     };
 
     let ws_server_config = cmp_websocket_server::Config {

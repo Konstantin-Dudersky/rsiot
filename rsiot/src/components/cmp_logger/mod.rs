@@ -5,28 +5,39 @@ use tracing::{debug, error, info, trace, warn, Level};
 
 use crate::{
     executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    message::{AuthPermissions, Message, MsgDataBound},
 };
 
 /// Настройки компонента логгирования
 #[derive(Clone, Debug)]
-pub struct Config {
+pub struct Config<TMsg> {
     /// Уровень логгирования
     pub level: Level,
-    /// Добавляется в начале каждого сообщения
-    pub header: String,
+
+    /// Функция преобразования входящих сообщений в записи.
+    ///
+    /// Можно реализовать фильтрацию сообщений.
+    ///
+    /// # Примеры
+    ///
+    /// ## Логгирование всех сообщений
+    ///
+    /// ```rust
+    /// fn_input: |msg| Ok(Some(msg.serialize()?)),
+    /// ```
+    pub fn_input: fn(Message<TMsg>) -> anyhow::Result<Option<String>>,
 }
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
-impl<TMessage> IComponentProcess<Config, TMessage> for Component<Config, TMessage>
+impl<TMsg> IComponentProcess<Config<TMsg>, TMsg> for Component<Config<TMsg>, TMsg>
 where
-    TMessage: MsgDataBound,
+    TMsg: MsgDataBound,
 {
     async fn process(
         &self,
-        config: Config,
-        in_out: CmpInOut<TMessage>,
+        config: Config<TMsg>,
+        in_out: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
         process(
             config,
@@ -36,30 +47,32 @@ where
     }
 }
 
-async fn process<TMessage>(
-    config: Config,
-    mut in_out: CmpInOut<TMessage>,
+async fn process<TMsg>(
+    config: Config<TMsg>,
+    mut in_out: CmpInOut<TMsg>,
 ) -> Result<(), ComponentError>
 where
-    TMessage: MsgDataBound,
+    TMsg: MsgDataBound,
 {
-    let header = match config.header.as_str() {
-        "" => "".to_string(),
-        _ => format!("{}: ", config.header),
-    };
     while let Ok(msg) = in_out.recv_input().await {
+        let text = (config.fn_input)(msg);
+        // ошибка сериализации
+        let Ok(text) = text else {
+            warn!("Logger Error: {:?}", text);
+            continue;
+        };
+        // фильтрация
+        let Some(text) = text else { continue };
         match config.level {
-            Level::TRACE => trace!("{}{:?}", header, msg),
-            Level::DEBUG => debug!("{}{:?}", header, msg),
-            Level::INFO => info!("{}{:?}", header, msg),
-            Level::WARN => warn!("{}{:?}", header, msg),
-            Level::ERROR => error!("{}{:?}", header, msg),
+            Level::TRACE => trace!("{text}"),
+            Level::DEBUG => debug!("{text}"),
+            Level::INFO => info!("{text}"),
+            Level::WARN => warn!("{text}"),
+            Level::ERROR => error!("{text}"),
         }
     }
     Ok(())
 }
 
 /// Компонент cmp_logger
-pub type Cmp<TMessage> = Component<Config, TMessage>;
-
-// TODO - функция фильтрации fn_input
+pub type Cmp<TMsg> = Component<Config<TMsg>, TMsg>;
