@@ -1,7 +1,16 @@
 <!-- cargo-rdme start -->
 
-Компоненты для построения системы сбора данных
+Компоненты для построения системы сбора и обработки данных
+
 [Документация](https://docs.rs/rsiot/latest/rsiot)
+
+Поддерживаемые архитектуры ([подробнее](https://doc.rust-lang.org/rustc/platform-support.html)):
+
+- x86_64-unknown-linux-gnu - 64-bit Linux - использование в бекенд (target_arch = "x86_64")
+- aarch64-unknown-linux-gnu - ARM64 Linux - использование в бекенд (target_arch = "aarch64")
+- wasm32-unknown-unknown - WebAssembly - для создания веб-интерфейсов (target_arch = "wasm32")
+- riscv32imc-esp-espidf - RISC-V ESP-IDF - микроконтроллеры ESP32 на базе процессора RISC-V
+  (target_arch = "riscv32")
 
 ## Зачем это надо
 
@@ -65,7 +74,9 @@ TODO **mqtt**
 
 #### Интерфейсы пользователя
 
-TODO **leptos**
+[**leptos**](https://docs.rs/rsiot-leptos/latest)
+
+Веб-интерфейс. Используется фреймворк leptos.
 
 #### Вспомогательные крейты
 
@@ -110,6 +121,7 @@ where
 **Сообщения** представляют собой тип enum, например:
 
 ```rust
+use rsiot_messages_core::eav::EavModel;
 use rsiot_messages_core::IMessage;
 use serde::{Deserialize, Serialize};
 
@@ -121,7 +133,10 @@ enum Message {
     ChangeSetpoint(f64),
 }
 
-impl IMessage for Message {}
+impl IMessage for Message {
+    fn into_eav(self) -> Vec<EavModel> {
+        vec![]
+    }}
 ```
 
 Трейт `IMessage` реализует основные методы - см. документацию по крейту

@@ -7,8 +7,6 @@ def print_header [header: string] {
     print $"\n\n(ansi magenta_bold)($header)(ansi reset)\n\n"
 }
 
-cd rsiot
-
 let targets = open target_config.json
 let targets = $targets.targets
 
@@ -27,13 +25,13 @@ for target in $targets {
 
 # cargo doc ----------------------------------------------------------------------------------------
 
-rm -rf ../../rsiot-docs/src/rustdoc
+rm -rf ../rsiot-docs/src/rustdoc
 
 for target in $targets {
     print_header $"cargo doc - ($target.name)"
     
     # create folder
-    let command = $"mkdir ../../rsiot-docs/src/rustdoc/($target.name)"
+    let command = $"mkdir ../rsiot-docs/src/rustdoc/($target.name)"
     nu -c $command;
     
     # combine features
@@ -45,7 +43,7 @@ for target in $targets {
     nu -c $command;
 
     # copy files
-    let command = $"cp -r target/($target.name)/doc/* ../../rsiot-docs/src/rustdoc/($target.name)"
+    let command = $"cp -r target/($target.name)/doc/* ../rsiot-docs/src/rustdoc/($target.name)"
     nu -c $command;
 }
 
