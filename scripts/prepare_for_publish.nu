@@ -1,93 +1,16 @@
 # Подготовка к публикации
 
+# TODO - https://github.com/rust-lang/libc/issues/3615
+# проблема со сборкой ESP в новых версиях, перейти на найтли, когда пофиксят
+
 def print_header [header: string] {
     print $"\n\n(ansi magenta_bold)($header)(ansi reset)\n\n"
 }
 
 cd rsiot
 
-let targets = [
-    {
-        name: "x86_64-unknown-linux-gnu",
-        toolchain: "+stable",
-        features: [
-            "cmp_auth",
-            "cmp_http_client",
-            "cmp_http_server",
-            "cmp_influxdb",
-            "cmp_modbus_client",
-            "cmp_plc",
-            "cmp_redis_client",
-            "cmp_slint",
-            "cmp_surrealdb",
-            "cmp_timescaledb",
-            "cmp_websocket_client",
-            "cmp_websocket_server",
-            "env_vars",
-            "executor",
-            "logging",
-        ],
-        add_feat: ["", "single-thread"],
-    },
-    {
-        name: "aarch64-linux-android",
-        toolchain: "+stable",
-        features: [
-            "cmp_http_client",
-            "cmp_slint",
-            "executor",
-            "logging",
-        ],
-        add_feat: ["", "single-thread"],
-    },
-    {
-        name: "aarch64-unknown-linux-gnu",
-        toolchain: "+stable",
-        features: [
-            "cmp_auth",
-            "cmp_http_client",
-            "cmp_http_server",
-            "cmp_influxdb",
-            "cmp_modbus_client",
-            "cmp_plc",
-            "cmp_redis_client",
-            "cmp_slint",
-            "cmp_surrealdb",
-            "cmp_timescaledb",
-            "cmp_websocket_client",
-            "cmp_websocket_server",
-            "env_vars",
-            "executor",
-            "logging",
-        ],
-        add_feat: ["", "single-thread"],
-    },
-    {
-        name: "riscv32imc-esp-espidf",
-        # TODO - https://github.com/rust-lang/libc/issues/3615
-        toolchain: "+nightly-2024-02-01-x86_64-unknown-linux-gnu",
-        features: [
-            "cmp_esp",
-            "cmp_plc",
-            "executor",
-        ],
-        add_feat: ["single-thread"],
-    },
-    {
-        name: "wasm32-unknown-unknown",
-        toolchain: "+stable",
-        features: [
-            "cmp_http_client_wasm",
-            "cmp_leptos",
-            "cmp_plc",
-            "cmp_websocket_client_wasm",
-            "cmp_webstorage",
-            "executor",
-            "logging",
-        ],
-        add_feat: ["single-thread"],
-    },
-]
+let targets = open target_config.json
+let targets = $targets.targets
 
 # cargo clippy -------------------------------------------------------------------------------------
 
