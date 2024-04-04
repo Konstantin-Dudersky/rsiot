@@ -24,6 +24,10 @@ pub mod cmp_esp_gpio;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
+pub mod cmp_esp_nvs;
+
+#[cfg(feature = "cmp_esp")]
+#[cfg(riscv32imc_esp_espidf)]
 pub mod cmp_esp_wifi;
 
 pub mod cmp_external_fn_process;
@@ -82,10 +86,6 @@ pub mod cmp_redis_client;
     x86_64__unknown__linux__gnu
 ))]
 pub mod cmp_slint;
-
-#[cfg(feature = "cmp_esp")]
-#[cfg(riscv32imc_esp_espidf)]
-pub mod cmp_storage_esp;
 
 #[cfg(feature = "cmp_surrealdb")]
 #[cfg(any(aarch64__unknown__linux__gnu, x86_64__unknown__linux__gnu))]

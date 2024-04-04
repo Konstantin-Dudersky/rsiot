@@ -180,7 +180,7 @@ cmp_esp = [
     "executor",
     "single-thread",
     "dep:embedded-svc",
-    "dep:heapless",     # TODO - может не нужно
+    "dep:heapless",
     "dep:postcard",
     "tokio?/time",
 ]
@@ -307,8 +307,8 @@ name = "cmp_system_info"
 path = "examples/cmp_system_info/cmp_system_info.rs"
 
 [[example]]
-name = "cmp_storage_esp"
-path = "examples/cmp_storage_esp/cmp_storage_esp.rs"
+name = "cmp_esp_nvs"
+path = "examples/cmp_esp_nvs/cmp_esp_nvs.rs"
 
 [[example]]
 name = "cmp_surrealdb"

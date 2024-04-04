@@ -33,13 +33,3 @@ where
         Some(msgs_content_data)
     }
 }
-
-// TODO - не компилируется
-// impl<TMsg, TStore> From<DeriveItem<TMsg, TStore>> for Box<DeriveItem<TMsg, TStore>>
-// where
-//     TStore: Default,
-// {
-//     fn from(value: DeriveItem<TMsg, TStore>) -> Self {
-//         Box::new(value)
-//     }
-// }

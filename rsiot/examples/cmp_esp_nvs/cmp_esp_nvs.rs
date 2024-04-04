@@ -1,6 +1,6 @@
 //! cargo run  --example cmp_storage_esp --target="riscv32imc-esp-espidf" --features="cmp_storage_esp, single-thread" --release
 
-#[cfg(feature = "cmp_storage_esp")]
+#[cfg(feature = "cmp_esp")]
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
     use esp_idf_svc::{log::EspLogger, sys::link_patches};
@@ -8,7 +8,7 @@ async fn main() {
     use tracing::Level;
 
     use rsiot::{
-        components::{cmp_inject_periodic, cmp_logger, cmp_storage_esp},
+        components::{cmp_esp_nvs, cmp_inject_periodic, cmp_logger},
         executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{example_message::*, *},
     };
@@ -46,7 +46,7 @@ async fn main() {
         pub test_i32: i32,
     }
 
-    let storage_config = cmp_storage_esp::Config {
+    let storage_config = cmp_esp_nvs::Config {
         fn_input: |data: &StorageData, msg: &Message<Custom>| match msg.data {
             MsgData::Custom(Custom::ValueInstantF64(value)) => Some(StorageData {
                 test_f64: value,
@@ -67,7 +67,7 @@ async fn main() {
         ComponentExecutor::<Custom>::new(executor_config)
             .add_cmp(cmp_inject_periodic::Cmp::new(inject_periodic_config))
             .add_cmp(cmp_logger::Cmp::new(logger_config))
-            .add_cmp(cmp_storage_esp::Cmp::new(storage_config))
+            .add_cmp(cmp_esp_nvs::Cmp::new(storage_config))
             .wait_result()
             .await
             .unwrap()
@@ -75,5 +75,5 @@ async fn main() {
     local_set.await;
 }
 
-#[cfg(not(feature = "cmp_storage_esp"))]
+#[cfg(not(feature = "cmp_esp"))]
 fn main() {}
