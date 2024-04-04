@@ -13,7 +13,7 @@ use tracing_subscriber::{
 /// Логи выводятся в:
 /// - stdout
 /// - Grafana Loki
-pub async fn configure_logging(rust_log: &str, loki_url: &url::Url) -> Result<(), super::Error> {
+pub async fn configure_logging(rust_log: &str, loki_url: &url::Url) -> super::Result<()> {
     let service = env::args().collect::<Vec<String>>()[0].clone();
     let service = service_cleanup(&service);
 

@@ -19,7 +19,7 @@
     // "executor",
     // "single-thread",
     // "env_vars"
-    // "logging"
+    "logging",
 
     // "cmp_auth"
     // "cmp_http_client"

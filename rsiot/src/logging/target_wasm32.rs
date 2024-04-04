@@ -9,7 +9,7 @@ use tracing_web::{performance_layer, MakeWebConsoleWriter};
 /// Настройка логгирования для платформы WASM32
 ///
 /// Логи выводятся в консоль
-pub fn configure_logging(rust_log: &str) {
+pub fn configure_logging(rust_log: &str) -> super::Result<()> {
     let fmt_layer = tracing_subscriber::fmt::layer()
         .with_ansi(false)
         .with_timer(ChronoLocal::rfc_3339())
@@ -26,4 +26,6 @@ pub fn configure_logging(rust_log: &str) {
         .init();
 
     info!("service started");
+
+    Ok(())
 }

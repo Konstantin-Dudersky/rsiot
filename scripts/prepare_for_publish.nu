@@ -94,10 +94,10 @@ let targets = [
 for target in $targets {
     for feat in $target.features {
         for add_feat in $target.add_feat {
-            print_header $"workspace clippy - ($target.name) / ($feat) / ($add_feat)";
-            let command = $'cargo ($target.toolchain) clippy --all-targets --target="($target.name)" --features="($feat), ($add_feat)"';
-            print $"execute command: ($command)";
-            nu -c $command;
+            print_header $"workspace clippy - ($target.name) / ($feat) / ($add_feat)"
+            let command = $'cargo ($target.toolchain) clippy --all-targets --target="($target.name)" --features="($feat), ($add_feat), logging"'
+            print $"execute command: ($command)\n"
+            nu -c $command
         }
     }
 }
@@ -117,7 +117,8 @@ for target in $targets {
     let features = $target.features | append $target.add_feat | str join ', '
 
     # generate doc
-    let command = $"cargo doc --target ($target.name) --features="($features)"  --no-deps --document-private-items -Zunstable-options -Zrustdoc-scrape-examples"
+    let command = $'cargo doc --target ($target.name) --features="($features), logging"  --no-deps --document-private-items -Zunstable-options -Zrustdoc-scrape-examples'
+    print $"execute command: ($command)\n"
     nu -c $command;
 
     # copy files

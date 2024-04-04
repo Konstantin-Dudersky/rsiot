@@ -105,8 +105,8 @@ tracing-subscriber = { version = "0.3.18", features = ["env-filter", "chrono"] }
 openssl = { version = "0.10", features = ["vendored"], optional = true }
 
 
-[target.'cfg(target_arch = "riscv32")'.dependencies]
-esp-idf-svc = { version = "0.48.1", features = ["std"], optional = true }
+[target.'cfg(all(target_arch = "riscv32", target_vendor = "espressif", target_os = "espidf"))'.dependencies]
+esp-idf-svc = { version = "0.48.1", features = ["std"] }
 embedded-svc = { version = "0.27.1", optional = true }
 
 
@@ -180,7 +180,6 @@ cmp_esp = [
     "executor",
     "single-thread",
     "dep:embedded-svc",
-    "dep:esp-idf-svc",
     "dep:heapless",     # TODO - может не нужно
     "dep:postcard",
     "tokio?/time",
