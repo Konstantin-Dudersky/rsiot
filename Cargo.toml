@@ -8,7 +8,7 @@ name = "rsiot"
 readme = "README.md"
 repository = "https://github.com/Konstantin-Dudersky/rsiot"
 rust-version = "1.75.0"
-version = "0.0.78"
+version = "0.0.79"
 
 
 [dependencies]

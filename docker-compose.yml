@@ -1,6 +1,5 @@
 # docker compose up -d
 
-version: "3.8"
 name: rsiot-dev
 
 services:
@@ -63,7 +62,7 @@ services:
   # surrealdb
   surrealdb:
     command: start --user root --pass root file:/data/database.db
-    container_name: surrealdb
+    container_name: rsiot-surrealdb
     healthcheck:
       test: surreal isready --conn http://localhost:8000
       interval: 5s
