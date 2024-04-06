@@ -60,7 +60,7 @@ where
     TMsg: MsgDataBound,
 {
     while let Ok(msg) = in_out.recv_input().await {
-        let topic = msg.key.replace("-", "/").to_lowercase();
+        let topic = msg.key.replace('-', "/").to_lowercase();
         let topic = format!("rsiot/{topic}");
 
         let payload = config_fn_input(msg);
@@ -133,7 +133,7 @@ where
         in_out
             .send_output(msg)
             .await
-            .map_err(|e| super::Error::CmpOutput(e))?;
+            .map_err(super::Error::CmpOutput)?;
     }
     Ok(())
 }

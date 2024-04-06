@@ -29,7 +29,7 @@ pub async fn subscribe() {
         port: 1883,
         fn_input: |_| Ok(None),
         fn_output: |payload: &[u8]| {
-            let payload = String::from_utf8_lossy(&payload);
+            let payload = String::from_utf8_lossy(payload);
             let msg = Message::deserialize(&payload)?;
             Ok(Some(msg))
         },

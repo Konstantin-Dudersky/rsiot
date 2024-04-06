@@ -69,7 +69,11 @@ pub mod cmp_logger;
 pub mod cmp_modbus_client;
 
 #[cfg(feature = "cmp_mqtt_client")]
-#[cfg(any(aarch64__unknown__linux__gnu, x86_64__unknown__linux__gnu))]
+#[cfg(any(
+    aarch64_linux_android,
+    aarch64__unknown__linux__gnu,
+    x86_64__unknown__linux__gnu
+))]
 pub mod cmp_mqtt_client;
 
 #[cfg(feature = "cmp_plc")]
