@@ -1,8 +1,29 @@
 # docker compose up -d
+#
+# Запустить один сервис:
+# docker compose up -d emqx
 
 name: rsiot-dev
 
 services:
+  emqx:
+    container_name: rsiot-emqx
+    healthcheck:
+      test: ["CMD", "/opt/emqx/bin/emqx", "ctl", "status"]
+      interval: 5s
+      timeout: 25s
+      retries: 5
+    hostname: emqx
+    image: emqx:5.6.0 # https://hub.docker.com/_/emqx
+    ports:
+      - 1883:1883
+      - 8083:8083
+      - 8084:8084
+      - 8883:8883
+      - 18083:18083
+    volumes:
+      - emqx_volume:/opt/emqx/data
+
   timescaledb:
     container_name: rsiot-timescaledb
     hostname: timescaledb
@@ -86,9 +107,11 @@ services:
       - influxdb_data:/var/lib/influxdb2
 
 volumes:
+  emqx_volume:
+    name: emqx_volume
+  influxdb_data:
+    name: influxdb_data
   redis_data:
     name: redis_data
   surrealdb_data:
     name: surrealdb_data
-  influxdb_data:
-    name: influxdb_data

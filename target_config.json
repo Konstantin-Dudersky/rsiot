@@ -4,11 +4,14 @@
       "name": "x86_64-unknown-linux-gnu",
       "toolchain": "+stable",
       "features": [
+        "executor",
+        "logging",
         "cmp_auth",
         "cmp_http_client",
         "cmp_http_server",
         "cmp_influxdb",
         "cmp_modbus_client",
+        "cmp_mqtt_client",
         "cmp_plc",
         "cmp_redis_client",
         "cmp_slint",
@@ -16,27 +19,34 @@
         "cmp_timescaledb",
         "cmp_websocket_client",
         "cmp_websocket_server",
-        "env_vars",
-        "executor",
-        "logging"
+        "env_vars"
       ],
       "add_feat": ["", "single-thread"]
     },
     {
       "name": "aarch64-linux-android",
       "toolchain": "+stable",
-      "features": ["cmp_http_client", "cmp_slint", "executor", "logging"],
+      "features": [
+        "executor",
+        "logging",
+        "cmp_http_client",
+        "cmp_mqtt_client",
+        "cmp_slint"
+      ],
       "add_feat": ["", "single-thread"]
     },
     {
       "name": "aarch64-unknown-linux-gnu",
       "toolchain": "+stable",
       "features": [
+        "executor",
+        "logging",
         "cmp_auth",
         "cmp_http_client",
         "cmp_http_server",
         "cmp_influxdb",
         "cmp_modbus_client",
+        "cmp_mqtt_client",
         "cmp_plc",
         "cmp_raspberrypi",
         "cmp_redis_client",
@@ -45,9 +55,7 @@
         "cmp_timescaledb",
         "cmp_websocket_client",
         "cmp_websocket_server",
-        "env_vars",
-        "executor",
-        "logging"
+        "env_vars"
       ],
       "add_feat": ["", "single-thread"]
     },
@@ -61,13 +69,13 @@
       "name": "wasm32-unknown-unknown",
       "toolchain": "+stable",
       "features": [
+        "executor",
+        "logging",
         "cmp_http_client_wasm",
         "cmp_leptos",
         "cmp_plc",
         "cmp_websocket_client_wasm",
-        "cmp_webstorage",
-        "executor",
-        "logging"
+        "cmp_webstorage"
       ],
       "add_feat": ["single-thread"]
     }

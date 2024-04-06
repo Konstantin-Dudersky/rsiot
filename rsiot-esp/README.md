@@ -25,5 +25,4 @@ cargo publish --allow-dirty --no-verify
 
 - TODO http-client-esp
 - TODO ws-client
-- TODO mqtt 1
-- TODO mqtt 2
+- TODO mqtt client

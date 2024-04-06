@@ -1,0 +1,30 @@
+services:
+  emqx:
+    container_name: emqx
+    healthcheck:
+      test: ["CMD", "/opt/emqx/bin/emqx", "ctl", "status"]
+      interval: 5s
+      timeout: 25s
+      retries: 5
+    hostname: emqx
+    image: emqx:5.6.0 # https://hub.docker.com/_/emqx
+    networks:
+      - network_internal
+    ports:
+      - 1883:1883
+      - 8083:8083
+      - 8084:8084
+      - 8883:8883
+      - 18083:18083
+    profiles:
+      - dev
+      - target
+    volumes:
+      - emqx_volume:/opt/emqx/data
+
+networks:
+  network_internal:
+
+volumes:
+  emqx_volume:
+    name: emqx_volume

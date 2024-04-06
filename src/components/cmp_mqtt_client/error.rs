@@ -6,8 +6,8 @@ pub enum Error {
     #[error("CmpOutput: {0}")]
     CmpOutput(ComponentError),
 
-    #[error("FnOutput: {0}")]
-    FnOutput(anyhow::Error),
+    #[error("RumqttcClient: {0}")]
+    RumqttcClient(#[from] rumqttc::ClientError),
 
     #[error("TokioTaskJoin: {0}")]
     TokioTaskJoin(#[from] tokio::task::JoinError),
