@@ -1,0 +1,7 @@
+[build]
+target = "x86_64-unknown-linux-gnu"
+
+[env]
+ANDROID_HOME = "/home/konstantin/Android/Sdk"
+NDK_HOME = "/home/konstantin/Android/Sdk/ndk/26.2.11394342"
+JAVA_HOME = "/snap/android-studio/current/jbr"

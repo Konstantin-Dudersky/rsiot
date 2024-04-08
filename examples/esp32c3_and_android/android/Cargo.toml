@@ -8,7 +8,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 futures = "*"
-rsiot = { path = "../../../rsiot", features = [
+rsiot = { path = "../../../", features = [
     "executor",
     "cmp_slint",
     "cmp_http_client",

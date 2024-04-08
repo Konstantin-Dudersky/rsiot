@@ -5,7 +5,7 @@ edition = "2021"
 
 
 [dependencies]
-rsiot = { path = "../../../rsiot", features = ["cmp_esp"] }
+rsiot = { path = "../../../", features = ["cmp_esp"] }
 esp-idf-svc = { version = "*" }
 tokio = { version = "*", features = ["macros", "rt"] }
 tracing = { version = "*" }

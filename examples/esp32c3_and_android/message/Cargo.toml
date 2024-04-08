@@ -5,5 +5,5 @@ edition = "2021"
 
 
 [dependencies]
-rsiot = { path = "../../../rsiot" }
+rsiot = { path = "../../.." }
 serde = { version = "*", features = ["derive"] }
