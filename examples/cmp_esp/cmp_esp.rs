@@ -1,6 +1,6 @@
 //! Example based on developer board ESP32-C3
 //!
-//! cargo run --example cmp_esp --target="riscv32imc-esp-espidf" --features="cmp_esp" --release
+//! cargo run --example cmp_esp --target="riscv32imc-esp-espidf" --features="cmp_esp, logging" --release
 
 #[cfg(feature = "cmp_esp")]
 #[tokio::main(flavor = "current_thread")]
@@ -15,8 +15,8 @@ async fn main() {
 
     use rsiot::{
         components::{
-            cmp_esp_adc, cmp_esp_gpio, cmp_esp_wifi, cmp_http_server_esp, cmp_inject_periodic,
-            cmp_logger,
+            cmp_esp_adc, cmp_esp_gpio, cmp_esp_mqtt_client, cmp_esp_wifi, cmp_http_server_esp,
+            cmp_inject_periodic, cmp_logger,
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
         logging::configure_logging,
@@ -50,10 +50,10 @@ async fn main() {
     };
 
     // cmp_logger ----------------------------------------------------------------------------------
-    let logger_config = cmp_logger::Config {
-        level: Level::INFO,
-        fn_input: |msg| Ok(Some(msg.serialize()?)),
-    };
+    // let logger_config = cmp_logger::Config {
+    //     level: Level::INFO,
+    //     fn_input: |msg| Ok(Some(msg.serialize()?)),
+    // };
 
     // cmp_inject_periodic -------------------------------------------------------------------------
     let mut value = false;
@@ -74,6 +74,14 @@ async fn main() {
     let wifi_config = cmp_esp_wifi::Config {
         peripherals: peripherals.modem,
         event_loop: event_loop.clone(),
+        access_point: Some(cmp_esp_wifi::ConfigAccessPoint {
+            ssid: "test_esp".into(),
+        }),
+        client: Some(cmp_esp_wifi::ConfigClient {
+            ssid: "internet".into(),
+            password: "k33n3+Ik".into(),
+            auth_method: cmp_esp_wifi::ConfigAuthMethod::WPA2Personal,
+        }),
     };
 
     // GPIO
@@ -107,6 +115,19 @@ async fn main() {
         }],
     };
 
+    // MQTT
+    let config_esp_mqtt_client = cmp_esp_mqtt_client::Config {
+        client_id: "cmp_esp_example".into(),
+        host: "192.168.101.123".into(),
+        port: 1883,
+        fn_input: |msg| Ok(Some(msg.serialize()?.into_bytes())),
+        fn_output: |payload: &[u8]| {
+            let payload = String::from_utf8_lossy(&payload);
+            let msg = Message::deserialize(&payload)?;
+            Ok(Some(msg))
+        },
+    };
+
     // executor ------------------------------------------------------------------------------------
 
     let executor_config = ComponentExecutorConfig {
@@ -119,12 +140,13 @@ async fn main() {
 
     local_set.spawn_local(async {
         ComponentExecutor::<Custom>::new(executor_config)
-            .add_cmp(cmp_logger::Cmp::new(logger_config))
+            // .add_cmp(cmp_logger::Cmp::new(logger_config))
             .add_cmp(cmp_http_server_esp::Cmp::new(http_server_esp_config))
             .add_cmp(cmp_esp_wifi::Cmp::new(wifi_config))
             .add_cmp(cmp_esp_gpio::Cmp::new(gpio_config))
             .add_cmp(cmp_inject_periodic::Cmp::new(config_inject_periodic))
             .add_cmp(cmp_esp_adc::Cmp::new(config_esp_adc))
+            .add_cmp(cmp_esp_mqtt_client::Cmp::new(config_esp_mqtt_client))
             .wait_result()
             .await
             .unwrap()

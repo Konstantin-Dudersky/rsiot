@@ -24,6 +24,10 @@ pub mod cmp_esp_gpio;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
+pub mod cmp_esp_mqtt_client;
+
+#[cfg(feature = "cmp_esp")]
+#[cfg(riscv32imc_esp_espidf)]
 pub mod cmp_esp_nvs;
 
 #[cfg(feature = "cmp_esp")]
