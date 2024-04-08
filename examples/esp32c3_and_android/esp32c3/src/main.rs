@@ -1,14 +1,8 @@
 use esp_idf_svc::{
-    eventloop::EspSystemEventLoop,
-    hal::{gpio::PinDriver, peripherals::Peripherals},
-    log::EspLogger,
-    sys::link_patches,
-    wifi::EspWifi,
+    eventloop::EspSystemEventLoop, hal::peripherals::Peripherals, log::EspLogger, sys::link_patches,
 };
 use rsiot::{
-    components::{
-        cmp_esp_gpio_input, cmp_esp_gpio_output, cmp_esp_wifi, cmp_http_server_esp, cmp_logger,
-    },
+    components::{cmp_esp_gpio, cmp_esp_wifi, cmp_http_server_esp, cmp_logger},
     executor::{ComponentExecutor, ComponentExecutorConfig},
     message::*,
 };
@@ -38,7 +32,7 @@ async fn main() {
     // cmp_logger ----------------------------------------------------------------------------------
     let logger_config = cmp_logger::Config {
         level: Level::INFO,
-        header: "".into(),
+        fn_input: |msg| Ok(Some(msg.serialize()?)),
     };
 
     // ESP -----------------------------------------------------------------------------------------
@@ -46,27 +40,29 @@ async fn main() {
     let event_loop = EspSystemEventLoop::take().unwrap();
 
     // wifi
-    let wifi_config = cmp_esp_wifi::Config::<Custom> {
-        fn_input: |_| None,
-        fn_output: |_| vec![],
+    let wifi_config = cmp_esp_wifi::Config {
+        peripherals: peripherals.modem,
         event_loop: event_loop.clone(),
-        driver: EspWifi::new(peripherals.modem, event_loop.clone(), None).unwrap(),
+        access_point: Some(cmp_esp_wifi::ConfigAccessPoint {
+            ssid: "test_esp".into(),
+        }),
+        client: None,
     };
 
     // GPIO0 - выход на реле
-    let gpio0_config = cmp_esp_gpio_output::Config {
-        fn_input: |msg| match msg.data {
-            MsgData::Custom(Custom::SetRelayState(value)) => Some(value),
-            _ => None,
-        },
-        driver: PinDriver::output(peripherals.pins.gpio0).unwrap(),
-        is_low_triggered: false,
-    };
-
-    // GPIO9 - button Boot
-    let gpio9_config = cmp_esp_gpio_input::Config {
-        fn_output: |value| Message::new_custom(Custom::BootButton(value)),
-        driver: PinDriver::input(peripherals.pins.gpio9).unwrap(),
+    let gpio_config = cmp_esp_gpio::Config {
+        inputs: vec![cmp_esp_gpio::ConfigGpioInput {
+            peripherals: peripherals.pins.gpio9.into(),
+            fn_output: |value| Message::new_custom(Custom::BootButton(value)),
+        }],
+        outputs: vec![cmp_esp_gpio::ConfigGpioOutput {
+            peripherals: peripherals.pins.gpio0.into(),
+            fn_input: |msg| match msg.data {
+                MsgData::Custom(Custom::SetRelayState(value)) => Some(value),
+                _ => None,
+            },
+            is_low_triggered: false,
+        }],
     };
 
     // executor ------------------------------------------------------------------------------------
@@ -84,8 +80,7 @@ async fn main() {
             .add_cmp(cmp_logger::Cmp::new(logger_config))
             .add_cmp(cmp_http_server_esp::Cmp::new(http_server_esp_config))
             .add_cmp(cmp_esp_wifi::Cmp::new(wifi_config))
-            .add_cmp(cmp_esp_gpio_output::Cmp::new(gpio0_config))
-            .add_cmp(cmp_esp_gpio_input::Cmp::new(gpio9_config))
+            .add_cmp(cmp_esp_gpio::Cmp::new(gpio_config))
             .wait_result()
             .await
             .unwrap()

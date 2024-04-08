@@ -12,25 +12,26 @@ use super::{component::IComponent, error::ComponentError, types::FnAuth, Cache, 
 
 /// Запуск коллекции компонентов в работу
 ///
-/// # Примеры
+/// **Примеры**
 ///
-/// ## Многопоточное окружение
-///
-/// TODO
-///
-/// ## Однопоточное окружение
+/// - Многопоточное окружение
 ///
 /// TODO
 ///
-/// ## Однопоточное окружение - WASM (Leptos)
+/// - Однопоточное окружение
 ///
+/// TODO
+///
+/// - Однопоточное окружение - WASM (Leptos)
 ///
 /// ```rust
 /// use leptos::*;
 ///
+/// // функция main - обычная, не async
+///
 /// let context = LocalSet::new();
 /// context.spawn_local(async move {
-///     ComponentExecutor::<Message>::new(100, "example")
+///     ComponentExecutor::<Custom>::new(config_executor)
 ///         .add_cmp(cmp_websocket_client_wasm::Cmp::new(ws_client_config))
 ///         .add_cmp(cmp_leptos::Cmp::new(leptos_config))
 ///         .wait_result()
@@ -55,15 +56,15 @@ pub struct ComponentExecutorConfig<TMsg> {
 
     /// Функция фильтрации сообщений в зависимости от текущей авторизации
     ///
-    /// # Примеры
+    /// **Примеры**
     ///
-    /// ## Все сообщения блокируются
+    /// - Все сообщения блокируются
     ///
     /// ```rust
     /// |_, _| None
     /// ```
     ///
-    /// ## Все сообщения разрешены
+    /// - Все сообщения разрешены
     ///
     /// ```rust
     /// |msg, _| Some(msg)
