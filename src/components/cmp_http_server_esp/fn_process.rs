@@ -1,29 +1,7 @@
-// Пробовал для настройки CORS вместо
-//
-// ```rust
-// let mut response = request.into_ok_response().unwrap();
-// ```
-//
-// использовать
-//
-// ```rust
-// let mut response = request
-//     .into_response(
-//         200,
-//         None,
-//         &[
-//             ("Access-Control-Allow-Origin", "*"),
-//             ("Access-Control-Max-Age", "600"),
-//             ("Access-Control-Allow-Methods", "PUT,POST,GET,OPTIONS"),
-//             ("Access-Control-Allow-Headers", "*"),
-//         ],
-//     )
-//     .unwrap();
-// ```
-//
-// Работает или нет, непонятно
-
-use std::time::Duration;
+use std::{
+    ffi::{CStr, CString},
+    time::Duration,
+};
 
 use embedded_svc::{http::Headers, io::Read};
 use esp_idf_svc::{
@@ -32,6 +10,7 @@ use esp_idf_svc::{
         Method,
     },
     io::Write,
+    tls::X509,
 };
 use tokio::time::sleep;
 use tracing::info;
@@ -43,6 +22,17 @@ use crate::{
 
 use super::Config;
 
+/// Заголовки для разрешения CORS
+const HEADERS: [(&str, &str); 4] = [
+    ("Access-Control-Allow-Origin", "*"),
+    ("Access-Control-Max-Age", "600"),
+    ("Access-Control-Allow-Methods", "PUT,POST,GET,OPTIONS"),
+    ("Access-Control-Allow-Headers", "*"),
+];
+
+const CERTIFICATE: &[u8] = include_bytes!("./cert/cert.pem");
+const PRIVATE_KEY: &[u8] = include_bytes!("./cert/key.pem");
+
 pub async fn fn_process<TMsg>(in_out: CmpInOut<TMsg>, _config: Config<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound,
@@ -50,7 +40,14 @@ where
     // Необходимо подождать, пока поднимется Wi-Fi
     sleep(Duration::from_secs(2)).await;
 
+    let cert = X509::pem_until_nul(CERTIFICATE);
+    let key = X509::pem_until_nul(PRIVATE_KEY);
+
     let http_config = HttpServerConfiguration {
+        // server_certificate: Some(X509::der(CERTIFICATE)),
+        // private_key: Some(X509::der(PRIVATE_KEY)),
+        server_certificate: Some(cert),
+        private_key: Some(key),
         ..Default::default()
     };
 
@@ -60,7 +57,7 @@ where
     let cache_clone = in_out.cache.clone();
     server
         .fn_handler("/messages", Method::Get, move |request| {
-            info!("new request for messages");
+            info!("Get request");
             let mut msgs_json: Vec<String> = vec![];
             {
                 let lock = cache_clone.blocking_read();
@@ -72,6 +69,8 @@ where
             let json = msgs_json.join(",");
             let json = format!("[{}]", json);
             let mut response = request.into_ok_response().unwrap();
+
+            // let mut response = request.into_response(200, None, &HEADERS).unwrap();
             response.write_all(json.as_bytes()).unwrap();
             Ok(()) as super::Result<()>
         })
@@ -87,6 +86,8 @@ where
             let mut buf = vec![0; len];
             request.read_exact(&mut buf).unwrap();
             let buf_str = String::from_utf8_lossy(&buf);
+
+            let request = request;
 
             let mut response = request.into_ok_response().unwrap();
             let msg = Message::deserialize(&buf_str);

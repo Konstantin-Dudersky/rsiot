@@ -4,6 +4,13 @@ use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;
 
+use rsiot::{
+    components::cmp_leptos::{create_signal_from_msg, GlobalState},
+    message::*,
+};
+
+use message::*;
+
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "core"])]
@@ -17,6 +24,10 @@ struct GreetArgs<'a> {
 
 #[component]
 pub fn App() -> impl IntoView {
+    let gs = use_context::<GlobalState<Custom>>().unwrap();
+
+    let (gpio0_button, _) = create_signal_from_msg!("Custom-HttpbinGet");
+
     let (name, set_name) = create_signal(String::new());
     let (greet_msg, set_greet_msg) = create_signal(String::new());
 
@@ -42,6 +53,9 @@ pub fn App() -> impl IntoView {
 
     view! {
         <main class="container">
+            <p> { move || gpio0_button.get() } </p>
+
+
             <div class="row">
                 <a href="https://tauri.app" target="_blank">
                     <img src="public/tauri.svg" class="logo tauri" alt="Tauri logo"/>

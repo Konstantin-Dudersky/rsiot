@@ -49,14 +49,14 @@ async fn main() {
         client: None,
     };
 
-    // GPIO0 - выход на реле
+    // GPIO
     let gpio_config = cmp_esp_gpio::Config {
         inputs: vec![cmp_esp_gpio::ConfigGpioInput {
-            peripherals: peripherals.pins.gpio9.into(),
-            fn_output: |value| Message::new_custom(Custom::BootButton(value)),
+            peripherals: peripherals.pins.gpio0.into(),
+            fn_output: |value| Message::new_custom(Custom::Gpio0Button(value)),
         }],
         outputs: vec![cmp_esp_gpio::ConfigGpioOutput {
-            peripherals: peripherals.pins.gpio0.into(),
+            peripherals: peripherals.pins.gpio1.into(),
             fn_input: |msg| match msg.data {
                 MsgData::Custom(Custom::SetRelayState(value)) => Some(value),
                 _ => None,

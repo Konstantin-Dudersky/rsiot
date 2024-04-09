@@ -9,6 +9,7 @@ wasm-bindgen = "0.2"
 wasm-bindgen-futures = "0.4"
 js-sys = "0.3"
 serde = { version = "1", features = ["derive"] }
+serde_json = { version = "*" }
 serde-wasm-bindgen = "0.6"
 console_error_panic_hook = "0.1.7"
 tokio = { version = "*", features = ["rt"] }
@@ -17,9 +18,12 @@ rsiot = { path = "../../../", features = [
     "cmp_http_client_wasm",
     "cmp_leptos",
     "single-thread",
+    "logging",
 ] }
+url = { version = "*" }
 
 message = { path = "../message" }
 
-[workspace]
-members = ["src-tauri"]
+
+# [workspace]
+# members = ["src-tauri"]
