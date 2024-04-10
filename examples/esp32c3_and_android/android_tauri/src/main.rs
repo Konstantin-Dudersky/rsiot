@@ -45,18 +45,18 @@ fn main() -> anyhow::Result<()> {
 
     let config_http_client_wasm = cmp_http_client_wasm::Config {
         connection_config: cmp_http_client_wasm::ConnectionConfig {
-            base_url: Url::parse("https://httpbin.org").unwrap(),
+            base_url: Url::parse("http://192.168.71.1").unwrap(),
         },
         requests_input: vec![],
         requests_periodic: vec![cmp_http_client_wasm::RequestPeriodic {
             period: Duration::from_secs(1),
             http_param: cmp_http_client_wasm::HttpParam::Get {
-                endpoint: "get".into(),
+                endpoint: "messages".into(),
             },
             on_success: |data| {
-                // let text: String = serde_json::from_str(data)?;
-                let msg = Message::new_custom(Custom::HttpbinGet(data.to_string()));
-                Ok(vec![msg])
+                let msgs: Vec<Message<Custom>> = serde_json::from_str(data)?;
+                // let msg = Message::new_custom(Custom::Gpio0Button(data.to_string()));
+                Ok(msgs)
             },
             on_failure: || vec![],
         }],

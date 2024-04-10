@@ -4,10 +4,7 @@ use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::to_value;
 use wasm_bindgen::prelude::*;
 
-use rsiot::{
-    components::cmp_leptos::{create_signal_from_msg, GlobalState},
-    message::*,
-};
+use rsiot::{components::cmp_leptos::create_signal_from_msg, message::*};
 
 use message::*;
 
@@ -24,9 +21,8 @@ struct GreetArgs<'a> {
 
 #[component]
 pub fn App() -> impl IntoView {
-    let gs = use_context::<GlobalState<Custom>>().unwrap();
-
-    let (gpio0_button, _) = create_signal_from_msg!("Custom-HttpbinGet");
+    let (gpio0_button, _) = create_signal_from_msg!("Custom-Gpio0Button");
+    // let (gpio0_button, _) = create_signal_from_msg!("Custom-HttpbinGet");
 
     let (name, set_name) = create_signal(String::new());
     let (greet_msg, set_greet_msg) = create_signal(String::new());

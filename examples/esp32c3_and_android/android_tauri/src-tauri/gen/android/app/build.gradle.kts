@@ -15,7 +15,7 @@ android {
     compileSdk = 33
     namespace = "uscada.android_tauri"
     defaultConfig {
-        manifestPlaceholders["usesCleartextTraffic"] = "false"
+        manifestPlaceholders["usesCleartextTraffic"] = "true"
         applicationId = "uscada.android_tauri"
         minSdk = 24
         targetSdk = 33

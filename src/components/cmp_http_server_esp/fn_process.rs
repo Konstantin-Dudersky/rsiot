@@ -1,7 +1,4 @@
-use std::{
-    ffi::{CStr, CString},
-    time::Duration,
-};
+use std::time::Duration;
 
 use embedded_svc::{http::Headers, io::Read};
 use esp_idf_svc::{
@@ -10,7 +7,6 @@ use esp_idf_svc::{
         Method,
     },
     io::Write,
-    tls::X509,
 };
 use tokio::time::sleep;
 use tracing::info;
@@ -30,9 +26,6 @@ const HEADERS: [(&str, &str); 4] = [
     ("Access-Control-Allow-Headers", "*"),
 ];
 
-const CERTIFICATE: &[u8] = include_bytes!("./cert/cert.pem");
-const PRIVATE_KEY: &[u8] = include_bytes!("./cert/key.pem");
-
 pub async fn fn_process<TMsg>(in_out: CmpInOut<TMsg>, _config: Config<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound,
@@ -40,14 +33,7 @@ where
     // Необходимо подождать, пока поднимется Wi-Fi
     sleep(Duration::from_secs(2)).await;
 
-    let cert = X509::pem_until_nul(CERTIFICATE);
-    let key = X509::pem_until_nul(PRIVATE_KEY);
-
     let http_config = HttpServerConfiguration {
-        // server_certificate: Some(X509::der(CERTIFICATE)),
-        // private_key: Some(X509::der(PRIVATE_KEY)),
-        server_certificate: Some(cert),
-        private_key: Some(key),
         ..Default::default()
     };
 
@@ -68,9 +54,7 @@ where
             }
             let json = msgs_json.join(",");
             let json = format!("[{}]", json);
-            let mut response = request.into_ok_response().unwrap();
-
-            // let mut response = request.into_response(200, None, &HEADERS).unwrap();
+            let mut response = request.into_response(200, None, &HEADERS).unwrap();
             response.write_all(json.as_bytes()).unwrap();
             Ok(()) as super::Result<()>
         })
