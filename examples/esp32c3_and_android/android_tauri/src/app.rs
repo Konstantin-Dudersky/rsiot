@@ -1,87 +1,44 @@
-use leptos::leptos_dom::ev::SubmitEvent;
 use leptos::*;
-use serde::{Deserialize, Serialize};
-use serde_wasm_bindgen::to_value;
-use wasm_bindgen::prelude::*;
 
 use rsiot::{components::cmp_leptos::create_signal_from_msg, message::*};
 
 use message::*;
 
-#[wasm_bindgen]
-extern "C" {
-    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "core"])]
-    async fn invoke(cmd: &str, args: JsValue) -> JsValue;
-}
-
-#[derive(Serialize, Deserialize)]
-struct GreetArgs<'a> {
-    name: &'a str,
-}
-
 #[component]
 pub fn App() -> impl IntoView {
     let (gpio0_button, _) = create_signal_from_msg!("Custom-Gpio0Button");
-    // let (gpio0_button, _) = create_signal_from_msg!("Custom-HttpbinGet");
+    let (analog_pin2, _) = create_signal_from_msg!("Custom-AnalogPin2");
 
-    let (name, set_name) = create_signal(String::new());
-    let (greet_msg, set_greet_msg) = create_signal(String::new());
-
-    let update_name = move |ev| {
-        let v = event_target_value(&ev);
-        set_name.set(v);
-    };
-
-    let greet = move |ev: SubmitEvent| {
-        ev.prevent_default();
-        spawn_local(async move {
-            let name = name.get_untracked();
-            if name.is_empty() {
-                return;
-            }
-
-            let args = to_value(&GreetArgs { name: &name }).unwrap();
-            // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-            let new_msg = invoke("greet", args).await.as_string().unwrap();
-            set_greet_msg.set(new_msg);
-        });
-    };
+    let (_, set_relay_state) = create_signal_from_msg!("Custom-SetRelayState");
 
     view! {
-        <main class="container">
-            <p> { move || gpio0_button.get() } </p>
-
-
-            <div class="row">
-                <a href="https://tauri.app" target="_blank">
-                    <img src="public/tauri.svg" class="logo tauri" alt="Tauri logo"/>
-                </a>
-                <a href="https://docs.rs/leptos/" target="_blank">
-                    <img src="public/leptos.svg" class="logo leptos" alt="Leptos logo"/>
-                </a>
+        <main class="container mx-auto">
+            <div class="flex flex-row">
+                <div class="basis-1/4">Вход GPIO0</div>
+                <div class="basis-3/4">{ move || gpio0_button.get() }</div>
             </div>
-
-            <p>"Click on the Tauri and Leptos logos to learn more."</p>
-
-            <p>
-                "Recommended IDE setup: "
-                <a href="https://code.visualstudio.com/" target="_blank">"VS Code"</a>
-                " + "
-                <a href="https://github.com/tauri-apps/tauri-vscode" target="_blank">"Tauri"</a>
-                " + "
-                <a href="https://github.com/rust-lang/rust-analyzer" target="_blank">"rust-analyzer"</a>
-            </p>
-
-            <form class="row" on:submit=greet>
-                <input
-                    id="greet-input"
-                    placeholder="Enter a name..."
-                    on:input=update_name
-                />
-                <button type="submit">"Greet"</button>
-            </form>
-
-            <p><b>{ move || greet_msg.get() }</b></p>
+            <div class="flex flex-row">
+                <div class="basis-3/12">Выход GPIO</div>
+                <div class="basis-4/12">
+                    <button
+                        class="bg-white opacity-10"
+                        on:click = move |_| {set_relay_state.set(true)}
+                    >
+                        Включить
+                    </button>
+                </div>
+                <div class="basis-4/12">
+                    <button
+                        on:click = move |_| {set_relay_state.set(false)}
+                    >
+                        Отключить
+                    </button>
+                </div>
+            </div>
+            <div class="flex flex-row">
+                <div class="basis-1/4">Аналоговое значение</div>
+                <div class="basis-3/4">{ move || analog_pin2.get() }</div>
+            </div>
         </main>
     }
 }

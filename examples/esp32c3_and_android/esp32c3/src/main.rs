@@ -1,8 +1,10 @@
+use std::time::Duration;
+
 use esp_idf_svc::{
     eventloop::EspSystemEventLoop, hal::peripherals::Peripherals, log::EspLogger, sys::link_patches,
 };
 use rsiot::{
-    components::{cmp_esp_gpio, cmp_esp_wifi, cmp_http_server_esp, cmp_logger},
+    components::{cmp_esp_adc, cmp_esp_gpio, cmp_esp_wifi, cmp_http_server_esp, cmp_logger},
     executor::{ComponentExecutor, ComponentExecutorConfig},
     message::*,
 };
@@ -65,6 +67,21 @@ async fn main() {
         }],
     };
 
+    // ADC
+    let config_esp_adc = cmp_esp_adc::Config {
+        adc1: peripherals.adc1,
+        adc2: peripherals.adc2,
+        inputs: vec![cmp_esp_adc::ConfigInput {
+            peripherals: cmp_esp_adc::ConfigInputType::Gpio2(peripherals.pins.gpio2),
+            attenuation: cmp_esp_adc::ConfigInputAttenuation::Db11,
+            update_period: Duration::from_secs(1),
+            fn_output: |value| {
+                let value = value as f32 / 1000.0;
+                Message::new_custom(Custom::AnalogPin2(value))
+            },
+        }],
+    };
+
     // executor ------------------------------------------------------------------------------------
 
     let executor_config = ComponentExecutorConfig {
@@ -81,6 +98,7 @@ async fn main() {
             .add_cmp(cmp_http_server_esp::Cmp::new(http_server_esp_config))
             .add_cmp(cmp_esp_wifi::Cmp::new(wifi_config))
             .add_cmp(cmp_esp_gpio::Cmp::new(gpio_config))
+            .add_cmp(cmp_esp_adc::Cmp::new(config_esp_adc))
             .wait_result()
             .await
             .unwrap()

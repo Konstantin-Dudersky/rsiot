@@ -9,7 +9,7 @@ use esp_idf_svc::{
     io::Write,
 };
 use tokio::time::sleep;
-use tracing::info;
+use tracing::{info, trace};
 
 use crate::{
     executor::CmpInOut,
@@ -43,7 +43,7 @@ where
     let cache_clone = in_out.cache.clone();
     server
         .fn_handler("/messages", Method::Get, move |request| {
-            info!("Get request");
+            trace!("Get request");
             let mut msgs_json: Vec<String> = vec![];
             {
                 let lock = cache_clone.blocking_read();
@@ -70,10 +70,7 @@ where
             let mut buf = vec![0; len];
             request.read_exact(&mut buf).unwrap();
             let buf_str = String::from_utf8_lossy(&buf);
-
-            let request = request;
-
-            let mut response = request.into_ok_response().unwrap();
+            let mut response = request.into_response(200, None, &HEADERS).unwrap();
             let msg = Message::deserialize(&buf_str);
             match msg {
                 Ok(val) => in_out_clone.send_output_blocking(val).unwrap(),
@@ -97,8 +94,7 @@ where
             let mut buf = vec![0; len];
             request.read_exact(&mut buf).unwrap();
             let buf_str = String::from_utf8_lossy(&buf);
-
-            let mut response = request.into_ok_response().unwrap();
+            let mut response = request.into_response(200, None, &HEADERS).unwrap();
             let msg = Message::deserialize(&buf_str);
             match msg {
                 Ok(val) => in_out_clone.send_output_blocking(val).unwrap(),

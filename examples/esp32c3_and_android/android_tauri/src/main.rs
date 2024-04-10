@@ -25,29 +25,20 @@ fn main() -> anyhow::Result<()> {
         hostname: "localhost".into(),
     };
 
-    // let config_http_client_wasm = cmp_http_client_wasm::Config {
-    //     connection_config: cmp_http_client_wasm::ConnectionConfig {
-    //         base_url: Url::parse("http://192.168.71.1").unwrap(),
-    //     },
-    //     requests_input: vec![],
-    //     requests_periodic: vec![cmp_http_client_wasm::RequestPeriodic {
-    //         period: Duration::from_secs(1),
-    //         http_param: cmp_http_client_wasm::HttpParam::Get {
-    //             endpoint: "messages".into(),
-    //         },
-    //         on_success: |data| {
-    //             let msgs: Vec<Message<Custom>> = serde_json::from_str(data)?;
-    //             Ok(msgs)
-    //         },
-    //         on_failure: || vec![],
-    //     }],
-    // };
-
     let config_http_client_wasm = cmp_http_client_wasm::Config {
         connection_config: cmp_http_client_wasm::ConnectionConfig {
             base_url: Url::parse("http://192.168.71.1").unwrap(),
         },
-        requests_input: vec![],
+        requests_input: vec![cmp_http_client_wasm::RequestInput {
+            fn_input: |msg| {
+                let endpoint = "messages".into();
+                let body = msg.serialize().unwrap();
+                let req = cmp_http_client_wasm::HttpParam::Post { endpoint, body };
+                Some(req)
+            },
+            on_success: |_| Ok(vec![]),
+            on_failure: || vec![],
+        }],
         requests_periodic: vec![cmp_http_client_wasm::RequestPeriodic {
             period: Duration::from_secs(1),
             http_param: cmp_http_client_wasm::HttpParam::Get {
@@ -55,7 +46,6 @@ fn main() -> anyhow::Result<()> {
             },
             on_success: |data| {
                 let msgs: Vec<Message<Custom>> = serde_json::from_str(data)?;
-                // let msg = Message::new_custom(Custom::Gpio0Button(data.to_string()));
                 Ok(msgs)
             },
             on_failure: || vec![],
