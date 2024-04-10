@@ -20,15 +20,13 @@ pub fn App() -> impl IntoView {
             <div class="flex flex-row">
                 <div class="basis-3/12">Выход GPIO</div>
                 <div class="basis-4/12">
-                    <button
-                        class="bg-white opacity-10"
+                    <button type="button" class="rounded-md bg-secondaryContainer px-3.5 py-2.5 text-sm font-semibold text-onSecondaryContainer shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                         on:click = move |_| {set_relay_state.set(true)}
-                    >
-                        Включить
+                    >Включить
                     </button>
                 </div>
                 <div class="basis-4/12">
-                    <button
+                    <button type="button" class="rounded-md bg-secondaryContainer px-3.5 py-2.5 text-sm font-semibold text-onSecondaryContainer shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                         on:click = move |_| {set_relay_state.set(false)}
                     >
                         Отключить
