@@ -13,29 +13,35 @@ pub fn App() -> impl IntoView {
 
     view! {
         <main class="container mx-auto">
-            <div class="flex flex-row">
-                <div class="basis-1/4">Вход GPIO0</div>
-                <div class="basis-3/4">{ move || gpio0_button.get() }</div>
-            </div>
-            <div class="flex flex-row">
-                <div class="basis-3/12">Выход GPIO</div>
+            <div class="flex flex-row justify-around items-center mt-8">
                 <div class="basis-4/12">
-                    <button type="button" class="rounded-md bg-secondaryContainer px-3.5 py-2.5 text-sm font-semibold text-onSecondaryContainer shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                    <p>GPIO 0 (вход)</p>
+                </div>
+                <div class="basis-8/12">{ move || gpio0_button.get() }</div>
+            </div>
+            <div class="flex flex-row items-center mt-8">
+                <div class="basis-4/12">
+                    <p>GPIO 1 (выход)</p>
+                </div>
+                <div class="basis-4/12">
+                    <button type="button" class="py-2.5 px-3.5 text-sm font-semibold rounded-md shadow-sm bg-secondaryContainer text-onSecondaryContainer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                         on:click = move |_| {set_relay_state.set(true)}
                     >Включить
                     </button>
                 </div>
                 <div class="basis-4/12">
-                    <button type="button" class="rounded-md bg-secondaryContainer px-3.5 py-2.5 text-sm font-semibold text-onSecondaryContainer shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                    <button type="button" class="py-2.5 px-3.5 text-sm font-semibold rounded-md shadow-sm bg-secondaryContainer text-onSecondaryContainer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                         on:click = move |_| {set_relay_state.set(false)}
                     >
                         Отключить
                     </button>
                 </div>
             </div>
-            <div class="flex flex-row">
-                <div class="basis-1/4">Аналоговое значение</div>
-                <div class="basis-3/4">{ move || analog_pin2.get() }</div>
+            <div class="flex flex-row justify-around items-center mt-8">
+                <div class="basis-4/12">
+                    <p>GPIO 2 (вход ADC)</p>
+                </div>
+                <div class="basis-8/12">{ move || analog_pin2.get() }</div>
             </div>
         </main>
     }

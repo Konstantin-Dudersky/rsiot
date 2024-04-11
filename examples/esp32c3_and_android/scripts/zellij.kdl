@@ -1,0 +1,21 @@
+layout {
+    default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+        children
+        pane size=2 borderless=true {
+            plugin location="zellij:status-bar"
+        }
+    }
+
+    tab name="trunk serve" cwd="./android_tauri" {
+        pane {
+            command "trunk"
+            args "serve"
+            name "cargo run"
+            start_suspended true
+        }
+    }
+    
+}
