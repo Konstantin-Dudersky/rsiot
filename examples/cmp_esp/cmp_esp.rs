@@ -78,8 +78,8 @@ async fn main() {
             ssid: "test_esp".into(),
         }),
         client: Some(cmp_esp_wifi::ConfigClient {
-            ssid: "internet".into(),
-            password: "k33n3+Ik".into(),
+            ssid: "KonstantinAP".into(),
+            password: "Admin123!".into(),
             auth_method: cmp_esp_wifi::ConfigAuthMethod::WPA2Personal,
         }),
     };
@@ -87,11 +87,11 @@ async fn main() {
     // GPIO
     let gpio_config = cmp_esp_gpio::Config {
         inputs: vec![cmp_esp_gpio::ConfigGpioInput {
-            peripherals: peripherals.pins.gpio9.into(),
+            peripherals: peripherals.pins.gpio0.into(),
             fn_output: |value| Message::new_custom(Custom::BootButton(value)),
         }],
         outputs: vec![cmp_esp_gpio::ConfigGpioOutput {
-            peripherals: peripherals.pins.gpio0.into(),
+            peripherals: peripherals.pins.gpio1.into(),
             fn_input: |msg| match msg.data {
                 MsgData::Custom(Custom::Relay0(value)) => Some(value),
                 _ => None,
@@ -105,7 +105,7 @@ async fn main() {
         adc1: peripherals.adc1,
         adc2: peripherals.adc2,
         inputs: vec![cmp_esp_adc::ConfigInput {
-            peripherals: cmp_esp_adc::ConfigInputType::Gpio3(peripherals.pins.gpio3),
+            peripherals: cmp_esp_adc::ConfigInputType::Gpio2(peripherals.pins.gpio2),
             attenuation: cmp_esp_adc::ConfigInputAttenuation::Db11,
             update_period: Duration::from_secs(1),
             fn_output: |value| {
@@ -118,7 +118,7 @@ async fn main() {
     // MQTT
     let config_esp_mqtt_client = cmp_esp_mqtt_client::Config {
         client_id: "cmp_esp_example".into(),
-        host: "192.168.101.123".into(),
+        host: "195.43.142.106".into(),
         port: 1883,
         fn_input: |msg| Ok(Some(msg.serialize()?.into_bytes())),
         fn_output: |payload: &[u8]| {

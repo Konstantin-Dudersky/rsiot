@@ -38,22 +38,21 @@ cargo doc --open
 
 ## Публикация версии на crates.io
 
-Проверяем, что все компилируется без ошибок:
+- Проверяем, что все компилируется без ошибок:
 
-```bash
-nu scripts/prepare_for_publish.nu
-```
+  ```bash
+  nu scripts/prepare_for_publish.nu
+  ```
 
-Коммитим все изменения в git.
+- Коммитим все изменения в git.
 
-### rsiot-macros
+  - rsiot-macros
+  - rsiot
 
-### rsiot
+- Изменяем номер версии проекта в Cargo.toml.
 
-Изменяем номер версии проекта в Cargo.toml.
+- Публикуем на `crates.io`:
 
-Публикуем на `crates.io`:
-
-```bash
-cargo publish --allow-dirty
-```
+  ```bash
+  cargo publish --allow-dirty
+  ```
