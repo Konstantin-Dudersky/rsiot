@@ -1092,7 +1092,7 @@ dependencies = [
 
 [[package]]
 name = "rsiot"
-version = "0.0.79"
+version = "0.0.80"
 dependencies = [
  "anyhow",
  "cfg_aliases",

@@ -15,6 +15,10 @@ pub enum Custom {
     DataUnit(()),
     /// Вложенная группа
     DataGroup(DataGroup),
+    /// ESP - кнопка BOOT
+    EspBootButton(bool),
+    /// ESP - выход на реле
+    EspRelay(bool),
 }
 
 /// Пример структуры

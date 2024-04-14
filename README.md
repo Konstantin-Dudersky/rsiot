@@ -1,8 +1,8 @@
 <!-- cargo-rdme start -->
 
-Компоненты для построения системы сбора и обработки данных
+Компоненты для построения системы сбора, обработки и визуализации данных
 
-[Документация](https://docs.rs/rsiot/latest/rsiot)
+[Документация](https://konstantin-dudersky.github.io/rsiot-docs/)
 
 Поддерживаемые архитектуры ([подробнее](https://doc.rust-lang.org/rustc/platform-support.html)):
 

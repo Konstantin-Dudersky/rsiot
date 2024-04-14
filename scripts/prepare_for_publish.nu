@@ -3,6 +3,10 @@
 # TODO - https://github.com/rust-lang/libc/issues/3615
 # проблема со сборкой ESP в новых версиях, перейти на найтли, когда пофиксят
 
+let RSIOT_DOCS = "../rsiot-docs/src"
+let RSIOT_DOCS_RUSTDOC = $"($RSIOT_DOCS)/rustdoc"
+let RSIOT_DOCS_SRC = $"($RSIOT_DOCS)/src-rsiot"
+
 def print_header [header: string] {
     print $"\n\n(ansi magenta_bold)($header)(ansi reset)\n\n"
 }
@@ -25,13 +29,15 @@ for target in $targets {
 
 # cargo doc ----------------------------------------------------------------------------------------
 
-rm -rf ../rsiot-docs/src/rustdoc
+# delete files
+let command = $"rm -rf ($RSIOT_DOCS_RUSTDOC)"
+nu -c $command
 
 for target in $targets {
     print_header $"cargo doc - ($target.name)"
     
     # create folder
-    let command = $"mkdir ../rsiot-docs/src/rustdoc/($target.name)"
+    let command = $"mkdir ($RSIOT_DOCS_RUSTDOC)/($target.name)"
     nu -c $command;
     
     # combine features
@@ -42,12 +48,38 @@ for target in $targets {
     print $"execute command: ($command)\n"
     nu -c $command;
 
-    # copy files
-    let command = $"cp -r target/($target.name)/doc/* ../rsiot-docs/src/rustdoc/($target.name)"
+    # copy doc files
+    let command = $"cp -r target/($target.name)/doc/* ($RSIOT_DOCS_RUSTDOC)/($target.name)"
     nu -c $command;
 }
 
+# copy src files to mdbook -------------------------------------------------------------------------
+print_header "Copy src files to mdbook"
+
+let command = $"rm -rf ($RSIOT_DOCS_SRC)"
+nu -c $command;
+let command = $"mkdir ($RSIOT_DOCS_SRC)"
+nu -c $command;
+let command = $"cp -r src/* ($RSIOT_DOCS_SRC)"
+nu -c $command;
+
+
+
 return; # TODO - доделать
+
+
+# cargo rdme ---------------------------------------------------------------------------------------
+
+do {
+    print_header "readme"
+    cargo rdme --force
+}
+
+# cargo update -------------------------------------------------------------------------------------
+
+print_header "workspace - update"
+cargo update
+
 
 # cargo udeps --------------------------------------------------------------------------------------
 
@@ -76,10 +108,7 @@ for feat in $features {
     }
 }
 
-# cargo update -------------------------------------------------------------------------------------
 
-print_header "workspace - update"
-cargo update
 
 
 # cargo outdated -----------------------------------------------------------------------------------
@@ -94,22 +123,3 @@ cargo outdated
 # cargo test --all-targets --target="x86_64-unknown-linux-gnu" --features=""
 # TODO - тесты не проходят
 
-do {
-    print_header "rsiot"
-    cd rsiot
-    cargo rdme --force
-}
-
-do {
-    print_header "rsiot-esp"
-    cd rsiot-esp
-    cargo update
-    cargo outdated
-    cargo +nightly udeps
-    cargo check --all-targets
-    cargo clippy --all-targets
-    cargo build
-    cargo rdme --force
-}
-
-cp rsiot/README.md .
