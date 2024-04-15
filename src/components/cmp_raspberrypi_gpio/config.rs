@@ -1,6 +1,5 @@
 use crate::message::{Message, MsgDataBound};
 
-/// Конфигурация cmp_raspberrypi_gpio
 #[derive(Clone)]
 pub struct Config<TMsg>
 where
@@ -31,4 +30,27 @@ pub struct ConfigOutput<TMsg> {
 
     /// Преобразование входящего сообщения в состояние пина
     pub fn_input: fn(Message<TMsg>) -> Option<bool>,
+}
+
+#[cfg(test)]
+mod tests {
+
+    use crate::components::cmp_raspberrypi_gpio;
+
+    #[test]
+    fn test() {
+        let config_raspberrypi_gpio = cmp_raspberrypi_gpio::Config {
+            inputs: vec![cmp_raspberrypi_gpio::ConfigInput {
+                pin_number: 4,
+                fn_output: |value| Message::new_custom(Custom::Input4State(value)),
+            }],
+            outputs: vec![cmp_raspberrypi_gpio::ConfigOutput {
+                pin_number: 2,
+                fn_input: |msg| match msg.data {
+                    MsgData::Custom(Custom::SetOutput2(value)) => Some(value),
+                    _ => None,
+                },
+            }],
+        };
+    }
 }

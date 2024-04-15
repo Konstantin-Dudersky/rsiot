@@ -2,12 +2,14 @@ use esp_idf_svc::hal::gpio::{AnyInputPin, AnyOutputPin};
 
 use crate::message::{Message, MsgDataBound};
 
+/// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_auth.html#config
 pub struct Config<TMsg>
 where
     TMsg: MsgDataBound,
 {
+    /// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_esp_gpio.html#inputs
     pub inputs: Vec<ConfigGpioInput<TMsg>>,
-
+    /// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_esp_gpio.html#outputs
     pub outputs: Vec<ConfigGpioOutput<TMsg>>,
 }
 

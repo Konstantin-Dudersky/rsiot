@@ -1,4 +1,4 @@
-//! Шаблон компонента
+//! Клиент MQTT микроконтроллера ESP32
 
 mod component;
 mod config;

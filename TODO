@@ -1,3 +1,8 @@
 TODO - избавиться от unwrap()
 
 TODO - tauri вывод с камеры (WebRTC?) - ошибка RtcPeerConnection
+
+Добавить компоненты:
+- TODO - cmp_telegram_client
+- TODO - cmp_s7_client
+- TODO - cmp_opcua_client
