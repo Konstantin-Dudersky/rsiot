@@ -1,14 +1,15 @@
 use crate::message::{Message, MsgDataBound};
 
+/// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_raspberrypi_gpio.html#config
 #[derive(Clone)]
 pub struct Config<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    /// Обработка входов
+    /// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_raspberrypi_gpio.html#inputs
     pub inputs: Vec<ConfigInput<TMsg>>,
 
-    /// Обработка выходов
+    /// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_raspberrypi_gpio.html#outputs
     pub outputs: Vec<ConfigOutput<TMsg>>,
 }
 
@@ -35,15 +36,28 @@ pub struct ConfigOutput<TMsg> {
 #[cfg(test)]
 mod tests {
 
-    use crate::components::cmp_raspberrypi_gpio;
+    use serde::{Deserialize, Serialize};
+
+    use crate::{components::cmp_raspberrypi_gpio, message::*};
+
+    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    pub enum Custom {
+        Input4State(bool),
+        SetOutput2(bool),
+    }
+
+    impl MsgDataBound for Custom {}
 
     #[test]
     fn test() {
-        let config_raspberrypi_gpio = cmp_raspberrypi_gpio::Config {
+        let _config_raspberrypi_gpio = cmp_raspberrypi_gpio::Config {
+            // ANCHOR: inputs
             inputs: vec![cmp_raspberrypi_gpio::ConfigInput {
                 pin_number: 4,
                 fn_output: |value| Message::new_custom(Custom::Input4State(value)),
             }],
+            // ANCHOR_END: inputs
+            // ANCHOR: outputs
             outputs: vec![cmp_raspberrypi_gpio::ConfigOutput {
                 pin_number: 2,
                 fn_input: |msg| match msg.data {
@@ -51,6 +65,7 @@ mod tests {
                     _ => None,
                 },
             }],
+            // ANCHOR_END: outputs
         };
     }
 }
