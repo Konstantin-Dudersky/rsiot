@@ -63,11 +63,6 @@ nu -c $command;
 let command = $"cp -r src/* ($RSIOT_DOCS_SRC)"
 nu -c $command;
 
-
-
-return; # TODO - доделать
-
-
 # cargo rdme ---------------------------------------------------------------------------------------
 
 do {
@@ -79,6 +74,8 @@ do {
 
 print_header "workspace - update"
 cargo update
+
+return; # TODO - доделать
 
 
 # cargo udeps --------------------------------------------------------------------------------------

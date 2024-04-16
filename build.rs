@@ -10,7 +10,7 @@ fn main() {
             target_vendor = "unknown",
             target_os = "android"
         ) },
-        aarch64__unknown__linux__gnu: { all (
+        aarch64_unknown_linux_gnu: { all (
             target_arch = "aarch64",
             target_vendor = "unknown",
             target_os = "linux",
@@ -21,12 +21,12 @@ fn main() {
             target_vendor = "espressif",
             target_os = "espidf"
         ) },
-        wasm32__unknown__unknown: { all (
+        wasm32_unknown_unknown: { all (
             target_arch = "wasm32",
             target_vendor = "unknown",
             target_os = "unknown"
         ) },
-        x86_64__unknown__linux__gnu: { all(
+        x8664_unknown_linux_gnu: { all(
             target_arch = "x86_64",
             target_vendor = "unknown",
             target_os = "linux",
