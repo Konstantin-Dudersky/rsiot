@@ -31,4 +31,5 @@ where
     }
 }
 
+/// Компонент cmp_leptos
 pub type Cmp<TMsg, TView, TIntoView> = Component<Config<TView, TIntoView>, TMsg>;

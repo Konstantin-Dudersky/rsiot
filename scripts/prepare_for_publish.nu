@@ -44,7 +44,7 @@ for target in $targets {
     let features = $target.features | append $target.add_feat | str join ', '
 
     # generate doc
-    let command = $'cargo doc --target ($target.name) --features="($features), logging"  --no-deps --document-private-items -Zunstable-options -Zrustdoc-scrape-examples'
+    let command = $'cargo +nightly-x86_64-unknown-linux-gnu doc --target ($target.name) --features="($features), logging"  --no-deps --document-private-items -Zunstable-options -Zrustdoc-scrape-examples'
     print $"execute command: ($command)\n"
     nu -c $command;
 

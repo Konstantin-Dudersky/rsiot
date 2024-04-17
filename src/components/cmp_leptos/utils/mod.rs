@@ -1,3 +1,5 @@
+//! Вспомогательные функции
+
 mod define_hostname;
 mod define_window_url;
 

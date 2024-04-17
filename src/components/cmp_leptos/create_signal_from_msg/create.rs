@@ -4,6 +4,7 @@ use crate::message::MsgDataBound;
 
 use super::{super::GlobalState, Config};
 
+/// Функция создания сигнала на основе сообщений
 pub fn create<TMsg, TValue>(
     config: Config<TMsg, TValue>,
 ) -> (ReadSignal<TValue>, WriteSignal<TValue>)

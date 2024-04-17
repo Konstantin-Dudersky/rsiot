@@ -2,6 +2,7 @@ use leptos::*;
 
 use crate::{executor::Cache, message::*};
 
+/// Структура глобального состояния
 #[derive(Clone)]
 pub struct GlobalState<TMsg>
 where

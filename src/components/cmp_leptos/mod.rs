@@ -1,3 +1,5 @@
+//! Компонент для интеграции веб-приложения на основе фреймворка Leptos
+
 mod cmp_leptos;
 pub mod components;
 pub mod create_signal_from_msg;

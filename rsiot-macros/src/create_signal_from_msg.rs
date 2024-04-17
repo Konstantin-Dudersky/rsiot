@@ -81,7 +81,7 @@ mod tests {
     //! Запуск:
     //!
     //! ```bash
-    //!
+    //! cargo test -- create_signal_from_msg
     //! ```
 
     use super::*;

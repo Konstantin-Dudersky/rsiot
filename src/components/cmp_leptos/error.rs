@@ -1,3 +1,5 @@
+/// Ошибки компонента cmp_leptos
+#[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("{0}")]

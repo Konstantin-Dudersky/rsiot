@@ -5,4 +5,4 @@ mod component;
 mod svg_input;
 
 pub use component::SvgDynamic;
-pub use svg_input::{SvgInput, SvgInputSignal};
+pub use svg_input::SvgInput;

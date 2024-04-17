@@ -1,5 +1,6 @@
 use crate::message::{Message, MsgDataBound};
 
+/// Конфигурация create_signal_from_msg
 pub struct Config<TMsg, TValue>
 where
     TMsg: MsgDataBound + 'static,
