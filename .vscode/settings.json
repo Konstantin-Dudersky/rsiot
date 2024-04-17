@@ -43,10 +43,10 @@
     //   "executor",
     // "logging",
 
-    "cmp_http_client_wasm",
-    "cmp_leptos",
-    "cmp_websocket_client_wasm",
-    "cmp_webstorage"
+    // "cmp_http_client_wasm",
+    "cmp_leptos"
+    // "cmp_websocket_client_wasm",
+    // "cmp_webstorage"
   ],
 
   // ---- esp32 ------------------------------------------------------------------------------------

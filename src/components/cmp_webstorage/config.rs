@@ -32,7 +32,7 @@ mod tests {
         cmp_webstorage::Config::<Custom> {
             kind: cmp_webstorage::ConfigKind::SessionStorage,
             // ANCHOR: fn_input_save_all
-            fn_input: |msg| Some(msg),
+            fn_input: Some,
             // ANCHOR_END: fn_input_save_all
             // ANCHOR: fn_output_not_load
             fn_output: |_| None,

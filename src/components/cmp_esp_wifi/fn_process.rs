@@ -27,33 +27,31 @@ where
 }
 
 fn prepare_wifi_config(config: &Config) -> Configuration {
-    let access_point_config = match &config.access_point {
-        Some(ap) => Some(esp_idf_svc::wifi::AccessPointConfiguration {
-            ssid: heapless::String::try_from(ap.ssid.as_str()).unwrap(),
-            ..Default::default()
-        }),
-        None => None,
-    };
+    let access_point_config =
+        config
+            .access_point
+            .as_ref()
+            .map(|ap| esp_idf_svc::wifi::AccessPointConfiguration {
+                ssid: heapless::String::try_from(ap.ssid.as_str()).unwrap(),
+                ..Default::default()
+            });
 
-    let client_config: Option<ClientConfiguration> = match &config.client {
-        Some(cl) => Some(ClientConfiguration {
+    let client_config: Option<ClientConfiguration> =
+        config.client.as_ref().map(|cl| ClientConfiguration {
             ssid: heapless::String::try_from(cl.ssid.as_str()).unwrap(),
             password: heapless::String::try_from(cl.password.as_str()).unwrap(),
             auth_method: cl.auth_method,
             ..Default::default()
-        }),
-        None => None,
-    };
+        });
 
-    if access_point_config.is_some() && client_config.is_some() {
-        Configuration::Mixed(
-            client_config.expect("Already checked"),
-            access_point_config.expect("Already checked"),
-        )
-    } else if access_point_config.is_some() {
-        Configuration::AccessPoint(access_point_config.expect("Already checked"))
-    } else if client_config.is_some() {
-        Configuration::Client(client_config.expect("Already checked"))
+    if let Some(apc) = access_point_config {
+        if let Some(cc) = client_config {
+            Configuration::Mixed(cc, apc)
+        } else {
+            Configuration::AccessPoint(apc)
+        }
+    } else if let Some(cc) = client_config {
+        Configuration::Client(cc)
     } else {
         todo!()
     }

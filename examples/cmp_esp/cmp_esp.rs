@@ -122,7 +122,7 @@ async fn main() {
         port: 1883,
         fn_input: |msg| Ok(Some(msg.serialize()?.into_bytes())),
         fn_output: |payload: &[u8]| {
-            let payload = String::from_utf8_lossy(&payload);
+            let payload = String::from_utf8_lossy(payload);
             let msg = Message::deserialize(&payload)?;
             Ok(Some(msg))
         },
