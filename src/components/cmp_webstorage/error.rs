@@ -1,3 +1,5 @@
+/// Ошибки компонента cmp_webstorage
+#[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("Component: {0}")]

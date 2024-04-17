@@ -1,4 +1,4 @@
-//! Хранение и загрузка сообщений используя LocalStorage браузера
+//! Хранение и загрузка сообщений используя LocalStorage или SessionStorage браузера
 
 mod component;
 mod config;

@@ -73,10 +73,7 @@ where
             }
         }
         let msg = (fn_output)(level);
-        in_out
-            .send_output(msg)
-            .await
-            .map_err(|e| Error::CmpOutput(e))?;
+        in_out.send_output(msg).await.map_err(Error::CmpOutput)?;
         sleep(INPUT_READ_DELAY).await;
     }
 }

@@ -1,3 +1,5 @@
+//!  Компонент клиента websocket для WASM
+
 mod component;
 mod config;
 mod error;

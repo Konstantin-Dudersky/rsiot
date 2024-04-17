@@ -1,3 +1,5 @@
+/// Ошибки компонента cmp_websocket_client_wasm
+#[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("Error when establishing connection: {0}")]
