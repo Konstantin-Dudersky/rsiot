@@ -75,6 +75,7 @@
 #[cfg(feature = "executor")]
 pub mod components;
 mod components_config;
+mod drivers_i2c;
 #[cfg(feature = "env_vars")]
 pub mod env_vars;
 #[cfg(feature = "executor")]

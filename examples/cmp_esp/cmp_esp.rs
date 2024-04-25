@@ -13,7 +13,7 @@ async fn main() {
         sys::link_patches,
     };
     use tokio::{task::LocalSet, time::sleep};
-    use tracing::{level_filters::LevelFilter, Level};
+    use tracing::{error, info, level_filters::LevelFilter, Level};
 
     use rsiot::{
         components::{
@@ -134,20 +134,43 @@ async fn main() {
     let config_esp_i2c_master = cmp_esp_i2c_master::Config {
         fn_input: |_| None,
         fn_output: |_| vec![],
+        baudrate: cmp_esp_i2c_master::ConfigBaudrate::Standard,
+        timeout: Duration::from_millis(10000),
     };
 
     let config = esp_idf_svc::hal::i2c::config::Config::new().baudrate(100_u32.kHz().into());
 
     let mut i2c = I2cDriver::new(
         peripherals.i2c0,
-        peripherals.pins.gpio9,
-        peripherals.pins.gpio10,
+        peripherals.pins.gpio6,
+        peripherals.pins.gpio7,
         &config,
-    ).unwrap();
+    )
+    .unwrap();
 
+    let mut flag = false;
     loop {
         println!("i2c call");
-        i2c
+
+        let send_bytes = if flag {
+            vec![0x00, 0x00]
+            // vec![0xFF, 0xFF]
+        } else {
+            vec![0xFF, 0xFF]
+        };
+        flag = !flag;
+        // let mut answer = vec![0x00, 0x00];
+        let size = 2;
+        let mut answer = vec![0; size];
+        match i2c.write_read(0x20, &send_bytes, &mut answer, 1000) {
+            // match i2c.write(0x20, &bytes, 1000) {
+            Ok(res) => {
+                info!("result: {:?}", send_bytes);
+                info!("answer: {:?}", answer);
+            }
+            Err(err) => error!("error: {}", err),
+        }
+
         sleep(Duration::from_secs(2)).await;
     }
 

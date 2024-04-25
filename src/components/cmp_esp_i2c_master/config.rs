@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use crate::message::{Message, MsgDataBound};
 
 /// Конфигурация cmp_esp_i2c_master
@@ -19,4 +21,20 @@ where
     /// fn_output: |_| vec![]
     /// ```
     pub fn_output: fn(String) -> Vec<Message<TMsg>>,
+
+    /// Скорость шины
+    pub baudrate: ConfigBaudrate,
+
+    /// Таймаут запроса
+    pub timeout: Duration,
+}
+
+/// Скорость шины
+#[derive(Clone)]
+pub enum ConfigBaudrate {
+    /// 100 kHz
+    Standard,
+
+    /// 400 kHz
+    Fast,
 }

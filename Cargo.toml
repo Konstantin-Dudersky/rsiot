@@ -234,7 +234,7 @@ cmp_websocket_client = [
     "dep:url",
 ]
 
-## Компонент websocket клиента
+## Компонент websocket клиента для платформы WASM
 cmp_websocket_client_wasm = ["executor", "dep:futures", "dep:gloo", "dep:url"]
 
 ## Компонент websocket сервера
