@@ -37,21 +37,21 @@
   // ],
 
   // ---- wasm32 -----------------------------------------------------------------------------------
-  "rust-analyzer.cargo.target": "wasm32-unknown-unknown",
-  "rust-analyzer.cargo.features": [
-    "single-thread", // Активировать обязательно !
-    //   "executor",
-    // "logging",
+  // "rust-analyzer.cargo.target": "wasm32-unknown-unknown",
+  // "rust-analyzer.cargo.features": [
+  // "single-thread", // Активировать обязательно !
+  //   "executor",
+  // "logging",
 
-    // "cmp_http_client_wasm",
-    "cmp_leptos"
-    // "cmp_websocket_client_wasm",
-    // "cmp_webstorage"
-  ],
+  // "cmp_http_client_wasm",
+  // "cmp_leptos"
+  // "cmp_websocket_client_wasm",
+  // "cmp_webstorage"
+  // ],
 
   // ---- esp32 ------------------------------------------------------------------------------------
-  // "rust-analyzer.cargo.target": "riscv32imc-esp-espidf",
-  // "rust-analyzer.cargo.features": ["executor", "logging", "cmp_esp", "cmp_plc"],
+  "rust-analyzer.cargo.target": "riscv32imc-esp-espidf",
+  "rust-analyzer.cargo.features": ["executor", "logging", "cmp_esp", "cmp_plc"],
 
   "rust-analyzer.showUnlinkedFileNotification": false
 }
