@@ -1,10 +1,6 @@
 use std::time::Duration;
 
-use esp_idf_svc::hal::{
-    i2c::{APBTickType, I2cDriver},
-    peripherals::Peripherals,
-    units::{FromValueType, Hertz},
-};
+use esp_idf_svc::hal::{i2c::I2cDriver, peripherals::Peripherals, units::FromValueType};
 use tokio::time::sleep;
 
 use crate::{executor::CmpInOut, message::MsgDataBound};

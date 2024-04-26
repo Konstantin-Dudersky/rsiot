@@ -131,16 +131,9 @@ async fn main() {
     };
 
     // I2C
-    let config_esp_i2c_master = cmp_esp_i2c_master::Config {
-        fn_input: |_| None,
-        fn_output: |_| vec![],
-        baudrate: cmp_esp_i2c_master::ConfigBaudrate::Standard,
-        timeout: Duration::from_millis(10000),
-    };
-
     let config = esp_idf_svc::hal::i2c::config::Config::new().baudrate(100_u32.kHz().into());
 
-    let mut i2c = I2cDriver::new(
+    let i2c = I2cDriver::new(
         peripherals.i2c0,
         peripherals.pins.gpio6,
         peripherals.pins.gpio7,
@@ -148,31 +141,61 @@ async fn main() {
     )
     .unwrap();
 
-    let mut flag = false;
-    loop {
-        println!("i2c call");
+    let config_esp_i2c_master = cmp_esp_i2c_master::Config {
+        fn_input: |_| None,
+        timeout: Duration::from_millis(10000),
+        devices: vec![cmp_esp_i2c_master::I2cDevices::BMP180 { address: 0x77 }],
+        i2c_driver: i2c,
+    };
 
-        let send_bytes = if flag {
-            vec![0x00, 0x00]
-            // vec![0xFF, 0xFF]
-        } else {
-            vec![0xFF, 0xFF]
-        };
-        flag = !flag;
-        // let mut answer = vec![0x00, 0x00];
-        let size = 2;
-        let mut answer = vec![0; size];
-        match i2c.write_read(0x20, &send_bytes, &mut answer, 1000) {
-            // match i2c.write(0x20, &bytes, 1000) {
-            Ok(res) => {
-                info!("result: {:?}", send_bytes);
-                info!("answer: {:?}", answer);
-            }
-            Err(err) => error!("error: {}", err),
-        }
+    // let mut flag = false;
+    // loop {
+    //     println!("i2c call");
 
-        sleep(Duration::from_secs(2)).await;
-    }
+    //     let send_bytes = if flag {
+    //         // vec![0x00, 0x00]
+    //         vec![0xFF, 0xFF]
+    //     } else {
+    //         vec![0xFF, 0xFF]
+    //     };
+    //     flag = !flag;
+    //     // let mut answer = vec![0x00, 0x00];
+    //     let size = 30;
+    //     let mut answer = vec![0; size];
+
+    //     // BMP180
+    //     let send_bytes = vec![0xF4, 0x2E];
+    //     match i2c.write(0x77, &send_bytes, 1000) {
+    //         Ok(res) => {
+    //             info!("write result: {:?}", send_bytes);
+    //         }
+    //         Err(err) => error!("error: {}", err),
+    //     }
+    //     let send_bytes = vec![0xAA];
+    //     sleep(Duration::from_millis(5)).await;
+    //     match i2c.write_read(0x77, &send_bytes, &mut answer, 1000) {
+    //         // match i2c.write_read(0x77, &send_bytes, &mut answer, 1000) {
+    //         Ok(res) => {
+    //             info!("read result: {:?}", send_bytes);
+    //             info!("read answer: {:?}", answer);
+    //         }
+    //         Err(err) => error!("error: {}", err),
+    //     }
+    //     sleep(Duration::from_secs(2)).await;
+    //     continue;
+
+    //     // PCF8574
+    //     match i2c.write_read(0x20, &send_bytes, &mut answer, 1000) {
+    //         // i2c.write(0x20, &send_bytes, 1000).unwrap();
+    //         Ok(res) => {
+    //             info!("result: {:?}", send_bytes);
+    //             info!("answer: {:?}", answer);
+    //         }
+    //         Err(err) => error!("error: {}", err),
+    //     }
+
+    //     sleep(Duration::from_secs(2)).await;
+    // }
 
     // executor ------------------------------------------------------------------------------------
 

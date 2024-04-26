@@ -1,6 +1,18 @@
-//! Драйвера для протокола I2C
+//! Драйверы для протокола I2C
 
-#[allow(non_snake_case)]
-pub mod PCF8575;
+mod bmp180;
+// mod pcf8575;
 
-pub mod driver;
+mod rsiot_i2c_driver_base;
+
+pub(crate) use bmp180::BMP180;
+// pub(crate) use pcf8575::PCF8575;
+pub(crate) use rsiot_i2c_driver_base::RsiotI2cDriverBase;
+
+#[derive(Clone)]
+pub enum I2cDevices {
+    BMP180 {
+        /// Адрес. По-умолчанию 0x77
+        address: u8,
+    },
+}

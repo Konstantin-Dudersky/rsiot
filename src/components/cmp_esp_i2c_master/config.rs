@@ -1,9 +1,13 @@
 use std::time::Duration;
 
-use crate::message::{Message, MsgDataBound};
+use esp_idf_svc::hal::i2c::I2cDriver;
+
+use crate::{
+    drivers_i2c::I2cDevices,
+    message::{Message, MsgDataBound},
+};
 
 /// Конфигурация cmp_esp_i2c_master
-#[derive(Clone)]
 pub struct Config<TMsg>
 where
     TMsg: MsgDataBound,
@@ -15,18 +19,12 @@ where
     /// ```
     pub fn_input: fn(Message<TMsg>) -> Option<String>,
 
-    /// # Пример
-    ///
-    /// ```rust
-    /// fn_output: |_| vec![]
-    /// ```
-    pub fn_output: fn(String) -> Vec<Message<TMsg>>,
-
-    /// Скорость шины
-    pub baudrate: ConfigBaudrate,
-
     /// Таймаут запроса
     pub timeout: Duration,
+
+    pub devices: Vec<I2cDevices>,
+
+    pub i2c_driver: I2cDriver<'static>,
 }
 
 /// Скорость шины

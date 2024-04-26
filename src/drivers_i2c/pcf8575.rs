@@ -1,5 +1,8 @@
 use crate::message::*;
 
+use super::RsiotI2cDriverBase;
+
+#[derive(Clone)]
 pub struct PCF8575 {
     pub address: u8,
 }
@@ -14,12 +17,16 @@ impl PCF8575 {
     pub fn periodic_request() {}
 }
 
+impl RsiotI2cDriverBase for PCF8575 {}
+
 #[cfg(test)]
 mod tests {
+
     use super::*;
 
     #[test]
     fn test1() {
-        let pcf = PCF8575::new(1);
+
+        // let pcf = Arc::new(Mutex::new())
     }
 }
