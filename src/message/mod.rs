@@ -12,6 +12,7 @@ mod msg_data;
 mod msg_data_bound;
 mod msg_serde;
 mod msg_trace;
+mod phy_quantity;
 pub mod system_messages;
 mod timestamp;
 
@@ -28,6 +29,7 @@ pub use message_channel::IMessageChannel;
 pub use msg_data::MsgData;
 pub use msg_data_bound::MsgDataBound;
 pub use msg_trace::MsgTrace;
+pub use phy_quantity::PhyQuantity;
 pub use rsiot_macros::message_new;
 pub use timestamp::Timestamp;
 

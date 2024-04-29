@@ -133,18 +133,24 @@ async fn main() {
     // I2C
     let config = esp_idf_svc::hal::i2c::config::Config::new().baudrate(100_u32.kHz().into());
 
-    let i2c = I2cDriver::new(
+    let mut i2c = I2cDriver::new(
         peripherals.i2c0,
-        peripherals.pins.gpio6,
-        peripherals.pins.gpio7,
+        peripherals.pins.gpio4,
+        peripherals.pins.gpio5,
         &config,
     )
     .unwrap();
 
     let config_esp_i2c_master = cmp_esp_i2c_master::Config {
-        fn_input: |_| None,
         timeout: Duration::from_millis(10000),
-        devices: vec![cmp_esp_i2c_master::I2cDevices::BMP180 { address: 0x77 }],
+        devices: vec![cmp_esp_i2c_master::I2cDevices::BMP180 {
+            address: 0x77,
+            fn_output: |response| {
+                info!("Temperature and pressure: {response:?}");
+                vec![]
+            },
+            oversampling: cmp_esp_i2c_master::BMP180Oversampling::HighResolution,
+        }],
         i2c_driver: i2c,
     };
 
@@ -153,26 +159,25 @@ async fn main() {
     //     println!("i2c call");
 
     //     let send_bytes = if flag {
-    //         // vec![0x00, 0x00]
-    //         vec![0xFF, 0xFF]
+    //         vec![0x00, 0x00]
+    //         // vec![0xFF, 0xFF]
     //     } else {
     //         vec![0xFF, 0xFF]
     //     };
     //     flag = !flag;
     //     // let mut answer = vec![0x00, 0x00];
-    //     let size = 30;
+    //     let size = 2;
     //     let mut answer = vec![0; size];
 
     //     // BMP180
-    //     let send_bytes = vec![0xF4, 0x2E];
-    //     match i2c.write(0x77, &send_bytes, 1000) {
-    //         Ok(res) => {
-    //             info!("write result: {:?}", send_bytes);
-    //         }
-    //         Err(err) => error!("error: {}", err),
-    //     }
+    //     // let send_bytes = vec![0xF4, 0x2E];
+    //     // match i2c.write(0x77, &send_bytes, 1000) {
+    //     //     Ok(res) => {
+    //     //         info!("write result: {:?}", send_bytes);
+    //     //     }
+    //     //     Err(err) => error!("error: {}", err),
+    //     // }
     //     let send_bytes = vec![0xAA];
-    //     sleep(Duration::from_millis(5)).await;
     //     match i2c.write_read(0x77, &send_bytes, &mut answer, 1000) {
     //         // match i2c.write_read(0x77, &send_bytes, &mut answer, 1000) {
     //         Ok(res) => {
@@ -182,6 +187,7 @@ async fn main() {
     //         Err(err) => error!("error: {}", err),
     //     }
     //     sleep(Duration::from_secs(2)).await;
+
     //     continue;
 
     //     // PCF8574

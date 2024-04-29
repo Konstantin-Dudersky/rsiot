@@ -6359,6 +6359,7 @@ dependencies = [
  "anyhow",
  "async-trait",
  "axum",
+ "bincode",
  "cfg_aliases 0.2.0",
  "chrono",
  "clap",
