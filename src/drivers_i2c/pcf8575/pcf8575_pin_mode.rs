@@ -11,4 +11,5 @@ where
     Output {
         fn_input: fn(Message<TMsg>) -> Option<bool>,
     },
+    Disabled,
 }

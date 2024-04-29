@@ -29,10 +29,31 @@ where
                 let driver = driver.clone();
                 task_set.spawn(async move { device.fn_process(driver).await });
             }
-            I2cDevices::PCF8575 { address, pin_00 } => {
+            I2cDevices::PCF8575 {
+                address,
+                pin_00,
+                pin_01,
+                pin_02,
+                pin_03,
+                pin_04,
+                pin_05,
+                pin_06,
+                pin_07,
+                pin_10,
+                pin_11,
+                pin_12,
+                pin_13,
+                pin_14,
+                pin_15,
+                pin_16,
+                pin_17,
+            } => {
                 let device = drivers_i2c::PCF8575 {
                     address,
-                    pins: vec![pin_00],
+                    pins: vec![
+                        pin_00, pin_01, pin_02, pin_03, pin_04, pin_05, pin_06, pin_07, pin_10,
+                        pin_11, pin_12, pin_13, pin_14, pin_15, pin_16, pin_17,
+                    ],
                 };
                 let driver = driver.clone();
                 let in_out = in_out.clone();

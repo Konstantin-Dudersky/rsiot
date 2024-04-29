@@ -133,7 +133,7 @@ async fn main() {
     // I2C
     let config = esp_idf_svc::hal::i2c::config::Config::new().baudrate(100_u32.kHz().into());
 
-    let mut i2c = I2cDriver::new(
+    let i2c = I2cDriver::new(
         peripherals.i2c0,
         peripherals.pins.gpio4,
         peripherals.pins.gpio5,
@@ -143,21 +143,51 @@ async fn main() {
 
     let config_esp_i2c_master = cmp_esp_i2c_master::Config {
         timeout: Duration::from_millis(10000),
-        devices: vec![cmp_esp_i2c_master::I2cDevices::BMP180 {
-            address: 0x77,
-            fn_output: |response| {
-                info!("Temperature and pressure: {response:?}");
-                vec![]
-            },
-            oversampling: cmp_esp_i2c_master::BMP180Oversampling::HighResolution,
-        }],
         i2c_driver: i2c,
+        devices: vec![
+            // cmp_esp_i2c_master::I2cDevices::BMP180 {
+            //     address: 0x77,
+            //     fn_output: |response| {
+            //         info!("Temperature and pressure: {response:?}");
+            //         vec![]
+            //     },
+            //     oversampling: cmp_esp_i2c_master::BMP180Oversampling::HighResolution,
+            // },
+            cmp_esp_i2c_master::I2cDevices::PCF8575 {
+                address: 0x20,
+                pin_00: cmp_esp_i2c_master::PCF8575PinMode::Input {
+                    fn_output: |value| {
+                        info!("Input 00: {value}");
+                        None
+                    },
+                },
+                pin_01: cmp_esp_i2c_master::PCF8575PinMode::Input {
+                    fn_output: |value| {
+                        info!("Input 01: {value}");
+                        None
+                    },
+                },
+                pin_02: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
+                pin_03: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
+                pin_04: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
+                pin_05: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
+                pin_06: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
+                pin_07: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
+                pin_10: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
+                pin_11: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
+                pin_12: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
+                pin_13: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
+                pin_14: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
+                pin_15: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
+                pin_16: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
+                pin_17: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
+            },
+        ],
     };
 
     // let mut flag = false;
     // loop {
     //     println!("i2c call");
-
     //     let send_bytes = if flag {
     //         vec![0x00, 0x00]
     //         // vec![0xFF, 0xFF]
@@ -168,28 +198,6 @@ async fn main() {
     //     // let mut answer = vec![0x00, 0x00];
     //     let size = 2;
     //     let mut answer = vec![0; size];
-
-    //     // BMP180
-    //     // let send_bytes = vec![0xF4, 0x2E];
-    //     // match i2c.write(0x77, &send_bytes, 1000) {
-    //     //     Ok(res) => {
-    //     //         info!("write result: {:?}", send_bytes);
-    //     //     }
-    //     //     Err(err) => error!("error: {}", err),
-    //     // }
-    //     let send_bytes = vec![0xAA];
-    //     match i2c.write_read(0x77, &send_bytes, &mut answer, 1000) {
-    //         // match i2c.write_read(0x77, &send_bytes, &mut answer, 1000) {
-    //         Ok(res) => {
-    //             info!("read result: {:?}", send_bytes);
-    //             info!("read answer: {:?}", answer);
-    //         }
-    //         Err(err) => error!("error: {}", err),
-    //     }
-    //     sleep(Duration::from_secs(2)).await;
-
-    //     continue;
-
     //     // PCF8574
     //     match i2c.write_read(0x20, &send_bytes, &mut answer, 1000) {
     //         // i2c.write(0x20, &send_bytes, 1000).unwrap();
@@ -199,7 +207,6 @@ async fn main() {
     //         }
     //         Err(err) => error!("error: {}", err),
     //     }
-
     //     sleep(Duration::from_secs(2)).await;
     // }
 

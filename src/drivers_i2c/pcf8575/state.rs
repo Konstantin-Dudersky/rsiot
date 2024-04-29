@@ -1,31 +1,33 @@
-use std::{fmt::Binary, sync::Arc};
-
-use tokio::sync::Mutex;
+use std::fmt::Binary;
 
 pub struct State {
     state: u16,
 }
 
 impl State {
-    pub fn new() -> Arc<Mutex<Self>> {
+    pub fn new() -> Self {
         let state = Self { state: 0 };
-        Arc::new(Mutex::new(state))
+        state
     }
 
-    pub fn set_input(&mut self, pin: u8) {
-        self.set_output_low(pin);
+    /// Переключить работу пина в режим входа
+    pub fn set_input(&mut self, pin_index: usize) {
+        self.set_output_low(pin_index);
     }
 
-    pub fn set_output_high(&mut self, pin: u8) {
+    /// Переключить работу пина в режим выхода в отключенном состоянии
+    pub fn set_output_high(&mut self, pin: usize) {
         let mask = 1 << pin;
         self.state = self.state & !mask;
     }
 
-    pub fn set_output_low(&mut self, pin: u8) {
+    /// Переключить работу пина в режим выхода во включенном состоянии
+    pub fn set_output_low(&mut self, pin: usize) {
         let mask = 1 << pin;
         self.state = self.state | mask;
     }
 
+    /// Вернуть конфигурацию в виде двух байт
     pub fn to_bytes(&self) -> [u8; 2] {
         self.state.to_le_bytes()
     }
@@ -46,10 +48,9 @@ mod tests {
     /// ```bash
     /// cargo test --target x86_64-unknown-linux-gnu --lib --features executor -- drivers_i2c::pcf8575::state::tests::test1 --exact --show-output
     /// ```
-    #[tokio::test]
-    async fn test1() {
-        let state = State::new();
-        let mut state = state.lock().await;
+    #[test]
+    fn test1() {
+        let mut state = State::new();
 
         state.set_input(3);
         assert_eq!(state.state, 8);

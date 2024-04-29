@@ -47,4 +47,19 @@ impl RsiotI2cDriverBase for RsiotI2cDriver {
             }
         }
     }
+
+    async fn read(&mut self, address: u8, response_size: usize) -> Result<Vec<u8>, String> {
+        let mut response = vec![0; response_size];
+        let res = self.i2c.read(address, &mut response, 1000);
+        match res {
+            Ok(_) => {
+                trace!("I2C success response");
+                Ok(response)
+            }
+            Err(err) => {
+                warn!("I2C error response: {err:?}");
+                Err(err.to_string())
+            }
+        }
+    }
 }

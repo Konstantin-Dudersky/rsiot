@@ -6360,6 +6360,7 @@ dependencies = [
  "async-trait",
  "axum",
  "bincode",
+ "bitvec",
  "cfg_aliases 0.2.0",
  "chrono",
  "clap",

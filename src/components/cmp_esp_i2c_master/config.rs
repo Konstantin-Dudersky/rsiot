@@ -12,8 +12,11 @@ where
     /// Таймаут запроса
     pub timeout: Duration,
 
-    pub devices: Vec<I2cDevices<TMsg>>,
+    /// Ссылка на аппаратный драйвер шины I2C контроллера ESP
     pub i2c_driver: I2cDriver<'static>,
+
+    /// Конфигурация устройств по шине
+    pub devices: Vec<I2cDevices<TMsg>>,
 }
 
 /// Скорость шины
