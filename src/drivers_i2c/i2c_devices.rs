@@ -19,21 +19,37 @@ where
     PCF8575 {
         /// Адрес
         address: u8,
+        /// Настройка пина P00
         pin_00: super::PCF8575PinMode<TMsg>,
+        /// Настройка пина P01
         pin_01: super::PCF8575PinMode<TMsg>,
+        /// Настройка пина P02
         pin_02: super::PCF8575PinMode<TMsg>,
+        /// Настройка пина P03
         pin_03: super::PCF8575PinMode<TMsg>,
+        /// Настройка пина P04
         pin_04: super::PCF8575PinMode<TMsg>,
+        /// Настройка пина P05
         pin_05: super::PCF8575PinMode<TMsg>,
+        /// Настройка пина P06
         pin_06: super::PCF8575PinMode<TMsg>,
+        /// Настройка пина P07
         pin_07: super::PCF8575PinMode<TMsg>,
+        /// Настройка пина P10
         pin_10: super::PCF8575PinMode<TMsg>,
+        /// Настройка пина P11
         pin_11: super::PCF8575PinMode<TMsg>,
+        /// Настройка пина P12
         pin_12: super::PCF8575PinMode<TMsg>,
+        /// Настройка пина P13
         pin_13: super::PCF8575PinMode<TMsg>,
+        /// Настройка пина P14
         pin_14: super::PCF8575PinMode<TMsg>,
+        /// Настройка пина P15
         pin_15: super::PCF8575PinMode<TMsg>,
+        /// Настройка пина P16
         pin_16: super::PCF8575PinMode<TMsg>,
+        /// Настройка пина P17
         pin_17: super::PCF8575PinMode<TMsg>,
     },
 }

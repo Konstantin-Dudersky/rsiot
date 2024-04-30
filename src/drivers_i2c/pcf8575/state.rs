@@ -1,41 +1,49 @@
-use std::fmt::Binary;
+use std::{fmt::Binary, sync::Arc};
 
+use tokio::sync::Mutex;
+
+#[derive(Clone)]
 pub struct State {
-    state: u16,
+    state: Arc<Mutex<u16>>,
 }
 
 impl State {
     pub fn new() -> Self {
-        let state = Self { state: 0 };
+        let state = Self {
+            state: Arc::new(Mutex::new(0)),
+        };
         state
     }
 
     /// Переключить работу пина в режим входа
-    pub fn set_input(&mut self, pin_index: usize) {
-        self.set_output_low(pin_index);
+    pub async fn set_input(&mut self, pin_index: usize) {
+        self.set_output_low(pin_index).await;
     }
 
     /// Переключить работу пина в режим выхода в отключенном состоянии
-    pub fn set_output_high(&mut self, pin: usize) {
+    pub async fn set_output_high(&mut self, pin: usize) {
+        let mut state = self.state.lock().await;
         let mask = 1 << pin;
-        self.state = self.state & !mask;
+        *state = *state & !mask;
     }
 
     /// Переключить работу пина в режим выхода во включенном состоянии
-    pub fn set_output_low(&mut self, pin: usize) {
+    pub async fn set_output_low(&mut self, pin: usize) {
+        let mut state = self.state.lock().await;
         let mask = 1 << pin;
-        self.state = self.state | mask;
+        *state = *state | mask;
     }
 
     /// Вернуть конфигурацию в виде двух байт
-    pub fn to_bytes(&self) -> [u8; 2] {
-        self.state.to_le_bytes()
+    pub async fn to_bytes(&self) -> [u8; 2] {
+        self.state.lock().await.to_le_bytes()
     }
 }
 
 impl Binary for State {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:b}", self.state)
+        let state = *self.state.blocking_lock();
+        write!(f, "{:b}", state)
     }
 }
 
@@ -48,16 +56,16 @@ mod tests {
     /// ```bash
     /// cargo test --target x86_64-unknown-linux-gnu --lib --features executor -- drivers_i2c::pcf8575::state::tests::test1 --exact --show-output
     /// ```
-    #[test]
-    fn test1() {
+    #[tokio::test]
+    async fn test1() {
         let mut state = State::new();
 
-        state.set_input(3);
-        assert_eq!(state.state, 8);
+        state.set_input(3).await;
+        assert_eq!(*state.state.lock().await, 8);
 
-        assert_eq!(state.to_bytes(), [8, 0]);
+        assert_eq!(state.to_bytes().await, [8, 0]);
 
-        state.set_output_high(3);
-        assert_eq!(state.state, 0);
+        state.set_output_high(3).await;
+        assert_eq!(*state.state.lock().await, 0);
     }
 }

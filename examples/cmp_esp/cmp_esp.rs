@@ -8,17 +8,15 @@ async fn main() {
     use std::time::Duration;
 
     use esp_idf_svc::{
-        eventloop::EspSystemEventLoop,
-        hal::{i2c::I2cDriver, peripherals::Peripherals, units::FromValueType},
-        sys::link_patches,
+        eventloop::EspSystemEventLoop, hal::peripherals::Peripherals, sys::link_patches,
     };
-    use tokio::{task::LocalSet, time::sleep};
-    use tracing::{error, info, level_filters::LevelFilter, Level};
+    use tokio::task::LocalSet;
+    use tracing::{level_filters::LevelFilter, Level};
 
     use rsiot::{
         components::{
-            cmp_esp_adc, cmp_esp_gpio, cmp_esp_i2c_master, cmp_esp_mqtt_client, cmp_esp_wifi,
-            cmp_http_server_esp, cmp_inject_periodic, cmp_logger,
+            cmp_esp_adc, cmp_esp_gpio, cmp_esp_mqtt_client, cmp_esp_wifi, cmp_http_server_esp,
+            cmp_inject_periodic, cmp_logger,
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
         logging::configure_logging,
@@ -52,7 +50,7 @@ async fn main() {
     };
 
     // cmp_logger ----------------------------------------------------------------------------------
-    let _logger_config = cmp_logger::Config::<Custom> {
+    let logger_config = cmp_logger::Config::<Custom> {
         level: Level::INFO,
         fn_input: |msg| Ok(Some(msg.serialize()?)),
     };
@@ -130,86 +128,6 @@ async fn main() {
         },
     };
 
-    // I2C
-    let config = esp_idf_svc::hal::i2c::config::Config::new().baudrate(100_u32.kHz().into());
-
-    let i2c = I2cDriver::new(
-        peripherals.i2c0,
-        peripherals.pins.gpio4,
-        peripherals.pins.gpio5,
-        &config,
-    )
-    .unwrap();
-
-    let config_esp_i2c_master = cmp_esp_i2c_master::Config {
-        timeout: Duration::from_millis(10000),
-        i2c_driver: i2c,
-        devices: vec![
-            // cmp_esp_i2c_master::I2cDevices::BMP180 {
-            //     address: 0x77,
-            //     fn_output: |response| {
-            //         info!("Temperature and pressure: {response:?}");
-            //         vec![]
-            //     },
-            //     oversampling: cmp_esp_i2c_master::BMP180Oversampling::HighResolution,
-            // },
-            cmp_esp_i2c_master::I2cDevices::PCF8575 {
-                address: 0x20,
-                pin_00: cmp_esp_i2c_master::PCF8575PinMode::Input {
-                    fn_output: |value| {
-                        info!("Input 00: {value}");
-                        None
-                    },
-                },
-                pin_01: cmp_esp_i2c_master::PCF8575PinMode::Input {
-                    fn_output: |value| {
-                        info!("Input 01: {value}");
-                        None
-                    },
-                },
-                pin_02: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
-                pin_03: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
-                pin_04: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
-                pin_05: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
-                pin_06: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
-                pin_07: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
-                pin_10: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
-                pin_11: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
-                pin_12: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
-                pin_13: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
-                pin_14: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
-                pin_15: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
-                pin_16: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
-                pin_17: cmp_esp_i2c_master::PCF8575PinMode::Disabled,
-            },
-        ],
-    };
-
-    // let mut flag = false;
-    // loop {
-    //     println!("i2c call");
-    //     let send_bytes = if flag {
-    //         vec![0x00, 0x00]
-    //         // vec![0xFF, 0xFF]
-    //     } else {
-    //         vec![0xFF, 0xFF]
-    //     };
-    //     flag = !flag;
-    //     // let mut answer = vec![0x00, 0x00];
-    //     let size = 2;
-    //     let mut answer = vec![0; size];
-    //     // PCF8574
-    //     match i2c.write_read(0x20, &send_bytes, &mut answer, 1000) {
-    //         // i2c.write(0x20, &send_bytes, 1000).unwrap();
-    //         Ok(res) => {
-    //             info!("result: {:?}", send_bytes);
-    //             info!("answer: {:?}", answer);
-    //         }
-    //         Err(err) => error!("error: {}", err),
-    //     }
-    //     sleep(Duration::from_secs(2)).await;
-    // }
-
     // executor ------------------------------------------------------------------------------------
 
     let executor_config = ComponentExecutorConfig {
@@ -222,14 +140,13 @@ async fn main() {
 
     local_set.spawn_local(async {
         ComponentExecutor::<Custom>::new(executor_config)
-            // .add_cmp(cmp_logger::Cmp::new(logger_config))
-            // .add_cmp(cmp_http_server_esp::Cmp::new(http_server_esp_config))
-            // .add_cmp(cmp_esp_wifi::Cmp::new(wifi_config))
-            // .add_cmp(cmp_esp_gpio::Cmp::new(gpio_config))
-            // .add_cmp(cmp_inject_periodic::Cmp::new(config_inject_periodic))
-            // .add_cmp(cmp_esp_adc::Cmp::new(config_esp_adc))
-            // .add_cmp(cmp_esp_mqtt_client::Cmp::new(config_esp_mqtt_client))
-            .add_cmp(cmp_esp_i2c_master::Cmp::new(config_esp_i2c_master))
+            .add_cmp(cmp_logger::Cmp::new(logger_config))
+            .add_cmp(cmp_http_server_esp::Cmp::new(http_server_esp_config))
+            .add_cmp(cmp_esp_wifi::Cmp::new(wifi_config))
+            .add_cmp(cmp_esp_gpio::Cmp::new(gpio_config))
+            .add_cmp(cmp_inject_periodic::Cmp::new(config_inject_periodic))
+            .add_cmp(cmp_esp_adc::Cmp::new(config_esp_adc))
+            .add_cmp(cmp_esp_mqtt_client::Cmp::new(config_esp_mqtt_client))
             .wait_result()
             .await
             .unwrap()
