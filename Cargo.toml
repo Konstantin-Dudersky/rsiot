@@ -14,7 +14,8 @@ version = "0.0.81"
 [dependencies]
 anyhow = { version = "1.0.80" }
 bincode = { version = "1.3.3" }
-bitvec = { version = "*" }
+bitvec = { version = "1.0.1" }
+byteorder = { version = "1.5.0" }
 chrono = { version = "0.4.35", features = ["serde"] }
 document-features = { version = "0.2.8" }
 getrandom = { version = "0.2", features = ["js"] }
@@ -276,8 +277,22 @@ name = "cmp_external_fn_process"
 path = "examples/cmp_external_fn_process/cmp_external_fn_process.rs"
 
 [[example]]
-name = "cmp_inject_periodic"
-path = "examples/cmp_inject_periodic/cmp_inject_periodic.rs"
+name = "cmp_esp"
+path = "examples/cmp_esp/cmp_esp.rs"
+doc-scrape-examples = true
+
+[[example]]
+name = "cmp_esp_i2c_master_pcf8575"
+path = "./examples/cmp_esp/cmp_esp_i2c_master_pcf8575.rs"
+
+[[example]]
+name = "cmp_esp_i2c_master_ads1115"
+path = "./examples/cmp_esp/cmp_esp_i2c_master_ads1115.rs"
+
+[[example]]
+name = "cmp_esp_nvs"
+path = "examples/cmp_esp_nvs/cmp_esp_nvs.rs"
+
 
 [[example]]
 name = "cmp_http_client"
@@ -288,21 +303,12 @@ name = "cmp_http_server"
 path = "examples/cmp_http_server/cmp_http_server.rs"
 
 [[example]]
-name = "cmp_esp"
-path = "examples/cmp_esp/cmp_esp.rs"
-doc-scrape-examples = true
-
-[[example]]
-name = "cmp_esp_i2c_master_pcf8575"
-path = "./examples/cmp_esp/cmp_esp_i2c_master_pcf8575.rs"
-
-[[example]]
-name = "cmp_esp_nvs"
-path = "examples/cmp_esp_nvs/cmp_esp_nvs.rs"
-
-[[example]]
 name = "cmp_influxdb"
 path = "examples/cmp_influxdb/cmp_influxdb.rs"
+
+[[example]]
+name = "cmp_inject_periodic"
+path = "examples/cmp_inject_periodic/cmp_inject_periodic.rs"
 
 [[example]]
 name = "create_signal_from_msg"

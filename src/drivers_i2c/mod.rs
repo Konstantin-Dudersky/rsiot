@@ -1,9 +1,10 @@
 //! Драйверы для протокола I2C
 
+pub mod ads1115;
 mod bmp180;
-mod i2c_devices;
 mod pcf8575;
 
+mod i2c_devices;
 mod rsiot_i2c_driver_base;
 
 pub use bmp180::BMP180Oversampling;

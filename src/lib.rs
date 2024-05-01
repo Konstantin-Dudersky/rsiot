@@ -76,7 +76,7 @@
 pub mod components;
 mod components_config;
 #[cfg(feature = "cmp_esp")]
-mod drivers_i2c;
+pub mod drivers_i2c;
 #[cfg(feature = "env_vars")]
 pub mod env_vars;
 #[cfg(feature = "executor")]

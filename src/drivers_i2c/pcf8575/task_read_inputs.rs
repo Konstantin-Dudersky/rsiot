@@ -4,7 +4,7 @@ use bitvec::prelude::*;
 use tokio::{sync::Mutex, time::sleep};
 
 use crate::{
-    components::cmp_esp_i2c_master::RsiotI2cDriverBase,
+    drivers_i2c::RsiotI2cDriverBase,
     executor::CmpInOut,
     message::{Message, MsgDataBound},
 };

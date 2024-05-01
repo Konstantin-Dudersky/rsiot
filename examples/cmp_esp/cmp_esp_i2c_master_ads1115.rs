@@ -1,6 +1,6 @@
 //! Пример работы с модулем PCF8575 по I2C
 //!
-//! cargo run --example cmp_esp_i2c_master_pcf8575 --target="riscv32imc-esp-espidf" --features="cmp_esp, logging" --release
+//! cargo run --example cmp_esp_i2c_master_ads1115 --target="riscv32imc-esp-espidf" --features="cmp_esp, logging" --release
 
 #[cfg(feature = "cmp_esp")]
 #[tokio::main(flavor = "current_thread")]
@@ -15,7 +15,7 @@ async fn main() {
     use tracing::{level_filters::LevelFilter, Level};
 
     use rsiot::{
-        components::{cmp_esp_i2c_master, cmp_inject_periodic, cmp_logger},
+        components::{cmp_esp_i2c_master, cmp_logger},
         drivers_i2c,
         executor::{ComponentExecutor, ComponentExecutorConfig},
         logging::configure_logging,
@@ -41,17 +41,6 @@ async fn main() {
         fn_input: |msg| Ok(Some(msg.serialize()?)),
     };
 
-    // cmp_inject_periodic -------------------------------------------------------------------------
-    let mut value = false;
-    let config_inject_periodic = cmp_inject_periodic::Config {
-        period: Duration::from_secs(5),
-        fn_periodic: move || {
-            let msg = Message::new_custom(Custom::Pin02Output(value));
-            value = !value;
-            vec![msg]
-        },
-    };
-
     // ESP -----------------------------------------------------------------------------------------
     let peripherals = Peripherals::take().unwrap();
 
@@ -66,40 +55,15 @@ async fn main() {
     )
     .unwrap();
 
-    let devices = vec![drivers_i2c::I2cDevices::PCF8575 {
-        address: 0x20,
-        pin_00: drivers_i2c::PCF8575PinMode::Input {
-            fn_output: |value| {
-                let msg = Message::new_custom(Custom::Pin00Input(value));
-                Some(msg)
-            },
-        },
-        pin_01: drivers_i2c::PCF8575PinMode::Input {
-            fn_output: |value| {
-                let msg = Message::new_custom(Custom::Pin01Input(value));
-                Some(msg)
-            },
-        },
-        pin_02: drivers_i2c::PCF8575PinMode::Output {
-            fn_input: |msg| match msg.data {
-                MsgData::Custom(Custom::Pin02Output(value)) => Some(value),
-                _ => None,
-            },
-        },
-        pin_03: drivers_i2c::PCF8575PinMode::Disabled,
-        pin_04: drivers_i2c::PCF8575PinMode::Disabled,
-        pin_05: drivers_i2c::PCF8575PinMode::Disabled,
-        pin_06: drivers_i2c::PCF8575PinMode::Disabled,
-        pin_07: drivers_i2c::PCF8575PinMode::Disabled,
-        pin_10: drivers_i2c::PCF8575PinMode::Disabled,
-        pin_11: drivers_i2c::PCF8575PinMode::Disabled,
-        pin_12: drivers_i2c::PCF8575PinMode::Disabled,
-        pin_13: drivers_i2c::PCF8575PinMode::Disabled,
-        pin_14: drivers_i2c::PCF8575PinMode::Disabled,
-        pin_15: drivers_i2c::PCF8575PinMode::Disabled,
-        pin_16: drivers_i2c::PCF8575PinMode::Disabled,
-        pin_17: drivers_i2c::PCF8575PinMode::Disabled,
+    let devices = vec![drivers_i2c::I2cDevices::ADS1115 {
+        address: 0x48,
+        inputs: vec![drivers_i2c::ads1115::config::InputConfig {
+            mux_config: drivers_i2c::ads1115::config::MuxConfig::Diff_0_1,
+            amplifier: drivers_i2c::ads1115::config::Amplifier::V_2_048,
+            fn_output: |_| None,
+        }],
     }];
+
     let config_esp_i2c_master = cmp_esp_i2c_master::Config {
         timeout: Duration::from_millis(10000),
         i2c_driver: i2c,
@@ -119,7 +83,6 @@ async fn main() {
     local_set.spawn_local(async {
         ComponentExecutor::<Custom>::new(executor_config)
             .add_cmp(cmp_logger::Cmp::new(logger_config))
-            .add_cmp(cmp_inject_periodic::Cmp::new(config_inject_periodic))
             .add_cmp(cmp_esp_i2c_master::Cmp::new(config_esp_i2c_master))
             .wait_result()
             .await

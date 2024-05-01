@@ -4,7 +4,7 @@ use tokio::{sync::Mutex, task::JoinSet};
 
 use crate::{drivers_i2c, executor::CmpInOut, message::MsgDataBound};
 
-use super::{rsiot_i2c_driver::RsiotI2cDriver, Config, I2cDevices};
+use super::{rsiot_i2c_driver::RsiotI2cDriver, Config};
 
 pub async fn fn_process<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> super::Result<()>
 where
@@ -16,7 +16,13 @@ where
 
     for device in config.devices {
         match device {
-            I2cDevices::BMP180 {
+            drivers_i2c::I2cDevices::ADS1115 { address, inputs } => {
+                let driver = driver.clone();
+                let device = drivers_i2c::ads1115::ADS1115 { address, driver };
+                task_set.spawn(async move { device.spawn().await });
+            }
+
+            drivers_i2c::I2cDevices::BMP180 {
                 address,
                 fn_output,
                 oversampling,
@@ -29,7 +35,8 @@ where
                 let driver = driver.clone();
                 task_set.spawn(async move { device.fn_process(driver).await });
             }
-            I2cDevices::PCF8575 {
+
+            drivers_i2c::I2cDevices::PCF8575 {
                 address,
                 pin_00,
                 pin_01,

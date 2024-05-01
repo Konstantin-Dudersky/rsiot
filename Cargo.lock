@@ -6452,6 +6452,7 @@ dependencies = [
  "axum",
  "bincode",
  "bitvec",
+ "byteorder",
  "cfg_aliases 0.2.0",
  "chrono",
  "clap",

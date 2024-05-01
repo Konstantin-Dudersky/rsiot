@@ -6,6 +6,19 @@ pub enum I2cDevices<TMsg>
 where
     TMsg: MsgDataBound,
 {
+    /// Аналого-цифровой преобразователь
+    ADS1115 {
+        /// Адрес. Зависит от подключения входа ADDR:
+        /// - GND - 0x48
+        /// - VDD - 0x49
+        /// - SDA - 0x4A
+        /// - SCL - 0x4B
+        address: u8,
+
+        /// Настройка входов
+        inputs: Vec<super::ads1115::config::InputConfig<TMsg>>,
+    },
+
     /// Датчик давления BMP180
     BMP180 {
         /// Адрес. По-умолчанию 0x77
@@ -15,6 +28,7 @@ where
         /// Кол-во измерений для определения значения
         oversampling: super::bmp180::BMP180Oversampling,
     },
+
     /// Расширение GPIO PCF8575
     PCF8575 {
         /// Адрес
