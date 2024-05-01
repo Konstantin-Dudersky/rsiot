@@ -55,6 +55,7 @@ sqlx = { version = "0.7.3", features = [
 ], optional = true }
 surrealdb = { version = "1.2.0", optional = true }
 sysinfo = { version = "0.30.7", optional = true }
+teloxide = { version = "0.12.2", optional = true, features = ["macros"] }
 tokio = { version = "^1.36.0", features = [
     "macros",
     "sync",
@@ -157,6 +158,16 @@ serde-json = ["dep:serde_json"]
 ## Компонент аутентификации
 cmp_auth = ["executor", "dep:jwt", "dep:hmac", "dep:sha2"]
 
+## Компоненты для работы с микроконтроллером ESP
+cmp_esp = [
+    "executor",
+    "single-thread",
+    "dep:embedded-svc",
+    "dep:heapless",
+    "dep:postcard",
+    "tokio?/time",
+]
+
 ## Компонент http-клиент
 cmp_http_client = [
     "executor",
@@ -177,16 +188,6 @@ cmp_http_client_wasm = [
 
 ## Компонент http-сервер
 cmp_http_server = ["executor", "dep:axum", "dep:tower-http"]
-
-## Компоненты для работы с микроконтроллером ESP
-cmp_esp = [
-    "executor",
-    "single-thread",
-    "dep:embedded-svc",
-    "dep:heapless",
-    "dep:postcard",
-    "tokio?/time",
-]
 
 ## Компонент сохранения в БД InfluxDB
 cmp_influxdb = ["executor", "dep:openssl", "dep:reqwest"]
@@ -224,6 +225,9 @@ cmp_surrealdb = ["executor", "dep:surrealdb"]
 
 ## Компонент получает системную информацию
 cmp_system_info = ["executor", "dep:sysinfo"]
+
+## Компонент бота telegram
+cmp_telegram = ["executor", "dep:teloxide"]
 
 ## Компонент сохранения в БД TimescaleDB
 cmp_timescaledb = ["executor", "dep:sqlx", "dep:url"]
@@ -293,6 +297,10 @@ name = "cmp_esp_i2c_master_pcf8575"
 path = "./examples/cmp_esp/cmp_esp_i2c_master_pcf8575.rs"
 
 [[example]]
+name = "cmp_esp_nvs"
+path = "examples/cmp_esp_nvs/cmp_esp_nvs.rs"
+
+[[example]]
 name = "cmp_influxdb"
 path = "examples/cmp_influxdb/cmp_influxdb.rs"
 
@@ -317,12 +325,12 @@ name = "cmp_system_info"
 path = "examples/cmp_system_info/cmp_system_info.rs"
 
 [[example]]
-name = "cmp_esp_nvs"
-path = "examples/cmp_esp_nvs/cmp_esp_nvs.rs"
-
-[[example]]
 name = "cmp_surrealdb"
 path = "examples/cmp_surrealdb/cmp_surrealdb.rs"
+
+[[example]]
+name = "cmp_telegram"
+path = "./examples/cmp_telegram/cmp_telegram.rs"
 
 [[example]]
 name = "cmp_timescaledb"

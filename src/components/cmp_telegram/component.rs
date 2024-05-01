@@ -14,11 +14,11 @@ where
     TMsg: MsgDataBound + 'static,
 {
     async fn process(&self, config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> CmpResult {
-        let in_out = in_out.clone_with_new_id("cmp_esp_i2c_master", AuthPermissions::FullAccess);
+        let in_out = in_out.clone_with_new_id("cmp_telegram", AuthPermissions::FullAccess);
         fn_process(config, in_out).await?;
         Ok(())
     }
 }
 
-/// Компонент cmp_esp_i2c_master
+/// Компонент cmp_telegram
 pub type Cmp<TMsg> = Component<Config<TMsg>, TMsg>;

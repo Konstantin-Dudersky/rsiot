@@ -14,27 +14,28 @@
   // ],
 
   // ---- x86_64-unknown-linux-gnu -----------------------------------------------------------------
-  // "rust-analyzer.cargo.target": "x86_64-unknown-linux-gnu",
-  // "rust-analyzer.cargo.features": [
-  // "executor",
-  // "single-thread",
-  // "env_vars"
-  // "logging",
-  // "cmp_auth"
-  // "cmp_http_client"
-  // "cmp_http_server"
-  // "cmp_influxdb"
-  // "cmp_modbus_client"
-  // "cmp_mqtt_client"
-  // "cmp_plc"
-  // "cmp_redis_client"
-  // "cmp_slint"
-  // "cmp_surrealdb"
-  // "cmp_system_info"
-  // "cmp_timescaledb"
-  // "cmp_websocket_client"
-  // "cmp_websocket_server"
-  // ],
+  "rust-analyzer.cargo.target": "x86_64-unknown-linux-gnu",
+  "rust-analyzer.cargo.features": [
+    // "executor",
+    // "single-thread",
+    // "env_vars"
+    // "logging",
+    // "cmp_auth"
+    // "cmp_http_client"
+    // "cmp_http_server"
+    // "cmp_influxdb"
+    // "cmp_modbus_client"
+    // "cmp_mqtt_client"
+    // "cmp_plc"
+    // "cmp_redis_client"
+    // "cmp_slint"
+    // "cmp_surrealdb"
+    // "cmp_system_info"
+    "cmp_telegram"
+    // "cmp_timescaledb"
+    // "cmp_websocket_client"
+    // "cmp_websocket_server"
+  ],
 
   // ---- wasm32 -----------------------------------------------------------------------------------
   // "rust-analyzer.cargo.target": "wasm32-unknown-unknown",
@@ -50,8 +51,8 @@
   // ],
 
   // ---- esp32 ------------------------------------------------------------------------------------
-  "rust-analyzer.cargo.target": "riscv32imc-esp-espidf",
-  "rust-analyzer.cargo.features": ["executor", "logging", "cmp_esp", "cmp_plc"],
+  // "rust-analyzer.cargo.target": "riscv32imc-esp-espidf",
+  // "rust-analyzer.cargo.features": ["executor", "logging", "cmp_esp", "cmp_plc"],
 
   "rust-analyzer.showUnlinkedFileNotification": false
 }
