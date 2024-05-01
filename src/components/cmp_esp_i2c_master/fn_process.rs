@@ -18,7 +18,12 @@ where
         match device {
             drivers_i2c::I2cDevices::ADS1115 { address, inputs } => {
                 let driver = driver.clone();
-                let device = drivers_i2c::ads1115::ADS1115 { address, driver };
+                let device = drivers_i2c::ads1115::ADS1115 {
+                    address,
+                    driver,
+                    inputs,
+                    cmp_in_out: in_out.clone(),
+                };
                 task_set.spawn(async move { device.spawn().await });
             }
 

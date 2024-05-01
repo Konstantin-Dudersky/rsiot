@@ -1,11 +1,14 @@
 use std::{io::Cursor, sync::Arc, time::Duration};
 
 use byteorder::{BigEndian, ReadBytesExt};
-use tokio::{sync::Mutex, time::sleep};
-use tracing::info;
+use tokio::{sync::Mutex, task::JoinSet, time::sleep};
+use tracing::warn;
+
+use crate::{executor::CmpInOut, message::MsgDataBound};
 
 use super::{super::RsiotI2cDriverBase, config};
 
+/// АЦП ADS1115
 pub struct ADS1115<TMsg, Driver>
 where
     Driver: RsiotI2cDriverBase,
@@ -18,39 +21,37 @@ where
 
     /// Ссылка на драйвер
     pub driver: Arc<Mutex<Driver>>,
+
+    pub cmp_in_out: CmpInOut<TMsg>,
 }
 
 impl<TMsg, Driver> ADS1115<TMsg, Driver>
 where
-    Driver: RsiotI2cDriverBase,
+    TMsg: MsgDataBound + 'static,
+    Driver: RsiotI2cDriverBase + 'static,
 {
     pub async fn spawn(&self) {
         loop {
-            info!("Call ADS1115");
-            {
-                let mut driver = self.driver.lock().await;
+            let mut task_set: JoinSet<Result<(), String>> = JoinSet::new();
 
-                // Посылаем конфигурацию
-                let mut request = vec![0x01];
-                request.extend(config::config_to_bytes(
-                    config::MuxConfig::Diff_0_1,
-                    config::Amplifier::V_2_048,
-                ));
-
-                let response = driver.write(self.address, &request).await;
-                info!("Write config: {:?}", response);
-
-                sleep(Duration::from_millis(10)).await;
-
-                // Читаем ответ
-                let request = [0x00];
-                let response = driver.write_read(self.address, &request, 2).await;
-                if let Ok(response) = response {
-                    let volt =
-                        convert_response_to_voltage(&response, config::Amplifier::V_2_048).unwrap();
-                    info!("Conversion: {}", volt);
-                }
+            for input in &self.inputs {
+                let driver = self.driver.clone();
+                let input = input.clone();
+                let cmp_in_out = self.cmp_in_out.clone();
+                let task = TaskInput {
+                    address: self.address,
+                    input,
+                    driver,
+                    cmp_in_out,
+                };
+                task_set.spawn(async move { task.spawn().await });
             }
+
+            while let Some(res) = task_set.join_next().await {
+                warn!("ADS1150 stop execution: {:?}", res);
+                task_set.abort_all();
+            }
+
             sleep(Duration::from_secs(2)).await;
         }
     }
@@ -58,7 +59,7 @@ where
 
 fn convert_response_to_voltage(
     response: &[u8],
-    amplfier: config::Amplifier,
+    amplfier: &config::Amplifier,
 ) -> Result<f64, String> {
     let mut rdr = Cursor::new(response);
     let response = rdr.read_i16::<BigEndian>().unwrap();
@@ -68,46 +69,56 @@ fn convert_response_to_voltage(
     Ok(volt)
 }
 
-struct TaskInput<TMsg, Driver> {
+struct TaskInput<TMsg, Driver>
+where
+    TMsg: MsgDataBound,
+    Driver: RsiotI2cDriverBase,
+{
     pub address: u8,
-    pub inputs: config::InputConfig<TMsg>,
+    pub input: config::InputConfig<TMsg>,
     pub driver: Arc<Mutex<Driver>>,
-    pub period: Duration,
+    pub cmp_in_out: CmpInOut<TMsg>,
 }
 
 impl<TMsg, Driver> TaskInput<TMsg, Driver>
 where
+    TMsg: MsgDataBound,
     Driver: RsiotI2cDriverBase,
 {
     pub async fn spawn(&self) -> Result<(), String> {
         loop {
-            info!("Call ADS1115");
             {
                 let mut driver = self.driver.lock().await;
 
                 // Посылаем конфигурацию
                 let mut request = vec![0x01];
                 request.extend(config::config_to_bytes(
-                    &self.inputs.mux_config,
-                    &self.inputs.amplifier,
+                    &self.input.mux_config,
+                    &self.input.amplifier,
                 ));
 
-                let response = driver.write(self.address, &request).await;
-                info!("Write config: {:?}", response);
+                let _ = driver.write(self.address, &request).await;
 
                 sleep(Duration::from_millis(10)).await;
 
                 // Читаем ответ
                 let request = [0x00];
-                let response = driver.write_read(self.address, &request, 2).await;
-                if let Ok(response) = response {
-                    let volt =
-                        convert_response_to_voltage(&response, config::Amplifier::V_2_048).unwrap();
-                    info!("Conversion: {}", volt);
-                }
+                let response = driver
+                    .write_read(self.address, &request, 2)
+                    .await
+                    .map_err(String::from)?;
+                let volt = convert_response_to_voltage(&response, &self.input.amplifier).unwrap();
+
+                // Обрабатываем исходящие сообщения
+                let msg = (self.input.fn_output)(volt);
+                let Some(msg) = msg else { continue };
+                self.cmp_in_out
+                    .send_output(msg)
+                    .await
+                    .map_err(|e| e.to_string())?;
             }
 
-            sleep(self.period).await
+            sleep(self.input.period).await
         }
     }
 }

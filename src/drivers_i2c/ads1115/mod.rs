@@ -1,4 +1,4 @@
 pub mod config;
 mod device;
 
-pub use device::ADS1115;
+pub(crate) use device::ADS1115;

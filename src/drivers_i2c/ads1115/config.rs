@@ -1,5 +1,7 @@
 //! Типы данных для конфигурации устройства ADS1115
 
+use std::time::Duration;
+
 use bitvec::prelude::*;
 
 use crate::message::Message;
@@ -11,6 +13,8 @@ pub struct InputConfig<TMsg> {
     pub mux_config: MuxConfig,
     /// Диапазон измерения
     pub amplifier: Amplifier,
+    /// Периодичность вызова
+    pub period: Duration,
     /// Функция преобразования измеренного значения в вольтах, в исходящее сообщение
     pub fn_output: fn(f64) -> Option<Message<TMsg>>,
 }
@@ -192,7 +196,7 @@ mod tests {
     /// ```
     #[test]
     fn test1() {
-        let config = config_to_bytes(MuxConfig::Diff_0_1, Amplifier::V_2_048);
+        let config = config_to_bytes(&MuxConfig::Diff_0_1, &Amplifier::V_2_048);
         assert_eq!(config, [0x85, 0x83]);
     }
 }

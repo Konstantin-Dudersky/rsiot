@@ -28,9 +28,7 @@ async fn main() {
     // message -------------------------------------------------------------------------------------
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub enum Custom {
-        Pin00Input(bool),
-        Pin01Input(bool),
-        Pin02Output(bool),
+        VoltageA0(f64),
     }
 
     impl MsgDataBound for Custom {}
@@ -58,9 +56,10 @@ async fn main() {
     let devices = vec![drivers_i2c::I2cDevices::ADS1115 {
         address: 0x48,
         inputs: vec![drivers_i2c::ads1115::config::InputConfig {
-            mux_config: drivers_i2c::ads1115::config::MuxConfig::Diff_0_1,
-            amplifier: drivers_i2c::ads1115::config::Amplifier::V_2_048,
-            fn_output: |_| None,
+            mux_config: drivers_i2c::ads1115::config::MuxConfig::Single_0,
+            amplifier: drivers_i2c::ads1115::config::Amplifier::V_4_096,
+            fn_output: |value| Some(Message::new_custom(Custom::VoltageA0(value))),
+            period: Duration::from_secs(2),
         }],
     }];
 

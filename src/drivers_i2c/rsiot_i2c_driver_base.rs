@@ -1,4 +1,7 @@
-pub trait RsiotI2cDriverBase {
+pub trait RsiotI2cDriverBase
+where
+    Self: Send,
+{
     fn write_read(
         &mut self,
         address: u8,
@@ -6,7 +9,11 @@ pub trait RsiotI2cDriverBase {
         response_size: usize,
     ) -> impl std::future::Future<Output = Result<Vec<u8>, String>> + std::marker::Send;
 
-    async fn write(&mut self, address: u8, request: &[u8]) -> Result<(), String>;
+    fn write(
+        &mut self,
+        address: u8,
+        request: &[u8],
+    ) -> impl std::future::Future<Output = Result<(), String>> + std::marker::Send;
 
     fn read(
         &mut self,
