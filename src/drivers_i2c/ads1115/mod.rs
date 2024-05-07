@@ -1,3 +1,5 @@
+//! Коммуникация с АЦП ADS11xx
+
 pub mod config;
 mod device;
 

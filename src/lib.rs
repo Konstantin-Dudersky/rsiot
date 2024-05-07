@@ -75,7 +75,7 @@
 #[cfg(feature = "executor")]
 pub mod components;
 mod components_config;
-#[cfg(feature = "cmp_esp")]
+#[cfg(any(feature = "cmp_esp", feature = "cmp_raspberrypi"))]
 pub mod drivers_i2c;
 #[cfg(feature = "env_vars")]
 pub mod env_vars;

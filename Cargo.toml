@@ -293,10 +293,21 @@ path = "./examples/cmp_esp/cmp_esp_i2c_master_ads1115.rs"
 name = "cmp_esp_nvs"
 path = "examples/cmp_esp_nvs/cmp_esp_nvs.rs"
 
-
 [[example]]
 name = "cmp_http_client"
 path = "examples/cmp_http_client/cmp_http_client.rs"
+
+[[example]]
+name = "cmp_raspberry_i2c_master_ads1115"
+path = "./examples/cmp_raspberrypi/cmp_raspberry_i2c_master_ads1115.rs"
+
+[[example]]
+name = "cmp_raspberry_i2c_master_bmp180"
+path = "./examples/cmp_raspberrypi/cmp_raspberry_i2c_master_bmp180.rs"
+
+[[example]]
+name = "cmp_raspberry_i2c_master_pcf8575"
+path = "./examples/cmp_raspberrypi/cmp_raspberry_i2c_master_pcf8575.rs"
 
 [[example]]
 name = "cmp_http_server"
