@@ -2,3 +2,5 @@
 
 pub mod go2rtc;
 pub mod svg_dynamic;
+
+pub mod tailwind;
