@@ -18,14 +18,14 @@
     // "executor",
     // "single-thread",
     // "env_vars"
-    "logging"
+    // "logging"
     // "cmp_auth"
     // "cmp_http_client"
     // "cmp_http_server"
     // "cmp_influxdb"
     // "cmp_modbus_client"
     // "cmp_mqtt_client"
-    // "cmp_plc"
+    "cmp_plc"
     // "cmp_redis_client"
     // "cmp_slint"
     // "cmp_surrealdb"

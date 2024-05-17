@@ -8,6 +8,8 @@ pub type FnOutput<TMsg> = fn(&str) -> anyhow::Result<Option<Vec<Message<TMsg>>>>
 #[derive(Clone, Debug)]
 pub struct Config<TMsg> {
     /// Адрес Websocket-сервера
+    ///
+    /// TODO - переделать на прием строки
     pub url: Url,
 
     /// Преобразование входящих сообщений в текст для отправки на сервер

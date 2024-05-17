@@ -26,6 +26,7 @@ mod config;
 mod error;
 mod fn_process;
 pub mod plc;
+#[allow(dead_code)]
 mod template;
 
 pub use component::Cmp;

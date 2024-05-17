@@ -9,22 +9,50 @@ pub type FB = FunctionBlockBase<I, Q, S>;
 // Input -------------------------------------------------------------------------------------------
 
 #[derive(Clone, Default, Deserialize, Serialize)]
-pub struct I {}
+pub struct I {
+    pub auto_mode: bool,
+    pub man_mode: bool,
+}
 
 // Output ------------------------------------------------------------------------------------------
 
 #[derive(Clone, Default, Deserialize, Serialize)]
-pub struct Q {}
+pub struct Q {
+    pub status: super::messages::Status,
+}
 
 // Stat --------------------------------------------------------------------------------------------
 
 #[derive(Clone, Default, Deserialize, Serialize)]
-pub struct S {}
+pub struct S {
+    mode: Mode,
+}
 
 // Logic -------------------------------------------------------------------------------------------
 
 impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
-    fn logic(_input: &I, _stat: &mut S) -> Q {
-        Q {}
+    fn logic(input: &I, stat: &mut S) -> Q {
+        // Выбор режима
+        if input.auto_mode {
+            stat.mode = Mode::Auto;
+        } else if input.man_mode {
+            stat.mode = Mode::Manual;
+        }
+
+        Q {
+            status: super::messages::Status {
+                man_act: stat.mode == Mode::Auto,
+                aut_act: stat.mode == Mode::Manual,
+            },
+        }
     }
+}
+
+// other -------------------------------------------------------------------------------------------
+
+#[derive(Clone, Default, PartialEq, Deserialize, Serialize)]
+enum Mode {
+    Auto,
+    #[default]
+    Manual,
 }

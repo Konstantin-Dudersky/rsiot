@@ -8,9 +8,9 @@ use super::plc::function_block_base::{FunctionBlockBase, IFunctionBlock};
 
 /// Конфигурация компонента ПЛК
 #[derive(Clone)]
-pub struct Config<TMessage, I, Q, S>
+pub struct Config<TMsg, I, Q, S>
 where
-    TMessage: MsgDataBound,
+    TMsg: MsgDataBound,
     I: Clone + Default + Serialize,
     Q: Clone + Default + Serialize,
     S: Clone + Default + Serialize,
@@ -32,7 +32,7 @@ where
     /// ```rust
     /// fn_input: |input: &mut fb_main::I, msg: &Message<Custom>| match msg {}
     /// ```
-    pub fn_input: fn(&mut I, &Message<TMessage>) -> (),
+    pub fn_input: fn(&mut I, &Message<TMsg>) -> (),
 
     /// Функция преобразования выходной структуры ПЛК в исходящие сообщения.
     ///
@@ -41,7 +41,7 @@ where
     /// ```rust
     /// fn_output: |output: &fb_main::Q| vec![]
     /// ```
-    pub fn_output: fn(&Q) -> Vec<Message<TMessage>>,
+    pub fn_output: fn(&Q) -> Vec<Message<TMsg>>,
 
     /// Главный функциональный блок ПЛК
     ///
@@ -60,4 +60,15 @@ where
     /// period: Duration::from_millis(100)
     /// ```
     pub period: Duration,
+}
+
+/// Настройка сохранения и восстановления области Static
+pub struct ConfigRetention<TMsg, S>
+where
+    TMsg: MsgDataBound,
+    S: Clone + Default + Serialize,
+{
+    save_period: Duration,
+    fn_save: fn(&S) -> Option<TMsg>,
+    fn_restore: fn(&str) -> Option<S>,
 }

@@ -1,9 +1,9 @@
 //! Функциональный блок
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 /// Функциональный блок
-#[derive(Clone, Default, Serialize)]
+#[derive(Clone, Default, Deserialize, Serialize)]
 pub struct FunctionBlockBase<I, Q, S>
 where
     I: Clone + Default + Serialize,

@@ -32,19 +32,19 @@ where
     S: Clone + Default + Send + Serialize + 'static + Sync,
     FunctionBlockBase<I, Q, S>: IFunctionBlock<I, Q, S>,
 {
-    let local_cache = Cache::<TMsg>::new();
+    let input_msg_cache = Cache::<TMsg>::new();
 
     let mut task_set = JoinSet::<super::Result<()>>::new();
 
     // Сохранение входных сообщений в кеше
-    let task = save_input_msg_in_cache(in_out.clone(), local_cache.clone());
+    let task = save_input_msg_in_cache(in_out.clone(), input_msg_cache.clone());
     #[cfg(feature = "single-thread")]
     task_set.spawn_local(task);
     #[cfg(not(feature = "single-thread"))]
     task_set.spawn(task);
 
     // Выполнение цикла ПЛК
-    let task = plc_cycle_execute_loop::<TMsg, I, Q, S>(in_out, config, local_cache);
+    let task = plc_cycle_execute_loop::<TMsg, I, Q, S>(in_out, config, input_msg_cache);
     #[cfg(feature = "single-thread")]
     task_set.spawn_local(task);
     #[cfg(not(feature = "single-thread"))]
@@ -59,13 +59,13 @@ where
 /// Сохранение входящих сообщений в локальном кеше
 async fn save_input_msg_in_cache<TMsg>(
     mut in_out: CmpInOut<TMsg>,
-    mut local_cache: Cache<TMsg>,
+    mut input_msg_cache: Cache<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
 {
     while let Ok(msg) = in_out.recv_input().await {
-        local_cache.insert(msg).await
+        input_msg_cache.insert(msg).await
     }
     Ok(())
 }
@@ -74,7 +74,7 @@ where
 async fn plc_cycle_execute_loop<TMsg, I, Q, S>(
     in_out: CmpInOut<TMsg>,
     config: Config<TMsg, I, Q, S>,
-    local_cache: Cache<TMsg>,
+    input_msg_cache: Cache<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
@@ -84,7 +84,7 @@ where
     FunctionBlockBase<I, Q, S>: IFunctionBlock<I, Q, S>,
 {
     let mut fb_main = config.fb_main.clone();
-    let input = I::default();
+    let mut input = I::default();
 
     loop {
         trace!("Start PLC cycle");
@@ -94,8 +94,8 @@ where
         let msgs = plc_cycle_execute::<TMsg, I, Q, S>(
             &config,
             &mut fb_main,
-            input.clone(),
-            local_cache.clone(),
+            &mut input,
+            input_msg_cache.clone(),
         )
         .await?;
 
@@ -119,8 +119,8 @@ where
 async fn plc_cycle_execute<TMsg, I, Q, S>(
     config: &Config<TMsg, I, Q, S>,
     fb_main: &mut FunctionBlockBase<I, Q, S>,
-    mut input: I,
-    local_cache: Cache<TMsg>,
+    input: &mut I,
+    input_msg_cache: Cache<TMsg>,
 ) -> super::Result<Vec<Message<TMsg>>>
 where
     TMsg: MsgDataBound + 'static,
@@ -129,14 +129,16 @@ where
     S: Clone + Default + Send + Serialize,
     FunctionBlockBase<I, Q, S>: IFunctionBlock<I, Q, S>,
 {
+    // Инициализация входов в начале цикла
+    (config.fn_cycle_init)(input);
     {
-        let mut lock = local_cache.write().await;
+        let mut lock = input_msg_cache.write().await;
         for msg in lock.values() {
-            (config.fn_input)(&mut input, msg);
+            (config.fn_input)(input, msg);
         }
         lock.clear();
     }
-    fb_main.call(input);
+    fb_main.call(input.clone());
     let msgs = (config.fn_output)(&fb_main.output);
     Ok(msgs)
 }
