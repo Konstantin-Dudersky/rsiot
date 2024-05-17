@@ -193,6 +193,9 @@ cmp_http_server = ["executor", "dep:axum", "dep:tower-http"]
 ## Компонент сохранения в БД InfluxDB
 cmp_influxdb = ["executor", "dep:openssl", "dep:reqwest"]
 
+## Комонент сохранения данных в файловой системе
+cmp_filesystem = ["executor", "tokio?/fs"]
+
 ## Компонент для создания интерфейсов на базе Leptos
 cmp_leptos = [
     "executor",

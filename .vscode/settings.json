@@ -22,6 +22,7 @@
     // "cmp_auth"
     // "cmp_http_client"
     // "cmp_http_server"
+    "cmp_filesystem",
     // "cmp_influxdb"
     // "cmp_modbus_client"
     // "cmp_mqtt_client"

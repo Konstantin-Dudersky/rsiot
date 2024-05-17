@@ -30,7 +30,7 @@ pub mod plc;
 mod template;
 
 pub use component::Cmp;
-pub use config::Config;
+pub use config::{Config, ConfigRetention, ConfigRetentionRestoreResult};
 pub use error::Error;
 
 type Result<T> = std::result::Result<T, Error>;

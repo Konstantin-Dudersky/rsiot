@@ -60,15 +60,29 @@ where
     /// period: Duration::from_millis(100)
     /// ```
     pub period: Duration,
+
+    /// Настройки сохранения состояния и восттановления при запуске
+    pub retention: Option<ConfigRetention<TMsg, S>>,
 }
 
 /// Настройка сохранения и восстановления области Static
+#[derive(Clone)]
 pub struct ConfigRetention<TMsg, S>
 where
     TMsg: MsgDataBound,
     S: Clone + Default + Serialize,
 {
-    save_period: Duration,
-    fn_save: fn(&S) -> Option<TMsg>,
-    fn_restore: fn(&str) -> Option<S>,
+    pub save_period: Duration,
+    pub fn_save_static: fn(&S) -> Option<Message<TMsg>>,
+    pub fn_restore_static: fn(&Message<TMsg>) -> anyhow::Result<Option<S>>,
+    pub restore_timeout: Duration,
+}
+
+pub enum ConfigRetentionRestoreResult<S>
+where
+    S: Clone + Default + Serialize,
+{
+    NoRestoreData,
+    RestoreDeserializationError,
+    RestoreData(S),
 }

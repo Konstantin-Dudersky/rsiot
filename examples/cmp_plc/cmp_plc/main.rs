@@ -45,6 +45,12 @@ async fn main() -> anyhow::Result<()> {
         },
         fb_main: fb1_example::FB::new(),
         period: Duration::from_secs(2),
+        retention: Some(cmp_plc::ConfigRetention {
+            save_period: Duration::from_secs(1),
+            fn_save_static: |_| None,
+            fn_restore_static: |_| Ok(None),
+            restore_timeout: Duration::from_secs(2),
+        }),
     };
 
     let logger_config = cmp_logger::Config {
