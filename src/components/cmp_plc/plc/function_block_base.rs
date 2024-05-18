@@ -33,6 +33,13 @@ where
         }
     }
 
+    pub(crate) fn new_with_restore_stat(self, stat: S) -> Self {
+        Self {
+            stat,
+            ..Default::default()
+        }
+    }
+
     /// Вызов функционального блока
     pub fn call(&mut self, input: I) -> Q {
         self.input = input;

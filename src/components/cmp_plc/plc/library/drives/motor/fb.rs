@@ -12,6 +12,7 @@ pub type FB = FunctionBlockBase<I, Q, S>;
 pub struct I {
     pub auto_mode: bool,
     pub man_mode: bool,
+    pub man_command: super::messages::ManCommand,
 }
 
 // Output ------------------------------------------------------------------------------------------

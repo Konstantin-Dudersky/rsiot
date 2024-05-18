@@ -37,33 +37,29 @@ where
 
     let input_msg_cache = Cache::<TMsg>::new();
 
-    let fb_main = config.fb_main.clone();
-    let fb_main = Arc::new(Mutex::new(fb_main));
-
     let mut task_set = JoinSet::<super::Result<()>>::new();
 
     // Сохранение входных сообщений в кеше
-    let task = save_input_msg_in_cache(in_out.clone(), input_msg_cache.clone());
-    #[cfg(feature = "single-thread")]
-    task_set.spawn_local(task);
-    #[cfg(not(feature = "single-thread"))]
-    task_set.spawn(task);
+    let task = task_save_input_msg_in_cache(in_out.clone(), input_msg_cache.clone());
+    join_set_spawn(&mut task_set, task);
 
     // Ожидаем данные для восстановления памяти
-    let config_retention = if let Some(config_retention) = config.retention.clone() {
+    let retention_restore = if let Some(config_retention) = config.retention.clone() {
         let mut task_set_retention = JoinSet::<ConfigRetentionRestoreResult<S>>::new();
 
         // Таймаут
         // В tokio есть timeout в модуле time, но использование модуля вызывает панику в WASM.
-        task_set_retention.spawn(async move {
-            sleep(config_retention.restore_timeout).await;
-            ConfigRetentionRestoreResult::NoRestoreData
-        });
+        // task_set_retention.spawn(async move {
+        //     sleep(config_retention.restore_timeout).await;
+        //     ConfigRetentionRestoreResult::NoRestoreData
+        // });
+        let task = task_retention_timeout(config_retention.restore_timeout);
+        join_set_spawn(&mut task_set_retention, task);
 
         let mut in_out_clone = in_out.clone();
         task_set_retention.spawn(async move {
             while let Ok(msg) = in_out_clone.recv_input().await {
-                let data = (config_retention.fn_restore_static)(&msg);
+                let data = (config_retention.fn_import_static)(&msg);
 
                 let Ok(data) = data else {
                     return ConfigRetentionRestoreResult::RestoreDeserializationError;
@@ -85,7 +81,7 @@ where
     } else {
         ConfigRetentionRestoreResult::NoRestoreData
     };
-    match config_retention {
+    match retention_restore {
         ConfigRetentionRestoreResult::NoRestoreData => warn!("Restore retention data: no data"),
         ConfigRetentionRestoreResult::RestoreDeserializationError => {
             warn!("Restore retention data: deserialization error");
@@ -93,8 +89,17 @@ where
         ConfigRetentionRestoreResult::RestoreData(_) => info!("Restore retention data: success"),
     }
 
+    let fb_main = match retention_restore {
+        ConfigRetentionRestoreResult::NoRestoreData => config.fb_main.clone(),
+        ConfigRetentionRestoreResult::RestoreDeserializationError => config.fb_main.clone(),
+        ConfigRetentionRestoreResult::RestoreData(stat) => {
+            config.fb_main.clone().new_with_restore_stat(stat)
+        }
+    };
+    let fb_main = Arc::new(Mutex::new(fb_main));
+
     // Выполнение цикла ПЛК
-    let task = plc_cycle_execute_loop::<TMsg, I, Q, S>(
+    let task = task_plc_cycle_execute_loop::<TMsg, I, Q, S>(
         in_out.clone(),
         config.clone(),
         fb_main.clone(),
@@ -103,7 +108,7 @@ where
     join_set_spawn(&mut task_set, task);
 
     if let Some(config_retention) = config.retention.clone() {
-        let task = task_save_state(in_out, config_retention, fb_main);
+        let task = task_export_i_q_s(in_out, config_retention, fb_main);
         join_set_spawn(&mut task_set, task);
     }
 
@@ -113,8 +118,16 @@ where
     Ok(())
 }
 
+async fn task_retention_timeout<S>(timeout: Duration) -> ConfigRetentionRestoreResult<S>
+where
+    S: Clone + Default + Serialize,
+{
+    sleep(timeout).await;
+    ConfigRetentionRestoreResult::NoRestoreData
+}
+
 /// Сохранение входящих сообщений в локальном кеше
-async fn save_input_msg_in_cache<TMsg>(
+async fn task_save_input_msg_in_cache<TMsg>(
     mut in_out: CmpInOut<TMsg>,
     mut input_msg_cache: Cache<TMsg>,
 ) -> super::Result<()>
@@ -128,7 +141,7 @@ where
 }
 
 /// Исполнение логики ПЛК в цикле
-async fn plc_cycle_execute_loop<TMsg, I, Q, S>(
+async fn task_plc_cycle_execute_loop<TMsg, I, Q, S>(
     in_out: CmpInOut<TMsg>,
     config: Config<TMsg, I, Q, S>,
     fb_main: Arc<Mutex<FunctionBlockBase<I, Q, S>>>,
@@ -205,9 +218,9 @@ where
     Ok(msgs)
 }
 
-async fn task_save_state<TMsg, I, Q, S>(
+async fn task_export_i_q_s<TMsg, I, Q, S>(
     in_out: CmpInOut<TMsg>,
-    config: ConfigRetention<TMsg, S>,
+    config: ConfigRetention<TMsg, I, Q, S>,
     fb_main: Arc<Mutex<FunctionBlockBase<I, Q, S>>>,
 ) -> super::Result<()>
 where
@@ -219,25 +232,36 @@ where
 {
     loop {
         sleep(config.save_period).await;
+        let input;
+        let output;
         let stat;
         {
-            let mut fb_main = fb_main.lock().await;
+            let fb_main = fb_main.lock().await;
+            input = fb_main.input.clone();
+            output = fb_main.output.clone();
             stat = fb_main.stat.clone();
         }
-        let msg = (config.fn_save_static)(&stat);
-        let Some(msg) = msg else { continue };
-        in_out.send_output(msg).await.unwrap();
+        let msgs = (config.fn_export)(&input, &output, &stat);
+        let Some(msgs) = msgs else { continue };
+        for msg in msgs {
+            in_out.send_output(msg).await.unwrap();
+        }
     }
 }
-
+#[cfg(feature = "single-thread")]
 fn join_set_spawn<F, T>(join_set: &mut JoinSet<T>, task: F)
 where
-    F: Future<Output = T>,
-    F: Send + 'static,
+    F: Future<Output = T> + 'static,
     T: Send + 'static,
 {
-    #[cfg(feature = "single-thread")]
     join_set.spawn_local(task);
-    #[cfg(not(feature = "single-thread"))]
+}
+
+#[cfg(not(feature = "single-thread"))]
+fn join_set_spawn<F, T>(join_set: &mut JoinSet<T>, task: F)
+where
+    F: Future<Output = T> + Send + 'static,
+    T: Send + 'static,
+{
     join_set.spawn(task);
 }

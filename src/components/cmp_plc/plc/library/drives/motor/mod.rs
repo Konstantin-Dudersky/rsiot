@@ -1,2 +1,4 @@
 mod fb;
-mod messages;
+pub mod messages;
+
+pub use fb::FB;

@@ -47,8 +47,8 @@ async fn main() -> anyhow::Result<()> {
         period: Duration::from_secs(2),
         retention: Some(cmp_plc::ConfigRetention {
             save_period: Duration::from_secs(1),
-            fn_save_static: |_| None,
-            fn_restore_static: |_| Ok(None),
+            fn_export: |_, _, _| None,
+            fn_import_static: |_| Ok(None),
             restore_timeout: Duration::from_secs(2),
         }),
     };

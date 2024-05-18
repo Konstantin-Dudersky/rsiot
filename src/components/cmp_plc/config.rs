@@ -62,19 +62,21 @@ where
     pub period: Duration,
 
     /// Настройки сохранения состояния и восттановления при запуске
-    pub retention: Option<ConfigRetention<TMsg, S>>,
+    pub retention: Option<ConfigRetention<TMsg, I, Q, S>>,
 }
 
 /// Настройка сохранения и восстановления области Static
 #[derive(Clone)]
-pub struct ConfigRetention<TMsg, S>
+pub struct ConfigRetention<TMsg, I, Q, S>
 where
     TMsg: MsgDataBound,
+    I: Clone + Default + Serialize,
+    Q: Clone + Default + Serialize,
     S: Clone + Default + Serialize,
 {
     pub save_period: Duration,
-    pub fn_save_static: fn(&S) -> Option<Message<TMsg>>,
-    pub fn_restore_static: fn(&Message<TMsg>) -> anyhow::Result<Option<S>>,
+    pub fn_export: fn(&I, &Q, &S) -> Option<Vec<Message<TMsg>>>,
+    pub fn_import_static: fn(&Message<TMsg>) -> anyhow::Result<Option<S>>,
     pub restore_timeout: Duration,
 }
 
