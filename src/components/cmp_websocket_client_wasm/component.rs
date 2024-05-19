@@ -5,22 +5,22 @@ use crate::{
     message::{AuthPermissions, MsgDataBound},
 };
 
-use super::{config::ConfigAlias, fn_process::fn_process};
+use super::{config::Config, fn_process::fn_process};
 
 #[cfg(feature = "single-thread")]
 #[async_trait(?Send)]
-impl<TMessage> IComponentProcess<ConfigAlias<TMessage>, TMessage>
-    for Component<ConfigAlias<TMessage>, TMessage>
+impl<TMessage> IComponentProcess<Config<TMessage>, TMessage>
+    for Component<Config<TMessage>, TMessage>
 where
     TMessage: MsgDataBound + 'static,
 {
     async fn process(
         &self,
-        config: ConfigAlias<TMessage>,
+        config: Config<TMessage>,
         input: CmpInOut<TMessage>,
     ) -> Result<(), ComponentError> {
         fn_process(
-            config.0,
+            config,
             input.clone_with_new_id("cmp_websocket_client_wasm", AuthPermissions::FullAccess),
         )
         .await
@@ -29,4 +29,4 @@ where
 }
 
 /// Компонент cmp_websocket_client_wasm
-pub type Cmp<TMessage> = Component<ConfigAlias<TMessage>, TMessage>;
+pub type Cmp<TMessage> = Component<Config<TMessage>, TMessage>;

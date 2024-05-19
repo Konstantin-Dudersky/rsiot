@@ -13,5 +13,3 @@ pub use global_state::GlobalState;
 pub use rsiot_macros::create_signal_from_msg;
 
 type Result = std::result::Result<(), Error>;
-
-// TODO - скопировать вспомогательные файлы из UST

@@ -22,4 +22,7 @@ pub enum Error {
 
     #[error(transparent)]
     CmpOutput(crate::executor::ComponentError),
+
+    #[error(transparent)]
+    BadUrl(url::ParseError),
 }

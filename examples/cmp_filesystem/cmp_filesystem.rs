@@ -76,7 +76,6 @@ async fn main() {
 }
 
 #[cfg(not(feature = "cmp_filesystem"))]
-#[tokio::main]
-async fn main() {
+fn main() {
     unimplemented!()
 }

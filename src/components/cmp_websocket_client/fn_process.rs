@@ -11,6 +11,7 @@ use tokio_tungstenite::{
     connect_async, tungstenite::Message as TungsteniteMessage, MaybeTlsStream, WebSocketStream,
 };
 use tracing::{error, info, warn};
+use url::Url;
 
 use crate::{
     executor::{CmpInOut, ComponentError},
@@ -50,7 +51,9 @@ async fn task_connect<TMessage>(
 where
     TMessage: MsgDataBound + 'static,
 {
-    let (ws_stream, _) = connect_async(config.url).await?;
+    let url = Url::parse(&config.url).map_err(Error::BadUrl)?;
+
+    let (ws_stream, _) = connect_async(url).await?;
     let (write, read) = ws_stream.split();
 
     let mut task_set: JoinSet<Result<(), Error<TMessage>>> = JoinSet::new();

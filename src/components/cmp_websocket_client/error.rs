@@ -26,4 +26,7 @@ pub enum Error<TMessage> {
 
     #[error(transparent)]
     CmpOutput(crate::executor::ComponentError),
+
+    #[error(transparent)]
+    BadUrl(url::ParseError),
 }

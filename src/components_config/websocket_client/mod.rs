@@ -1,5 +1,3 @@
-use url::Url;
-
 use crate::message::Message;
 
 pub type FnOutput<TMsg> = fn(&str) -> anyhow::Result<Option<Vec<Message<TMsg>>>>;
@@ -9,8 +7,8 @@ pub type FnOutput<TMsg> = fn(&str) -> anyhow::Result<Option<Vec<Message<TMsg>>>>
 pub struct Config<TMsg> {
     /// Адрес Websocket-сервера
     ///
-    /// TODO - переделать на прием строки
-    pub url: Url,
+    /// "ws://localhost:9001"
+    pub url: String,
 
     /// Преобразование входящих сообщений в текст для отправки на сервер
     ///

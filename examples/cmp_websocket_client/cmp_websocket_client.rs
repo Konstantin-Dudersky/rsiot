@@ -10,7 +10,6 @@ async fn main() -> anyhow::Result<()> {
     use serde::{Deserialize, Serialize};
     use tokio::time::Duration;
     use tracing::Level;
-    use url::Url;
 
     use rsiot::{
         components::{cmp_inject_periodic, cmp_logger, cmp_websocket_client},
@@ -83,7 +82,7 @@ async fn main() -> anyhow::Result<()> {
     };
 
     let ws_client = cmp_websocket_client::Config {
-        url: Url::parse("ws://localhost:9001")?,
+        url: "ws://localhost:9001".into(),
         fn_input,
         fn_output,
     };

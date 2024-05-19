@@ -10,6 +10,7 @@ use gloo::{
 };
 use tokio::task::JoinSet;
 use tracing::{info, trace, warn};
+use url::Url;
 
 use crate::{executor::CmpInOut, message::MsgDataBound};
 
@@ -35,7 +36,8 @@ async fn task_main<TMessage>(config: Config<TMessage>, input: CmpInOut<TMessage>
 where
     TMessage: MsgDataBound + 'static,
 {
-    let url = config.url.to_string();
+    let url = Url::parse(&config.url).map_err(Error::BadUrl)?;
+    let url = url.to_string();
     let ws = WebSocket::open(&url).map_err(Error::Connect)?;
     info!("Connection to websocket server established");
     let (write_stream, read_stream) = ws.split();
