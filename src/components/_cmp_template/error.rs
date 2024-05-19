@@ -7,6 +7,9 @@ pub enum Error {
     CmpOutput(ComponentError),
 
     #[error("FnOutput: {0}")]
+    FnInput(anyhow::Error),
+
+    #[error("FnOutput: {0}")]
     FnOutput(anyhow::Error),
 
     #[error("TokioTaskJoin: {0}")]

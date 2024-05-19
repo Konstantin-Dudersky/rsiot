@@ -1,53 +1,27 @@
 use crate::message::{Message, MsgDataBound};
 
+/// Функция преобразования сообщений в текстовые файлы.
+///
+/// Возращает кортеж из двух значений:
+/// - название файла для сохранения
+/// - содержимое файла
+pub type FnInput<TMsg> = fn(Message<TMsg>) -> anyhow::Result<Option<(String, String)>>;
+
+/// Функция преобразования текстовых файлов в сообщения
+pub type FnOutput<TMsg> = fn(&str) -> anyhow::Result<Option<Message<TMsg>>>;
+
 /// Конфигурация cmp_filesystem
 #[derive(Clone)]
 pub struct Config<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    /// Настройки сохранения сообщений в файловой системе
-    ///
-    ///
-    /// # Пример
-    ///
-    /// ```rust
-    /// fn_input: |_| vec![]
-    /// ```
-    pub fn_input: Vec<ConfigSave<TMsg>>,
+    /// Папка, в которой хранятся файлы
+    pub directory: String,
 
-    /// Настройки загрузки сообщений из файловой системы
-    ///
-    /// # Пример
-    ///
-    /// ```rust
-    /// fn_output: |_| vec![]
-    /// ```
-    pub fn_output: Vec<ConfigLoad<TMsg>>,
-}
+    /// Функция преобразования сообщений в текстовые файлы
+    pub fn_input: FnInput<TMsg>,
 
-/// Настройка сохранения одного сообщения в файловой системе
-#[derive(Clone)]
-pub struct ConfigSave<TMsg>
-where
-    TMsg: MsgDataBound,
-{
-    /// Название файла, в который произодится сохранение
-    pub filename: String,
-
-    /// Функция сохранения
-    pub fn_save: fn(Message<TMsg>) -> Option<String>,
-}
-
-/// Настройка загрузки одного сообщения из файловой системы
-#[derive(Clone)]
-pub struct ConfigLoad<TMsg>
-where
-    TMsg: MsgDataBound,
-{
-    /// Название файла, который считывается для восстановления
-    pub filename: String,
-
-    /// Функция восстановления
-    pub fn_restore: fn(&str) -> Option<Message<TMsg>>,
+    /// Функция преобразования текстовых файлов в сообщения
+    pub fn_output: FnOutput<TMsg>,
 }

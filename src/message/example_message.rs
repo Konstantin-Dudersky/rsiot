@@ -22,6 +22,7 @@ pub enum Custom {
     EspRelay(bool),
     MotorM1(Motor),
     MotorM2(Motor),
+    SaveToFilesystem(u64),
 }
 
 /// Пример структуры

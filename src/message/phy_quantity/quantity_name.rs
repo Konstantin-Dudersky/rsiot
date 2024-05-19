@@ -1,5 +1,5 @@
 #[derive(Debug, PartialEq)]
-pub(super) enum QuantityName {
+pub enum QuantityName {
     /// Безразмерная величина
     Dimensionless,
     /// Длина. Единица СИ - метр

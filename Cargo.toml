@@ -297,6 +297,10 @@ name = "cmp_esp_nvs"
 path = "examples/cmp_esp_nvs/cmp_esp_nvs.rs"
 
 [[example]]
+name = "cmp_filesystem"
+path = "./examples/cmp_filesystem/cmp_filesystem.rs"
+
+[[example]]
 name = "cmp_http_client"
 path = "examples/cmp_http_client/cmp_http_client.rs"
 
