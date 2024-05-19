@@ -3,6 +3,14 @@ use tracing::{trace, warn};
 
 use crate::drivers_i2c::RsiotI2cDriverBase;
 
+/// Адрес подчиненного устройства
+pub enum I2cSlaveAddress {
+    /// Прямое подключение
+    Direct(u8),
+    /// Через мультиплексор
+    I2cMux { mux_address: u8, slave_address: u8 },
+}
+
 pub struct RsiotI2cDriver {
     i2c: I2cDriver<'static>,
 }
