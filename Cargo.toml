@@ -285,12 +285,16 @@ path = "examples/cmp_esp/cmp_esp.rs"
 doc-scrape-examples = true
 
 [[example]]
-name = "cmp_esp_i2c_master_pcf8575"
-path = "./examples/cmp_esp/cmp_esp_i2c_master_pcf8575.rs"
-
-[[example]]
 name = "cmp_esp_i2c_master_ads1115"
 path = "./examples/cmp_esp/cmp_esp_i2c_master_ads1115.rs"
+
+[[example]]
+name = "cmp_esp_i2c_master_bmp180"
+path = "./examples/cmp_esp/cmp_esp_i2c_master_bmp180.rs"
+
+[[example]]
+name = "cmp_esp_i2c_master_pcf8575"
+path = "./examples/cmp_esp/cmp_esp_i2c_master_pcf8575.rs"
 
 [[example]]
 name = "cmp_esp_nvs"
