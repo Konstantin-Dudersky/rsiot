@@ -54,9 +54,6 @@ async fn main() {
     .unwrap();
 
     let devices = vec![drivers_i2c::I2cDevices::BMP180 {
-        // address: drivers_i2c::I2cSlaveAddress::Direct {
-        //     slave_address: 0x77,
-        // },
         address: drivers_i2c::I2cSlaveAddress::Mux {
             mux_address: 0x70,
             channel: 7,

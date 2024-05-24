@@ -1,7 +1,7 @@
 use std::marker::Send;
 
 use async_trait::async_trait;
-use tracing::{info, trace, warn};
+use tracing::{trace, warn};
 
 #[async_trait]
 pub trait RsiotI2cDriverBase
