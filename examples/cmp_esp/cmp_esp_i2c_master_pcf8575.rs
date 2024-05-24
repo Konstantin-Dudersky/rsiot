@@ -67,7 +67,9 @@ async fn main() {
     .unwrap();
 
     let devices = vec![drivers_i2c::I2cDevices::PCF8575 {
-        address: 0x20,
+        address: drivers_i2c::I2cSlaveAddress::Direct {
+            slave_address: 0x20,
+        },
         pin_00: drivers_i2c::PCF8575PinMode::Input {
             fn_output: |value| {
                 let msg = Message::new_custom(Custom::Pin00Input(value));

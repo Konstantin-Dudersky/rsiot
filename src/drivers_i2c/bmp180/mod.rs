@@ -10,12 +10,12 @@ use tracing::{info, trace, warn};
 
 use crate::message::{Message, PhyQuantity};
 
-use super::RsiotI2cDriverBase;
+use super::{I2cSlaveAddress, RsiotI2cDriverBase};
 
 use calculate_values::calculate_values;
 
 pub struct BMP180<TMsg> {
-    pub address: u8,
+    pub address: I2cSlaveAddress,
     pub fn_output: fn(BMP180Data) -> Vec<Message<TMsg>>,
     pub oversampling: BMP180Oversampling,
 }
@@ -64,7 +64,7 @@ impl<TMsg> BMP180<TMsg> {
 /// Запрос данных калибровки. Необходимо выполнить один раз при запуске
 async fn request_calibration_data(
     driver: Arc<Mutex<impl RsiotI2cDriverBase>>,
-    address: u8,
+    address: I2cSlaveAddress,
 ) -> Result<ResponseCalibrationData, String> {
     let mut response;
     {
@@ -81,7 +81,7 @@ async fn request_calibration_data(
 /// Запрос на измерение температуры
 async fn request_temperature(
     driver: Arc<Mutex<impl RsiotI2cDriverBase>>,
-    address: u8,
+    address: I2cSlaveAddress,
 ) -> Result<ResponseUncompensatedTemperature, String> {
     let mut response;
     {
@@ -104,7 +104,7 @@ async fn request_temperature(
 #[allow(non_snake_case)]
 async fn request_pressure(
     driver: Arc<Mutex<impl RsiotI2cDriverBase>>,
-    address: u8,
+    address: I2cSlaveAddress,
     oversampling: BMP180Oversampling,
 ) -> Result<ResponseUncompensatedPressure, String> {
     let response;

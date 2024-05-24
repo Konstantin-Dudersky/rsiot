@@ -6,7 +6,10 @@ use tracing::warn;
 
 use crate::{executor::CmpInOut, message::MsgDataBound};
 
-use super::{super::RsiotI2cDriverBase, config};
+use super::{
+    super::{I2cSlaveAddress, RsiotI2cDriverBase},
+    config,
+};
 
 /// АЦП ADS1115
 pub struct ADS1115<TMsg, Driver>
@@ -14,7 +17,7 @@ where
     Driver: RsiotI2cDriverBase,
 {
     /// Адрес
-    pub address: u8,
+    pub address: I2cSlaveAddress,
 
     /// Настройка
     pub inputs: Vec<config::InputConfig<TMsg>>,
@@ -74,7 +77,7 @@ where
     TMsg: MsgDataBound,
     Driver: RsiotI2cDriverBase,
 {
-    pub address: u8,
+    pub address: I2cSlaveAddress,
     pub input: config::InputConfig<TMsg>,
     pub driver: Arc<Mutex<Driver>>,
     pub cmp_in_out: CmpInOut<TMsg>,

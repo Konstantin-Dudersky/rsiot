@@ -7,7 +7,10 @@ use crate::{
     message::{Message, MsgDataBound},
 };
 
-use super::{super::RsiotI2cDriverBase, state::State};
+use super::{
+    super::{I2cSlaveAddress, RsiotI2cDriverBase},
+    state::State,
+};
 
 /// Обработка и запись выходов
 pub struct TaskWriteOutput<TMsg, Driver>
@@ -18,7 +21,7 @@ where
     pub fn_input: fn(Message<TMsg>) -> Option<bool>,
     pub state: State,
     pub driver: Arc<Mutex<Driver>>,
-    pub address: u8,
+    pub address: I2cSlaveAddress,
     pub pin: usize,
 }
 

@@ -54,7 +54,9 @@ async fn main() {
     .unwrap();
 
     let devices = vec![drivers_i2c::I2cDevices::ADS1115 {
-        address: 0x48,
+        address: drivers_i2c::I2cSlaveAddress::Direct {
+            slave_address: 0x48,
+        },
         inputs: vec![drivers_i2c::ads1115::config::InputConfig {
             mux_config: drivers_i2c::ads1115::config::MuxConfig::Single_0,
             amplifier: drivers_i2c::ads1115::config::Amplifier::V_4_096,

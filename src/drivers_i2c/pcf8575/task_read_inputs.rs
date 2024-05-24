@@ -4,7 +4,7 @@ use bitvec::prelude::*;
 use tokio::{sync::Mutex, time::sleep};
 
 use crate::{
-    drivers_i2c::RsiotI2cDriverBase,
+    drivers_i2c::{I2cSlaveAddress, RsiotI2cDriverBase},
     executor::CmpInOut,
     message::{Message, MsgDataBound},
 };
@@ -15,7 +15,7 @@ use super::state::State;
 pub struct TaskReadInputs<TMsg, Driver> {
     pub in_out: CmpInOut<TMsg>,
     pub driver: Arc<Mutex<Driver>>,
-    pub address: u8,
+    pub address: I2cSlaveAddress,
     pub pin_and_fn_output: Vec<(usize, fn(bool) -> Option<Message<TMsg>>)>,
     pub state: State,
 }

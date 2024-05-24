@@ -1,5 +1,7 @@
 use crate::message::{Message, MsgDataBound};
 
+use super::I2cSlaveAddress;
+
 /// Конфигурации устройств по шине I2C
 #[derive(Clone)]
 pub enum I2cDevices<TMsg>
@@ -13,7 +15,7 @@ where
         /// - VDD - 0x49
         /// - SDA - 0x4A
         /// - SCL - 0x4B
-        address: u8,
+        address: I2cSlaveAddress,
 
         /// Настройка входов
         inputs: Vec<super::ads1115::config::InputConfig<TMsg>>,
@@ -22,7 +24,7 @@ where
     /// Датчик давления BMP180
     BMP180 {
         /// Адрес. По-умолчанию 0x77
-        address: u8,
+        address: I2cSlaveAddress,
         /// Функция преобразования данных в исходящие сообщения
         fn_output: fn(super::bmp180::BMP180Data) -> Vec<Message<TMsg>>,
         /// Кол-во измерений для определения значения
@@ -32,7 +34,7 @@ where
     /// Расширение GPIO PCF8575
     PCF8575 {
         /// Адрес
-        address: u8,
+        address: I2cSlaveAddress,
         /// Настройка пина P00
         pin_00: super::PCF8575PinMode<TMsg>,
         /// Настройка пина P01

@@ -9,15 +9,18 @@ use crate::{
 };
 
 use super::{
-    super::RsiotI2cDriverBase, state::State, task_read_inputs::TaskReadInputs,
-    task_write_output::TaskWriteOutput, PCF8575PinMode,
+    super::{I2cSlaveAddress, RsiotI2cDriverBase},
+    state::State,
+    task_read_inputs::TaskReadInputs,
+    task_write_output::TaskWriteOutput,
+    PCF8575PinMode,
 };
 
 pub struct PCF8575<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    pub address: u8,
+    pub address: I2cSlaveAddress,
     pub pins: Vec<PCF8575PinMode<TMsg>>,
 }
 
