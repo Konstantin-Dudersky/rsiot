@@ -31,6 +31,12 @@ where
         oversampling: super::bmp180::BMP180Oversampling,
     },
 
+    /// Часы реального времени DS3231
+    DS3231 {
+        address: I2cSlaveAddress,
+        fn_output: fn(super::ds3231::OutputData) -> Option<Vec<Message<TMsg>>>,
+    },
+
     /// Расширение GPIO PCF8575
     PCF8575 {
         /// Адрес

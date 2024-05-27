@@ -2,6 +2,7 @@
 
 pub mod ads1115;
 mod bmp180;
+pub mod ds3231;
 mod pcf8575;
 
 mod i2c_devices;

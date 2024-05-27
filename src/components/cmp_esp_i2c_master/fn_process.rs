@@ -41,6 +41,16 @@ where
                 task_set.spawn(async move { device.fn_process(driver).await });
             }
 
+            drivers_i2c::I2cDevices::DS3231 { address, fn_output } => {
+                let device = drivers_i2c::ds3231::DS3231 {
+                    address,
+                    fn_output,
+                    in_out: in_out.clone(),
+                };
+                let driver = driver.clone();
+                task_set.spawn(async move { device.fn_process(driver).await });
+            }
+
             drivers_i2c::I2cDevices::PCF8575 {
                 address,
                 pin_00,

@@ -23,7 +23,12 @@ where
         }
     }
 
-    async fn read(&mut self, address: u8, response_size: usize) -> Result<Vec<u8>, String> {
+    async fn read(
+        &mut self,
+        address: I2cSlaveAddress,
+        response_size: usize,
+    ) -> Result<Vec<u8>, String> {
+        let address = self.mux_control(address).await?;
         let response = self.read_platform(address, response_size).await;
         match response {
             Ok(response) => {
