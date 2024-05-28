@@ -26,7 +26,6 @@ uuid = { version = "1.7.0", features = ["serde", "v4"] }
 
 async-trait = { version = "0.1.77", optional = true }
 axum = { version = "0.7.4", optional = true }
-bcd-numbers = { version = "1.0.11", optional = true }
 clap = { version = "^4.4.18", features = ["derive"], optional = true }
 dotenvy = { version = "0.15.7", optional = true }
 embedded-svc = { version = "0.27.1", optional = true }
@@ -164,7 +163,6 @@ cmp_auth = ["executor", "dep:jwt", "dep:hmac", "dep:sha2"]
 cmp_esp = [
     "executor",
     "single-thread",
-    "dep:bcd-numbers",
     "dep:embedded-svc",
     "dep:heapless",
     "dep:postcard",

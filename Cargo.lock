@@ -770,12 +770,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8c3c1a368f70d6cf7302d78f8f7093da241fb8e8807c05cc9e51a125895a6d5b"
 
 [[package]]
-name = "bcd-numbers"
-version = "1.0.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bb4c32d4c1412d4be3aacc142d4b88ab071dc63c21f49cbefe839a1415e1391c"
-
-[[package]]
 name = "bcrypt"
 version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6456,7 +6450,6 @@ dependencies = [
  "anyhow",
  "async-trait",
  "axum",
- "bcd-numbers",
  "bincode",
  "bitvec",
  "byteorder",

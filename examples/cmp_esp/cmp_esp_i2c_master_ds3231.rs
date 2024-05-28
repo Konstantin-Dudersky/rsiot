@@ -15,7 +15,7 @@ async fn main() {
     use tracing::{level_filters::LevelFilter, Level};
 
     use rsiot::{
-        components::{cmp_esp_i2c_master, cmp_logger},
+        components::{cmp_esp_i2c_master, cmp_inject_periodic, cmp_logger},
         drivers_i2c,
         executor::{ComponentExecutor, ComponentExecutorConfig},
         logging::configure_logging,
@@ -29,14 +29,26 @@ async fn main() {
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub enum Custom {
         VoltageA0(f64),
+        InjectPeriodic(u8),
     }
 
     impl MsgDataBound for Custom {}
 
+    // cmp_inject_periodic -------------------------------------------------------------------------
+    let mut counter = 0;
+    let config_inject_periodic = cmp_inject_periodic::Config {
+        period: Duration::from_secs(10),
+        fn_periodic: move || {
+            let msg = Message::new_custom(Custom::InjectPeriodic(counter));
+            counter += 1;
+            vec![msg]
+        },
+    };
+
     // cmp_logger ----------------------------------------------------------------------------------
     let logger_config = cmp_logger::Config::<Custom> {
         level: Level::INFO,
-        fn_input: |msg| Ok(Some(msg.serialize()?)),
+        fn_input: |msg| Ok(Some(msg.serialize_data()?)),
     };
 
     // ESP -----------------------------------------------------------------------------------------
@@ -57,6 +69,22 @@ async fn main() {
         address: drivers_i2c::I2cSlaveAddress::Direct {
             slave_address: 0x68,
         },
+        fn_input: |msg| {
+            let data = msg.get_custom_data();
+            let Some(data) = data else { return None };
+            let input_data = match data {
+                Custom::InjectPeriodic(sec) => drivers_i2c::ds3231::InputData {
+                    year: sec,
+                    month: sec,
+                    day: sec,
+                    hour: sec,
+                    minute: sec,
+                    second: sec,
+                },
+                _ => return None,
+            };
+            Some(input_data)
+        },
         fn_output: |data| {
             println!(
                 "{:02}-{:02}-{:02}T{:02}:{:02}:{:02}",
@@ -64,6 +92,7 @@ async fn main() {
             );
             None
         },
+        fn_output_period: Duration::from_secs(5),
     }];
 
     let config_esp_i2c_master = cmp_esp_i2c_master::Config {
@@ -85,6 +114,7 @@ async fn main() {
     local_set.spawn_local(async {
         ComponentExecutor::<Custom>::new(executor_config)
             .add_cmp(cmp_logger::Cmp::new(logger_config))
+            .add_cmp(cmp_inject_periodic::Cmp::new(config_inject_periodic))
             .add_cmp(cmp_esp_i2c_master::Cmp::new(config_esp_i2c_master))
             .wait_result()
             .await

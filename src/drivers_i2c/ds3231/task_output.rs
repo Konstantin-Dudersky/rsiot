@@ -10,12 +10,19 @@ use crate::{
 
 use super::data_models;
 
+/// Структура выходных данных
 pub struct OutputData {
+    /// Год
     pub year: u8,
+    /// Месяц
     pub month: u8,
+    /// День
     pub day: u8,
+    /// Час
     pub hour: u8,
+    /// Минуты
     pub minute: u8,
+    /// Секунды
     pub second: u8,
 }
 /// Задача чтения данных с модуля
@@ -41,22 +48,26 @@ where
             sleep(self.period).await;
 
             let mut driver = self.driver.lock().await;
-            let res = driver.read(self.address, 19).await?;
+            let res = driver.write_read(self.address, &[0x00], 19).await?;
 
-            let second = data_models::Second::new_from_device(res[0]);
-            let minute = data_models::Minute::new_from_device(res[1]);
-            let hour = data_models::Hour::new_from_device(res[2]);
-            let day = data_models::Day::new_from_device(res[4]);
-            let month = data_models::Month::new_from_device(res[5]);
-            let year = data_models::Year::new_from_device(res[6]);
+            let second = data_models::Second::new_from_bcd(res[0]);
+            let minute = data_models::Minute::new_from_bcd(res[1]);
+            let hour = data_models::Hour::new_from_bcd(res[2]);
+            let day = data_models::Day::new_from_bcd(res[4]);
+            let month = data_models::Month::new_from_bcd(res[5]);
+            let year = data_models::Year::new_from_bcd(res[6]);
+
+            let res = driver.write_read(self.address, &[0x0E], 2).await?;
+            println!("Control: {:?}", res[0]);
+            println!("Status: {:?}", res[1]);
 
             let output = OutputData {
-                year: year.get(),
-                month: month.get(),
-                day: day.get(),
-                hour: hour.get(),
-                minute: minute.get(),
-                second: second.get(),
+                year: year.get_dec(),
+                month: month.get_dec(),
+                day: day.get_dec(),
+                hour: hour.get_dec(),
+                minute: minute.get_dec(),
+                second: second.get_dec(),
             };
 
             let msgs = (self.fn_output)(output);

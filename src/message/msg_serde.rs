@@ -1,6 +1,6 @@
-use super::message::Message;
-
 use serde::{de::DeserializeOwned, Serialize};
+
+use super::{message::Message, MsgData};
 
 #[cfg(feature = "serde-json")]
 use serde_json::{from_str as deserialize, to_string as serialize};
@@ -25,7 +25,21 @@ where
     /// Сериализация сообщений в json
     #[cfg(feature = "serde-json")]
     pub fn serialize(&self) -> Result<String, super::Error> {
-        match serialize::<Self>(self) {
+        let json = serialize::<Self>(self);
+        match json {
+            Ok(value) => Ok(value),
+            Err(error) => {
+                let error = error.to_string();
+                Err(super::Error::Serialization(error))
+            }
+        }
+    }
+
+    /// Сериализация полей данных сообщений в json
+    #[cfg(feature = "serde-json")]
+    pub fn serialize_data(&self) -> Result<String, super::Error> {
+        let json = serialize::<MsgData<TData>>(&self.data);
+        match json {
             Ok(value) => Ok(value),
             Err(error) => {
                 let error = error.to_string();

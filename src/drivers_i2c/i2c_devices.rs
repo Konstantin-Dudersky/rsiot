@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use crate::message::{Message, MsgDataBound};
 
 use super::I2cSlaveAddress;
@@ -33,8 +35,14 @@ where
 
     /// Часы реального времени DS3231
     DS3231 {
+        /// Адрес. По-умолчанию 0x68
         address: I2cSlaveAddress,
+        /// Функция преобразования входящих сообщений в данные для записи в модуль
+        fn_input: fn(Message<TMsg>) -> Option<super::ds3231::InputData>,
+        /// Функция преобразования данных с модуля в исходящие сообщения
         fn_output: fn(super::ds3231::OutputData) -> Option<Vec<Message<TMsg>>>,
+        /// Период чтения данных с часов
+        fn_output_period: Duration,
     },
 
     /// Расширение GPIO PCF8575
