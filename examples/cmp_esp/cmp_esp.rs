@@ -52,7 +52,7 @@ async fn main() {
     // cmp_logger ----------------------------------------------------------------------------------
     let logger_config = cmp_logger::Config::<Custom> {
         level: Level::INFO,
-        fn_input: |msg| Ok(Some(msg.serialize()?)),
+        fn_input: |msg| Ok(Some(msg.serialize_data()?)),
     };
 
     // cmp_inject_periodic -------------------------------------------------------------------------
@@ -146,7 +146,7 @@ async fn main() {
             .add_cmp(cmp_esp_gpio::Cmp::new(gpio_config))
             .add_cmp(cmp_inject_periodic::Cmp::new(config_inject_periodic))
             .add_cmp(cmp_esp_adc::Cmp::new(config_esp_adc))
-            .add_cmp(cmp_esp_mqtt_client::Cmp::new(config_esp_mqtt_client))
+            // .add_cmp(cmp_esp_mqtt_client::Cmp::new(config_esp_mqtt_client))
             .wait_result()
             .await
             .unwrap()
