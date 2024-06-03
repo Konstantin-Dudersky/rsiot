@@ -1,3 +1,5 @@
+//! Обертки над компонентами [tailwind components](https://tailwindui.com/?ref=top)
+
 mod button;
 mod simple_toggle;
 

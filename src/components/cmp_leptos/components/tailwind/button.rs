@@ -7,7 +7,6 @@ pub fn Button<FClicked>(
     text: &'static str,
 
     /// Событие нажатия
-    // clicked: WriteSignal<()>,
     clicked: FClicked,
 ) -> impl IntoView
 where
