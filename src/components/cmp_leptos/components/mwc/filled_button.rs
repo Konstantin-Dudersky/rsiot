@@ -6,18 +6,15 @@ use leptos::*;
 /// import "@material/web/button/filled-button.js";
 /// ```
 #[component]
-pub fn FilledButton<FClicked>(
+pub fn FilledButton(
     /// Событие нажатия
-    clicked: FClicked,
+    clicked: impl Fn() -> () + 'static,
 
-    #[prop(default = false.into())] disabled: MaybeSignal<bool>,
+    #[prop(default = MaybeSignal::from(false))] disabled: MaybeSignal<bool>,
 
     /// Текст кнопки
     children: Children,
-) -> impl IntoView
-where
-    FClicked: Fn() -> () + 'static,
-{
+) -> impl IntoView {
     view! {
         <md-filled-button
             on:click= move |_| (clicked)()
