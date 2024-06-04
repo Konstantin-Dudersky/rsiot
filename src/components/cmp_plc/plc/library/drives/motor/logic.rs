@@ -1,54 +1,58 @@
-use super::{IHmiCommand, QHmiPermission, QHmiStatus, SMode, I, Q, S};
+use super::{IHmiCommand, QHmiPermission, QHmiStatus, QMode, QState, I, Q, S};
 
 pub fn logic(input: &I, stat: &mut S) -> Q {
     // Выбор режима
     match input.mode_plc_hmi {
         // Задание с hmi
         true => match input.hmi_command {
-            IHmiCommand::AutoMode => stat.mode = SMode::Auto,
-            IHmiCommand::ManMode => stat.mode = SMode::Manual,
+            IHmiCommand::AutoMode => stat.mode = QMode::Auto,
+            IHmiCommand::ManMode => stat.mode = QMode::Manual,
             _ => (),
         },
 
         // Задание с plc
         false => {
             if input.auto_mode_plc {
-                stat.mode = SMode::Auto;
+                stat.mode = QMode::Auto;
             } else if input.man_mode_plc {
-                stat.mode = SMode::Manual;
+                stat.mode = QMode::Manual;
             }
         }
     }
 
     // Команда на запуск
-    stat.start = match stat.mode {
-        SMode::Auto => {
+    stat.state = match stat.mode {
+        QMode::Auto => {
             if input.auto_start {
-                true
+                QState::Start
             } else if input.auto_stop {
-                false
+                QState::Stop
             } else {
-                false
+                QState::Stop
             }
         }
-        SMode::Local => false,
-        SMode::Manual => match input.hmi_command {
-            IHmiCommand::ManStart => true,
-            IHmiCommand::ManStop => false,
-            _ => stat.start,
+        QMode::Local => QState::Stop,
+        QMode::Manual => match input.hmi_command {
+            IHmiCommand::ManStart => QState::Start,
+            IHmiCommand::ManStop => QState::Stop,
+            _ => stat.state,
         },
-        SMode::Oos => false,
+        QMode::Oos => QState::Stop,
     };
 
     Q {
-        status: QHmiStatus {
-            man_act: stat.mode == SMode::Manual,
-            aut_act: stat.mode == SMode::Auto,
+        hmi_status: QHmiStatus {
             hmi_permission: QHmiPermission {
-                man_start: stat.mode == SMode::Manual,
-                man_stop: stat.mode == SMode::Manual,
+                man_start: stat.mode == QMode::Manual,
+                man_stop: stat.mode == QMode::Manual,
+                auto_mode: stat.mode != QMode::Auto && !input.mode_plc_hmi,
+                man_mode: stat.mode != QMode::Manual && !input.mode_plc_hmi,
+                local_mode: stat.mode != QMode::Local && !input.mode_plc_hmi,
+                oos_mode: stat.mode != QMode::Oos && !input.mode_plc_hmi,
             },
+            mode: stat.mode,
+            state: stat.state,
         },
-        start: stat.start,
+        start: stat.state == QState::Start,
     }
 }

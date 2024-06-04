@@ -34,4 +34,6 @@ pub enum IHmiCommand {
     ManMode,
     /// Переключение в режим auto из hmi
     AutoMode,
+    /// Переключение в режим local из hmi
+    LocalMode,
 }

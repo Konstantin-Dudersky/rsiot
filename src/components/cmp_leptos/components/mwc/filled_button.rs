@@ -10,17 +10,16 @@ pub fn FilledButton(
     /// Событие нажатия
     clicked: impl Fn() -> () + 'static,
 
-    #[prop(default = MaybeSignal::from(false))] disabled: MaybeSignal<bool>,
+    /// true = кнопка заблокирована
+    #[prop(default = MaybeSignal::from(false))]
+    disabled: MaybeSignal<bool>,
 
     /// Текст кнопки
     children: Children,
 ) -> impl IntoView {
     view! {
-        <md-filled-button
-            on:click= move |_| (clicked)()
-            disabled=move || disabled.get()
-        >
-            { children() }
+        <md-filled-button on:click=move |_| (clicked)() disabled=move || disabled.get()>
+            {children()}
         </md-filled-button>
     }
 }
