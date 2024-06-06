@@ -1,13 +1,13 @@
 use leptos::*;
 
-use crate::components::cmp_plc::plc::library::drives::motor::{
+use crate::components::cmp_plc::plc::library::drives::valve::{
     IHmiCommand, QHmiStatus, QMode, QState,
 };
 
 use super::{Dialog, FilledButton, IconButton, IconButtonKind};
 
 #[component]
-pub fn Motor(
+pub fn Valve(
     /// Заголовок
     title: &'static str,
 
@@ -117,26 +117,26 @@ pub fn Motor(
                         <div class="flex flex-wrap gap-2">
                             <div>
                                 <FilledButton
-                                    clicked=move || hmi_command(IHmiCommand::ManStart)
+                                    clicked=move || hmi_command(IHmiCommand::OpenMan)
                                     disabled=MaybeSignal::derive(move || {
                                         !hmi_status.get().hmi_permission.man_start
                                     })
                                 >
 
-                                    <md-icon slot="icon">play_arrow</md-icon>
-                                    Пуск
+                                    <md-icon slot="icon">expand_all</md-icon>
+                                    Открыть
                                 </FilledButton>
                             </div>
                             <div>
                                 <FilledButton
-                                    clicked=move || hmi_command(IHmiCommand::ManStop)
+                                    clicked=move || hmi_command(IHmiCommand::CloseMan)
                                     disabled=MaybeSignal::derive(move || {
                                         !hmi_status.get().hmi_permission.man_stop
                                     })
                                 >
 
-                                    <md-icon slot="icon">stop</md-icon>
-                                    Стоп
+                                    <md-icon slot="icon">collapse_all</md-icon>
+                                    Закрыть
                                 </FilledButton>
                             </div>
                         </div>

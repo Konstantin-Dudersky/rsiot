@@ -12,11 +12,6 @@ pub struct I {
 
     /// Команда с hmi
     pub hmi_command: IHmiCommand,
-
-    /// Команда на запуск в режиме auto
-    pub auto_start: bool,
-    /// Команда на останов в режиме stop
-    pub auto_stop: bool,
 }
 
 /// Команда с hmi
@@ -25,14 +20,19 @@ pub enum IHmiCommand {
     /// Нет команды - по-умолчанию
     #[default]
     NoCommand,
-    /// Запуск
-    ManStart,
-    /// Стоп
-    ManStop,
+
     /// Переключение в режим man из hmi
     ManMode,
     /// Переключение в режим auto из hmi
     AutoMode,
     /// Переключение в режим local из hmi
     LocalMode,
+    /// Переключение в режим oos из hmi
+    OosMode,
+
+    /// Открыть в ручном режиме из hmi
+    OpenMan,
+
+    /// Закрыть в ручном режиме из hmi
+    CloseMan,
 }

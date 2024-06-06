@@ -1,6 +1,6 @@
 //! Пример работы с модулем PCF8575 по I2C
 //!
-//! cargo run --example cmp_esp_i2c_master_bmp180 --target="riscv32imc-esp-espidf" --features="cmp_esp, logging" --release
+//! cargo run --example cmp_esp_i2c_master_ssd1306 --target="riscv32imc-esp-espidf" --features="cmp_esp, logging" --release
 
 #[cfg(feature = "cmp_esp")]
 #[tokio::main(flavor = "current_thread")]
@@ -12,7 +12,7 @@ async fn main() {
         sys::link_patches,
     };
     use tokio::task::LocalSet;
-    use tracing::{info, level_filters::LevelFilter, Level};
+    use tracing::{level_filters::LevelFilter, Level};
 
     use rsiot::{
         components::{cmp_esp_i2c_master, cmp_logger},
@@ -53,21 +53,7 @@ async fn main() {
     )
     .unwrap();
 
-    let devices = vec![drivers_i2c::I2cDevices::BMP180 {
-        // address: drivers_i2c::I2cSlaveAddress::Mux {
-        //     mux_address: 0x70,
-        //     channel: 7,
-        //     slave_address: 0x77,
-        // },
-        address: drivers_i2c::I2cSlaveAddress::Direct {
-            slave_address: 0x77,
-        },
-        fn_output: |data| {
-            info!("{data:?}");
-            vec![]
-        },
-        oversampling: drivers_i2c::BMP180Oversampling::HighResolution,
-    }];
+    let devices = vec![drivers_i2c::I2cDevices::SSD1306 {}];
 
     let config_esp_i2c_master = cmp_esp_i2c_master::Config {
         timeout: Duration::from_millis(10000),

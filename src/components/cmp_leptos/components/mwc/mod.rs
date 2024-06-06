@@ -5,9 +5,11 @@ mod filled_button;
 mod icon_button;
 mod motor;
 mod switch;
+mod valve;
 
 pub use dialog::Dialog;
 pub use filled_button::FilledButton;
 pub use icon_button::{IconButton, IconButtonKind};
 pub use motor::Motor;
 pub use switch::Switch;
+pub use valve::Valve;

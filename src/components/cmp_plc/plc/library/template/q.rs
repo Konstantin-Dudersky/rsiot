@@ -1,15 +1,10 @@
 use serde::{Deserialize, Serialize};
 
-pub use super::super::mode_select::QMode;
-
 /// Область памяти output
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct Q {
     /// Статус для вывода на hmi
     pub hmi_status: QHmiStatus,
-
-    /// 1 = команда на запуск двигателя
-    pub start: bool,
 }
 
 /// Статут для вывода на hmi
@@ -41,6 +36,23 @@ pub struct QHmiPermission {
     pub local_mode: bool,
     /// Разрешение переключения в режим oos
     pub oos_mode: bool,
+}
+
+/// Режим работы
+#[derive(Clone, Copy, Debug, Default, PartialEq, Deserialize, Serialize)]
+pub enum QMode {
+    /// Автоматический режим
+    Auto,
+
+    /// Местный
+    Local,
+
+    /// Ручной
+    #[default]
+    Manual,
+
+    /// Out of service - выведен из эксплуатации
+    Oos,
 }
 
 /// Состояние

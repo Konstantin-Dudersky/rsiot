@@ -7,9 +7,6 @@ pub use super::super::mode_select::QMode;
 pub struct Q {
     /// Статус для вывода на hmi
     pub hmi_status: QHmiStatus,
-
-    /// 1 = команда на запуск двигателя
-    pub start: bool,
 }
 
 /// Статут для вывода на hmi

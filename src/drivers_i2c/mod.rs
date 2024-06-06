@@ -4,6 +4,7 @@ pub mod ads1115;
 mod bmp180;
 pub mod ds3231;
 mod pcf8575;
+pub mod ssd1306;
 
 mod i2c_devices;
 mod rsiot_i2c_driver_base;

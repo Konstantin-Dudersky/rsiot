@@ -1,26 +1,20 @@
 use serde::{Deserialize, Serialize};
 
-pub use super::super::mode_select::QMode;
-
 /// Область памяти output
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct Q {
+    /// Режим работы
+    pub mode: QMode,
+
     /// Статус для вывода на hmi
     pub hmi_status: QHmiStatus,
-
-    /// 1 = команда на запуск двигателя
-    pub start: bool,
 }
 
 /// Статут для вывода на hmi
 #[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct QHmiStatus {
-    /// Состояние
-    pub state: QState,
-
     /// Режим работы
     pub mode: QMode,
-
     /// Разрешения для работы с hmi
     pub hmi_permission: QHmiPermission,
 }
@@ -28,11 +22,6 @@ pub struct QHmiStatus {
 /// Разрешения для работы с hmi
 #[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct QHmiPermission {
-    /// Разрешение включения в ручном режиме
-    pub man_start: bool,
-    /// Разрешение отключения в ручном режиме
-    pub man_stop: bool,
-
     /// Разрешение переключения в режим auto
     pub auto_mode: bool,
     /// Разрешение переключения в режим manual
@@ -43,16 +32,19 @@ pub struct QHmiPermission {
     pub oos_mode: bool,
 }
 
-/// Состояние
+/// Режим работы
 #[derive(Clone, Copy, Debug, Default, PartialEq, Deserialize, Serialize)]
-pub enum QState {
-    /// Стоп
+pub enum QMode {
+    /// Автоматический режим
+    Auto,
+
+    /// Местный
+    Local,
+
+    /// Ручной
     #[default]
-    Stop,
+    Manual,
 
-    /// Старт
-    Start,
-
-    /// В ошибке
-    Alarm,
+    /// Out of service - выведен из эксплуатации
+    Oos,
 }
