@@ -14,13 +14,18 @@ pub fn Motor(
     hmi_command: impl Fn(IHmiCommand) -> () + 'static + Copy,
     #[prop(into)] hmi_status: Signal<QHmiStatus>,
 ) -> impl IntoView {
-    let (open_state_dialog, open_state_dialog_set) = create_signal(());
     let (open_mode_dialog, open_mode_dialog_set) = create_signal(());
 
+    let (visible_state, visible_state_set) = create_signal(false);
+
     view! {
-        <div class="flex flex-col">
-            <div>
+        <div class="flex flex-col border-2 border-[--md-sys-color-outline-variant] rounded-lg p-2">
+            <div class="my-4 self-center">
                 <p>{title}</p>
+            </div>
+
+            <div>
+                <md-divider></md-divider>
             </div>
 
             // Команда -----------------------------------------------------------------------------
@@ -47,17 +52,60 @@ pub fn Motor(
                 <div class="pl-4">
                     <IconButton
                         kind=IconButtonKind::OutlinedIcon
-                        clicked=move || open_state_dialog_set.set(())
+                        clicked=move || visible_state_set.update(|v| *v = !*v)
                         disabled=MaybeSignal::derive(move || {
                             !hmi_status.get().hmi_permission.man_start
                                 && !hmi_status.get().hmi_permission.man_stop
                         })
+
+                        selected=MaybeSignal::derive(move || visible_state.get())
+                        toggle=true
                     >
 
                         <md-icon>more_horiz</md-icon>
+                        <md-icon slot="selected">close</md-icon>
                     </IconButton>
                 </div>
             </div>
+
+            <Show when=move || visible_state.get()>
+                <div class="flex flex-wrap gap-2 my-4">
+                    <div>
+                        <FilledButton
+                            clicked=move || {
+                                visible_state_set.update(|v| *v = !*v);
+                                hmi_command(IHmiCommand::ManStart)
+                            }
+
+                            disabled=MaybeSignal::derive(move || {
+                                !hmi_status.get().hmi_permission.man_start
+                            })
+                        >
+
+                            <md-icon slot="icon">play_arrow</md-icon>
+                            Пуск
+                        </FilledButton>
+                    </div>
+                    <div>
+                        <FilledButton
+                            clicked=move || {
+                                visible_state_set.update(|v| *v = !*v);
+                                hmi_command(IHmiCommand::ManStop)
+                            }
+
+                            disabled=MaybeSignal::derive(move || {
+                                !hmi_status.get().hmi_permission.man_stop
+                            })
+                        >
+
+                            <md-icon slot="icon">stop</md-icon>
+                            Стоп
+                        </FilledButton>
+                    </div>
+                </div>
+            </Show>
+
+            <md-divider></md-divider>
 
             // Режим работы ------------------------------------------------------------------------
 
@@ -108,55 +156,6 @@ pub fn Motor(
             </div>
 
         </div>
-
-        <Dialog
-            headline=|| view! { Команда }
-            content=|| {
-                view! {
-                    <form method="dialog">
-                        <div class="flex flex-wrap gap-2">
-                            <div>
-                                <FilledButton
-                                    clicked=move || hmi_command(IHmiCommand::ManStart)
-                                    disabled=MaybeSignal::derive(move || {
-                                        !hmi_status.get().hmi_permission.man_start
-                                    })
-                                >
-
-                                    <md-icon slot="icon">play_arrow</md-icon>
-                                    Пуск
-                                </FilledButton>
-                            </div>
-                            <div>
-                                <FilledButton
-                                    clicked=move || hmi_command(IHmiCommand::ManStop)
-                                    disabled=MaybeSignal::derive(move || {
-                                        !hmi_status.get().hmi_permission.man_stop
-                                    })
-                                >
-
-                                    <md-icon slot="icon">stop</md-icon>
-                                    Стоп
-                                </FilledButton>
-                            </div>
-                        </div>
-                    </form>
-                }
-            }
-
-            actions=|| {
-                view! {
-                    <form method="dialog">
-                        <FilledButton clicked=|| ()>
-                            <md-icon slot="icon">close</md-icon>
-                            Закрыть
-                        </FilledButton>
-                    </form>
-                }
-            }
-
-            open=open_state_dialog
-        />
 
         <Dialog
             headline=|| view! { Режим работы }

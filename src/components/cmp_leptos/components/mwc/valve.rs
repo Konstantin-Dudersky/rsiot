@@ -30,15 +30,15 @@ pub fn Valve(
 
                 <div>
 
-                    <Show when=move || hmi_status.get().state == QState::Stop>
+                    <Show when=move || hmi_status.get().state == QState::Closed>
                         <p class="p-2 rounded-sm bg-custom-color3-color text-custom-color1-on-color">
-                            Стоп
+                            Закрыт
                         </p>
                     </Show>
 
-                    <Show when=move || hmi_status.get().state == QState::Start>
+                    <Show when=move || hmi_status.get().state == QState::Opened>
                         <p class="p-2 rounded-sm bg-custom-color1-color text-custom-color1-on-color">
-                            Пуск
+                            Открыт
                         </p>
                     </Show>
 

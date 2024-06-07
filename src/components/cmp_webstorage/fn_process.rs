@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
-use gloo::storage::{LocalStorage, SessionStorage, Storage};
+use gloo::storage::{errors::StorageError, LocalStorage, SessionStorage, Storage};
+use tracing::warn;
 
 use crate::{executor::CmpInOut, message::*};
 
@@ -42,9 +43,16 @@ async fn load_from_storage<TMsg>(
 where
     TMsg: MsgDataBound,
 {
-    let msgs: HashMap<String, Message<TMsg>> = match config.kind {
-        ConfigKind::LocalStorage => LocalStorage::get_all()?,
-        ConfigKind::SessionStorage => SessionStorage::get_all()?,
+    let msgs: Result<HashMap<String, Message<TMsg>>, StorageError> = match config.kind {
+        ConfigKind::LocalStorage => LocalStorage::get_all(),
+        ConfigKind::SessionStorage => SessionStorage::get_all(),
+    };
+    let msgs = match msgs {
+        Ok(val) => val,
+        Err(err) => {
+            warn!("Error loading messages from webstorage: {:?}", err);
+            return Ok(());
+        }
     };
     for msg in msgs.values().cloned() {
         let msg = (config.fn_output)(msg);

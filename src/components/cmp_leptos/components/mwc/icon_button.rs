@@ -20,12 +20,25 @@ pub fn IconButton(
     #[prop(default = MaybeSignal::from(false))]
     disabled: MaybeSignal<bool>,
 
+    /// true = кнопка выбрана
+    #[prop(default = MaybeSignal::from(false))]
+    selected: MaybeSignal<bool>,
+
+    /// Работает в режиме переключения
+    #[prop(default = false)]
+    toggle: bool,
+
     children: Children,
 ) -> impl IntoView {
     match kind {
         IconButtonKind::Icon => {
             view! {
-                <md-icon-button on:click=move |_| (clicked)() disabled=move || disabled.get()>
+                <md-icon-button
+                    on:click=move |_| (clicked)()
+                    disabled=move || disabled.get()
+                    selected=move || selected.get()
+                    toggle=toggle
+                >
                     {children()}
                 </md-icon-button>
             }
@@ -36,6 +49,8 @@ pub fn IconButton(
                 <md-filled-icon-button
                     on:click=move |_| (clicked)()
                     disabled=move || disabled.get()
+                    selected=move || selected.get()
+                    toggle=toggle
                 >
                     {children()}
                 </md-filled-icon-button>
@@ -47,6 +62,8 @@ pub fn IconButton(
                 <md-filled-tonal-icon-button
                     on:click=move |_| (clicked)()
                     disabled=move || disabled.get()
+                    selected=move || selected.get()
+                    toggle=toggle
                 >
                     {children()}
                 </md-filled-tonal-icon-button>
@@ -58,6 +75,8 @@ pub fn IconButton(
                 <md-outlined-icon-button
                     on:click=move |_| (clicked)()
                     disabled=move || disabled.get()
+                    selected=move || selected.get()
+                    toggle=toggle
                 >
                     {children()}
                 </md-outlined-icon-button>

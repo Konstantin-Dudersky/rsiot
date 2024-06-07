@@ -47,16 +47,16 @@
 
     // "cmp_http_client_wasm",
     "cmp_leptos",
-    "cmp_plc"
+    "cmp_plc",
     // "cmp_websocket_client_wasm"
-    // "cmp_webstorage"
+    "cmp_webstorage"
   ],
 
   // ---- esp32 ------------------------------------------------------------------------------------
   // "rust-analyzer.cargo.target": "riscv32imc-esp-espidf",
   // "rust-analyzer.cargo.features": ["executor", "logging", "cmp_esp", "cmp_plc"],
   //
-  "rust-analyzer.showUnlinkedFileNotification": false
+  "rust-analyzer.showUnlinkedFileNotification": false,
 
-  // "rust-analyzer.rustfmt.overrideCommand": ["leptosfmt", "--stdin", "--rustfmt"]
+  "rust-analyzer.rustfmt.overrideCommand": ["leptosfmt", "--stdin", "--rustfmt"]
 }

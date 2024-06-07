@@ -14,6 +14,7 @@ use crate::components::cmp_plc::plc::function_block_base::{FunctionBlockBase, IF
 use logic::logic;
 
 /// motor
+#[allow(dead_code)]
 pub type FB = FunctionBlockBase<I, Q, S>;
 
 impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
