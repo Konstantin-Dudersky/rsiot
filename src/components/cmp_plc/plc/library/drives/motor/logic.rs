@@ -1,21 +1,21 @@
 use super::{IHmiCommand, QHmiPermission, QHmiStatus, QMode, QState, I, Q, S};
 
-use super::super::mode_select;
+use super::super::select_mode;
 
 pub fn logic(input: &I, stat: &mut S) -> Q {
     // Выбор режима
-    stat.mode.call(mode_select::I {
-        mode_plc_hmi: input.mode_plc_hmi,
-        auto_mode_plc: input.auto_mode_plc,
-        man_mode_plc: input.man_mode_plc,
-        local_mode_plc: false,
-        oos_mode_plc: false,
+    stat.mode.call(select_mode::I {
+        mode_source: input.mode_source,
+        mode_auto: input.mode_auto,
+        mode_man: input.mode_man,
+        mode_local: false,
+        mode_oos: false,
         hmi_command: match input.hmi_command {
-            IHmiCommand::NoCommand => mode_select::IHmiCommand::NoCommand,
-            IHmiCommand::ManMode => mode_select::IHmiCommand::ManMode,
-            IHmiCommand::AutoMode => mode_select::IHmiCommand::AutoMode,
-            IHmiCommand::LocalMode => mode_select::IHmiCommand::LocalMode,
-            IHmiCommand::ManStart | IHmiCommand::ManStop => mode_select::IHmiCommand::NoCommand,
+            IHmiCommand::NoCommand => select_mode::IHmiCommand::no_command,
+            IHmiCommand::ManMode => select_mode::IHmiCommand::mode_man,
+            IHmiCommand::AutoMode => select_mode::IHmiCommand::mode_auto,
+            IHmiCommand::LocalMode => select_mode::IHmiCommand::mode_local,
+            IHmiCommand::ManStart | IHmiCommand::ManStop => select_mode::IHmiCommand::no_command,
         },
     });
     let mode = stat.mode.output.mode;
@@ -46,10 +46,10 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
                 man_start: mode == QMode::Manual,
                 man_stop: mode == QMode::Manual,
 
-                auto_mode: stat.mode.output.hmi_status.hmi_permission.auto_mode,
-                man_mode: stat.mode.output.hmi_status.hmi_permission.auto_mode,
-                local_mode: stat.mode.output.hmi_status.hmi_permission.auto_mode,
-                oos_mode: stat.mode.output.hmi_status.hmi_permission.auto_mode,
+                auto_mode: stat.mode.output.hmi_status.hmi_permission.mode_auto,
+                man_mode: stat.mode.output.hmi_status.hmi_permission.mode_man,
+                local_mode: stat.mode.output.hmi_status.hmi_permission.mode_local,
+                oos_mode: stat.mode.output.hmi_status.hmi_permission.mode_oos,
             },
             mode,
             state: stat.state,

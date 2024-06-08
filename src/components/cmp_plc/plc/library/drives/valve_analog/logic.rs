@@ -1,40 +1,40 @@
-use super::super::{mode_select, sp_plc_hmi};
+use super::super::{select_mode, select_sp};
 
 use super::{IHmiCommand, QHmiPermission, QHmiStatus, QMode, QState, I, Q, S};
 
 pub fn logic(input: &I, stat: &mut S) -> Q {
     // Выбор режима
-    stat.mode.call(mode_select::I {
-        mode_plc_hmi: input.mode_plc_hmi,
-        auto_mode_plc: input.auto_mode_plc,
-        man_mode_plc: input.man_mode_plc,
-        local_mode_plc: false,
-        oos_mode_plc: false,
+    stat.mode.call(select_mode::I {
+        mode_source: input.mode_plc_hmi,
+        mode_auto: input.auto_mode_plc,
+        mode_man: input.man_mode_plc,
+        mode_local: false,
+        mode_oos: false,
         hmi_command: match input.hmi_command {
-            IHmiCommand::NoCommand => mode_select::IHmiCommand::NoCommand,
+            IHmiCommand::NoCommand => select_mode::IHmiCommand::no_command,
 
-            IHmiCommand::ManMode => mode_select::IHmiCommand::ManMode,
-            IHmiCommand::AutoMode => mode_select::IHmiCommand::AutoMode,
-            IHmiCommand::LocalMode => mode_select::IHmiCommand::LocalMode,
-            IHmiCommand::OosMode => mode_select::IHmiCommand::OosMode,
+            IHmiCommand::ManMode => select_mode::IHmiCommand::mode_man,
+            IHmiCommand::AutoMode => select_mode::IHmiCommand::mode_auto,
+            IHmiCommand::LocalMode => select_mode::IHmiCommand::mode_local,
+            IHmiCommand::OosMode => select_mode::IHmiCommand::mode_oos,
 
-            _ => mode_select::IHmiCommand::NoCommand,
+            _ => select_mode::IHmiCommand::no_command,
         },
     });
     let mode = stat.mode.output.mode;
 
     // Выбор задания
-    stat.mv.call(sp_plc_hmi::I {
+    stat.mv.call(select_sp::I {
         sp_en_select: input.mv_en_select,
         sp_hmi_en: input.mv_hmi_en,
         sp_plc_en: input.mv_plc_en,
         sp_plc: input.mv_plc,
         hmi_command: match input.hmi_command {
-            IHmiCommand::NoCommand => sp_plc_hmi::IHmiCommand::no_command,
+            IHmiCommand::NoCommand => select_sp::IHmiCommand::no_command,
             IHmiCommand::mv_hmi_en => todo!(),
             IHmiCommand::mv_plc_en => todo!(),
             IHmiCommand::mv_hmi(_) => todo!(),
-            _ => sp_plc_hmi::IHmiCommand::no_command,
+            _ => select_sp::IHmiCommand::no_command,
         },
     });
 
@@ -46,10 +46,10 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
                 man_start: mode == QMode::Manual,
                 man_stop: mode == QMode::Manual,
 
-                auto_mode: stat.mode.output.hmi_status.hmi_permission.auto_mode,
-                man_mode: stat.mode.output.hmi_status.hmi_permission.man_mode,
-                local_mode: stat.mode.output.hmi_status.hmi_permission.local_mode,
-                oos_mode: stat.mode.output.hmi_status.hmi_permission.oos_mode,
+                auto_mode: stat.mode.output.hmi_status.hmi_permission.mode_auto,
+                man_mode: stat.mode.output.hmi_status.hmi_permission.mode_man,
+                local_mode: stat.mode.output.hmi_status.hmi_permission.mode_local,
+                oos_mode: stat.mode.output.hmi_status.hmi_permission.mode_oos,
 
                 mv_hmi_en: stat.mv.output.hmi_status.hmi_permission.sp_hmi_en,
                 mv_plc_en: stat.mv.output.hmi_status.hmi_permission.sp_plc_en,

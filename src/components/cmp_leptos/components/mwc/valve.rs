@@ -18,9 +18,13 @@ pub fn Valve(
     let (open_mode_dialog, open_mode_dialog_set) = create_signal(());
 
     view! {
-        <div class="flex flex-col">
-            <div>
+        <div class="flex flex-col px-4">
+            <div class="py-4 self-center">
                 <p>{title}</p>
+            </div>
+
+            <div>
+                <md-divider></md-divider>
             </div>
 
             // Команда -----------------------------------------------------------------------------
@@ -58,6 +62,8 @@ pub fn Valve(
                     </IconButton>
                 </div>
             </div>
+
+            <md-divider></md-divider>
 
             // Режим работы ------------------------------------------------------------------------
 

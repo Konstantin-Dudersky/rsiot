@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-pub use super::super::mode_select::QMode;
+pub use super::super::select_mode::QMode;
 
 /// Область памяти output
 #[derive(Clone, Default, Deserialize, Serialize)]

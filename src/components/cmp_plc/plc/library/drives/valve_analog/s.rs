@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::super::{mode_select, sp_plc_hmi};
+use super::super::{select_mode, select_sp};
 
 use super::QState;
 
@@ -8,11 +8,11 @@ use super::QState;
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct S {
     /// Режим работы
-    pub mode: mode_select::FB,
+    pub mode: select_mode::FB,
 
     /// Команда на запуск
     pub state: QState,
 
     /// Задание открытия
-    pub mv: sp_plc_hmi::FB,
+    pub mv: select_sp::FB,
 }

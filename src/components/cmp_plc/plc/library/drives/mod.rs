@@ -1,6 +1,6 @@
 //! Двигатели, клапана
-pub mod mode_select;
 pub mod motor;
-pub mod sp_plc_hmi;
+pub mod select_mode;
+pub mod select_sp;
 pub mod valve;
 pub mod valve_analog;

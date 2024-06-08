@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::super::mode_select;
+use super::super::select_mode;
 
 use super::QState;
 
@@ -8,7 +8,7 @@ use super::QState;
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct S {
     /// Режим работы
-    pub mode: mode_select::FB,
+    pub mode: select_mode::FB,
 
     /// Команда на запуск
     pub state: QState,

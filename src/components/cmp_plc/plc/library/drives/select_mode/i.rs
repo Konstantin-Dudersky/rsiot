@@ -3,35 +3,37 @@ use serde::{Deserialize, Serialize};
 /// Входная структура
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct I {
-    /// Источник выбора режима: 0 = из plc, 1 = из hmi
-    pub mode_plc_hmi: bool,
-
+    /// Источник выбора режима:
+    /// - false => из hmi,
+    /// - true => из plc
+    pub mode_source: bool,
     /// Переключение в режим auto из контроллера
-    pub auto_mode_plc: bool,
+    pub mode_auto: bool,
     /// Переключение в режим manual из контроллера
-    pub man_mode_plc: bool,
+    pub mode_man: bool,
     /// Переключение в режим local из контроллера
-    pub local_mode_plc: bool,
+    pub mode_local: bool,
     /// Переключение в режим oos из контроллера
-    pub oos_mode_plc: bool,
+    pub mode_oos: bool,
 
     /// Команда с hmi
     pub hmi_command: IHmiCommand,
 }
 
 /// Команда с hmi
+#[allow(non_camel_case_types)]
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub enum IHmiCommand {
     /// Нет команды - по-умолчанию
     #[default]
-    NoCommand,
+    no_command,
 
     /// Переключение в режим man из hmi
-    ManMode,
+    mode_man,
     /// Переключение в режим auto из hmi
-    AutoMode,
+    mode_auto,
     /// Переключение в режим local из hmi
-    LocalMode,
+    mode_local,
     /// Переключение в режим oos из hmi
-    OosMode,
+    mode_oos,
 }

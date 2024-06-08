@@ -3,12 +3,18 @@ use serde::{Deserialize, Serialize};
 /// Входная структура
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct I {
-    /// Источник выбора режима: 0 = из plc, 1 = из hmi
-    pub mode_plc_hmi: bool,
+    /// Источник выбора режима:
+    /// - false => из hmi,
+    /// - true => из plc
+    pub mode_source: bool,
     /// Переключение в режим auto из контроллера
-    pub auto_mode_plc: bool,
-    /// Переключение в режим man из контроллера
-    pub man_mode_plc: bool,
+    pub mode_auto: bool,
+    /// Переключение в режим manual из контроллера
+    pub mode_man: bool,
+    /// Переключение в режим local из контроллера
+    pub mode_local: bool,
+    /// Переключение в режим oos из контроллера
+    pub mode_oos: bool,
 
     /// Команда с hmi
     pub hmi_command: IHmiCommand,
