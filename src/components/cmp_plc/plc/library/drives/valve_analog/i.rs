@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::components::cmp_plc::plc::library::drives::select_sp;
+
 /// Входная структура
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct I {
@@ -54,4 +56,15 @@ pub enum IHmiCommand {
     mv_plc_en,
     /// Задание из hmi
     mv_hmi(f64),
+}
+
+impl From<super::super::select_sp::IHmiCommand> for IHmiCommand {
+    fn from(value: super::super::select_sp::IHmiCommand) -> Self {
+        match value {
+            select_sp::IHmiCommand::no_command => IHmiCommand::no_command,
+            select_sp::IHmiCommand::sp_hmi_en => IHmiCommand::mv_hmi_en,
+            select_sp::IHmiCommand::sp_plc_en => IHmiCommand::mv_plc_en,
+            select_sp::IHmiCommand::sp_hmi(mv) => IHmiCommand::mv_hmi(mv),
+        }
+    }
 }

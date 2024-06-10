@@ -1,10 +1,10 @@
 use leptos::*;
 
-use crate::components::cmp_plc::plc::library::drives::valve_analog::QHmiStatus;
-
 /// Тип отображения поля ввода
 pub enum TextFieldKind {
+    /// `md-filled-text-field`
     Filled,
+    /// `md-outlined-text-field`
     Outlined,
 }
 
@@ -14,10 +14,30 @@ pub fn TextField(
     #[prop(default = TextFieldKind::Outlined)]
     kind: TextFieldKind,
 
-    hmi_status: ReadSignal<QHmiStatus>,
+    /// Состояние для hmi
+    #[prop(into)]
+    value: Signal<f64>,
+
+    on_input: impl Fn(&str) -> () + 'static,
+
+    #[prop(default = false)] readonly: bool,
 ) -> impl IntoView {
     match kind {
-        TextFieldKind::Filled => view! { <md-filled-text-field></md-filled-text-field> },
-        TextFieldKind::Outlined => view! { <md-outlined-text-field></md-outlined-text-field> },
+        TextFieldKind::Filled => {
+            view! { <md-filled-text-field readOnly=readonly></md-filled-text-field> }
+        }
+        TextFieldKind::Outlined => {
+            view! {
+                <md-outlined-text-field
+                    readOnly=readonly
+                    value=move || value.get()
+                    on:click=move |ev| {
+                        let value = event_target_value(&ev);
+                        on_input(&value)
+                    }
+                >
+                </md-outlined-text-field>
+            }
+        }
     }
 }

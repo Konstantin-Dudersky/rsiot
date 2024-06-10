@@ -1,7 +1,7 @@
 use leptos::*;
 
 use crate::components::cmp_plc::plc::library::drives::valve_analog::{
-    IHmiCommand, QHmiStatus, QMode, QState,
+    IHmiCommand, QHmiStatus, QMode,
 };
 
 use super::{FilledButton, IconButton, IconButtonKind, TextField};
@@ -14,7 +14,7 @@ pub fn ValveAnalog(
     hmi_command: impl Fn(IHmiCommand) -> () + 'static + Copy,
     #[prop(into)] hmi_status: Signal<QHmiStatus>,
 ) -> impl IntoView {
-    let (visible_state, visible_state_set) = create_signal(false);
+    let (visible_mv, visible_mv_set) = create_signal(false);
     let (visible_mode, visible_mode_set) = create_signal(false);
 
     view! {
@@ -34,20 +34,20 @@ pub fn ValveAnalog(
 
                 <div>
 
-                    <TextField/>
+                    <TextField value=move || hmi_status.get().mv readonly=true on_input=|_| ()/>
 
                 </div>
 
                 <div class="pl-4">
                     <IconButton
                         kind=IconButtonKind::OutlinedIcon
-                        clicked=move || visible_state_set.update(|v| *v = !*v)
+                        clicked=move || visible_mv_set.update(|v| *v = !*v)
                         disabled=MaybeSignal::derive(move || {
                             !hmi_status.get().hmi_permission.man_start
                                 && !hmi_status.get().hmi_permission.man_stop
                         })
 
-                        selected=MaybeSignal::derive(move || visible_state.get())
+                        selected=MaybeSignal::derive(move || visible_mv.get())
                         toggle=true
                     >
 
@@ -57,10 +57,13 @@ pub fn ValveAnalog(
                 </div>
             </div>
 
-            <Show when=move || visible_state.get()>
+            <Show when=move || visible_mv.get()>
                 <div class="flex flex-wrap gap-2 my-4">
                     <div>
-                        <TextField/>
+                        <TextField
+                            value=move || hmi_status.get().mv
+                            on_input=move |value| hmi_command(IHmiCommand::mv_hmi(77.7))
+                        />
                     </div>
 
                 </div>
