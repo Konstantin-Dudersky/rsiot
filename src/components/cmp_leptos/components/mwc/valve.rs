@@ -4,7 +4,7 @@ use crate::components::cmp_plc::plc::library::drives::valve::{
     IHmiCommand, QHmiStatus, QMode, QState,
 };
 
-use super::{Dialog, FilledButton, IconButton, IconButtonKind};
+use super::{FilledButton, IconButton, IconButtonKind};
 
 #[component]
 pub fn Valve(
@@ -14,8 +14,8 @@ pub fn Valve(
     hmi_command: impl Fn(IHmiCommand) -> () + 'static + Copy,
     #[prop(into)] hmi_status: Signal<QHmiStatus>,
 ) -> impl IntoView {
-    let (open_state_dialog, open_state_dialog_set) = create_signal(());
-    let (open_mode_dialog, open_mode_dialog_set) = create_signal(());
+    let (visible_state, visible_state_set) = create_signal(false);
+    let (visible_mode, visible_mode_set) = create_signal(false);
 
     view! {
         <div class="flex flex-col px-4">
@@ -51,17 +51,58 @@ pub fn Valve(
                 <div class="pl-4">
                     <IconButton
                         kind=IconButtonKind::OutlinedIcon
-                        clicked=move || open_state_dialog_set.set(())
+                        clicked=move || visible_state_set.update(|v| *v = !*v)
                         disabled=MaybeSignal::derive(move || {
                             !hmi_status.get().hmi_permission.man_start
                                 && !hmi_status.get().hmi_permission.man_stop
                         })
+
+                        selected=MaybeSignal::derive(move || visible_state.get())
+                        toggle=true
                     >
 
                         <md-icon>more_horiz</md-icon>
+                        <md-icon slot="selected">close</md-icon>
                     </IconButton>
                 </div>
             </div>
+
+            <Show when=move || visible_state.get()>
+                <div class="flex flex-wrap gap-2 my-4">
+                    <div>
+                        <FilledButton
+                            clicked=move || {
+                                visible_state_set.update(|v| *v = !*v);
+                                hmi_command(IHmiCommand::OpenMan)
+                            }
+
+                            disabled=MaybeSignal::derive(move || {
+                                !hmi_status.get().hmi_permission.man_start
+                            })
+                        >
+
+                            <md-icon slot="icon">expand_all</md-icon>
+                            Открыть
+                        </FilledButton>
+                    </div>
+                    <div>
+                        <FilledButton
+                            clicked=move || {
+                                visible_state_set.update(|v| *v = !*v);
+                                hmi_command(IHmiCommand::CloseMan)
+                            }
+
+                            disabled=MaybeSignal::derive(move || {
+                                !hmi_status.get().hmi_permission.man_stop
+                            })
+                        >
+
+                            <md-icon slot="icon">collapse_all</md-icon>
+                            Закрыть
+                        </FilledButton>
+                    </div>
+                </div>
+            </Show>
 
             <md-divider></md-divider>
 
@@ -99,113 +140,57 @@ pub fn Valve(
                 <div class="pl-4">
                     <IconButton
                         kind=IconButtonKind::OutlinedIcon
-                        clicked=move || open_mode_dialog_set.set(())
+                        clicked=move || visible_mode_set.update(|v| *v = !*v)
                         disabled=MaybeSignal::derive(move || {
-                            !hmi_status.get().hmi_permission.man_mode
-                                && !hmi_status.get().hmi_permission.auto_mode
-                                && !hmi_status.get().hmi_permission.local_mode
-                                && !hmi_status.get().hmi_permission.oos_mode
+                            !hmi_status.get().hmi_permission.mode_man
+                                && !hmi_status.get().hmi_permission.mode_auto
+                                && !hmi_status.get().hmi_permission.mode_local
+                                && !hmi_status.get().hmi_permission.mode_oos
                         })
+
+                        selected=MaybeSignal::derive(move || visible_mode.get())
+                        toggle=true
                     >
 
                         <md-icon>more_horiz</md-icon>
+                        <md-icon slot="selected">close</md-icon>
                     </IconButton>
                 </div>
             </div>
 
+            <Show when=move || visible_mode.get()>
+                <div class="flex flex-wrap gap-2 my-4">
+
+                    <div>
+                        <FilledButton clicked=move || {
+                            visible_mode_set.update(|v| *v = !*v);
+                            hmi_command(IHmiCommand::mode_auto)
+                        }>
+                            <md-icon slot="icon">autoplay</md-icon>
+                            Авто
+                        </FilledButton>
+                    </div>
+                    <div>
+                        <FilledButton clicked=move || {
+                            visible_mode_set.update(|v| *v = !*v);
+                            hmi_command(IHmiCommand::mode_man)
+                        }>
+                            <md-icon slot="icon">pan_tool</md-icon>
+                            Ручной
+                        </FilledButton>
+                    </div>
+                    <div>
+                        <FilledButton clicked=move || {
+                            visible_mode_set.update(|v| *v = !*v);
+                            hmi_command(IHmiCommand::mode_local)
+                        }>
+                            <md-icon slot="icon">switch</md-icon>
+                            Местный
+                        </FilledButton>
+                    </div>
+                </div>
+            </Show>
+
         </div>
-
-        <Dialog
-            headline=|| view! { Команда }
-            content=|| {
-                view! {
-                    <form method="dialog">
-                        <div class="flex flex-wrap gap-2">
-                            <div>
-                                <FilledButton
-                                    clicked=move || hmi_command(IHmiCommand::OpenMan)
-                                    disabled=MaybeSignal::derive(move || {
-                                        !hmi_status.get().hmi_permission.man_start
-                                    })
-                                >
-
-                                    <md-icon slot="icon">expand_all</md-icon>
-                                    Открыть
-                                </FilledButton>
-                            </div>
-                            <div>
-                                <FilledButton
-                                    clicked=move || hmi_command(IHmiCommand::CloseMan)
-                                    disabled=MaybeSignal::derive(move || {
-                                        !hmi_status.get().hmi_permission.man_stop
-                                    })
-                                >
-
-                                    <md-icon slot="icon">collapse_all</md-icon>
-                                    Закрыть
-                                </FilledButton>
-                            </div>
-                        </div>
-                    </form>
-                }
-            }
-
-            actions=|| {
-                view! {
-                    <form method="dialog">
-                        <FilledButton clicked=|| ()>
-                            <md-icon slot="icon">close</md-icon>
-                            Закрыть
-                        </FilledButton>
-                    </form>
-                }
-            }
-
-            open=open_state_dialog
-        />
-
-        <Dialog
-            headline=|| view! { Режим работы }
-            content=|| {
-                view! {
-                    <form method="dialog">
-                        <div class="flex flex-wrap gap-2">
-
-                            <div>
-                                <FilledButton clicked=move || hmi_command(IHmiCommand::AutoMode)>
-                                    <md-icon slot="icon">autoplay</md-icon>
-                                    Авто
-                                </FilledButton>
-                            </div>
-                            <div>
-                                <FilledButton clicked=move || hmi_command(IHmiCommand::ManMode)>
-                                    <md-icon slot="icon">pan_tool</md-icon>
-                                    Ручной
-                                </FilledButton>
-                            </div>
-                            <div>
-                                <FilledButton clicked=move || hmi_command(IHmiCommand::LocalMode)>
-                                    <md-icon slot="icon">switch</md-icon>
-                                    Местный
-                                </FilledButton>
-                            </div>
-                        </div>
-                    </form>
-                }
-            }
-
-            actions=|| {
-                view! {
-                    <form method="dialog">
-                        <FilledButton clicked=|| ()>
-                            <md-icon slot="icon">close</md-icon>
-                            Закрыть
-                        </FilledButton>
-                    </form>
-                }
-            }
-
-            open=open_mode_dialog
-        />
     }
 }

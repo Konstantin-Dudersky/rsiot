@@ -142,10 +142,10 @@ pub fn Motor(
                         kind=IconButtonKind::OutlinedIcon
                         clicked=move || visible_mode_set.update(|v| *v = !*v)
                         disabled=MaybeSignal::derive(move || {
-                            !hmi_status.get().hmi_permission.man_mode
-                                && !hmi_status.get().hmi_permission.auto_mode
-                                && !hmi_status.get().hmi_permission.local_mode
-                                && !hmi_status.get().hmi_permission.oos_mode
+                            !hmi_status.get().hmi_permission.mode_man
+                                && !hmi_status.get().hmi_permission.mode_auto
+                                && !hmi_status.get().hmi_permission.mode_local
+                                && !hmi_status.get().hmi_permission.mode_oos
                         })
 
                         selected=MaybeSignal::derive(move || visible_mode.get())
@@ -164,7 +164,7 @@ pub fn Motor(
                     <div>
                         <FilledButton clicked=move || {
                             visible_mode_set.update(|v| *v = !*v);
-                            hmi_command(IHmiCommand::AutoMode)
+                            hmi_command(IHmiCommand::mode_auto)
                         }>
                             <md-icon slot="icon">autoplay</md-icon>
                             Авто
@@ -173,7 +173,7 @@ pub fn Motor(
                     <div>
                         <FilledButton clicked=move || {
                             visible_mode_set.update(|v| *v = !*v);
-                            hmi_command(IHmiCommand::ManMode)
+                            hmi_command(IHmiCommand::mode_man)
                         }>
                             <md-icon slot="icon">pan_tool</md-icon>
                             Ручной
@@ -182,7 +182,7 @@ pub fn Motor(
                     <div>
                         <FilledButton clicked=move || {
                             visible_mode_set.update(|v| *v = !*v);
-                            hmi_command(IHmiCommand::LocalMode)
+                            hmi_command(IHmiCommand::mode_local)
                         }>
                             <md-icon slot="icon">switch</md-icon>
                             Местный

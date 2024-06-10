@@ -1,38 +1,61 @@
 use serde::{Deserialize, Serialize};
 
+use super::super::select_mode;
+
 /// Входная структура
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct I {
-    /// Источник выбора режима: 0 = из plc, 1 = из hmi
-    pub mode_plc_hmi: bool,
+    /// Источник выбора режима:
+    /// - false => из hmi,
+    /// - true => из plc
+    pub mode_source: bool,
     /// Переключение в режим auto из контроллера
-    pub auto_mode_plc: bool,
-    /// Переключение в режим man из контроллера
-    pub man_mode_plc: bool,
+    pub mode_auto: bool,
+    /// Переключение в режим manual из контроллера
+    pub mode_man: bool,
+    /// Переключение в режим local из контроллера
+    pub mode_local: bool,
+    /// Переключение в режим oos из контроллера
+    pub mode_oos: bool,
 
     /// Команда с hmi
     pub hmi_command: IHmiCommand,
 }
 
 /// Команда с hmi
+#[allow(non_camel_case_types)]
 #[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub enum IHmiCommand {
     /// Нет команды - по-умолчанию
     #[default]
-    NoCommand,
+    no_command,
 
     /// Переключение в режим man из hmi
-    ManMode,
+    mode_man,
     /// Переключение в режим auto из hmi
-    AutoMode,
+    mode_auto,
     /// Переключение в режим local из hmi
-    LocalMode,
+    mode_local,
     /// Переключение в режим oos из hmi
-    OosMode,
+    mode_oos,
 
     /// Открыть в ручном режиме из hmi
     OpenMan,
-
     /// Закрыть в ручном режиме из hmi
     CloseMan,
+}
+
+impl From<IHmiCommand> for select_mode::IHmiCommand {
+    fn from(value: IHmiCommand) -> Self {
+        match value {
+            IHmiCommand::no_command => select_mode::IHmiCommand::no_command,
+
+            IHmiCommand::mode_man => select_mode::IHmiCommand::mode_man,
+            IHmiCommand::mode_auto => select_mode::IHmiCommand::mode_auto,
+            IHmiCommand::mode_local => select_mode::IHmiCommand::mode_local,
+            IHmiCommand::mode_oos => select_mode::IHmiCommand::mode_oos,
+
+            _ => select_mode::IHmiCommand::no_command,
+        }
+    }
 }

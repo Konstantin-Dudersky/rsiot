@@ -31,13 +31,13 @@ pub struct QHmiPermission {
     pub man_stop: bool,
 
     /// Разрешение переключения в режим auto
-    pub auto_mode: bool,
+    pub mode_auto: bool,
     /// Разрешение переключения в режим manual
-    pub man_mode: bool,
+    pub mode_man: bool,
     /// Разрешение переключения в режим local
-    pub local_mode: bool,
+    pub mode_local: bool,
     /// Разрешение переключения в режим oos
-    pub oos_mode: bool,
+    pub mode_oos: bool,
 }
 
 /// Состояние

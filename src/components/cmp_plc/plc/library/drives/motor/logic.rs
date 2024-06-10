@@ -10,13 +10,7 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
         mode_man: input.mode_man,
         mode_local: false,
         mode_oos: false,
-        hmi_command: match input.hmi_command {
-            IHmiCommand::NoCommand => select_mode::IHmiCommand::no_command,
-            IHmiCommand::ManMode => select_mode::IHmiCommand::mode_man,
-            IHmiCommand::AutoMode => select_mode::IHmiCommand::mode_auto,
-            IHmiCommand::LocalMode => select_mode::IHmiCommand::mode_local,
-            IHmiCommand::ManStart | IHmiCommand::ManStop => select_mode::IHmiCommand::no_command,
-        },
+        hmi_command: input.hmi_command.into(),
     });
     let mode = stat.mode.output.mode;
 
@@ -46,10 +40,10 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
                 man_start: mode == QMode::Manual,
                 man_stop: mode == QMode::Manual,
 
-                auto_mode: stat.mode.output.hmi_status.hmi_permission.mode_auto,
-                man_mode: stat.mode.output.hmi_status.hmi_permission.mode_man,
-                local_mode: stat.mode.output.hmi_status.hmi_permission.mode_local,
-                oos_mode: stat.mode.output.hmi_status.hmi_permission.mode_oos,
+                mode_auto: stat.mode.output.hmi_status.hmi_permission.mode_auto,
+                mode_man: stat.mode.output.hmi_status.hmi_permission.mode_man,
+                mode_local: stat.mode.output.hmi_status.hmi_permission.mode_local,
+                mode_oos: stat.mode.output.hmi_status.hmi_permission.mode_oos,
             },
             mode,
             state: stat.state,
