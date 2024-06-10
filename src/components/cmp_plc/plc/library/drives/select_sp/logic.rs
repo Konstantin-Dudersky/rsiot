@@ -1,7 +1,7 @@
 use super::{IHmiCommand, QHmiPermission, QHmiStatus, I, Q, S};
 
 pub fn logic(input: &I, stat: &mut S) -> Q {
-    stat.sp_plc_act = match input.sp_en_select {
+    stat.sp_plc_act = match input.sp_en_source {
         // из hmi
         false => match input.hmi_command {
             IHmiCommand::no_command => stat.sp_plc_act,
@@ -38,9 +38,9 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
     Q {
         hmi_status: QHmiStatus {
             hmi_permission: QHmiPermission {
-                sp_hmi_en: !input.sp_en_select && stat.sp_plc_act,
-                sp_plc_en: !input.sp_en_select && !stat.sp_plc_act,
-                sp_hmi_plc_en: !input.sp_en_select,
+                sp_hmi_en: !input.sp_en_source && stat.sp_plc_act,
+                sp_plc_en: !input.sp_en_source && !stat.sp_plc_act,
+                sp_hmi_plc_en: !input.sp_en_source,
                 sp_hmi: !stat.sp_plc_act,
             },
             sp_plc_act: stat.sp_plc_act,

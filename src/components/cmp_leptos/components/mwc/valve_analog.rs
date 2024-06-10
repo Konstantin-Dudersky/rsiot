@@ -1,13 +1,13 @@
 use leptos::*;
 
-use crate::components::cmp_plc::plc::library::drives::motor::{
+use crate::components::cmp_plc::plc::library::drives::valve_analog::{
     IHmiCommand, QHmiStatus, QMode, QState,
 };
 
-use super::{FilledButton, IconButton, IconButtonKind};
+use super::{FilledButton, IconButton, IconButtonKind, TextField};
 
 #[component]
-pub fn Motor(
+pub fn ValveAnalog(
     /// Заголовок
     title: &'static str,
 
@@ -21,30 +21,20 @@ pub fn Motor(
         <div class="flex flex-col px-4">
             <div class="py-4 self-center">
                 <p>{title}</p>
-            </div> 
+            </div>
 
             <div>
                 <md-divider></md-divider>
             </div>
 
-            // Команда -----------------------------------------------------------------------------
+            // MV ----------------------------------------------------------------------------------
 
             <div class="flex flex-row items-center my-4">
-                <div class="grow">Команда</div>
+                <div class="grow">Открытие</div>
 
                 <div>
 
-                    <Show when=move || hmi_status.get().state == QState::Stop>
-                        <p class="p-2 rounded-sm bg-custom-color3-color text-custom-color1-on-color">
-                            Стоп
-                        </p>
-                    </Show>
-
-                    <Show when=move || hmi_status.get().state == QState::Start>
-                        <p class="p-2 rounded-sm bg-custom-color1-color text-custom-color1-on-color">
-                            Пуск
-                        </p>
-                    </Show>
+                    <TextField/>
 
                 </div>
 
@@ -70,37 +60,9 @@ pub fn Motor(
             <Show when=move || visible_state.get()>
                 <div class="flex flex-wrap gap-2 my-4">
                     <div>
-                        <FilledButton
-                            clicked=move || {
-                                visible_state_set.update(|v| *v = !*v);
-                                hmi_command(IHmiCommand::ManStart)
-                            }
-
-                            disabled=MaybeSignal::derive(move || {
-                                !hmi_status.get().hmi_permission.man_start
-                            })
-                        >
-
-                            <md-icon slot="icon">play_arrow</md-icon>
-                            Пуск
-                        </FilledButton>
+                        <TextField/>
                     </div>
-                    <div>
-                        <FilledButton
-                            clicked=move || {
-                                visible_state_set.update(|v| *v = !*v);
-                                hmi_command(IHmiCommand::ManStop)
-                            }
 
-                            disabled=MaybeSignal::derive(move || {
-                                !hmi_status.get().hmi_permission.man_stop
-                            })
-                        >
-
-                            <md-icon slot="icon">stop</md-icon>
-                            Стоп
-                        </FilledButton>
-                    </div>
                 </div>
             </Show>
 

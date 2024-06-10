@@ -5,18 +5,18 @@ use super::{IHmiCommand, QHmiPermission, QHmiStatus, QMode, QState, I, Q, S};
 pub fn logic(input: &I, stat: &mut S) -> Q {
     // Выбор режима
     stat.mode.call(select_mode::I {
-        mode_source: input.mode_plc_hmi,
-        mode_auto: input.auto_mode_plc,
-        mode_man: input.man_mode_plc,
+        mode_source: input.mode_source,
+        mode_auto: input.mode_auto,
+        mode_man: input.mode_man,
         mode_local: false,
         mode_oos: false,
         hmi_command: match input.hmi_command {
-            IHmiCommand::NoCommand => select_mode::IHmiCommand::no_command,
+            IHmiCommand::no_command => select_mode::IHmiCommand::no_command,
 
-            IHmiCommand::ManMode => select_mode::IHmiCommand::mode_man,
-            IHmiCommand::AutoMode => select_mode::IHmiCommand::mode_auto,
-            IHmiCommand::LocalMode => select_mode::IHmiCommand::mode_local,
-            IHmiCommand::OosMode => select_mode::IHmiCommand::mode_oos,
+            IHmiCommand::mode_man => select_mode::IHmiCommand::mode_man,
+            IHmiCommand::mode_auto => select_mode::IHmiCommand::mode_auto,
+            IHmiCommand::mode_local => select_mode::IHmiCommand::mode_local,
+            IHmiCommand::mode_oos => select_mode::IHmiCommand::mode_oos,
 
             _ => select_mode::IHmiCommand::no_command,
         },
@@ -25,12 +25,12 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
 
     // Выбор задания
     stat.mv.call(select_sp::I {
-        sp_en_select: input.mv_en_select,
+        sp_en_source: input.mv_en_source,
         sp_hmi_en: input.mv_hmi_en,
         sp_plc_en: input.mv_plc_en,
         sp_plc: input.mv_plc,
         hmi_command: match input.hmi_command {
-            IHmiCommand::NoCommand => select_sp::IHmiCommand::no_command,
+            IHmiCommand::no_command => select_sp::IHmiCommand::no_command,
             IHmiCommand::mv_hmi_en => todo!(),
             IHmiCommand::mv_plc_en => todo!(),
             IHmiCommand::mv_hmi(_) => todo!(),
@@ -46,10 +46,10 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
                 man_start: mode == QMode::Manual,
                 man_stop: mode == QMode::Manual,
 
-                auto_mode: stat.mode.output.hmi_status.hmi_permission.mode_auto,
-                man_mode: stat.mode.output.hmi_status.hmi_permission.mode_man,
-                local_mode: stat.mode.output.hmi_status.hmi_permission.mode_local,
-                oos_mode: stat.mode.output.hmi_status.hmi_permission.mode_oos,
+                mode_auto: stat.mode.output.hmi_status.hmi_permission.mode_auto,
+                mode_man: stat.mode.output.hmi_status.hmi_permission.mode_man,
+                mode_local: stat.mode.output.hmi_status.hmi_permission.mode_local,
+                mode_oos: stat.mode.output.hmi_status.hmi_permission.mode_oos,
 
                 mv_hmi_en: stat.mv.output.hmi_status.hmi_permission.sp_hmi_en,
                 mv_plc_en: stat.mv.output.hmi_status.hmi_permission.sp_plc_en,

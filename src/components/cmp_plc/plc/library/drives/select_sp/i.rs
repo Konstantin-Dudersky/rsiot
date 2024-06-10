@@ -6,7 +6,7 @@ pub struct I {
     /// Выбор источника команд выбора (`sp_hmi_en`, `sp_plc_en`):
     /// false => из hmi
     /// true => из plc
-    pub sp_en_select: bool,
+    pub sp_en_source: bool,
     /// Активировать задание из hmi
     pub sp_hmi_en: bool,
     /// Активировать задание из plc
