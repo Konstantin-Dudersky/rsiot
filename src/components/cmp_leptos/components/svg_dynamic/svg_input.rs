@@ -1,6 +1,7 @@
 use leptos::*;
 use palette::Srgb;
 
+#[derive(Clone)]
 pub(crate) enum SvgInputSignal {
     Fill(Signal<Srgb<u8>>),
     Y(Signal<f64>),
@@ -8,6 +9,7 @@ pub(crate) enum SvgInputSignal {
 }
 
 /// Изменение свойств элементов SVG
+#[derive(Clone)]
 pub struct SvgInput {
     /// HTML аттрибут id элемента
     pub(crate) id: String,
