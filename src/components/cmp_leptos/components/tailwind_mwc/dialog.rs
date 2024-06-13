@@ -4,13 +4,26 @@ use leptos::*;
 ///
 /// https://m3.material.io/components/dialogs/overview
 #[component]
-pub fn Dialog(
+pub fn Dialog<F1, IV1>(
     /// Сигнал управления видимостью диалога
     #[prop(into)]
     visible: Signal<bool>,
 
     on_close: impl Fn() -> () + Copy + 'static,
-) -> impl IntoView {
+
+    /// Заголовок диалога
+    ///
+    /// **Примеры**
+    ///
+    /// ```rust
+    /// || view! { Headline }
+    /// ```
+    headline: F1,
+) -> impl IntoView
+where
+    F1: Fn() -> IV1 + 'static,
+    IV1: IntoView,
+{
     // let on_close_clone = on_close.clone();
     view! {
         <Show when=move || visible.get()>
@@ -48,33 +61,17 @@ pub fn Dialog(
                         // From: "opacity-100 translate-y-0 sm:scale-100"
                         // To: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                         // -->
-                        <div class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
+                        <div class="relative transform overflow-hidden rounded-3xl bg-surface-container-high text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm p-6">
                             <div>
-                                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                                    <svg
-                                        class="h-6 w-6 text-green-600"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke-width="1.5"
-                                        stroke="currentColor"
-                                        aria-hidden="true"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            d="M4.5 12.75l6 6 9-13.5"
-                                        ></path>
-                                    </svg>
-                                </div>
-                                <div class="mt-3 text-center sm:mt-5">
+                                <div class="text-center">
                                     <h3
-                                        class="text-base font-semibold leading-6 text-gray-900"
+                                        class="text-base font-semibold leading-6 text-on-surface"
                                         id="modal-title"
                                     >
-                                        Payment successful
+                                        {headline()}
                                     </h3>
                                     <div class="mt-2">
-                                        <p class="text-sm text-gray-500">
+                                        <p class="text-sm text-on-surface-variant">
                                             Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur amet labore.
                                         </p>
                                     </div>
