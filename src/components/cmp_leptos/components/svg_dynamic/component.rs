@@ -19,11 +19,8 @@ where
     let div_ref = create_node_ref();
 
     let output_callback = Arc::new(Mutex::new(Closure::wrap(Box::new(move |e: Event| {
-        let s = e.to_string().as_string().unwrap();
-        let e1 = e.target().unwrap();
-
-        info!("{:?}", e.target().unwrap());
-        (svg_output.callback)(&s)
+        let id = extract_id_from_event(e).unwrap();
+        (svg_output.callback)(&id)
     }) as Box<dyn FnMut(_)>)));
 
     div_ref.on_load(move |_| {
@@ -87,6 +84,8 @@ where
                     }
                 };
 
+                info!("Регистрация коллбеков для вызова");
+
                 let lock = cb_clone.lock().unwrap();
 
                 svg_element
@@ -117,4 +116,23 @@ fn change_svg_element(svg_input: &SvgInput, element: &web_sys::SvgElement) -> Re
             element.set_attribute("y", &value)
         }
     }
+}
+
+/// Извлечение id элемента из события
+fn extract_id_from_event(event: Event) -> Option<String> {
+    let target = event.target()?;
+
+    let element = target.dyn_into::<web_sys::Element>();
+    let element = match element {
+        Ok(val) => val,
+        Err(err) => {
+            let err = format!("{:?}", err);
+            warn!("Cannot cast element: {:?}", err);
+            return None;
+        }
+    };
+
+    let id = element.id();
+
+    Some(id)
 }

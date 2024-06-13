@@ -12,3 +12,16 @@ where
     /// В качестве аргумента принимает id элемента, который был нажат
     pub callback: T,
 }
+
+impl<T> SvgOutput<T>
+where
+    T: Fn(&str) -> (),
+{
+    /// Создать структуру SvgOutput
+    pub fn new(ids: Vec<&str>, callback: T) -> Self {
+        Self {
+            ids: ids.into_iter().map(String::from).collect(),
+            callback,
+        }
+    }
+}
