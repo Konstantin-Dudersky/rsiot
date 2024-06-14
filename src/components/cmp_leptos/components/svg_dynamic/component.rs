@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use ev::Event;
+use gloo::dialogs::alert;
 use leptos::*;
 use tracing::{info, warn};
 use wasm_bindgen::{closure::Closure, JsCast, JsValue};
@@ -25,40 +26,7 @@ where
 
     div_ref.on_load(move |_| {
         for input in svg_input {
-            let cb_clone = output_callback.clone();
-
-            create_effect(move |_| {
-                let element = document().get_element_by_id(&input.id);
-                let element = match element {
-                    Some(val) => val,
-                    None => {
-                        warn!("Element with id '{}' not found", input.id);
-                        return;
-                    }
-                };
-
-                let svg_element = element.dyn_into::<web_sys::SvgElement>();
-                let svg_element = match svg_element {
-                    Ok(val) => val,
-                    Err(_) => {
-                        warn!("Cannot cast element with id '{} 'into SvgElement", input.id);
-                        return;
-                    }
-                };
-
-                let result = change_svg_element(&input, &svg_element);
-                if let Err(err) = result {
-                    warn!(
-                        "Cannot set attribute TODO of svg element with id '{}' :{:?}",
-                        input.id, err
-                    )
-                };
-
-                let lock = cb_clone.lock().unwrap();
-                svg_element
-                    .add_event_listener_with_callback("click", &lock.as_ref().unchecked_ref())
-                    .unwrap();
-            });
+            create_effect(move |_| create_effect_for_svg_input(&input).unwrap());
         }
 
         for id in svg_output.ids {
@@ -66,22 +34,8 @@ where
             // Не знаю, зачем нужно оборачивать в create_effect, но без него `get_element_by_id` не
             // находится
             create_effect(move |_| {
-                let element = document().get_element_by_id(&id);
-                let element = match element {
-                    Some(val) => val,
-                    None => {
-                        warn!("Element with id '{}' not found", id);
-                        return;
-                    }
-                };
-
-                let svg_element = element.dyn_into::<web_sys::SvgElement>();
-                let svg_element = match svg_element {
-                    Ok(val) => val,
-                    Err(_) => {
-                        warn!("Cannot cast element with id '{}' into SvgElement", id);
-                        return;
-                    }
+                let Some(svg_element) = get_svg_element_by_id(&id) else {
+                    return;
                 };
 
                 info!("Регистрация коллбеков для вызова");
@@ -115,6 +69,7 @@ fn change_svg_element(svg_input: &SvgInput, element: &web_sys::SvgElement) -> Re
             let value = sig.get().to_string();
             element.set_attribute("y", &value)
         }
+        SvgInputSignal::PlcDrivesMotor(_) => Ok(()),
     }
 }
 
@@ -127,7 +82,8 @@ fn extract_id_from_event(event: Event) -> Option<String> {
         Ok(val) => val,
         Err(err) => {
             let err = format!("{:?}", err);
-            warn!("Cannot cast element: {:?}", err);
+            let err = format!("Cannot cast element: {:?}", err);
+            warn_and_alert(err);
             return None;
         }
     };
@@ -136,3 +92,67 @@ fn extract_id_from_event(event: Event) -> Option<String> {
 
     Some(id)
 }
+
+/// Находим элемент svg по id
+fn get_svg_element_by_id(id: &str) -> Option<web_sys::SvgElement> {
+    let element = document().get_element_by_id(&id);
+    let element = match element {
+        Some(val) => val,
+        None => {
+            let err = format!("Element with id '{}' not found", id);
+            warn_and_alert(err);
+            return None;
+        }
+    };
+
+    let svg_element = element.dyn_into::<web_sys::SvgElement>();
+    let svg_element = match svg_element {
+        Ok(val) => val,
+        Err(_) => {
+            let err = format!("Cannot cast element with id '{} 'into SvgElement", id);
+            warn_and_alert(err);
+            return None;
+        }
+    };
+
+    Some(svg_element)
+}
+
+/// Находим вложенные элементы svg корневого элемента
+fn get_child_svg_elements_by_id(id: &str) -> Vec<web_sys::SvgElement> {
+    let root = get_svg_element_by_id(id);
+    let Some(root) = root else { return vec![] };
+
+    let mut svg_elements = vec![];
+    for i in 0..root.child_element_count() {
+        let node = root
+            .child_nodes()
+            .item(i)
+            .unwrap()
+            .dyn_into::<web_sys::SvgElement>()
+            .unwrap();
+        svg_elements.push(node);
+    }
+    svg_elements
+}
+
+/// Вывести сообщение в консоль и в окно браузера (alert)
+fn warn_and_alert(text: impl AsRef<str>) {
+    warn!("{}", text.as_ref());
+    alert(text.as_ref());
+}
+
+fn create_effect_for_svg_input(input: &SvgInput) -> Option<()> {
+    let svg_element = get_svg_element_by_id(&input.id)?;
+
+    let result = change_svg_element(&input, &svg_element);
+    if let Err(err) = result {
+        warn!(
+            "Cannot set attribute TODO of svg element with id '{}' :{:?}",
+            input.id, err
+        )
+    };
+    Some(())
+}
+
+// info!("{:?}", e.get_attribute("inkscape:label"));

@@ -8,28 +8,21 @@ use super::{FilledButton, IconButton, IconButtonKind};
 
 #[component]
 pub fn Motor(
-    /// Заголовок
-    title: &'static str,
+    /// Состояние
+    #[prop(into)]
+    hmi_status: Signal<QHmiStatus>,
 
+    /// Управление
     hmi_command: impl Fn(IHmiCommand) -> () + 'static + Copy,
-    #[prop(into)] hmi_status: Signal<QHmiStatus>,
 ) -> impl IntoView {
     let (visible_state, visible_state_set) = create_signal(false);
     let (visible_mode, visible_mode_set) = create_signal(false);
 
     view! {
-        <div class="flex flex-col px-4">
-            <div class="py-4 self-center">
-                <p>{title}</p>
-            </div> 
-
-            <div>
-                <md-divider></md-divider>
-            </div>
-
+        <div class="flex flex-col gap-2">
             // Команда -----------------------------------------------------------------------------
 
-            <div class="flex flex-row items-center my-4">
+            <div class="flex flex-row items-center gap-4">
                 <div class="grow">Команда</div>
 
                 <div>
@@ -48,7 +41,7 @@ pub fn Motor(
 
                 </div>
 
-                <div class="pl-4">
+                <div>
                     <IconButton
                         kind=IconButtonKind::OutlinedIcon
                         clicked=move || visible_state_set.update(|v| *v = !*v)
@@ -68,7 +61,7 @@ pub fn Motor(
             </div>
 
             <Show when=move || visible_state.get()>
-                <div class="flex flex-wrap gap-2 my-4">
+                <div class="flex flex-wrap gap-2">
                     <div>
                         <FilledButton
                             clicked=move || {
@@ -108,7 +101,7 @@ pub fn Motor(
 
             // Режим работы ------------------------------------------------------------------------
 
-            <div class="flex flex-row items-center my-4">
+            <div class="flex flex-row items-center gap-4">
                 <div class="grow">Режим работы</div>
 
                 <div>
@@ -137,7 +130,7 @@ pub fn Motor(
                     </Show>
                 </div>
 
-                <div class="pl-4">
+                <div>
                     <IconButton
                         kind=IconButtonKind::OutlinedIcon
                         clicked=move || visible_mode_set.update(|v| *v = !*v)

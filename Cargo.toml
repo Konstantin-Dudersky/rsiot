@@ -92,6 +92,7 @@ tracing-loki = { version = "0.2.4", optional = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 gloo = { version = "0.11.0", features = [
+    "dialogs",
     "futures",
     "net",
     "storage",

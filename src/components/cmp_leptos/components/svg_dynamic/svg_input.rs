@@ -1,11 +1,14 @@
 use leptos::*;
 use palette::Srgb;
 
+use crate::components::cmp_plc::plc::library;
+
 #[derive(Clone)]
 pub(crate) enum SvgInputSignal {
     Fill(Signal<Srgb<u8>>),
     Y(Signal<f64>),
     TextContent(Signal<String>),
+    PlcDrivesMotor(Signal<library::drives::motor::QHmiStatus>),
 }
 
 /// Изменение свойств элементов SVG
@@ -39,6 +42,16 @@ impl SvgInput {
         Self {
             id: id.to_string(),
             signal: SvgInputSignal::TextContent(signal.into()),
+        }
+    }
+
+    pub fn plc_drives_motor(
+        id: &str,
+        signal: impl Into<Signal<library::drives::motor::QHmiStatus>>,
+    ) -> Self {
+        Self {
+            id: id.to_string(),
+            signal: SvgInputSignal::PlcDrivesMotor(signal.into()),
         }
     }
 }
