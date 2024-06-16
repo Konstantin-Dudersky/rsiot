@@ -1,0 +1,40 @@
+//! Изменить стили всех элементов файла svg. Полезно для переключения темы
+
+use leptos::{document, wasm_bindgen::JsCast};
+
+use super::{super::material_theme::MaterialTheme, change_svg_prop, INK_LABEL};
+
+pub fn set_global_style(svg_id: String) {
+    let root_node = document()
+        .get_element_by_id(&svg_id)
+        .unwrap()
+        .parent_node()
+        .unwrap();
+
+    node_process(root_node);
+}
+
+/// Рекурсивно проходим по всем узлам документа
+fn node_process(node: web_sys::Node) -> () {
+    let element = node.dyn_ref::<web_sys::SvgElement>();
+    match element {
+        Some(element) => element_process(element),
+        None => (),
+    };
+    let node_list = node.child_nodes();
+    for i in 0..node_list.length() {
+        let node = node_list.item(i).unwrap();
+        node_process(node)
+    }
+}
+
+fn element_process(element: &web_sys::SvgElement) -> () {
+    let label = element.get_attribute(INK_LABEL);
+    let Some(label) = label else { return () };
+    match label.as_str() {
+        "text" => {
+            change_svg_prop::text_color(element, MaterialTheme::sys_color_on_surface);
+        }
+        _ => (),
+    }
+}

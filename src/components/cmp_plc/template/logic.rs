@@ -1,6 +1,6 @@
 use super::{QHmiPermission, QHmiStatus, QMode, QState, I, Q, S};
 
-use super::super::drives::select_mode;
+use super::super::plc::library::drives::select_mode;
 
 pub fn logic(_input: &I, _stat: &mut S) -> Q {
     Q {

@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use super::QState;
 
-use super::super::drives::select_mode;
+use super::super::plc::library::drives::select_mode;
 
 /// Область памяти stat
 #[derive(Clone, Default, Deserialize, Serialize)]

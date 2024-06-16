@@ -1,6 +1,7 @@
 //! Компоненты для использования в проектах leptos
 
 mod go2rtc;
+mod material_theme;
 pub mod svg_dynamic;
 pub mod tailwind_mwc;
 

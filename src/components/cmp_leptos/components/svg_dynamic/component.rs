@@ -4,9 +4,17 @@ use ev::Event;
 use gloo::dialogs::alert;
 use leptos::*;
 use tracing::{info, warn};
+use uuid::Uuid;
 use wasm_bindgen::{closure::Closure, JsCast, JsValue};
 
-use super::{svg_input::SvgInputSignal, SvgInput, SvgOutput};
+use crate::components::cmp_plc::plc::library::drives::{motor::QState, select_mode};
+
+use super::{
+    super::material_theme::MaterialTheme,
+    change_svg_prop,
+    set_global_style::set_global_style,
+    {svg_input::SvgInputSignal, SvgInput, SvgOutput},
+};
 
 #[component]
 pub fn SvgDynamic<FOutput>(
@@ -17,6 +25,7 @@ pub fn SvgDynamic<FOutput>(
 where
     FOutput: Fn(&str) -> () + 'static,
 {
+    let id = format!("svg_{}", Uuid::new_v4());
     let div_ref = create_node_ref();
 
     let output_callback = Arc::new(Mutex::new(Closure::wrap(Box::new(move |e: Event| {
@@ -24,7 +33,15 @@ where
         (svg_output.callback)(&id)
     }) as Box<dyn FnMut(_)>)));
 
+    let id_clone = id.clone();
+
     div_ref.on_load(move |_| {
+        // Задаем стили элементов svg файла
+        create_effect(move |_| {
+            let id_clone = id_clone.clone();
+            set_global_style(id_clone)
+        });
+
         for input in svg_input {
             create_effect(move |_| create_effect_for_svg_input(&input).unwrap());
         }
@@ -49,7 +66,7 @@ where
         }
     });
 
-    view! { <div node_ref=div_ref inner_html=file></div> }
+    view! { <div id=id node_ref=div_ref inner_html=file></div> }
 }
 
 fn change_svg_element(svg_input: &SvgInput, element: &web_sys::SvgElement) -> Result<(), JsValue> {
@@ -75,7 +92,7 @@ fn change_svg_element(svg_input: &SvgInput, element: &web_sys::SvgElement) -> Re
 
 /// Извлечение id элемента из события
 fn extract_id_from_event(event: Event) -> Option<String> {
-    let target = event.target()?;
+    let target = event.current_target()?;
 
     let element = target.dyn_into::<web_sys::Element>();
     let element = match element {
@@ -89,7 +106,6 @@ fn extract_id_from_event(event: Event) -> Option<String> {
     };
 
     let id = element.id();
-
     Some(id)
 }
 
@@ -119,10 +135,7 @@ fn get_svg_element_by_id(id: &str) -> Option<web_sys::SvgElement> {
 }
 
 /// Находим вложенные элементы svg корневого элемента
-fn get_child_svg_elements_by_id(id: &str) -> Vec<web_sys::SvgElement> {
-    let root = get_svg_element_by_id(id);
-    let Some(root) = root else { return vec![] };
-
+fn get_child_svg_elements(root: &web_sys::SvgElement) -> Vec<web_sys::SvgElement> {
     let mut svg_elements = vec![];
     for i in 0..root.child_element_count() {
         let node = root
@@ -144,6 +157,93 @@ fn warn_and_alert(text: impl AsRef<str>) {
 
 fn create_effect_for_svg_input(input: &SvgInput) -> Option<()> {
     let svg_element = get_svg_element_by_id(&input.id)?;
+
+    match input.signal {
+        SvgInputSignal::Fill(_) => todo!(),
+        SvgInputSignal::Y(_) => todo!(),
+        SvgInputSignal::TextContent(_) => todo!(),
+        SvgInputSignal::PlcDrivesMotor(hmi_status) => {
+            let svg_elements = get_child_svg_elements(&svg_element);
+
+            for element in svg_elements {
+                let label = element.get_attribute("inkscape:label");
+                let Some(label) = label else { continue };
+                match label.as_str() {
+                    "mode" => match hmi_status.get().mode {
+                        select_mode::QMode::Auto => change_svg_prop::fill(
+                            &element,
+                            MaterialTheme::extended_color_green_color,
+                        )
+                        .unwrap(),
+                        select_mode::QMode::Local => todo!(),
+                        select_mode::QMode::Manual => change_svg_prop::fill(
+                            &element,
+                            MaterialTheme::extended_color_yellow_color,
+                        )
+                        .unwrap(),
+                        select_mode::QMode::Oos => todo!(),
+                    },
+                    "mode_text" => match hmi_status.get().mode {
+                        select_mode::QMode::Auto => {
+                            change_svg_prop::text_content(&element, "A").unwrap();
+                            change_svg_prop::text_color(
+                                &element,
+                                MaterialTheme::extended_color_green_on_color,
+                            )
+                            .unwrap()
+                        }
+                        select_mode::QMode::Local => todo!(),
+                        select_mode::QMode::Manual => {
+                            change_svg_prop::text_content(&element, "P").unwrap();
+                            change_svg_prop::text_color(
+                                &element,
+                                MaterialTheme::extended_color_yellow_on_color,
+                            )
+                            .unwrap()
+                        }
+                        select_mode::QMode::Oos => todo!(),
+                    },
+                    "state" => match hmi_status.get().state {
+                        QState::Stop => {
+                            change_svg_prop::fill(&element, MaterialTheme::sys_color_surface);
+                            change_svg_prop::stroke(&element, MaterialTheme::sys_color_on_surface)
+                        }
+                        .unwrap(),
+                        QState::Start => {
+                            change_svg_prop::fill(
+                                &element,
+                                MaterialTheme::extended_color_green_color,
+                            );
+                            change_svg_prop::stroke(
+                                &element,
+                                MaterialTheme::extended_color_green_on_color,
+                            )
+                        }
+                        .unwrap(),
+                        QState::Alarm => {
+                            todo!()
+                        }
+                    },
+
+                    "state-text" => match hmi_status.get().state {
+                        QState::Stop => change_svg_prop::text_color(
+                            &element,
+                            MaterialTheme::sys_color_on_surface,
+                        )
+                        .unwrap(),
+                        QState::Start => change_svg_prop::text_color(
+                            &element,
+                            MaterialTheme::extended_color_green_on_color,
+                        )
+                        .unwrap(),
+                        QState::Alarm => todo!(),
+                    },
+
+                    _ => continue,
+                }
+            }
+        }
+    }
 
     let result = change_svg_element(&input, &svg_element);
     if let Err(err) = result {

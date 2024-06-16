@@ -106,25 +106,25 @@ pub fn Motor(
 
                 <div>
                     <Show when=move || hmi_status.get().mode == QMode::Auto>
-                        <p class="p-2 rounded-sm bg-custom-color1-color text-custom-color1-on-color">
+                        <p class="p-2 rounded-sm bg-green-color-container text-green-on-color-container">
                             Авто
                         </p>
                     </Show>
 
                     <Show when=move || hmi_status.get().mode == QMode::Local>
-                        <p class="p-2 rounded-sm bg-custom-color3-color text-custom-color1-on-color">
+                        <p class="p-2 rounded-sm bg-yellow-color-container text-green-on-color-container">
                             Местный
                         </p>
                     </Show>
 
                     <Show when=move || hmi_status.get().mode == QMode::Manual>
-                        <p class="p-2 rounded-sm bg-custom-color2-color text-custom-color1-on-color">
+                        <p class="p-2 rounded-sm bg-yellow-color-container text-green-on-color-container">
                             Ручной
                         </p>
                     </Show>
 
                     <Show when=move || hmi_status.get().mode == QMode::Oos>
-                        <p class="p-2 rounded-sm bg-custom-color3-color text-custom-color1-on-color">
+                        <p class="p-2 rounded-sm bg-yellow-color-container text-green-on-color-container">
                             Выведен
                         </p>
                     </Show>
