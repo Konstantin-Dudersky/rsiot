@@ -24,6 +24,7 @@
 mod component;
 mod config;
 mod error;
+mod filter_identical_data;
 mod fn_process;
 pub mod plc;
 #[allow(dead_code, unused_imports)]

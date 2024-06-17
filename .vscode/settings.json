@@ -56,7 +56,7 @@
   // "rust-analyzer.cargo.target": "riscv32imc-esp-espidf",
   // "rust-analyzer.cargo.features": ["executor", "logging", "cmp_esp", "cmp_plc"],
   //
-  "rust-analyzer.showUnlinkedFileNotification": false,
+  "rust-analyzer.showUnlinkedFileNotification": false
 
-  "rust-analyzer.rustfmt.overrideCommand": ["leptosfmt", "--stdin", "--rustfmt"]
+  // "rust-analyzer.rustfmt.overrideCommand": ["leptosfmt", "--stdin", "--rustfmt"]
 }

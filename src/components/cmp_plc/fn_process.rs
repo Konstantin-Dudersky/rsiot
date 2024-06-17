@@ -18,6 +18,7 @@ use crate::{
 
 use super::{
     config::{Config, ConfigRetention, ConfigRetentionRestoreResult},
+    filter_identical_data::filter_identical_data,
     plc::function_block_base::{FunctionBlockBase, IFunctionBlock},
     Error,
 };
@@ -99,7 +100,7 @@ where
     let fb_main = Arc::new(Mutex::new(fb_main));
 
     // Выполнение цикла ПЛК
-    let task = task_plc_cycle_execute_loop::<TMsg, I, Q, S>(
+    let task = task_plc_cycle::<TMsg, I, Q, S>(
         in_out.clone(),
         config.clone(),
         fb_main.clone(),
@@ -140,8 +141,8 @@ where
     Ok(())
 }
 
-/// Исполнение логики ПЛК в цикле
-async fn task_plc_cycle_execute_loop<TMsg, I, Q, S>(
+/// Задача bсполнения логики ПЛК в цикле
+async fn task_plc_cycle<TMsg, I, Q, S>(
     in_out: CmpInOut<TMsg>,
     config: Config<TMsg, I, Q, S>,
     fb_main: Arc<Mutex<FunctionBlockBase<I, Q, S>>>,
@@ -162,7 +163,7 @@ where
         let begin = Instant::now();
 
         // Исполняем цикл ПЛК
-        let msgs = plc_cycle_execute::<TMsg, I, Q, S>(
+        let msgs = plc_cycle::<TMsg, I, Q, S>(
             &config,
             fb_main.clone(),
             &mut fb_main_input,
@@ -187,7 +188,7 @@ where
 }
 
 /// Исполнение одного цикла ПЛК
-async fn plc_cycle_execute<TMsg, I, Q, S>(
+async fn plc_cycle<TMsg, I, Q, S>(
     config: &Config<TMsg, I, Q, S>,
     fb_main: Arc<Mutex<FunctionBlockBase<I, Q, S>>>,
     fb_main_input: &mut I,
@@ -200,8 +201,9 @@ where
     S: Clone + Default + Send + Serialize,
     FunctionBlockBase<I, Q, S>: IFunctionBlock<I, Q, S>,
 {
-    // Инициализация входов в начале цикла
+    // Инициализация структуры входов в начале цикла
     (config.fn_cycle_init)(fb_main_input);
+    // Обновляем входную структуру по данным из входящих сообщений
     {
         let mut lock = input_msg_cache.write().await;
         for msg in lock.values() {
@@ -209,6 +211,7 @@ where
         }
         lock.clear();
     }
+    // Выполняем цикл ПЛК и формируем исходящие сообщения
     let msgs;
     {
         let mut fb_main = fb_main.lock().await;
@@ -248,6 +251,7 @@ where
         }
     }
 }
+
 #[cfg(feature = "single-thread")]
 fn join_set_spawn<F, T>(join_set: &mut JoinSet<T>, task: F)
 where

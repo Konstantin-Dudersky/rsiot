@@ -7,7 +7,7 @@ use crate::message::{Message, MsgDataBound};
 
 type Hash<TMsg> = HashMap<String, Message<TMsg>>;
 
-/// Кеширование сообщений
+/// Кеш сообщений
 #[derive(Debug)]
 pub struct Cache<TMsg>(Arc<RwLock<Hash<TMsg>>>);
 
