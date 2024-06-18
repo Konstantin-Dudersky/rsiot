@@ -62,7 +62,7 @@ pub fn ValveAnalog(
                     <div>
                         <TextField
                             value=move || hmi_status.get().mv
-                            on_input=move |value| hmi_command(IHmiCommand::mv_hmi(77.7))
+                            on_input=move |_value| hmi_command(IHmiCommand::mv_hmi(77.7))
                         />
                     </div>
 

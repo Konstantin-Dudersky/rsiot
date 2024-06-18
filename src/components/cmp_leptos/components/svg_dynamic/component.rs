@@ -62,6 +62,10 @@ where
                 svg_element
                     .add_event_listener_with_callback("click", &lock.as_ref().unchecked_ref())
                     .unwrap();
+                svg_element
+                    .style()
+                    .set_property("cursor", "pointer")
+                    .unwrap();
             });
         }
     });

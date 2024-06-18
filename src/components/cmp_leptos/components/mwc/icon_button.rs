@@ -1,6 +1,7 @@
 use leptos::*;
 
 /// Вид кнопки
+#[allow(missing_docs)]
 pub enum IconButtonKind {
     Icon,
     FilledIcon,
