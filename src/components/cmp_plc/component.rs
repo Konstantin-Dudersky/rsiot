@@ -9,7 +9,7 @@ use crate::{
 use super::{
     config::Config,
     fn_process::fn_process,
-    plc::function_block_base::{FunctionBlockBase, IFunctionBlock},
+    plc::{FunctionBlockBase, IFunctionBlock},
 };
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]

@@ -1,4 +1,4 @@
-#[allow(non_camel_case_types)]
+#[allow(dead_code, non_camel_case_types)]
 pub enum MaterialTheme {
     sys_color_primary,
     sys_color_surface_tint,

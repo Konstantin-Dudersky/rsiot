@@ -9,7 +9,7 @@ pub use i::*;
 pub use q::*;
 pub use s::*;
 
-use crate::components::cmp_plc::plc::function_block_base::{FunctionBlockBase, IFunctionBlock};
+use crate::components::cmp_plc::plc::{FunctionBlockBase, IFunctionBlock};
 
 use logic::logic;
 

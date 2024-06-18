@@ -1,6 +1,5 @@
 use std::{cmp::max, fmt::Debug};
 
-use tokio::sync::mpsc;
 use tracing::{info, trace};
 use uuid::Uuid;
 
@@ -157,16 +156,6 @@ where
     /// Возвращает максимальный размер очереди сообщений
     pub fn max_capacity(&self) -> usize {
         self.output.max_capacity()
-    }
-
-    pub async fn task_route_input_to_mpsc(
-        mut self,
-        tx: mpsc::Sender<Message<TMsg>>,
-    ) -> Result<(), ComponentError> {
-        while let Ok(msg) = self.recv_input().await {
-            tx.send(msg).await.unwrap();
-        }
-        Ok(())
     }
 }
 

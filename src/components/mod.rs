@@ -144,3 +144,5 @@ pub mod cmp_websocket_server;
 #[cfg(feature = "cmp_webstorage")]
 #[cfg(wasm32_unknown_unknown)]
 pub mod cmp_webstorage;
+
+mod shared_tasks;

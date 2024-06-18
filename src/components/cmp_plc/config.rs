@@ -4,7 +4,7 @@ use serde::Serialize;
 
 use crate::message::{Message, MsgDataBound};
 
-use super::plc::function_block_base::{FunctionBlockBase, IFunctionBlock};
+use super::plc::{FunctionBlockBase, IFunctionBlock};
 
 /// Конфигурация компонента ПЛК
 #[derive(Clone)]
@@ -74,9 +74,19 @@ where
     Q: Clone + Default + Serialize,
     S: Clone + Default + Serialize,
 {
+    /// Периодичность сохранения текущего состояния
     pub save_period: Duration,
+
+    /// Функция преобразования состояния ПЛК в исходящие сообщения
     pub fn_export: fn(&I, &Q, &S) -> Option<Vec<Message<TMsg>>>,
+
+    /// Функция восстановления состояния из входящих сообщений
     pub fn_import_static: fn(&Message<TMsg>) -> anyhow::Result<Option<S>>,
+
+    /// Таймаут восстановления
+    ///
+    /// Если в течение заданного времени не будет получено сообщение с данными для восстановления,
+    /// считаем что восттановление не удалось и запускаем ПЛК с дефолтным состоянием
     pub restore_timeout: Duration,
 }
 

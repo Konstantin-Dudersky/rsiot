@@ -22,7 +22,7 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
         },
     });
     let mode = stat.mode.output.mode;
-
+ 
     // Выбор задания
     stat.mv.call(select_sp::I {
         sp_en_source: input.mv_en_source,
