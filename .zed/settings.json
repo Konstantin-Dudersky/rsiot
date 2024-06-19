@@ -1,0 +1,36 @@
+{
+  "lsp": {
+    "rust-analyzer": {
+      "initialization_options": {
+        "check": {
+          "command": "clippy" // rust-analyzer.check.command (default: "check")
+        },
+        "cargo": {
+          // wasm32 --------------------------------------------------------------------------------
+          "target": "wasm32-unknown-unknown",
+          "features": [
+            "single-thread", // Активировать обязательно !
+            // "executor",
+            // "logging",
+
+            // "cmp_http_client_wasm",
+            "cmp_leptos",
+            "cmp_plc",
+            // "cmp_websocket_client_wasm"
+            "cmp_webstorage"
+          ]
+        }
+      }
+    }
+  },
+  "inlayHints": {
+    "maxLength": null,
+    "lifetimeElisionHints": {
+      "useParameterNames": true,
+      "enable": "skip_trivial"
+    },
+    "closureReturnTypeHints": {
+      "enable": "always"
+    }
+  }
+}
