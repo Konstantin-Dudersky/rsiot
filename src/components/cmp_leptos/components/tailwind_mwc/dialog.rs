@@ -65,7 +65,7 @@ where
                 // To: "opacity-0"
                 // -->
                 <div
-                    class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                    class="fixed inset-0 bg-scrim opacity-40 transition-opacity"
                     class=("opacity-0", move || !visible.get())
                     class=("opacity-100", move || visible.get())
                 ></div>
