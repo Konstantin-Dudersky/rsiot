@@ -10,7 +10,7 @@ services:
         condition: service_healthy
         restart: true
     hostname: backend
-    image: ubuntu:jammy
+    image: ubuntu:noble
     networks:
       - network_internal
     environment:

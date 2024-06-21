@@ -1,0 +1,22 @@
+services:
+  frontend:
+    container_name: frontend
+    hostname: frontend
+    image: nginx
+    networks:
+      - network_internal
+    ports:
+      - "8000:80"
+    profiles:
+      - target
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html
+      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf
+
+networks:
+  network_internal:
+
+volumes:
+  surrealdb_data:
+    name: surrealdb_data
+# TODO - healtcheck
