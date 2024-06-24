@@ -45,6 +45,12 @@ where
         fn_output_period: Duration,
     },
 
+    /// Расширение GPIO PCA9555
+    PCA9555 {
+        /// Адрес. По-умолчанию 0x20
+        address: I2cSlaveAddress,
+    },
+
     /// Расширение GPIO PCF8575
     PCF8575 {
         /// Адрес

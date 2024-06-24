@@ -58,6 +58,12 @@ where
                 task_set.spawn(async move { device.spawn(driver).await });
             }
 
+            drivers_i2c::I2cDevices::PCA9555 { address } => {
+                let device = drivers_i2c::pca9555::PCA9555 { address };
+                let driver = driver.clone();
+                task_set.spawn(async move { device.spawn(driver).await });
+            }
+
             drivers_i2c::I2cDevices::PCF8575 {
                 address,
                 pin_00,
@@ -89,11 +95,11 @@ where
                 task_set.spawn(async move { device.fn_process(in_out, driver).await });
             }
 
-            drivers_i2c::I2cDevices::SSD1306 {  } => {
+            drivers_i2c::I2cDevices::SSD1306 {} => {
                 let device = drivers_i2c::ssd1306::SSD1306 {};
                 let driver = driver.clone();
-                task_set.spawn(async move { device.fn_process(driver).await }); 
-            },
+                task_set.spawn(async move { device.fn_process(driver).await });
+            }
         }
     }
 

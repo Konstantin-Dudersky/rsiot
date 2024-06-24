@@ -6,19 +6,23 @@
           "command": "clippy" // rust-analyzer.check.command (default: "check")
         },
         "cargo": {
-          // wasm32 --------------------------------------------------------------------------------
-          "target": "wasm32-unknown-unknown",
-          "features": [
-            "single-thread", // Активировать обязательно !
-            // "executor",
-            // "logging",
+          // WASM32 --------------------------------------------------------------------------------
+          // "target": "wasm32-unknown-unknown",
+          // "features": [
+          //   "single-thread", // Активировать обязательно !
+          //   // "executor",
+          //   // "logging",
 
-            // "cmp_http_client_wasm",
-            "cmp_leptos",
-            "cmp_plc",
-            // "cmp_websocket_client_wasm"
-            "cmp_webstorage"
-          ]
+          //   // "cmp_http_client_wasm",
+          //   "cmp_leptos",
+          //   "cmp_plc",
+          //   // "cmp_websocket_client_wasm"
+          //   "cmp_webstorage"
+          // ],
+
+          // ESP32 ---------------------------------------------------------------------------------
+          "target": "riscv32imc-esp-espidf",
+          "features": ["executor", "logging", "cmp_esp", "cmp_plc"]
         }
       }
     }

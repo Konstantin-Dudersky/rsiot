@@ -293,6 +293,10 @@ name = "cmp_esp_i2c_master_ds3231"
 path = "./examples/cmp_esp/cmp_esp_i2c_master_ds3231.rs"
 
 [[example]]
+name = "cmp_esp_i2c_master_pca9555"
+path = "./examples/cmp_esp/cmp_esp_i2c_master_pca9555.rs"
+
+[[example]]
 name = "cmp_esp_i2c_master_pcf8575"
 path = "./examples/cmp_esp/cmp_esp_i2c_master_pcf8575.rs"
 
