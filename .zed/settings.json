@@ -7,34 +7,32 @@
         },
         "cargo": {
           // WASM32 --------------------------------------------------------------------------------
-          // "target": "wasm32-unknown-unknown",
-          // "features": [
-          //   "single-thread", // Активировать обязательно !
-          //   // "executor",
-          //   // "logging",
-
-          //   // "cmp_http_client_wasm",
-          //   "cmp_leptos",
-          //   "cmp_plc",
-          //   // "cmp_websocket_client_wasm"
-          //   "cmp_webstorage"
-          // ],
-
-          // ESP32 ---------------------------------------------------------------------------------
-          "target": "riscv32imc-esp-espidf",
-          "features": ["executor", "logging", "cmp_esp", "cmp_plc"]
+          "target": "wasm32-unknown-unknown",
+          "features": [
+            "single-thread", // Активировать обязательно !
+            //   // "executor",
+            //   // "logging",
+            //   // "cmp_http_client_wasm",
+            "cmp_leptos",
+            "cmp_plc",
+            //   // "cmp_websocket_client_wasm"
+            //   "cmp_webstorage"
+            // ],
+            // ESP32 ---------------------------------------------------------------------------------
+            // "target": "riscv32imc-esp-espidf",
+            // "features": ["executor", "logging", "cmp_esp", "cmp_plc"]
+          }
         }
       }
-    }
-  },
-  "inlayHints": {
-    "maxLength": null,
-    "lifetimeElisionHints": {
-      "useParameterNames": true,
-      "enable": "skip_trivial"
     },
-    "closureReturnTypeHints": {
-      "enable": "always"
+    "inlayHints": {
+      "maxLength": null,
+      "lifetimeElisionHints": {
+        "useParameterNames": true,
+        "enable": "skip_trivial"
+      },
+      "closureReturnTypeHints": {
+        "enable": "always"
+      }
     }
   }
-}
