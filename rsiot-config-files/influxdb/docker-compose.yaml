@@ -9,7 +9,7 @@ services:
       - DOCKER_INFLUXDB_INIT_BUCKET=bucket
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=token
     hostname: influxdb
-    image: influxdb:2.7.5
+    image: influxdb:2.7.6 # https://hub.docker.com/_/influxdb
     networks:
       - network_internal
     ports:

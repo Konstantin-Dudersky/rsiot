@@ -1,0 +1,6 @@
+streams:
+  tapo: rtsp://administrator:Admin123!@10.0.6.3:554/stream1
+
+api:
+  origin: "*"
+  listen: ":8003"

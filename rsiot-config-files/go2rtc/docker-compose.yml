@@ -1,0 +1,13 @@
+services:
+  go2rtc:
+    container_name: go2rtc
+    hostname: go2rtc
+    image: alexxit/go2rtc
+    network_mode: host
+    privileged: true
+    restart: unless-stopped
+    profiles:
+      - target
+      - dev
+    volumes:
+      - "./go2rtc:/config"
