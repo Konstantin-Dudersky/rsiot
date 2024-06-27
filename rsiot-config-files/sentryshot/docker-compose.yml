@@ -1,0 +1,13 @@
+services:
+  sentryshot:
+    shm_size: 500m
+    image: codeberg.org/sentryshot/sentryshot:v0.2.17
+    ports:
+      - 2020:2020
+    environment:
+      - TZ=Europe/Minsk
+    profiles:
+      - target
+    volumes:
+      - ./config_services/sentryshot/configs:/app/configs
+      - ./config_services/sentryshot/storage:/app/storage

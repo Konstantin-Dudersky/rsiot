@@ -10,4 +10,4 @@ services:
       - target
       - dev
     volumes:
-      - "./go2rtc:/config"
+      - "./config_services/go2rtc:/config"

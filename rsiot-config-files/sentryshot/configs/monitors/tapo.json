@@ -1,0 +1,12 @@
+{
+  "alwaysRecord": true,
+  "enable": true,
+  "id": "tapo",
+  "name": "tapo",
+  "source": "rtsp",
+  "sourcertsp": {
+    "mainStream": "rtsp://administrator:Admin123!@192.168.31.3:554/stream1",
+    "protocol": "tcp"
+  },
+  "videoLength": 15
+}
