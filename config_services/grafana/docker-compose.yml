@@ -27,8 +27,8 @@ services:
       - dev
       - target
     volumes:
-      - ./services/grafana/datasources:/etc/grafana/provisioning/datasources
-      - ./services/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./config_services/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./config_services/grafana/dashboards:/etc/grafana/provisioning/dashboards
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     networks:
