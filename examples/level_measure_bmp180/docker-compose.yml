@@ -1,0 +1,27 @@
+services:
+  influxdb:
+    container_name: level_influxdb
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=Admin123!
+      - DOCKER_INFLUXDB_INIT_ORG=org
+      - DOCKER_INFLUXDB_INIT_BUCKET=bucket
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=token
+    hostname: influxdb
+    image: influxdb:2.7.6 # https://hub.docker.com/_/influxdb
+    networks:
+      - network_internal
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
+networks:
+  network_internal:
+
+volumes:
+  influxdb_data:
+    name: influxdb_data

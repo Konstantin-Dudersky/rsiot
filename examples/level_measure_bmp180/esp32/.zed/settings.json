@@ -1,0 +1,14 @@
+{
+  "lsp": {
+    "rust-analyzer": {
+      "initialization_options": {
+        "check": {
+          "command": "clippy" // rust-analyzer.check.command (default: "check")
+        },
+        "cargo": {
+          "target": "riscv32imc-esp-espidf"
+        }
+      }
+    }
+  }
+}

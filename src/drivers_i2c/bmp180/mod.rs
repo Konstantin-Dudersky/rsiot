@@ -8,7 +8,10 @@ use serde::{Deserialize, Serialize};
 use tokio::{sync::Mutex, time::sleep};
 use tracing::{info, trace, warn};
 
-use crate::message::{Message, PhyQuantity};
+use crate::{
+    executor::CmpInOut,
+    message::{Message, MsgDataBound, PhyQuantity},
+};
 
 use super::{I2cSlaveAddress, RsiotI2cDriverBase};
 
@@ -18,9 +21,13 @@ pub struct BMP180<TMsg> {
     pub address: I2cSlaveAddress,
     pub fn_output: fn(BMP180Data) -> Vec<Message<TMsg>>,
     pub oversampling: BMP180Oversampling,
+    pub cmp_in_out: CmpInOut<TMsg>,
 }
 
-impl<TMsg> BMP180<TMsg> {
+impl<TMsg> BMP180<TMsg>
+where
+    TMsg: MsgDataBound,
+{
     pub async fn fn_process(&self, driver: Arc<Mutex<impl RsiotI2cDriverBase>>) {
         let calibration_data: CalibrationData = loop {
             let calibration_data = request_calibration_data(driver.clone(), self.address).await;
@@ -55,7 +62,10 @@ impl<TMsg> BMP180<TMsg> {
                 &pressure,
                 self.oversampling,
             );
-            (self.fn_output)(values);
+            let msgs = (self.fn_output)(values);
+            for msg in msgs {
+                self.cmp_in_out.send_output(msg).await.unwrap();
+            }
             sleep(Duration::from_secs(2)).await;
         }
     }

@@ -1,0 +1,16 @@
+[package]
+name = "backend"
+version = "0.0.1"
+edition = "2021"
+
+
+[dependencies]
+rsiot = { path = "../../..", features = ["cmp_http_client", "cmp_influxdb"] }
+tokio = { version = "*", features = ["rt-multi-thread", "macros"] }
+url = "*"
+openssl = { version = "0.10", features = ["vendored"] }
+tracing-subscriber = "*"
+serde_json = { version = "*" }
+tracing = "*"
+
+messages = { path = "../messages" }

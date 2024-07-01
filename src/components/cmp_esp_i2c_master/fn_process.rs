@@ -36,6 +36,7 @@ where
                     address,
                     fn_output,
                     oversampling,
+                    cmp_in_out: in_out.clone(),
                 };
                 let driver = driver.clone();
                 task_set.spawn(async move { device.fn_process(driver).await });

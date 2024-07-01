@@ -1,4 +1,6 @@
-#[derive(Debug, PartialEq)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum QuantityName {
     /// Безразмерная величина
     Dimensionless,

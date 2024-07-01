@@ -1,11 +1,13 @@
 #![allow(non_snake_case)]
 
+use serde::{Deserialize, Serialize};
+
 use super::QuantityName;
 
 const C_TO_K: f64 = 273.15;
 
 /// Физическая величина
-#[derive(Debug)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct PhyQuantity {
     pub(crate) value: f64,
     /// Тип физической величины
@@ -38,6 +40,19 @@ impl PhyQuantity {
         Self {
             value,
             quantity_name: QuantityName::Pressure,
+        }
+    }
+
+    pub fn pressure_Pa(&self) -> f64 {
+        match self.quantity_name {
+            QuantityName::Pressure => self.value,
+            _ => {
+                let err = format!(
+                    "You exprect pressure, but current unit: {:?}",
+                    self.quantity_name
+                );
+                panic!("{err}")
+            }
         }
     }
 

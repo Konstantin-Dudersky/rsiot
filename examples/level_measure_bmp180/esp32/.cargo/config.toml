@@ -1,0 +1,22 @@
+[build]
+target = "riscv32imc-esp-espidf"
+
+[target.riscv32imc-esp-espidf]
+linker = "ldproxy"
+runner = "espflash flash --monitor"
+rustflags = [
+    "--cfg",
+    "espidf_time64",
+    "--cfg",
+    "mio_unsupported_force_poll_poll", # https://github.com/tokio-rs/tokio/issues/5866
+]
+
+[unstable]
+build-std = ["std", "panic_abort"]
+
+[env]
+MCU = "esp32c3"
+# install all libraries globally, in folder ~/.espressif
+ESP_IDF_TOOLS_INSTALL_DIR = "global"
+# check current version on https://docs.espressif.com/projects/esp-idf/en/latest/esp32/index.html
+ESP_IDF_VERSION = "v5.2.2"

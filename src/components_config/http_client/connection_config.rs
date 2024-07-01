@@ -6,5 +6,5 @@ use url::Url;
 #[derive(Clone, Debug)]
 pub struct ConnectionConfig {
     /// URL сервера
-    pub base_url: Url,
+    pub base_url: Url, // TODO - переделать в String
 }
