@@ -1,12 +1,12 @@
 [Unit]
-Description=Project
+Description=PROJECT_DESC
 Requires=docker.service
 After=docker.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-WorkingDirectory=/home/user/fermenter
+WorkingDirectory=/home/user/PROJECT_FOLDER
 ExecStart=/home/user/.cargo/bin/nu scripts/target-start.nu
 ExecStop=/home/user/.cargo/bin/nu scripts/target-stop.nu
 TimeoutStartSec=0
