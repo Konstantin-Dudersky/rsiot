@@ -6,6 +6,8 @@ use crate::components::cmp_plc::plc::library::drives::motor::{
 
 use super::{FilledButton, IconButton, IconButtonKind};
 
+use super::super::tailwind_mwc::{Button, IconButton as IconButton2};
+
 #[component]
 pub fn Motor(
     /// Состояние
@@ -26,7 +28,6 @@ pub fn Motor(
                 <div class="grow">Команда</div>
 
                 <div>
-
                     <Show when=move || hmi_status.get().state == QState::Stop>
                         <p class="p-2 rounded-sm bg-custom-color3-color text-custom-color1-on-color">
                             Стоп
@@ -57,14 +58,19 @@ pub fn Motor(
                         <md-icon>more_horiz</md-icon>
                         <md-icon slot="selected">close</md-icon>
                     </IconButton>
+                    <IconButton2
+                        icon=|| view! { <span class="iconify material-symbols--close-rounded h-6 w-6"></span> }
+                        on_click= move || visible_state_set.update(|v| *v = !*v)
+                    />
+
                 </div>
             </div>
 
             <Show when=move || visible_state.get()>
                 <div class="flex flex-wrap gap-2">
                     <div>
-                        <FilledButton
-                            clicked=move || {
+                        <Button
+                            on_click=move || {
                                 visible_state_set.update(|v| *v = !*v);
                                 hmi_command(IHmiCommand::ManStart)
                             }
@@ -72,15 +78,15 @@ pub fn Motor(
                             disabled=MaybeSignal::derive(move || {
                                 !hmi_status.get().hmi_permission.man_start
                             })
-                        >
 
-                            <md-icon slot="icon">play_arrow</md-icon>
-                            Пуск
-                        </FilledButton>
+                            icon=||view!{  <span class="iconify material-symbols--play-arrow-rounded"></span> }
+
+                            text="Пуск"
+                        />
                     </div>
                     <div>
-                        <FilledButton
-                            clicked=move || {
+                        <Button
+                            on_click=move || {
                                 visible_state_set.update(|v| *v = !*v);
                                 hmi_command(IHmiCommand::ManStop)
                             }
@@ -88,11 +94,11 @@ pub fn Motor(
                             disabled=MaybeSignal::derive(move || {
                                 !hmi_status.get().hmi_permission.man_stop
                             })
-                        >
 
-                            <md-icon slot="icon">stop</md-icon>
-                            Стоп
-                        </FilledButton>
+                            icon=||view!{  <span class="iconify material-symbols--stop-rounded"></span> }
+
+                            text="Стоп"
+                        />
                     </div>
                 </div>
             </Show>
@@ -155,31 +161,34 @@ pub fn Motor(
                 <div class="flex flex-wrap gap-2 my-4">
 
                     <div>
-                        <FilledButton clicked=move || {
-                            visible_mode_set.update(|v| *v = !*v);
-                            hmi_command(IHmiCommand::mode_auto)
-                        }>
-                            <md-icon slot="icon">autoplay</md-icon>
-                            Авто
-                        </FilledButton>
+                        <Button
+                            on_click=move || {
+                                visible_mode_set.update(|v| *v = !*v);
+                                hmi_command(IHmiCommand::mode_auto)
+                            }
+                            icon=||view!{  <span class="iconify material-symbols--play-arrow-rounded"></span> }
+                            text="Авто"
+                        />
                     </div>
                     <div>
-                        <FilledButton clicked=move || {
-                            visible_mode_set.update(|v| *v = !*v);
-                            hmi_command(IHmiCommand::mode_man)
-                        }>
-                            <md-icon slot="icon">pan_tool</md-icon>
-                            Ручной
-                        </FilledButton>
+                        <Button
+                            on_click=move || {
+                                visible_mode_set.update(|v| *v = !*v);
+                                hmi_command(IHmiCommand::mode_man)
+                            }
+                            icon=||view!{  <span class="iconify material-symbols--pan-tool-rounded"></span> }
+                            text="Ручной"
+                        />
                     </div>
                     <div>
-                        <FilledButton clicked=move || {
-                            visible_mode_set.update(|v| *v = !*v);
-                            hmi_command(IHmiCommand::mode_local)
-                        }>
-                            <md-icon slot="icon">switch</md-icon>
-                            Местный
-                        </FilledButton>
+                        <Button
+                            on_click=move || {
+                                visible_mode_set.update(|v| *v = !*v);
+                                hmi_command(IHmiCommand::mode_local)
+                            }
+                            icon=||view!{  <span class="iconify material-symbols--switch-rounded"></span> }
+                            text="Местный"
+                        />
                     </div>
                 </div>
             </Show>

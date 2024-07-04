@@ -1,0 +1,65 @@
+use leptos::*;
+
+pub enum ButtonKind {
+    Elavated,
+    Filled,
+    FilledTonal,
+    Outlined,
+    Text,
+}
+
+#[component]
+pub fn Button<FIcon, IVIcon>(
+    /// Вид кнопки
+    #[prop(default = ButtonKind::Filled)]
+    button_kind: ButtonKind,
+
+    /// Иконка
+    ///
+    /// Пример:
+    ///
+    /// ```html
+    /// ||view!{  <span class="iconify material-symbols--play-arrow-rounded"></span> }
+    /// ```
+    icon: FIcon,
+
+    /// Текст кнопки
+    #[prop(default = "Кнопка")]
+    text: &'static str,
+
+    /// Событие нажатия
+    on_click: impl Fn() -> () + 'static,
+
+    /// true = кнопка заблокирована
+    #[prop(default = MaybeSignal::from(false))]
+    disabled: MaybeSignal<bool>,
+) -> impl IntoView
+where
+    FIcon: Fn() -> IVIcon,
+    IVIcon: IntoView,
+{
+    match button_kind {
+        ButtonKind::Elavated => todo!(),
+        ButtonKind::Filled => view! {
+            <button
+                on:click = move |_| (on_click)()
+                disabled=move || disabled.get()
+                class="text-on-primary disabled:text-surface bg-primary disabled:bg-on-surface h-10 rounded-full disabled:opacity-10"
+            >
+                <div class="flex h-full flex-row items-center pl-4 pr-6">
+                    <div class="h-5 w-5">
+                        {icon()}
+                    </div>
+                    <div class="pl-2">
+                        { text }
+                    </div>
+                </div>
+            </button>
+        },
+        ButtonKind::FilledTonal => todo!(),
+        ButtonKind::Outlined => todo!(),
+        ButtonKind::Text => todo!(),
+    }
+}
+
+// TODO - как задать opacity для текста отдельно от кнопки? Должно быть opacity-40
