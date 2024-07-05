@@ -1,0 +1,16 @@
+/* Material theme */
+@import "./material-theme/dark.css";
+@import "./material-theme/dark-hc.css";
+@import "./material-theme/dark-mc.css";
+@import "./material-theme/light.css";
+@import "./material-theme/light-hc.css";
+@import "./material-theme/light-mc.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --md-ref-typeface-brand: "Roboto";
+    --md-ref-typeface-plain: system-ui;
+}

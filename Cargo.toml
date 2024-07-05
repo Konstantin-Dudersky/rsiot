@@ -1,4 +1,8 @@
-workspace = { members = [ "examples/level_measure_bmp180/backend","examples/level_measure_bmp180/esp32", "examples/level_measure_bmp180/messages"] }
+workspace = { members = [
+    "examples/level_measure_bmp180/backend",
+    "examples/level_measure_bmp180/esp32",
+    "examples/level_measure_bmp180/messages",
+] }
 [package]
 categories = ["api-bindings", "gui", "network-programming"]
 description = "Метакрейт, импортирующий все другие крейты через флаги feature"
@@ -38,6 +42,7 @@ jwt = { version = "0.16.0", optional = true }
 futures = { version = "0.3.30", optional = true }
 hmac = { version = "0.12.1", optional = true }
 leptos = { version = "0.6.12", features = ["csr"], optional = true }
+# leptos = { version = "0.7.0-alpha", features = ["csr"], optional = true }
 leptos_router = { version = "0.6.12", features = ["csr"], optional = true }
 log = { version = "0.4.21", optional = true }
 postcard = { version = "1.0.8", features = ["use-std"], optional = true }

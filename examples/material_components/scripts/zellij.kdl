@@ -1,0 +1,30 @@
+layout {
+    default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+        children
+        pane size=2 borderless=true {
+            plugin location="zellij:status-bar"
+        }
+    }
+
+    tab name="trunk serve" cwd="." {
+    	pane {
+    		command "trunk"
+    		args "serve"
+    		name "trunk serve"
+    		start_suspended true
+    	}
+    }
+
+    tab name="chromium" cwd="." {
+    	pane {
+    		command "chromium"
+    		args "http://localhost:1420"
+    		cwd "."
+    		name "chromium"
+    		start_suspended true
+    	}
+    }
+}

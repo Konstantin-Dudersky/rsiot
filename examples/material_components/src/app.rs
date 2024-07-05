@@ -1,68 +1,268 @@
-use leptos::leptos_dom::ev::SubmitEvent;
 use leptos::*;
-use serde::{Deserialize, Serialize};
-use serde_wasm_bindgen::to_value;
-use wasm_bindgen::prelude::*;
+use rsiot::components::cmp_leptos::components::tailwind_mwc::{IconButton, IconButtonKind};
+use tracing::info;
 
-#[wasm_bindgen]
-extern "C" {
-    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "core"])]
-    async fn invoke(cmd: &str, args: JsValue) -> JsValue;
-}
-
-#[derive(Serialize, Deserialize)]
-struct GreetArgs<'a> {
-    name: &'a str,
-}
+use crate::components::ThemeSwither;
 
 #[component]
 pub fn App() -> impl IntoView {
-    let (name, set_name) = create_signal(String::new());
-    let (greet_msg, set_greet_msg) = create_signal(String::new());
-
-    let update_name = move |ev| {
-        let v = event_target_value(&ev);
-        set_name.set(v);
-    };
-
-    let greet = move |ev: SubmitEvent| {
-        ev.prevent_default();
-        spawn_local(async move {
-            let name = name.get_untracked();
-            if name.is_empty() {
-                return;
-            }
-
-            let args = to_value(&GreetArgs { name: &name }).unwrap();
-            // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-            let new_msg = invoke("greet", args).await.as_string().unwrap();
-            set_greet_msg.set(new_msg);
-        });
-    };
-
     view! {
-        <main class="container">
-            <div class="row">
-                <a href="https://tauri.app" target="_blank">
-                    <img src="public/tauri.svg" class="logo tauri" alt="Tauri logo"/>
-                </a>
-                <a href="https://docs.rs/leptos/" target="_blank">
-                    <img src="public/leptos.svg" class="logo leptos" alt="Leptos logo"/>
-                </a>
+        <main class="container flex flex-col mx-auto">
+            <ThemeSwither />
+
+            <div class="grid grid-cols-3 place-items-center">
+                <div>
+                    IconButtonKind
+                </div>
+
+                <div>
+                    Enabled
+                </div>
+
+                <div>
+                    Disabled
+                </div>
+
+                <div>
+                    IconButtonKind::Standard
+                </div>
+
+                <div>
+                    <IconButton
+                        kind = IconButtonKind::Standard
+                        disabled = false.into()
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        on_click = || info!("clicked")
+                    />
+                </div>
+
+                <div>
+                    <IconButton
+                        kind = IconButtonKind::Standard
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        disabled = true.into()
+                        on_click = || info!("clicked")
+                    />
+                </div>
+
+                <div>
+                    IconButtonKind::StandardToggle
+                </div>
+
+                <div >
+                    <IconButton
+                        kind = IconButtonKind::StandardToggle
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        toggled = false.into()
+                        on_click = || info!("clicked")
+                    />
+
+                    <IconButton
+                        kind = IconButtonKind::StandardToggle
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        toggled = true.into()
+                        on_click = || info!("clicked")
+                    />
+                </div>
+
+                <div>
+                    <IconButton
+                        kind = IconButtonKind::StandardToggle
+                        disabled = true.into()
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        toggled = false.into()
+                        on_click = || info!("clicked")
+                    />
+
+                    <IconButton
+                        kind = IconButtonKind::StandardToggle
+                        disabled = true.into()
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        toggled = true.into()
+                        on_click = || info!("clicked")
+                    />
+                </div>
+
+                <div>
+                    IconButtonKind::Filled
+                </div>
+
+                <div>
+                    <IconButton
+                        kind = IconButtonKind::Filled
+                        disabled = false.into()
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        on_click = || info!("clicked")
+                    />
+                </div>
+
+                <div>
+                    <IconButton
+                        kind = IconButtonKind::Filled
+                        disabled = true.into()
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        on_click = || info!("clicked")
+                    />
+                </div>
+
+                <div>
+                    IconButtonKind::FilledToggle
+                </div>
+
+                <div>
+                    <IconButton
+                        kind = IconButtonKind::FilledToggle
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        toggled = false.into()
+                        on_click = || info!("clicked")
+                    />
+
+                    <IconButton
+                        kind = IconButtonKind::FilledToggle
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        toggled = true.into()
+                        on_click = || info!("clicked")
+                    />
+                </div>
+
+                <div>
+                    <IconButton
+                        kind = IconButtonKind::FilledToggle
+                        disabled = true.into()
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        toggled = false.into()
+                        on_click = || info!("clicked")
+                    />
+
+                    <IconButton
+                        kind = IconButtonKind::FilledToggle
+                        disabled = true.into()
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        toggled = true.into()
+                        on_click = || info!("clicked")
+                    />
+                </div>
+
+                <div>
+                    IconButtonKind::FilledTonal
+                </div>
+
+                <div>
+                    <IconButton
+                        kind = IconButtonKind::FilledTonal
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        on_click = || info!("clicked")
+                    />
+                </div>
+
+                <div>
+                    <IconButton
+                        kind = IconButtonKind::FilledTonal
+                        disabled = true.into()
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        on_click = || info!("clicked")
+                    />
+                </div>
+
+                <div>
+                    IconButtonKind::FilledTonalToggle
+                </div>
+
+                <div>
+                    <IconButton
+                        kind = IconButtonKind::FilledTonalToggle
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        toggled = false.into()
+                        on_click = || info!("clicked")
+                    />
+
+                    <IconButton
+                        kind = IconButtonKind::FilledTonalToggle
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        toggled = true.into()
+                        on_click = || info!("clicked")
+                    />
+                </div>
+
+                <div>
+                    <IconButton
+                        kind = IconButtonKind::FilledTonalToggle
+                        disabled = true.into()
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        toggled = false.into()
+                        on_click = || info!("clicked")
+                    />
+
+                    <IconButton
+                        kind = IconButtonKind::FilledTonalToggle
+                        disabled = true.into()
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        toggled = true.into()
+                        on_click = || info!("clicked")
+                    />
+                </div>
+
+                <div>
+                    IconButtonKind::Outlined
+                </div>
+
+                <div>
+                    <IconButton
+                        kind = IconButtonKind::Outlined
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        on_click = || info!("clicked")
+                    />
+                </div>
+
+                <div>
+                    <IconButton
+                        kind = IconButtonKind::Outlined
+                        disabled = true.into()
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        on_click = || info!("clicked")
+                    />
+                </div>
+
+                <div>
+                    IconButtonKind::OutlinedToggle
+                </div>
+
+                <div>
+                    <IconButton
+                        kind = IconButtonKind::OutlinedToggle
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        toggled = false.into()
+                        on_click = || info!("clicked")
+                    />
+
+                    <IconButton
+                        kind = IconButtonKind::OutlinedToggle
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        toggled = true.into()
+                        on_click = || info!("clicked")
+                    />
+                </div>
+
+                <div>
+                    <IconButton
+                        kind = IconButtonKind::OutlinedToggle
+                        disabled = true.into()
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        toggled = false.into()
+                        on_click = || info!("clicked")
+                    />
+
+                    <IconButton
+                        kind = IconButtonKind::OutlinedToggle
+                        disabled = true.into()
+                        icon = || view!{ <span class="iconify material-symbols--play-arrow-rounded h-6 w-6"></span> }
+                        toggled = true.into()
+                        on_click = || info!("clicked")
+                    />
+                </div>
+
             </div>
 
-            <p>"Click on the Tauri and Leptos logos to learn more."</p>
-
-            <form class="row" on:submit=greet>
-                <input
-                    id="greet-input"
-                    placeholder="Enter a name..."
-                    on:input=update_name
-                />
-                <button type="submit">"Greet"</button>
-            </form>
-
-            <p><b>{ move || greet_msg.get() }</b></p>
         </main>
     }
 }

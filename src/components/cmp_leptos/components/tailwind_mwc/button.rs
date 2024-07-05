@@ -1,5 +1,6 @@
 use leptos::*;
 
+#[allow(missing_docs)]
 pub enum ButtonKind {
     Elavated,
     Filled,
@@ -47,9 +48,7 @@ where
                 class="text-on-primary disabled:text-surface bg-primary disabled:bg-on-surface h-10 rounded-full disabled:opacity-10"
             >
                 <div class="flex h-full flex-row items-center pl-4 pr-6">
-                    <div class="h-5 w-5">
-                        {icon()}
-                    </div>
+                    {icon()}
                     <div class="pl-2">
                         { text }
                     </div>

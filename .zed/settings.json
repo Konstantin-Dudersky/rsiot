@@ -3,7 +3,7 @@
     "rust-analyzer": {
       "initialization_options": {
         "check": {
-          "command": "clippy" // rust-analyzer.check.command (default: "check")
+          "command": "clippy"
         },
         "cargo": {
           // WASM32 --------------------------------------------------------------------------------
@@ -24,15 +24,15 @@
         }
       }
     }
-  },
-  "inlayHints": {
-    "maxLength": null,
-    "lifetimeElisionHints": {
-      "useParameterNames": true,
-      "enable": "skip_trivial"
-    },
-    "closureReturnTypeHints": {
-      "enable": "always"
-    }
   }
+  // "inlayHints": {
+  //   "maxLength": null,
+  //   "lifetimeElisionHints": {
+  //     "useParameterNames": true,
+  //     "enable": "skip_trivial"
+  //   },
+  //   "closureReturnTypeHints": {
+  //     "enable": "always"
+  //   }
+  // }
 }

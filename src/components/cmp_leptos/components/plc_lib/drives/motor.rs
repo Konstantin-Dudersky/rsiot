@@ -4,9 +4,7 @@ use crate::components::cmp_plc::plc::library::drives::motor::{
     IHmiCommand, QHmiStatus, QMode, QState,
 };
 
-use super::{FilledButton, IconButton, IconButtonKind};
-
-use super::super::tailwind_mwc::{Button, IconButton as IconButton2};
+use super::super::super::tailwind_mwc::{Button, IconButton, IconButtonKind};
 
 #[component]
 pub fn Motor(
@@ -44,25 +42,15 @@ pub fn Motor(
 
                 <div>
                     <IconButton
-                        kind=IconButtonKind::OutlinedIcon
-                        clicked=move || visible_state_set.update(|v| *v = !*v)
+                        kind=IconButtonKind::OutlinedToggle
+                        icon=|| view! { <span class="iconify material-symbols--more-horiz h-6 w-6"></span> }
                         disabled=MaybeSignal::derive(move || {
                             !hmi_status.get().hmi_permission.man_start
                                 && !hmi_status.get().hmi_permission.man_stop
                         })
-
-                        selected=MaybeSignal::derive(move || visible_state.get())
-                        toggle=true
-                    >
-
-                        <md-icon>more_horiz</md-icon>
-                        <md-icon slot="selected">close</md-icon>
-                    </IconButton>
-                    <IconButton2
-                        icon=|| view! { <span class="iconify material-symbols--close-rounded h-6 w-6"></span> }
+                        toggled=MaybeSignal::derive(move || visible_state.get())
                         on_click= move || visible_state_set.update(|v| *v = !*v)
                     />
-
                 </div>
             </div>
 
@@ -138,22 +126,17 @@ pub fn Motor(
 
                 <div>
                     <IconButton
-                        kind=IconButtonKind::OutlinedIcon
-                        clicked=move || visible_mode_set.update(|v| *v = !*v)
+                        kind=IconButtonKind::OutlinedToggle
+                        icon=|| view! { <span class="iconify material-symbols--more-horiz h-6 w-6"></span> }
                         disabled=MaybeSignal::derive(move || {
                             !hmi_status.get().hmi_permission.mode_man
                                 && !hmi_status.get().hmi_permission.mode_auto
                                 && !hmi_status.get().hmi_permission.mode_local
                                 && !hmi_status.get().hmi_permission.mode_oos
                         })
-
-                        selected=MaybeSignal::derive(move || visible_mode.get())
-                        toggle=true
-                    >
-
-                        <md-icon>more_horiz</md-icon>
-                        <md-icon slot="selected">close</md-icon>
-                    </IconButton>
+                        toggled=MaybeSignal::derive(move || visible_mode.get())
+                        on_click= move || visible_mode_set.update(|v| *v = !*v)
+                    />
                 </div>
             </div>
 
