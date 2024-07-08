@@ -17,7 +17,7 @@
 async fn main() {
     use rsiot::{
         components::{cmp_logger, cmp_raspberrypi_i2c_master},
-        drivers_i2c,
+        drivers_i2c::{self, I2cSlaveAddress},
         executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{Message, MsgData, MsgDataBound},
     };
@@ -44,7 +44,9 @@ async fn main() {
 
     // cmp_raspberrypi_i2c_master ------------------------------------------------------------------
     let devices = vec![drivers_i2c::I2cDevices::PCF8575 {
-        address: 0x20,
+        address: I2cSlaveAddress::Direct {
+            slave_address: 0x20,
+        },
         pin_00: drivers_i2c::PCF8575PinMode::Input {
             fn_output: |value| {
                 let msg = Message::new_custom(Custom::Pin00Input(value));

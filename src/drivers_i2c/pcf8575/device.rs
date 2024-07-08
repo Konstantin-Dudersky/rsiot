@@ -28,7 +28,7 @@ where
     pub async fn fn_process(
         &self,
         in_out: CmpInOut<TMsg>,
-        driver: Arc<Mutex<impl RsiotI2cDriverBase + Send + 'static>>,
+        driver: Arc<Mutex<impl RsiotI2cDriverBase + 'static>>,
     ) {
         loop {
             let mut state = State::new();

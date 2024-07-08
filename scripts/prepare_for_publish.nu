@@ -27,6 +27,9 @@ for target in $targets {
     }
 }
 
+return; # TODO - доделать
+
+
 # cargo doc ----------------------------------------------------------------------------------------
 
 # delete files
@@ -74,9 +77,6 @@ do {
 
 print_header "workspace - update"
 cargo update
-
-return; # TODO - доделать
-
 
 # cargo udeps --------------------------------------------------------------------------------------
 

@@ -22,7 +22,7 @@ where
     {
         let content = read(entry.path()).await.map_err(Error::ReadFileError)?;
         let content = String::from_utf8_lossy(&content);
-        let msg = (config_fn_output)(&content.to_string());
+        let msg = (config_fn_output)(&content);
         let msg = match msg {
             Ok(ok) => ok,
             Err(err) => {

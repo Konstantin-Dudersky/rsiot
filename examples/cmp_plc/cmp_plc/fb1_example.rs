@@ -3,9 +3,8 @@
 use serde::Serialize;
 
 use rsiot::components::cmp_plc::plc::{
-    function_block_base::{FunctionBlockBase, IFunctionBlock},
     library::timer::ton,
-    types,
+    types, {FunctionBlockBase, IFunctionBlock},
 };
 
 #[derive(Clone, Default, Serialize)]

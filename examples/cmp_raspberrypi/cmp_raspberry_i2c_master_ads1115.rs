@@ -19,7 +19,7 @@ async fn main() {
 
     use rsiot::{
         components::{cmp_logger, cmp_raspberrypi_i2c_master},
-        drivers_i2c,
+        drivers_i2c::{self, I2cSlaveAddress},
         executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{Message, MsgDataBound},
     };
@@ -45,7 +45,9 @@ async fn main() {
     // cmp_raspberrypi_i2c_master ------------------------------------------------------------------
     let config_raspberrypi_i2c_master = cmp_raspberrypi_i2c_master::Config {
         devices: vec![drivers_i2c::I2cDevices::ADS1115 {
-            address: 0x48,
+            address: I2cSlaveAddress::Direct {
+                slave_address: 0x48,
+            },
             inputs: vec![drivers_i2c::ads1115::config::InputConfig {
                 mux_config: drivers_i2c::ads1115::config::MuxConfig::Single_0,
                 amplifier: drivers_i2c::ads1115::config::Amplifier::V_4_096,

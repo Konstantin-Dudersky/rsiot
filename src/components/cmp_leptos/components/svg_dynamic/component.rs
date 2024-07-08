@@ -7,11 +7,15 @@ use tracing::{info, warn};
 use uuid::Uuid;
 use wasm_bindgen::{closure::Closure, JsCast, JsValue};
 
+#[cfg(feature = "cmp_plc")]
 use crate::components::cmp_plc::plc::library::drives::{motor::QState, select_mode};
 
+#[cfg(feature = "cmp_plc")]
+use super::super::material_theme::MaterialTheme;
+#[cfg(feature = "cmp_plc")]
+use super::change_svg_prop;
+
 use super::{
-    super::material_theme::MaterialTheme,
-    change_svg_prop,
     set_global_style::set_global_style,
     {svg_input::SvgInputSignal, SvgInput, SvgOutput},
 };
@@ -90,6 +94,7 @@ fn change_svg_element(svg_input: &SvgInput, element: &web_sys::SvgElement) -> Re
             let value = sig.get().to_string();
             element.set_attribute("y", &value)
         }
+        #[cfg(feature = "cmp_plc")]
         SvgInputSignal::PlcDrivesMotor(_) => Ok(()),
     }
 }
@@ -166,6 +171,7 @@ fn create_effect_for_svg_input(input: &SvgInput) -> Option<()> {
         SvgInputSignal::Fill(_) => todo!(),
         SvgInputSignal::Y(_) => todo!(),
         SvgInputSignal::TextContent(_) => todo!(),
+        #[cfg(feature = "cmp_plc")]
         SvgInputSignal::PlcDrivesMotor(hmi_status) => {
             let svg_elements = get_child_svg_elements(&svg_element);
 

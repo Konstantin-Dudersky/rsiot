@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use rsiot::components::cmp_plc::plc::function_block_base::{FunctionBlockBase, IFunctionBlock};
+use rsiot::components::cmp_plc::plc::{FunctionBlockBase, IFunctionBlock};
 
 use super::fb1_example;
 

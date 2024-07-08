@@ -1,6 +1,7 @@
 use leptos::*;
 use palette::Srgb;
 
+#[cfg(feature = "cmp_plc")]
 use crate::components::cmp_plc::plc::library;
 
 #[derive(Clone)]
@@ -8,6 +9,7 @@ pub(crate) enum SvgInputSignal {
     Fill(Signal<Srgb<u8>>),
     Y(Signal<f64>),
     TextContent(Signal<String>),
+    #[cfg(feature = "cmp_plc")]
     PlcDrivesMotor(Signal<library::drives::motor::QHmiStatus>),
 }
 
@@ -46,6 +48,7 @@ impl SvgInput {
     }
 
     /// Двигатель `Motor`
+    #[cfg(feature = "cmp_plc")]
     pub fn plc_drives_motor(
         id: &str,
         signal: impl Into<Signal<library::drives::motor::QHmiStatus>>,

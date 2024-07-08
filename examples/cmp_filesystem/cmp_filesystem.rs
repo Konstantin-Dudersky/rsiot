@@ -28,9 +28,9 @@ async fn main() {
                 Custom::SaveToFilesystem(_) => {
                     let key = format!("{}.json", msg.key);
                     let content = msg.serialize()?;
-                    return Ok(Some((key, content)));
+                    Ok(Some((key, content)))
                 }
-                _ => return Ok(None),
+                _ => Ok(None),
             }
         },
         fn_output: |data| {
