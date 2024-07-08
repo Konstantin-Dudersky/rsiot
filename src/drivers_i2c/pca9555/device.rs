@@ -5,14 +5,15 @@ use tokio::{sync::Mutex, time::sleep};
 
 use super::super::{I2cSlaveAddress, RsiotI2cDriverBase};
 
+/// Опрос модуля PCA9555
 pub struct PCA9555 {
+    /// Адрес микросхемы
     pub address: I2cSlaveAddress,
 }
 
 impl PCA9555 {
+    /// Запустить опрос устройства
     pub async fn spawn(&self, driver: Arc<Mutex<impl RsiotI2cDriverBase + 'static>>) {
-        let mut value = 0;
-
         loop {
             let mut driver = driver.lock().await;
 

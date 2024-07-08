@@ -22,9 +22,8 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
         }
     };
 
-    match input.hmi_command {
-        IHmiCommand::sp_hmi(sp) => stat.sp_hmi = sp,
-        _ => (),
+    if let IHmiCommand::sp_hmi(sp) = input.hmi_command {
+        stat.sp_hmi = sp
     };
 
     let sp = match stat.sp_plc_act {

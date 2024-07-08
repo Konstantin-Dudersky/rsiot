@@ -731,20 +731,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "backend"
-version = "0.0.1"
-dependencies = [
- "messages",
- "openssl",
- "rsiot",
- "serde_json",
- "tokio",
- "tracing",
- "tracing-subscriber",
- "url",
-]
-
-[[package]]
 name = "backtrace"
 version = "0.3.73"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2457,17 +2443,6 @@ dependencies = [
  "serde",
  "strum 0.24.1",
  "which",
-]
-
-[[package]]
-name = "esp32"
-version = "0.1.0"
-dependencies = [
- "embuild",
- "esp-idf-svc",
- "messages",
- "rsiot",
- "tokio",
 ]
 
 [[package]]
@@ -4947,14 +4922,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "488016bfae457b036d996092f6cb448677611ce4449e970ceaf42695203f218a"
 dependencies = [
  "autocfg",
-]
-
-[[package]]
-name = "messages"
-version = "0.1.0"
-dependencies = [
- "rsiot",
- "serde",
 ]
 
 [[package]]

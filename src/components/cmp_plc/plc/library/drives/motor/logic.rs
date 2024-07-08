@@ -19,8 +19,6 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
         QMode::Auto => {
             if input.auto_start {
                 QState::Start
-            } else if input.auto_stop {
-                QState::Stop
             } else {
                 QState::Stop
             }

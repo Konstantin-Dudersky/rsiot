@@ -38,7 +38,7 @@ pub fn IconButton<FIcon, IVIcon>(
     toggled: MaybeSignal<bool>,
 
     /// Событие нажатия
-    on_click: impl Fn() -> () + 'static,
+    on_click: impl Fn() + 'static,
 ) -> impl IntoView
 where
     FIcon: Fn() -> IVIcon,

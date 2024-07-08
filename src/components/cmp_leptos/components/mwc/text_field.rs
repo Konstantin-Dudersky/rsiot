@@ -18,7 +18,7 @@ pub fn TextField(
     #[prop(into)]
     value: Signal<f64>,
 
-    on_input: impl Fn(&str) -> () + 'static,
+    on_input: impl Fn(&str) + 'static,
 
     #[prop(default = false)] readonly: bool,
 ) -> impl IntoView {

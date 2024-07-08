@@ -145,4 +145,5 @@ pub mod cmp_websocket_server;
 #[cfg(wasm32_unknown_unknown)]
 pub mod cmp_webstorage;
 
+#[allow(dead_code, unused_imports)]
 mod shared_tasks;

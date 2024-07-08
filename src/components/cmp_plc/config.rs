@@ -6,6 +6,8 @@ use crate::message::{Message, MsgDataBound};
 
 use super::plc::{FunctionBlockBase, IFunctionBlock};
 
+type TFnExport<TMsg, I, Q, S> = fn(&I, &Q, &S) -> Option<Vec<Message<TMsg>>>;
+
 /// Конфигурация компонента ПЛК
 #[derive(Clone)]
 pub struct Config<TMsg, I, Q, S>
@@ -78,7 +80,7 @@ where
     pub save_period: Duration,
 
     /// Функция преобразования состояния ПЛК в исходящие сообщения
-    pub fn_export: fn(&I, &Q, &S) -> Option<Vec<Message<TMsg>>>,
+    pub fn_export: TFnExport<TMsg, I, Q, S>,
 
     /// Функция восстановления состояния из входящих сообщений
     pub fn_import_static: fn(&Message<TMsg>) -> anyhow::Result<Option<S>>,

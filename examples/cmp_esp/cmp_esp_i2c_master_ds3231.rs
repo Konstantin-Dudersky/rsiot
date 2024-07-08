@@ -70,8 +70,7 @@ async fn main() {
             slave_address: 0x68,
         },
         fn_input: |msg| {
-            let data = msg.get_custom_data();
-            let Some(data) = data else { return None };
+            let data = msg.get_custom_data()?;
             let input_data = match data {
                 Custom::InjectPeriodic(sec) => drivers_i2c::ds3231::InputData {
                     year: sec,

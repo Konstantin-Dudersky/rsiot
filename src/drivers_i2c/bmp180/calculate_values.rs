@@ -36,8 +36,8 @@ pub(super) fn calculate_values(
     let X2 = (cd.B1 * (B6 * B6 / POW_2_12)) / POW_2_16;
     let X3 = ((X1 + X2) + 2.0) / 4.0;
     let B4 = cd.AC4 * (X3 + POW_2_15) / POW_2_15;
-    let B7 = (up.UP as f64 - B3) * ((50000 as u64) >> (oversampling as u8)) as f64;
-    let p = if B7 < 0x80000000 as i64 as f64 {
+    let B7 = (up.UP as f64 - B3) * (50000_u64 >> (oversampling as u8)) as f64;
+    let p = if B7 < 0x80000000_i64 as f64 {
         (B7 * 2.0) / B4
     } else {
         (B7 / B4) * 2.0
@@ -53,7 +53,7 @@ pub(super) fn calculate_values(
     BMP180Data {
         temperature: PhyQuantity::new_temperature_C(T / 10.0),
         pressure: PhyQuantity::new_pressure_Pa(p),
-        altitude: PhyQuantity::new_length_M(altitude),
+        altitude: PhyQuantity::new_length_m(altitude),
     }
 }
 

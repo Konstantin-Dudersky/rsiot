@@ -28,6 +28,7 @@ mod tests {
     use crate::{components::cmp_webstorage, message::example_message::*};
 
     #[test]
+    #[allow(clippy::no_effect)]
     fn fn_input() {
         cmp_webstorage::Config::<Custom> {
             kind: cmp_webstorage::ConfigKind::SessionStorage,

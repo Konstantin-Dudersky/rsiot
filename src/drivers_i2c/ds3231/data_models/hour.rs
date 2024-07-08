@@ -10,7 +10,7 @@ impl Hour {
             + 8 * (raw_bits[3] as u8)
             + 4 * (raw_bits[2] as u8)
             + 2 * (raw_bits[1] as u8)
-            + 1 * (raw_bits[0] as u8);
+            + (raw_bits[0] as u8);
         let hour_base = hour_base as i32;
 
         let hour_add = if raw_bits[6] {

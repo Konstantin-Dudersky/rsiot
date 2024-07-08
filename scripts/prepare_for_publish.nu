@@ -35,11 +35,11 @@ nu -c $command
 
 for target in $targets {
     print_header $"cargo doc - ($target.name)"
-    
+
     # create folder
     let command = $"mkdir ($RSIOT_DOCS_RUSTDOC)/($target.name)"
     nu -c $command;
-    
+
     # combine features
     let features = $target.features | append $target.add_feat | str join ', '
 
@@ -84,7 +84,7 @@ let features = [];
 for feat in $features {
     for target in $feat.targets {
         let add_feats = match $target {
-            "aarch64-unknown-linux-gnu" => ["", "single-thread"], 
+            "aarch64-unknown-linux-gnu" => ["", "single-thread"],
             "riscv32imc-esp-espidf" => ["single-thread"],
             "x86_64-unknown-linux-gnu" => ["", "single-thread"],
             "wasm32-unknown-unknown" => ["single-thread"],
@@ -106,8 +106,6 @@ for feat in $features {
 }
 
 
-
-
 # cargo outdated -----------------------------------------------------------------------------------
 
 print_header "workspace - outdated"
@@ -119,4 +117,3 @@ cargo outdated
 # print_header "workspace test - x86_64-unknown-linux-gnu / multi-thread"
 # cargo test --all-targets --target="x86_64-unknown-linux-gnu" --features=""
 # TODO - тесты не проходят
-

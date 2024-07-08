@@ -13,7 +13,7 @@ pub fn Motor(
     hmi_status: Signal<QHmiStatus>,
 
     /// Управление
-    hmi_command: impl Fn(IHmiCommand) -> () + 'static + Copy,
+    hmi_command: impl Fn(IHmiCommand) + 'static + Copy,
 ) -> impl IntoView {
     let (visible_state, visible_state_set) = create_signal(false);
     let (visible_mode, visible_mode_set) = create_signal(false);

@@ -3,17 +3,14 @@ use std::sync::Arc;
 use tokio::{sync::Mutex, task::JoinSet};
 use tracing::warn;
 
-use crate::{
-    executor::CmpInOut,
-    message::{Message, MsgDataBound},
-};
+use crate::{executor::CmpInOut, message::MsgDataBound};
 
 use super::{
     super::{I2cSlaveAddress, RsiotI2cDriverBase},
     state::State,
     task_read_inputs::TaskReadInputs,
     task_write_output::TaskWriteOutput,
-    PCF8575PinMode,
+    PCF8575PinMode, TPinFnOutput,
 };
 
 pub struct PCF8575<TMsg>
@@ -38,14 +35,14 @@ where
             let mut task_set: JoinSet<Result<(), String>> = JoinSet::new();
 
             // Определяем начальную конфигурацию входов / выходов
-            let mut pin_and_fn_output: Vec<(usize, fn(bool) -> Option<Message<TMsg>>)> = vec![];
+            let mut input_pins: TPinFnOutput<TMsg> = vec![];
             for (index, pin) in self.pins.iter().enumerate() {
                 match pin {
                     PCF8575PinMode::Disabled => {}
 
                     PCF8575PinMode::Input { fn_output } => {
                         state.set_input(index).await;
-                        pin_and_fn_output.push((index, *fn_output))
+                        input_pins.push((index, *fn_output))
                     }
 
                     PCF8575PinMode::Output { fn_input } => {
@@ -67,7 +64,7 @@ where
                 in_out: in_out.clone(),
                 driver: driver.clone(),
                 address: self.address,
-                pin_and_fn_output,
+                pin_and_fn_output: input_pins,
                 state: state.clone(),
             };
             task_set.spawn(async move { task_input.spawn().await });

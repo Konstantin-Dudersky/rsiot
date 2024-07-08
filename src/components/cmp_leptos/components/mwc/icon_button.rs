@@ -15,7 +15,7 @@ pub fn IconButton(
     kind: IconButtonKind,
 
     /// Событие нажатия
-    clicked: impl Fn() -> () + 'static,
+    clicked: impl Fn() + 'static,
 
     /// true = кнопка заблокирована
     #[prop(default = MaybeSignal::from(false))]

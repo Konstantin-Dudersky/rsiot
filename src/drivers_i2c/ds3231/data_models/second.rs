@@ -17,8 +17,7 @@ impl Second {
 
     pub fn get_bcd(&self) -> u8 {
         let s = format!("{}", self.0);
-        let i = u8::from_str_radix(&s, 16).unwrap();
-        i
+        u8::from_str_radix(&s, 16).unwrap()
     }
 }
 

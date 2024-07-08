@@ -20,7 +20,7 @@ pub fn Button<FIcon, IVIcon>(
     /// Пример:
     ///
     /// ```html
-    /// ||view!{  <span class="iconify material-symbols--play-arrow-rounded"></span> }
+    /// ||view!{  <span class="iconify material-symbols--play-arrow-rounded w-5 h-5"></span> }
     /// ```
     icon: FIcon,
 
@@ -29,7 +29,7 @@ pub fn Button<FIcon, IVIcon>(
     text: &'static str,
 
     /// Событие нажатия
-    on_click: impl Fn() -> () + 'static,
+    on_click: impl Fn() + 'static,
 
     /// true = кнопка заблокирована
     #[prop(default = MaybeSignal::from(false))]

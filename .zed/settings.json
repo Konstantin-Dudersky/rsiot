@@ -10,13 +10,13 @@
           "target": "wasm32-unknown-unknown",
           "features": [
             "single-thread", // Активировать обязательно !
-            // "executor",
-            // "logging",
-            // "cmp_http_client_wasm",
+            "executor",
+            "logging",
+            "cmp_http_client_wasm",
             "cmp_leptos",
-            "cmp_plc"
-            // "cmp_websocket_client_wasm"
-            // "cmp_webstorage"
+            "cmp_plc",
+            "cmp_websocket_client_wasm",
+            "cmp_webstorage"
           ]
           // ESP32 ---------------------------------------------------------------------------------
           // "target": "riscv32imc-esp-espidf",
@@ -25,14 +25,4 @@
       }
     }
   }
-  // "inlayHints": {
-  //   "maxLength": null,
-  //   "lifetimeElisionHints": {
-  //     "useParameterNames": true,
-  //     "enable": "skip_trivial"
-  //   },
-  //   "closureReturnTypeHints": {
-  //     "enable": "always"
-  //   }
-  // }
 }

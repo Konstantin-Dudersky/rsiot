@@ -9,10 +9,9 @@ pub struct State {
 
 impl State {
     pub fn new() -> Self {
-        let state = Self {
+        Self {
             state: Arc::new(Mutex::new(0)),
-        };
-        state
+        }
     }
 
     /// Переключить работу пина в режим входа
@@ -24,14 +23,14 @@ impl State {
     pub async fn set_output_high(&mut self, pin: usize) {
         let mut state = self.state.lock().await;
         let mask = 1 << pin;
-        *state = *state & !mask;
+        *state &= !mask;
     }
 
     /// Переключить работу пина в режим выхода во включенном состоянии
     pub async fn set_output_low(&mut self, pin: usize) {
         let mut state = self.state.lock().await;
         let mask = 1 << pin;
-        *state = *state | mask;
+        *state |= mask;
     }
 
     /// Вернуть конфигурацию в виде двух байт

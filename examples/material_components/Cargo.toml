@@ -5,16 +5,16 @@ edition = "2021"
 
 [dependencies]
 leptos = { version = "0.6", features = ["csr"] }
-leptos_router = { version = "0.6" }
+leptos_router = { version = "0.6", features = ["csr"] }
 console_error_panic_hook = "0.1.7"
 tracing = "*"
-
 rsiot = { path = "../../.", features = [
     "single-thread",
     "logging",
     "cmp_leptos",
     "cmp_plc",
 ] }
+
 
 [workspace]
 # members = ["src-tauri"]

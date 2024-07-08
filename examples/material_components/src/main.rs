@@ -1,5 +1,6 @@
 mod app;
 mod components;
+mod material_components;
 
 use app::*;
 use leptos::*;

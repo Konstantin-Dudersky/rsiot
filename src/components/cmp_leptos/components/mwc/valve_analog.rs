@@ -11,7 +11,7 @@ pub fn ValveAnalog(
     /// Заголовок
     title: &'static str,
 
-    hmi_command: impl Fn(IHmiCommand) -> () + 'static + Copy,
+    hmi_command: impl Fn(IHmiCommand) + 'static + Copy,
     #[prop(into)] hmi_status: Signal<QHmiStatus>,
 ) -> impl IntoView {
     let (visible_mv, visible_mv_set) = create_signal(false);

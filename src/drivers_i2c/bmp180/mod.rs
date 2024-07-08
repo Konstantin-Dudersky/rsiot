@@ -79,7 +79,7 @@ async fn request_calibration_data(
     let mut response;
     {
         let mut driver = driver.lock().await;
-        response = driver.write_read(address, &vec![0xAA], 22).await?;
+        response = driver.write_read(address, &[0xAA], 22).await?;
     }
     swap_msb_lsb(&mut response);
     let response =
@@ -96,12 +96,12 @@ async fn request_temperature(
     let mut response;
     {
         let mut driver = driver.lock().await;
-        driver.write(address, &vec![0xF4, 0x2E]).await?;
+        driver.write(address, &[0xF4, 0x2E]).await?;
     }
     sleep(Duration::from_millis(5)).await;
     {
         let mut driver = driver.lock().await;
-        response = driver.write_read(address, &vec![0xF6], 2).await?;
+        response = driver.write_read(address, &[0xF6], 2).await?;
     }
     swap_msb_lsb(&mut response);
     let response = bincode::deserialize::<ResponseUncompensatedTemperature>(&response)
@@ -126,14 +126,12 @@ async fn request_pressure(
     };
     {
         let mut driver = driver.lock().await;
-        driver
-            .write(address, &vec![0xF4, oversampling_command])
-            .await?;
+        driver.write(address, &[0xF4, oversampling_command]).await?;
     }
     sleep(Duration::from_millis(26)).await;
     {
         let mut driver = driver.lock().await;
-        response = driver.write_read(address, &vec![0xF6], 3).await?;
+        response = driver.write_read(address, &[0xF6], 3).await?;
     }
     let UP = (((response[0] as u32) << 16) + ((response[1] as u32) << 8) + response[2] as u32)
         >> (8 - oversampling as u8);
@@ -204,11 +202,11 @@ struct ResponseUncompensatedPressure {
     UP: u32,
 }
 
-fn swap_msb_lsb(ve: &mut Vec<u8>) {
+fn swap_msb_lsb(ve: &mut [u8]) {
     let mut index = 0;
     while index < ve.len() {
         ve.swap(index, index + 1);
-        index = index + 2;
+        index += 2;
     }
 }
 

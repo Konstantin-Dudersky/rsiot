@@ -6,9 +6,11 @@ use tokio::{sync::Mutex, time::sleep};
 
 use super::RsiotI2cDriverBase;
 
+/// Коммуникация с LED-экраном
 pub struct SSD1306 {}
 
 impl SSD1306 {
+    /// Запустить rоммуникацию с LED-экраном
     pub async fn fn_process(self, driver: Arc<Mutex<impl RsiotI2cDriverBase + Send + 'static>>) {
         loop {
             let mut driver = driver.lock().await;

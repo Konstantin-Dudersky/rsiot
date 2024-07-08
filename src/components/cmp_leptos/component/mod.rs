@@ -1,3 +1,4 @@
+#[allow(clippy::module_inception)]
 mod component;
 mod config;
 mod fn_process;

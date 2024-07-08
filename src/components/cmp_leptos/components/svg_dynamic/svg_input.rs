@@ -45,6 +45,7 @@ impl SvgInput {
         }
     }
 
+    /// Двигатель `Motor`
     pub fn plc_drives_motor(
         id: &str,
         signal: impl Into<Signal<library::drives::motor::QHmiStatus>>,

@@ -1,4 +1,4 @@
-use std::sync::{Arc, Mutex};
+use std::{rc::Rc, sync::Mutex};
 
 use ev::Event;
 use gloo::dialogs::alert;
@@ -23,12 +23,12 @@ pub fn SvgDynamic<FOutput>(
     svg_output: SvgOutput<FOutput>,
 ) -> impl IntoView
 where
-    FOutput: Fn(&str) -> () + 'static,
+    FOutput: Fn(&str) + 'static,
 {
     let id = format!("svg_{}", Uuid::new_v4());
     let div_ref = create_node_ref();
 
-    let output_callback = Arc::new(Mutex::new(Closure::wrap(Box::new(move |e: Event| {
+    let output_callback = Rc::new(Mutex::new(Closure::wrap(Box::new(move |e: Event| {
         let id = extract_id_from_event(e).unwrap();
         (svg_output.callback)(&id)
     }) as Box<dyn FnMut(_)>)));
@@ -60,7 +60,7 @@ where
                 let lock = cb_clone.lock().unwrap();
 
                 svg_element
-                    .add_event_listener_with_callback("click", &lock.as_ref().unchecked_ref())
+                    .add_event_listener_with_callback("click", lock.as_ref().unchecked_ref())
                     .unwrap();
                 svg_element
                     .style()
@@ -115,7 +115,7 @@ fn extract_id_from_event(event: Event) -> Option<String> {
 
 /// Находим элемент svg по id
 fn get_svg_element_by_id(id: &str) -> Option<web_sys::SvgElement> {
-    let element = document().get_element_by_id(&id);
+    let element = document().get_element_by_id(id);
     let element = match element {
         Some(val) => val,
         None => {
@@ -249,7 +249,7 @@ fn create_effect_for_svg_input(input: &SvgInput) -> Option<()> {
         }
     }
 
-    let result = change_svg_element(&input, &svg_element);
+    let result = change_svg_element(input, &svg_element);
     if let Err(err) = result {
         warn!(
             "Cannot set attribute TODO of svg element with id '{}' :{:?}",
