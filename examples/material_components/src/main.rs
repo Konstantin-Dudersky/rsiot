@@ -1,5 +1,5 @@
 mod app;
-mod components;
+mod leptos_components;
 mod material_components;
 mod messages;
 mod plc;
