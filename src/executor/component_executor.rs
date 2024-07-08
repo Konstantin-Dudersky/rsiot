@@ -11,36 +11,6 @@ use crate::message::{system_messages::*, *};
 use super::{component::IComponent, error::ComponentError, types::FnAuth, Cache, CmpInOut};
 
 /// Запуск коллекции компонентов в работу
-///
-/// **Примеры**
-///
-/// - Многопоточное окружение
-///
-/// TODO
-///
-/// - Однопоточное окружение
-///
-/// TODO
-///
-/// - Однопоточное окружение - WASM (Leptos)
-///
-/// ```rust
-/// use leptos::*;
-///
-/// // функция main - обычная, не async
-///
-/// let context = LocalSet::new();
-/// context.spawn_local(async move {
-///     ComponentExecutor::<Custom>::new(config_executor)
-///         .add_cmp(cmp_websocket_client_wasm::Cmp::new(ws_client_config))
-///         .add_cmp(cmp_leptos::Cmp::new(leptos_config))
-///         .wait_result()
-///         .await?;
-///     Ok(()) as anyhow::Result<()>
-/// });
-/// spawn_local(context);
-/// Ok(())
-/// ```
 pub struct ComponentExecutor<TMsg> {
     task_set: JoinSet<Result<(), ComponentError>>,
     cmp_in_out: CmpInOut<TMsg>,
@@ -223,4 +193,54 @@ where
         lock.insert(key, value);
     }
     Some(msg)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::message::example_message::*;
+
+    #[test]
+    #[cfg(wasm32_unknown_unknown)]
+    #[allow(dead_code)]
+    fn test_wasm() {
+        // ANCHOR: wasm_leptos
+        use leptos::*;
+        use tokio::task::LocalSet;
+
+        use crate::components::cmp_leptos;
+        fn main() -> anyhow::Result<()> {
+            #[component]
+            fn App() -> impl IntoView {
+                view! {}
+            }
+
+            // cmp_leptos --------------------------------------------------------------------------
+            let config_leptos = cmp_leptos::Config {
+                body_component: || view! { <App/> },
+                hostname: "localhost".into(),
+            };
+
+            // config_executor ---------------------------------------------------------------------
+            let config_executor = ComponentExecutorConfig {
+                buffer_size: 100,
+                executor_name: "example_leptos".into(),
+                fn_auth: |msg, _| Some(msg),
+            };
+
+            // executor ----------------------------------------------------------------------------
+
+            let context = LocalSet::new();
+            context.spawn_local(async move {
+                ComponentExecutor::<Custom>::new(config_executor)
+                    .add_cmp(cmp_leptos::Cmp::new(config_leptos))
+                    .wait_result()
+                    .await?;
+                Ok(()) as anyhow::Result<()>
+            });
+            spawn_local(context);
+            Ok(())
+        }
+        // ANCHOR_END: wasm_leptos
+    }
 }

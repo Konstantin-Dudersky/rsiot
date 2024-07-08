@@ -4,10 +4,43 @@ use crate::components::cmp_plc::plc::library::drives::motor::{
     IHmiCommand, QHmiStatus, QMode, QState,
 };
 
-use super::super::super::tailwind_mwc::{Button, IconButton, IconButtonKind};
+use super::super::super::tailwind_mwc::{Button, Dialog, IconButton, IconButtonKind};
 
 #[component]
 pub fn Motor(
+    /// Заголовок
+    title: &'static str,
+
+    /// Состояние
+    #[prop(into)]
+    hmi_status: Signal<QHmiStatus>,
+
+    /// Управление
+    hmi_command: impl Fn(IHmiCommand) + 'static + Copy,
+
+    /// Видимость
+    #[prop(into)]
+    visible: Signal<bool>,
+
+    /// Нажатие кнопки "Закрыть"
+    on_close: impl Fn() + 'static + Copy,
+) -> impl IntoView {
+    view! {
+        <Dialog
+            visible=move || visible.get()
+            headline=move || view! { {title} }
+            content=move || {
+                view! { <Content hmi_status=hmi_status hmi_command=hmi_command/> }
+            }
+            actions=move || {
+                view! { <button on:click=move |_| { on_close() }>Закрыть</button> }
+            }
+        />
+    }
+}
+
+#[component]
+fn Content(
     /// Состояние
     #[prop(into)]
     hmi_status: Signal<QHmiStatus>,
@@ -67,7 +100,7 @@ pub fn Motor(
                                 !hmi_status.get().hmi_permission.man_start
                             })
 
-                            icon=||view!{  <span class="iconify material-symbols--play-arrow-rounded"></span> }
+                            icon=||view!{  <span class="iconify material-symbols--play-arrow-rounded w-5 h-5"></span> }
 
                             text="Пуск"
                         />
@@ -83,7 +116,7 @@ pub fn Motor(
                                 !hmi_status.get().hmi_permission.man_stop
                             })
 
-                            icon=||view!{  <span class="iconify material-symbols--stop-rounded"></span> }
+                            icon=||view!{  <span class="iconify material-symbols--stop-rounded w-5 h-5"></span> }
 
                             text="Стоп"
                         />
@@ -149,7 +182,7 @@ pub fn Motor(
                                 visible_mode_set.update(|v| *v = !*v);
                                 hmi_command(IHmiCommand::mode_auto)
                             }
-                            icon=||view!{  <span class="iconify material-symbols--play-arrow-rounded"></span> }
+                            icon=||view!{  <span class="iconify material-symbols--play-arrow-rounded w-5 h-5"></span> }
                             text="Авто"
                         />
                     </div>
@@ -159,7 +192,7 @@ pub fn Motor(
                                 visible_mode_set.update(|v| *v = !*v);
                                 hmi_command(IHmiCommand::mode_man)
                             }
-                            icon=||view!{  <span class="iconify material-symbols--pan-tool-rounded"></span> }
+                            icon=||view!{  <span class="iconify material-symbols--pan-tool-rounded w-5 h-5"></span> }
                             text="Ручной"
                         />
                     </div>
@@ -169,7 +202,7 @@ pub fn Motor(
                                 visible_mode_set.update(|v| *v = !*v);
                                 hmi_command(IHmiCommand::mode_local)
                             }
-                            icon=||view!{  <span class="iconify material-symbols--switch-rounded"></span> }
+                            icon=||view!{  <span class="iconify material-symbols--switch-rounded w-5 h-5"></span> }
                             text="Местный"
                         />
                     </div>

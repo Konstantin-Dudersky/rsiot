@@ -14,6 +14,9 @@ rsiot = { path = "../../.", features = [
     "cmp_leptos",
     "cmp_plc",
 ] }
+serde = { version = "*", features = ["derive"] }
+tokio = { version = "*" }
+anyhow = { version = "*" }
 
 
 [workspace]

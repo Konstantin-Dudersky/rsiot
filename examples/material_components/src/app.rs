@@ -11,6 +11,7 @@ pub fn App() -> impl IntoView {
             <nav>
                 <A href="/icon_button"> IconButton </A>
                 <A href="/button"> Button </A>
+                <A href="/drives"> Drives </A>
             </nav>
 
             <main class="container flex flex-col mx-auto">
@@ -19,6 +20,7 @@ pub fn App() -> impl IntoView {
                 <Routes>
                     <Route path="/icon_button" view=material_components::IconButtonView/>
                     <Route path="/button" view=material_components::ButtonView/>
+                    <Route path="/drives" view=material_components::Drives/>
                 </Routes>
 
             </main>
