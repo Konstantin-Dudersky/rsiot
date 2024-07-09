@@ -25,8 +25,8 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
         }
         QMode::Local => QState::Stop,
         QMode::Manual => match input.hmi_command {
-            IHmiCommand::ManStart => QState::Start,
-            IHmiCommand::ManStop => QState::Stop,
+            IHmiCommand::man_start => QState::Start,
+            IHmiCommand::man_stop => QState::Stop,
             _ => stat.state,
         },
         QMode::Oos => QState::Stop,

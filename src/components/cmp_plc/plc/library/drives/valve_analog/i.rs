@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::components::cmp_plc::plc::library::drives::select_sp;
+use crate::components::cmp_plc::plc::library::drives::{select_mode, select_sp};
 
 /// Входная структура
 #[derive(Clone, Default, Deserialize, Serialize)]
@@ -28,6 +28,9 @@ pub struct I {
     pub mv_plc_en: bool,
     /// Задание из plc
     pub mv_plc: f64,
+
+    /// Фактическое открытие
+    pub rbk: f64,
 
     /// Команда с hmi
     pub hmi_command: IHmiCommand,
@@ -58,13 +61,25 @@ pub enum IHmiCommand {
     mv_hmi(f64),
 }
 
-impl From<super::super::select_sp::IHmiCommand> for IHmiCommand {
-    fn from(value: super::super::select_sp::IHmiCommand) -> Self {
+impl From<IHmiCommand> for select_sp::IHmiCommand {
+    fn from(value: IHmiCommand) -> Self {
         match value {
-            select_sp::IHmiCommand::no_command => IHmiCommand::no_command,
-            select_sp::IHmiCommand::sp_hmi_en => IHmiCommand::mv_hmi_en,
-            select_sp::IHmiCommand::sp_plc_en => IHmiCommand::mv_plc_en,
-            select_sp::IHmiCommand::sp_hmi(mv) => IHmiCommand::mv_hmi(mv),
+            IHmiCommand::mv_hmi_en => select_sp::IHmiCommand::sp_hmi_en,
+            IHmiCommand::mv_plc_en => select_sp::IHmiCommand::sp_plc_en,
+            IHmiCommand::mv_hmi(mv) => select_sp::IHmiCommand::sp_hmi(mv),
+            _ => select_sp::IHmiCommand::no_command,
+        }
+    }
+}
+
+impl From<IHmiCommand> for select_mode::IHmiCommand {
+    fn from(value: IHmiCommand) -> Self {
+        match value {
+            IHmiCommand::mode_man => select_mode::IHmiCommand::mode_man,
+            IHmiCommand::mode_auto => select_mode::IHmiCommand::mode_auto,
+            IHmiCommand::mode_local => select_mode::IHmiCommand::mode_local,
+            IHmiCommand::mode_oos => select_mode::IHmiCommand::mode_oos,
+            _ => select_mode::IHmiCommand::no_command,
         }
     }
 }

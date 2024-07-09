@@ -32,22 +32,26 @@ fn main() -> anyhow::Result<()> {
     // cmp_plc -------------------------------------------------------------------------------------
     let config_plc = cmp_plc::Config {
         fn_cycle_init: |input: &mut plc::fb_main::I| {
-            input.m1_command = Default::default();
+            input.motor_command = Default::default();
         },
         fn_input: |input: &mut plc::fb_main::I, msg: &Message<Custom>| {
             let Some(msg) = msg.get_custom_data() else {
                 return;
             };
             match msg {
-                Custom::m1_command(data) => input.m1_command = data,
+                Custom::m1_command(data) => input.motor_command = data,
+                Custom::valve_analog_command(data) => input.valve_analog_command = data,
                 _ => (),
             }
         },
         fn_output: |output: &plc::fb_main::Q| {
-            vec![Message::new_custom(Custom::m1_status(output.m1_status))]
+            vec![
+                Message::new_custom(Custom::m1_status(output.motor_status)),
+                Message::new_custom(Custom::valve_analog_status(output.valve_analog_status)),
+            ]
         },
         fb_main: plc::fb_main::FB::new(),
-        period: Duration::from_secs(2),
+        period: Duration::from_millis(500),
         retention: None,
     };
 

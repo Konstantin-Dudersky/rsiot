@@ -9,12 +9,27 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
         mode_man: false,
         mode_local: false,
         mode_oos: false,
-        hmi_command: input.m1_command,
+        hmi_command: input.motor_command,
         auto_start: false,
         auto_stop: false,
     });
 
+    stat.v1.call(drives::valve_analog::I {
+        mode_source: false,
+        mode_auto: false,
+        mode_man: false,
+        mode_local: false,
+        mode_oos: false,
+        mv_en_source: false,
+        mv_hmi_en: false,
+        mv_plc_en: false,
+        mv_plc: 0.0,
+        rbk: stat.v1.output.mv,
+        hmi_command: input.valve_analog_command,
+    });
+
     Q {
-        m1_status: stat.m1.output.hmi_status,
+        motor_status: stat.m1.output.hmi_status,
+        valve_analog_status: stat.v1.output.hmi_status,
     }
 }

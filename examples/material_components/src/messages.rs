@@ -6,6 +6,9 @@ use serde::{Deserialize, Serialize};
 pub enum Custom {
     m1_status(drives::motor::QHmiStatus),
     m1_command(drives::motor::IHmiCommand),
+
+    valve_analog_status(drives::valve_analog::QHmiStatus),
+    valve_analog_command(drives::valve_analog::IHmiCommand),
 }
 
 impl MsgDataBound for Custom {}

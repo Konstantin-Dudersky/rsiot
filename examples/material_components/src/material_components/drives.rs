@@ -17,17 +17,26 @@ pub fn Drives() -> impl IntoView {
     let (m1_status, _) = create_signal_from_msg!("Custom-m1_status");
     let (_, m1_command) = create_signal_from_msg!("Custom-m1_command");
 
+    let (v1_status, _) = create_signal_from_msg!("Custom-valve_analog_status");
+    let (_, v1_command) = create_signal_from_msg!("Custom-valve_analog_command");
+
     let (fpt, fpt_set) = create_signal(String::from(""));
 
     let svg_file = include_str!("../../schemas/drives.svg");
-    let svg_input = vec![SvgInput::plc_drives_motor("M1", m1_status)];
+    let svg_input = vec![
+        SvgInput::plc_drives_motor("M1", m1_status),
+        SvgInput::plc_drives_valve_analog("V1", v1_status),
+    ];
     let svg_output = SvgOutput {
-        ids: ["M1"].iter().map(|id| id.to_string()).collect(),
+        ids: ["M1", "V1"].iter().map(|id| id.to_string()).collect(),
         callback: move |id| match id {
             "M1" => fpt_set.set("M1".into()),
+            "V1" => fpt_set.set("V1".into()),
             _ => (),
         },
     };
+
+    let close_fpt = move || fpt_set.set("".into());
 
     view! {
         <SvgDynamic
@@ -39,9 +48,17 @@ pub fn Drives() -> impl IntoView {
         <drives::Motor
             title = "Двигатель M1"
             hmi_status = m1_status
-            hmi_command = move |command| m1_command.set(command)
+            hmi_command = m1_command
             visible = move || fpt.get() == "M1"
-            on_close = move || fpt_set.set("".into())
+            on_close = close_fpt
+        />
+
+        <drives::ValveAnalog
+            title = "Клапан V1"
+            hmi_status = v1_status
+            hmi_command = v1_command
+            visible = move || fpt.get() == "V1"
+            on_close = close_fpt
         />
 
     }

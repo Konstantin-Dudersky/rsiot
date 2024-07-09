@@ -7,13 +7,7 @@ use tracing::{info, warn};
 use uuid::Uuid;
 use wasm_bindgen::{closure::Closure, JsCast, JsValue};
 
-#[cfg(feature = "cmp_plc")]
-use crate::components::cmp_plc::plc::library::drives::{motor::QState, select_mode};
-
-#[cfg(feature = "cmp_plc")]
-use super::super::material_theme::MaterialTheme;
-#[cfg(feature = "cmp_plc")]
-use super::change_svg_prop;
+use super::create_svg_animation;
 
 use super::{
     set_global_style::set_global_style,
@@ -77,6 +71,7 @@ where
     view! { <div id=id node_ref=div_ref inner_html=file></div> }
 }
 
+#[deprecated]
 fn change_svg_element(svg_input: &SvgInput, element: &web_sys::SvgElement) -> Result<(), JsValue> {
     match svg_input.signal {
         SvgInputSignal::Fill(sig) => {
@@ -94,8 +89,12 @@ fn change_svg_element(svg_input: &SvgInput, element: &web_sys::SvgElement) -> Re
             let value = sig.get().to_string();
             element.set_attribute("y", &value)
         }
+
         #[cfg(feature = "cmp_plc")]
         SvgInputSignal::PlcDrivesMotor(_) => Ok(()),
+
+        #[cfg(feature = "cmp_plc")]
+        SvgInputSignal::PlcDrivesValveAnalog(_) => Ok(()),
     }
 }
 
@@ -143,21 +142,6 @@ fn get_svg_element_by_id(id: &str) -> Option<web_sys::SvgElement> {
     Some(svg_element)
 }
 
-/// Находим вложенные элементы svg корневого элемента
-fn get_child_svg_elements(root: &web_sys::SvgElement) -> Vec<web_sys::SvgElement> {
-    let mut svg_elements = vec![];
-    for i in 0..root.child_element_count() {
-        let node = root
-            .child_nodes()
-            .item(i)
-            .unwrap()
-            .dyn_into::<web_sys::SvgElement>()
-            .unwrap();
-        svg_elements.push(node);
-    }
-    svg_elements
-}
-
 /// Вывести сообщение в консоль и в окно браузера (alert)
 fn warn_and_alert(text: impl AsRef<str>) {
     warn!("{}", text.as_ref());
@@ -169,89 +153,19 @@ fn create_effect_for_svg_input(input: &SvgInput) -> Option<()> {
 
     match input.signal {
         SvgInputSignal::Fill(_) => todo!(),
+
         SvgInputSignal::Y(_) => todo!(),
+
         SvgInputSignal::TextContent(_) => todo!(),
+
         #[cfg(feature = "cmp_plc")]
         SvgInputSignal::PlcDrivesMotor(hmi_status) => {
-            let svg_elements = get_child_svg_elements(&svg_element);
+            create_svg_animation::plc_drives_motor(&svg_element, hmi_status)
+        }
 
-            for element in svg_elements {
-                let label = element.get_attribute("inkscape:label");
-                let Some(label) = label else { continue };
-                match label.as_str() {
-                    "mode" => match hmi_status.get().mode {
-                        select_mode::QMode::Auto => change_svg_prop::fill(
-                            &element,
-                            MaterialTheme::extended_color_green_color,
-                        )
-                        .unwrap(),
-                        select_mode::QMode::Local => todo!(),
-                        select_mode::QMode::Manual => change_svg_prop::fill(
-                            &element,
-                            MaterialTheme::extended_color_yellow_color,
-                        )
-                        .unwrap(),
-                        select_mode::QMode::Oos => todo!(),
-                    },
-                    "mode_text" => match hmi_status.get().mode {
-                        select_mode::QMode::Auto => {
-                            change_svg_prop::text_content(&element, "A").unwrap();
-                            change_svg_prop::text_color(
-                                &element,
-                                MaterialTheme::extended_color_green_on_color,
-                            )
-                            .unwrap()
-                        }
-                        select_mode::QMode::Local => todo!(),
-                        select_mode::QMode::Manual => {
-                            change_svg_prop::text_content(&element, "P").unwrap();
-                            change_svg_prop::text_color(
-                                &element,
-                                MaterialTheme::extended_color_yellow_on_color,
-                            )
-                            .unwrap()
-                        }
-                        select_mode::QMode::Oos => todo!(),
-                    },
-                    "state" => match hmi_status.get().state {
-                        QState::Stop => {
-                            change_svg_prop::fill(&element, MaterialTheme::sys_color_surface);
-                            change_svg_prop::stroke(&element, MaterialTheme::sys_color_on_surface)
-                        }
-                        .unwrap(),
-                        QState::Start => {
-                            change_svg_prop::fill(
-                                &element,
-                                MaterialTheme::extended_color_green_color,
-                            );
-                            change_svg_prop::stroke(
-                                &element,
-                                MaterialTheme::extended_color_green_on_color,
-                            )
-                        }
-                        .unwrap(),
-                        QState::Alarm => {
-                            todo!()
-                        }
-                    },
-
-                    "state-text" => match hmi_status.get().state {
-                        QState::Stop => change_svg_prop::text_color(
-                            &element,
-                            MaterialTheme::sys_color_on_surface,
-                        )
-                        .unwrap(),
-                        QState::Start => change_svg_prop::text_color(
-                            &element,
-                            MaterialTheme::extended_color_green_on_color,
-                        )
-                        .unwrap(),
-                        QState::Alarm => todo!(),
-                    },
-
-                    _ => continue,
-                }
-            }
+        #[cfg(feature = "cmp_plc")]
+        SvgInputSignal::PlcDrivesValveAnalog(hmi_status) => {
+            create_svg_animation::plc_drives_valve_analog(&svg_element, hmi_status)?
         }
     }
 
@@ -264,5 +178,3 @@ fn create_effect_for_svg_input(input: &SvgInput) -> Option<()> {
     };
     Some(())
 }
-
-// info!("{:?}", e.get_attribute("inkscape:label"));

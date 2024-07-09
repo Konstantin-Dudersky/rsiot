@@ -32,6 +32,9 @@ pub struct QHmiStatus {
     /// Задание
     pub mv: f64,
 
+    /// Фактическое открытие
+    pub rbk: f64,
+
     /// Разрешения для работы с hmi
     pub hmi_permission: QHmiPermission,
 }

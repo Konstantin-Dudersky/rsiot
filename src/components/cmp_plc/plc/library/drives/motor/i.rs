@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use super::super::select_mode;
+
 /// Входная структура
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct I {
@@ -34,9 +36,9 @@ pub enum IHmiCommand {
     no_command,
 
     /// Запуск
-    ManStart,
+    man_start,
     /// Стоп
-    ManStop,
+    man_stop,
 
     /// Переключение в режим man из hmi
     mode_man,
@@ -47,8 +49,6 @@ pub enum IHmiCommand {
     /// Переключение в режим oos из hmi
     mode_oos,
 }
-
-use super::super::select_mode;
 
 impl From<IHmiCommand> for select_mode::IHmiCommand {
     fn from(value: IHmiCommand) -> Self {

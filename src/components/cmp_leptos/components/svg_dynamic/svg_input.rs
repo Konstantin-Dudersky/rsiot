@@ -9,8 +9,12 @@ pub(crate) enum SvgInputSignal {
     Fill(Signal<Srgb<u8>>),
     Y(Signal<f64>),
     TextContent(Signal<String>),
+
     #[cfg(feature = "cmp_plc")]
     PlcDrivesMotor(Signal<library::drives::motor::QHmiStatus>),
+
+    #[cfg(feature = "cmp_plc")]
+    PlcDrivesValveAnalog(Signal<library::drives::valve_analog::QHmiStatus>),
 }
 
 /// Изменение свойств элементов SVG
@@ -56,6 +60,18 @@ impl SvgInput {
         Self {
             id: id.to_string(),
             signal: SvgInputSignal::PlcDrivesMotor(signal.into()),
+        }
+    }
+
+    /// Задвижка `ValveAnalog`
+    #[cfg(feature = "cmp_plc")]
+    pub fn plc_drives_valve_analog(
+        id: &str,
+        signal: impl Into<Signal<library::drives::valve_analog::QHmiStatus>>,
+    ) -> Self {
+        Self {
+            id: id.to_string(),
+            signal: SvgInputSignal::PlcDrivesValveAnalog(signal.into()),
         }
     }
 }

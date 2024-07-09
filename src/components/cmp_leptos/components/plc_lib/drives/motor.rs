@@ -1,10 +1,13 @@
 use leptos::*;
 
-use crate::components::cmp_plc::plc::library::drives::motor::{
-    IHmiCommand, QHmiStatus, QMode, QState,
+use crate::components::cmp_plc::plc::library::drives::{
+    motor::{IHmiCommand, QHmiStatus, QState},
+    select_mode,
 };
 
 use super::super::super::tailwind_mwc::{Button, Dialog, IconButton, IconButtonKind};
+
+use super::shared::SelectMode;
 
 #[component]
 pub fn Motor(
@@ -16,7 +19,7 @@ pub fn Motor(
     hmi_status: Signal<QHmiStatus>,
 
     /// Управление
-    hmi_command: impl Fn(IHmiCommand) + 'static + Copy,
+    hmi_command: WriteSignal<IHmiCommand>,
 
     /// Видимость
     #[prop(into)]
@@ -46,169 +49,123 @@ fn Content(
     hmi_status: Signal<QHmiStatus>,
 
     /// Управление
-    hmi_command: impl Fn(IHmiCommand) + 'static + Copy,
+    hmi_command: WriteSignal<IHmiCommand>,
 ) -> impl IntoView {
-    let (visible_state, visible_state_set) = create_signal(false);
-    let (visible_mode, visible_mode_set) = create_signal(false);
-
     view! {
         <div class="flex flex-col gap-2">
-            // Команда -----------------------------------------------------------------------------
-
-            <div class="flex flex-row items-center gap-4">
-                <div class="grow">Команда</div>
-
-                <div>
-                    <Show when=move || hmi_status.get().state == QState::Stop>
-                        <p class="p-2 rounded-sm bg-custom-color3-color text-custom-color1-on-color">
-                            Стоп
-                        </p>
-                    </Show>
-
-                    <Show when=move || hmi_status.get().state == QState::Start>
-                        <p class="p-2 rounded-sm bg-custom-color1-color text-custom-color1-on-color">
-                            Пуск
-                        </p>
-                    </Show>
-
-                </div>
-
-                <div>
-                    <IconButton
-                        kind=IconButtonKind::OutlinedToggle
-                        icon=|| view! { <span class="iconify material-symbols--more-horiz h-6 w-6"></span> }
-                        disabled=MaybeSignal::derive(move || {
-                            !hmi_status.get().hmi_permission.man_start
-                                && !hmi_status.get().hmi_permission.man_stop
-                        })
-                        toggled=MaybeSignal::derive(move || visible_state.get())
-                        on_click= move || visible_state_set.update(|v| *v = !*v)
-                    />
-                </div>
-            </div>
-
-            <Show when=move || visible_state.get()>
-                <div class="flex flex-wrap gap-2">
-                    <div>
-                        <Button
-                            on_click=move || {
-                                visible_state_set.update(|v| *v = !*v);
-                                hmi_command(IHmiCommand::ManStart)
-                            }
-
-                            disabled=MaybeSignal::derive(move || {
-                                !hmi_status.get().hmi_permission.man_start
-                            })
-
-                            icon=||view!{  <span class="iconify material-symbols--play-arrow-rounded w-5 h-5"></span> }
-
-                            text="Пуск"
-                        />
-                    </div>
-                    <div>
-                        <Button
-                            on_click=move || {
-                                visible_state_set.update(|v| *v = !*v);
-                                hmi_command(IHmiCommand::ManStop)
-                            }
-
-                            disabled=MaybeSignal::derive(move || {
-                                !hmi_status.get().hmi_permission.man_stop
-                            })
-
-                            icon=||view!{  <span class="iconify material-symbols--stop-rounded w-5 h-5"></span> }
-
-                            text="Стоп"
-                        />
-                    </div>
-                </div>
-            </Show>
+            // State -------------------------------------------------------------------------------
+            <State
+                hmi_status=hmi_status
+                hmi_command=hmi_command
+            />
 
             <md-divider></md-divider>
 
             // Режим работы ------------------------------------------------------------------------
+            <SelectMode
+                mode = move || hmi_status.get().mode
+                hmi_permission_mode_man = move || hmi_status.get().hmi_permission.mode_man
+                hmi_permission_mode_auto = move || hmi_status.get().hmi_permission.mode_auto
+                hmi_permission_mode_local = move || hmi_status.get().hmi_permission.mode_local
+                hmi_permission_mode_oos = move || hmi_status.get().hmi_permission.mode_oos
+                on_hmi_command = move |hc| {
+                    let hc = match hc {
+                        select_mode::IHmiCommand::no_command => IHmiCommand::no_command,
+                        select_mode::IHmiCommand::mode_man => IHmiCommand::mode_man,
+                        select_mode::IHmiCommand::mode_auto => IHmiCommand::mode_auto,
+                        select_mode::IHmiCommand::mode_local => IHmiCommand::mode_local,
+                        select_mode::IHmiCommand::mode_oos => IHmiCommand::mode_oos,
+                    };
+                    hmi_command.set(hc);
+                }
+            />
 
-            <div class="flex flex-row items-center gap-4">
-                <div class="grow">Режим работы</div>
+        </div>
+    }
+}
 
+#[component]
+fn State(
+    #[prop(into)] hmi_status: Signal<QHmiStatus>,
+
+    /// Управление
+    hmi_command: WriteSignal<IHmiCommand>,
+) -> impl IntoView {
+    let (visible_state, visible_state_set) = create_signal(false);
+
+    view! {
+        <div class="flex flex-row items-center gap-4">
+            <div class="grow">Команда</div>
+
+            <div>
+                <Show when=move || hmi_status.get().state == QState::Stop>
+                    <p class="p-2 rounded-sm bg-custom-color3-color text-custom-color1-on-color">
+                        Стоп
+                    </p>
+                </Show>
+
+                <Show when=move || hmi_status.get().state == QState::Start>
+                    <p class="p-2 rounded-sm bg-custom-color1-color text-custom-color1-on-color">
+                        Пуск
+                    </p>
+                </Show>
+            </div>
+
+            <div>
+                <IconButton
+                    kind=IconButtonKind::OutlinedToggle
+                    icon=|| view! {
+                        <span class="iconify material-symbols--more-horiz h-6 w-6"></span>
+                    }
+                    disabled=MaybeSignal::derive(move || {
+                        !hmi_status.get().hmi_permission.man_start
+                            && !hmi_status.get().hmi_permission.man_stop
+                    })
+                    toggled=MaybeSignal::derive(move || visible_state.get())
+                    on_click= move || visible_state_set.update(|v| *v = !*v)
+                />
+            </div>
+        </div>
+
+        <Show when=move || visible_state.get()>
+            <div class="flex flex-wrap gap-2">
                 <div>
-                    <Show when=move || hmi_status.get().mode == QMode::Auto>
-                        <p class="p-2 rounded-sm bg-green-color-container text-green-on-color-container">
-                            Авто
-                        </p>
-                    </Show>
+                    <Button
+                        on_click=move || {
+                            visible_state_set.update(|v| *v = !*v);
+                            hmi_command.set(IHmiCommand::man_start)
+                        }
 
-                    <Show when=move || hmi_status.get().mode == QMode::Local>
-                        <p class="p-2 rounded-sm bg-yellow-color-container text-green-on-color-container">
-                            Местный
-                        </p>
-                    </Show>
-
-                    <Show when=move || hmi_status.get().mode == QMode::Manual>
-                        <p class="p-2 rounded-sm bg-yellow-color-container text-green-on-color-container">
-                            Ручной
-                        </p>
-                    </Show>
-
-                    <Show when=move || hmi_status.get().mode == QMode::Oos>
-                        <p class="p-2 rounded-sm bg-yellow-color-container text-green-on-color-container">
-                            Выведен
-                        </p>
-                    </Show>
-                </div>
-
-                <div>
-                    <IconButton
-                        kind=IconButtonKind::OutlinedToggle
-                        icon=|| view! { <span class="iconify material-symbols--more-horiz h-6 w-6"></span> }
                         disabled=MaybeSignal::derive(move || {
-                            !hmi_status.get().hmi_permission.mode_man
-                                && !hmi_status.get().hmi_permission.mode_auto
-                                && !hmi_status.get().hmi_permission.mode_local
-                                && !hmi_status.get().hmi_permission.mode_oos
+                            !hmi_status.get().hmi_permission.man_start
                         })
-                        toggled=MaybeSignal::derive(move || visible_mode.get())
-                        on_click= move || visible_mode_set.update(|v| *v = !*v)
+
+                        icon=||view!{
+                            <span class="iconify material-symbols--play-arrow-rounded w-5 h-5"></span>
+                        }
+
+                        text="Пуск"
+                    />
+                </div>
+                <div>
+                    <Button
+                        on_click=move || {
+                            visible_state_set.update(|v| *v = !*v);
+                            hmi_command.set(IHmiCommand::man_stop)
+                        }
+
+                        disabled=MaybeSignal::derive(move || {
+                            !hmi_status.get().hmi_permission.man_stop
+                        })
+
+                        icon=||view!{
+                            <span class="iconify material-symbols--stop-rounded w-5 h-5"></span>
+                        }
+
+                        text="Стоп"
                     />
                 </div>
             </div>
-
-            <Show when=move || visible_mode.get()>
-                <div class="flex flex-wrap gap-2 my-4">
-
-                    <div>
-                        <Button
-                            on_click=move || {
-                                visible_mode_set.update(|v| *v = !*v);
-                                hmi_command(IHmiCommand::mode_auto)
-                            }
-                            icon=||view!{  <span class="iconify material-symbols--play-arrow-rounded w-5 h-5"></span> }
-                            text="Авто"
-                        />
-                    </div>
-                    <div>
-                        <Button
-                            on_click=move || {
-                                visible_mode_set.update(|v| *v = !*v);
-                                hmi_command(IHmiCommand::mode_man)
-                            }
-                            icon=||view!{  <span class="iconify material-symbols--pan-tool-rounded w-5 h-5"></span> }
-                            text="Ручной"
-                        />
-                    </div>
-                    <div>
-                        <Button
-                            on_click=move || {
-                                visible_mode_set.update(|v| *v = !*v);
-                                hmi_command(IHmiCommand::mode_local)
-                            }
-                            icon=||view!{  <span class="iconify material-symbols--switch-rounded w-5 h-5"></span> }
-                            text="Местный"
-                        />
-                    </div>
-                </div>
-            </Show>
-
-        </div>
+        </Show>
     }
 }

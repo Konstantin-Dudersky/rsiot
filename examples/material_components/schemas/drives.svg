@@ -27,16 +27,31 @@
    inkscape:pagecheckerboard="0"
    inkscape:deskcolor="#d1d1d1"
    inkscape:document-units="px"
-   inkscape:zoom="0.71877334"
-   inkscape:cx="607.28463"
-   inkscape:cy="219.81895"
-   inkscape:window-width="2560"
-   inkscape:window-height="984"
-   inkscape:window-x="1920"
-   inkscape:window-y="24"
+   inkscape:zoom="13.148547"
+   inkscape:cx="74.076627"
+   inkscape:cy="39.167826"
+   inkscape:window-width="3440"
+   inkscape:window-height="1344"
+   inkscape:window-x="0"
+   inkscape:window-y="0"
    inkscape:window-maximized="1"
-   inkscape:current-layer="g784"
-   showgrid="false" />
+   inkscape:current-layer="svg784"
+   showgrid="true"><inkscape:grid
+     id="grid1"
+     units="px"
+     originx="0"
+     originy="0"
+     spacingx="0.750003"
+     spacingy="0.7500012"
+     empcolor="#0099e5"
+     empopacity="0.30196078"
+     color="#0099e5"
+     opacity="0.14902"
+     empspacing="5"
+     dotted="false"
+     gridanglex="30"
+     gridanglez="30"
+     visible="true" /></sodipodi:namedview>
 	<v:documentProperties
    v:langID="1049"
    v:metric="true"
@@ -128,316 +143,286 @@
    transform="scale(-4.36)"
    id="use1" />
 		</marker>
+	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	</defs>
-	<g
-   v:mID="0"
-   v:index="1"
-   v:groupContext="foregroundPage"
-   id="g784"
-   transform="translate(-47.952343,-240.47198)"
-   inkscape:label="g784">
-		<title
-   id="title1">Страница-1</title>
-		<v:pageProperties
-   v:drawingScale="0.0393701"
-   v:pageScale="0.0393701"
-   v:drawingUnits="24"
-   v:shadowOffsetX="8.50394"
-   v:shadowOffsetY="-8.50394" />
-		<v:layer
-   v:name="ТХ_Трубопроводы"
-   v:index="0"
-   color="#000000" />
-		<v:layer
-   v:name="0"
-   v:index="1"
-   color="#000000" />
-		<v:layer
-   v:name="DWGEntityColorOverrideLayer"
-   v:index="2"
-   v:visibility="hidden" />
-		<v:layer
-   v:name="ТХ"
-   v:index="3"
-   color="#5f5f5f" />
-		<v:layer
-   v:name="Разм. текст"
-   v:index="4"
-   color="#00ffff" />
-		<v:layer
-   v:name="Поточное оборудование"
-   v:index="5" />
-		<v:layer
-   v:name="Вентиль"
-   v:index="6" />
-		<v:layer
-   v:name="Регулятор расхода"
-   v:index="7" />
-		<v:layer
-   v:name="ТХ Приборы КИП"
-   v:index="8"
-   color="#3f7f57" />
-		<v:layer
-   v:name="ТХ_Оборудование"
-   v:index="9"
-   color="#0000ff" />
-		<v:layer
-   v:name="Оборудование"
-   v:index="10" />
-		<v:layer
-   v:name="Отопление, вентиляция и кондиционирование"
-   v:index="11" />
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 	<text
    xml:space="preserve"
    style="font-size:12px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans, Normal';text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.750003;stroke-linejoin:round"
-   x="82.419624"
-   y="285.68188"
+   x="34.467281"
+   y="45.209904"
    id="label"
    inkscape:label="text"><tspan
      sodipodi:role="line"
      id="tspan27"
      style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.750003"
-     x="82.419624"
-     y="285.68188">M1</tspan></text><g
+     x="34.467281"
+     y="45.209904">M1</tspan></text><text
+   xml:space="preserve"
+   style="font-size:12px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans, Normal';text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.750003;stroke-linejoin:round"
+   x="79.500313"
+   y="51.749847"
+   id="label-5"
+   inkscape:label="text"
+   inkscape:transform-center-x="-1.5930333"
+   inkscape:transform-center-y="-5.5004162"><tspan
+     sodipodi:role="line"
+     id="tspan27-3"
+     style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.750003"
+     x="79.500313"
+     y="51.749847">V1</tspan></text><g
    id="M1"
    inkscape:label="M1"
-   transform="translate(-184.89462,-204.75826)"
+   transform="translate(-232.84696,-445.23024)"
    style="display:inline"
    onclick=""><path
      style="fill:#a05df8;fill-opacity:1;stroke:#000000;stroke-width:0.750003;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
@@ -481,5 +466,41 @@
        id="tspan1"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:6.00002px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;stroke-width:0.750003"
        x="254.60231"
-       y="457.87723">A</tspan></text></g></g>
+       y="457.87723">A</tspan></text></g><g
+   id="V1"
+   inkscape:label="V1"
+   transform="translate(11.250044,-1.0073896e-5)"><path
+     style="display:inline;fill:#a05df8;fill-opacity:1;stroke:#000000;stroke-width:0.750003;stroke-linejoin:round;stroke-opacity:1"
+     d="M 53.25021,14.9997 V 29.99976 L 81.75032,14.9997 v 15.00006 z"
+     id="path7"
+     inkscape:label="state" /><rect
+     style="display:inline;fill:#87dd00;fill-opacity:1;stroke:none;stroke-width:0.750003"
+     id="rect1-3"
+     width="6.0000238"
+     height="6.0000243"
+     x="52.50021"
+     y="7.4996796"
+     inkscape:label="mode" /><text
+     xml:space="preserve"
+     style="font-size:9.00004px;display:inline;fill:#000000;stroke:none;stroke-width:0.750003"
+     x="55.508999"
+     y="12.647171"
+     id="mode_text-6"
+     inkscape:label="mode_text"><tspan
+       sodipodi:role="line"
+       id="tspan1-7"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:6.00002px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;stroke-width:0.750003"
+       x="55.508999"
+       y="12.647171">A</tspan></text><text
+     xml:space="preserve"
+     style="font-size:12px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans, Normal';text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.750003;stroke-linejoin:round"
+     x="68.205315"
+     y="37.399788"
+     id="text2"
+     inkscape:label="mv"><tspan
+       sodipodi:role="line"
+       id="tspan2"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.750003"
+       x="68.205315"
+       y="37.399788">100 %</tspan></text></g>
 </svg>

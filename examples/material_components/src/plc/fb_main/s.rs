@@ -6,4 +6,5 @@ use rsiot::components::cmp_plc::plc::library::drives;
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct S {
     pub m1: drives::motor::FB,
+    pub v1: drives::valve_analog::FB,
 }

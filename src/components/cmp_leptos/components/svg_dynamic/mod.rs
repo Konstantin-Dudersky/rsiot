@@ -3,6 +3,8 @@
 
 mod change_svg_prop;
 mod component;
+mod create_svg_animation;
+mod get_child_svg_elements;
 mod set_global_style;
 mod svg_input;
 mod svg_output;
@@ -10,5 +12,7 @@ mod svg_output;
 pub use component::SvgDynamic;
 pub use svg_input::SvgInput;
 pub use svg_output::SvgOutput;
+
+use get_child_svg_elements::get_child_svg_elements;
 
 const INK_LABEL: &str = "inkscape:label";
