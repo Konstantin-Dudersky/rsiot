@@ -11,13 +11,11 @@ pub use s::*;
 
 use crate::components::cmp_plc::plc::{FunctionBlockBase, IFunctionBlock};
 
-use logic::logic;
-
 /// motor
 pub type FB = FunctionBlockBase<I, Q, S>;
 
 impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
     fn logic(input: &I, stat: &mut S) -> Q {
-        logic(input, stat)
+        logic::logic(input, stat)
     }
 }
