@@ -5,7 +5,7 @@ use crate::components::cmp_plc::plc::library::drives::{
     select_mode,
 };
 
-use super::super::super::tailwind_mwc::{Button, Dialog, IconButton, IconButtonKind};
+use super::super::super::tailwind_mwc::{Button, Dialog, Divider, IconButton, IconButtonKind};
 
 use super::shared::SelectMode;
 
@@ -59,7 +59,7 @@ fn Content(
                 hmi_command=hmi_command
             />
 
-            <md-divider></md-divider>
+            <Divider />
 
             // Режим работы ------------------------------------------------------------------------
             <SelectMode
