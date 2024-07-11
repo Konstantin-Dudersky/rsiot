@@ -30,7 +30,16 @@ fn node_process(node: web_sys::Node) {
 fn element_process(element: &web_sys::SvgElement) {
     let label = element.get_attribute(INK_LABEL);
     let Some(label) = label else { return };
-    if let "text" = label.as_str() {
-        change_svg_prop::text_color(element, MaterialTheme::sys_color_on_surface);
+    match label.as_str() {
+        "text" => {
+            change_svg_prop::text_color(element, MaterialTheme::sys_color_on_surface);
+        }
+        "stroke" => {
+            change_svg_prop::stroke(element, MaterialTheme::sys_color_on_surface);
+        }
+        "fill" => {
+            change_svg_prop::fill(element, MaterialTheme::sys_color_on_surface);
+        }
+        _ => (),
     }
 }
