@@ -15,7 +15,7 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
     let mode = stat.mode.output.mode;
 
     // Команда на запуск
-    stat.state = match stat.mode.output.mode {
+    stat.state = match mode {
         QMode::Auto => {
             if input.auto_start {
                 QState::Start

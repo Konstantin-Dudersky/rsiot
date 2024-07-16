@@ -18,6 +18,11 @@ pub struct I {
     /// Переключение в режим oos из контроллера
     pub mode_oos: bool,
 
+    /// Команда на открытие в автоматическом режиме
+    pub auto_open: bool,
+    /// Команда на закрытие в автоматическом режиме
+    pub auto_close: bool,
+
     /// Команда с hmi
     pub hmi_command: IHmiCommand,
 }
@@ -40,9 +45,9 @@ pub enum IHmiCommand {
     mode_oos,
 
     /// Открыть в ручном режиме из hmi
-    OpenMan,
+    man_open,
     /// Закрыть в ручном режиме из hmi
-    CloseMan,
+    man_close,
 }
 
 impl From<IHmiCommand> for select_mode::IHmiCommand {

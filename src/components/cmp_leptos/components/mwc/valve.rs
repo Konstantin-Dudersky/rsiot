@@ -73,7 +73,7 @@ pub fn Valve(
                         <FilledButton
                             clicked=move || {
                                 visible_state_set.update(|v| *v = !*v);
-                                hmi_command(IHmiCommand::OpenMan)
+                                hmi_command(IHmiCommand::man_open)
                             }
 
                             disabled=MaybeSignal::derive(move || {
@@ -89,7 +89,7 @@ pub fn Valve(
                         <FilledButton
                             clicked=move || {
                                 visible_state_set.update(|v| *v = !*v);
-                                hmi_command(IHmiCommand::CloseMan)
+                                hmi_command(IHmiCommand::man_close)
                             }
 
                             disabled=MaybeSignal::derive(move || {

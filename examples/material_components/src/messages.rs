@@ -9,6 +9,9 @@ pub enum Custom {
 
     valve_analog_status(drives::valve_analog::QHmiStatus),
     valve_analog_command(drives::valve_analog::IHmiCommand),
+
+    valve_hmi_command(drives::valve::IHmiCommand),
+    valve_hmi_status(drives::valve::QHmiStatus),
 }
 
 impl MsgDataBound for Custom {}

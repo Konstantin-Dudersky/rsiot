@@ -15,6 +15,9 @@ pub(crate) enum SvgInputSignal {
 
     #[cfg(feature = "cmp_plc")]
     PlcDrivesValveAnalog(Signal<library::drives::valve_analog::QHmiStatus>),
+
+    #[cfg(feature = "cmp_plc")]
+    PlcDrivesValve(Signal<library::drives::valve::QHmiStatus>),
 }
 
 /// Изменение свойств элементов SVG
@@ -72,6 +75,18 @@ impl SvgInput {
         Self {
             id: id.to_string(),
             signal: SvgInputSignal::PlcDrivesValveAnalog(signal.into()),
+        }
+    }
+
+    /// Задвижка `Valve`
+    #[cfg(feature = "cmp_plc")]
+    pub fn plc_drives_valve(
+        id: &str,
+        signal: impl Into<Signal<library::drives::valve::QHmiStatus>>,
+    ) -> Self {
+        Self {
+            id: id.to_string(),
+            signal: SvgInputSignal::PlcDrivesValve(signal.into()),
         }
     }
 }

@@ -1,6 +1,6 @@
 use super::super::select_mode;
 
-use super::{QHmiPermission, QHmiStatus, QMode, QState, I, Q, S};
+use super::{IHmiCommand, QHmiPermission, QHmiStatus, QMode, QState, I, Q, S};
 
 pub fn logic(input: &I, stat: &mut S) -> Q {
     // Выбор режима
@@ -14,9 +14,35 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
     });
     let mode = stat.mode.output.mode;
 
+    // Команда открыть / закрыть
+    stat.control = match mode {
+        QMode::Auto => {
+            if input.auto_close {
+                false
+            } else {
+                input.auto_open
+            }
+        }
+        QMode::Local => false,
+        QMode::Manual => match input.hmi_command {
+            IHmiCommand::man_open => true,
+            IHmiCommand::man_close => false,
+            _ => false,
+        },
+        QMode::Oos => false,
+    };
+
+    let state = {
+        if stat.control {
+            QState::Opened
+        } else {
+            QState::Closed
+        }
+    };
+
     Q {
         hmi_status: QHmiStatus {
-            state: QState::default(),
+            state,
             mode,
             hmi_permission: QHmiPermission {
                 man_start: mode == QMode::Manual,

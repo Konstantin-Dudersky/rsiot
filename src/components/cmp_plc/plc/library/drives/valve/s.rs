@@ -11,5 +11,5 @@ pub struct S {
     pub mode: select_mode::FB,
 
     /// Команда на запуск
-    pub state: QState,
+    pub control: bool,
 }

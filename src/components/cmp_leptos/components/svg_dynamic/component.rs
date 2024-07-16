@@ -95,6 +95,9 @@ fn change_svg_element(svg_input: &SvgInput, element: &web_sys::SvgElement) -> Re
 
         #[cfg(feature = "cmp_plc")]
         SvgInputSignal::PlcDrivesValveAnalog(_) => Ok(()),
+
+        #[cfg(feature = "cmp_plc")]
+        SvgInputSignal::PlcDrivesValve(_) => Ok(()),
     }
 }
 
@@ -166,6 +169,11 @@ fn create_effect_for_svg_input(input: &SvgInput) -> Option<()> {
         #[cfg(feature = "cmp_plc")]
         SvgInputSignal::PlcDrivesValveAnalog(hmi_status) => {
             create_svg_animation::plc_drives_valve_analog(&svg_element, hmi_status)?
+        }
+
+        #[cfg(feature = "cmp_plc")]
+        SvgInputSignal::PlcDrivesValve(hmi_status) => {
+            create_svg_animation::plc_drives_valve(&svg_element, hmi_status)?
         }
     }
 

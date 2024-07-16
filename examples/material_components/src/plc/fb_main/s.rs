@@ -7,4 +7,5 @@ use rsiot::components::cmp_plc::plc::library::drives;
 pub struct S {
     pub m1: drives::motor::FB,
     pub v1: drives::valve_analog::FB,
+    pub valve: drives::valve::FB,
 }

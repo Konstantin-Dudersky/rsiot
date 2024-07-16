@@ -110,6 +110,5 @@ fn Content(
             </div>
 
         </div>
-
     }
 }
