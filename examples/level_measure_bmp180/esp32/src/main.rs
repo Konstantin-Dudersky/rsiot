@@ -23,8 +23,8 @@ async fn main() {
     let i2c_config = esp_idf_svc::hal::i2c::config::Config::new().baudrate(100_u32.kHz().into());
     let i2c = I2cDriver::new(
         peripherals.i2c0,
-        peripherals.pins.gpio4,
-        peripherals.pins.gpio5,
+        peripherals.pins.gpio6,
+        peripherals.pins.gpio7,
         &i2c_config,
     )
     .unwrap();
