@@ -2249,8 +2249,24 @@ dependencies = [
  "embedded-io-async",
  "enumset",
  "heapless 0.8.0",
- "log",
  "no-std-net",
+ "num_enum",
+ "serde",
+ "strum 0.25.0",
+]
+
+[[package]]
+name = "embedded-svc"
+version = "0.28.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7b85590a7a120e370bed5b6bc2b399b345c60d4c749d3bc06039472da37b9893"
+dependencies = [
+ "defmt",
+ "embedded-io 0.6.1",
+ "embedded-io-async",
+ "enumset",
+ "heapless 0.8.0",
+ "log",
  "num_enum",
  "serde",
  "strum 0.25.0",
@@ -2415,7 +2431,7 @@ checksum = "2180642ca122a7fec1ec417a9b1a77aa66aaa067fdf1daae683dd8caba84f26b"
 dependencies = [
  "embassy-futures",
  "embedded-hal-async",
- "embedded-svc",
+ "embedded-svc 0.27.1",
  "embuild",
  "enumset",
  "esp-idf-hal",
@@ -5135,9 +5151,6 @@ name = "no-std-net"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1bcece43b12349917e096cddfa66107277f123e6c96a5aea78711dc601a47152"
-dependencies = [
- "serde",
-]
 
 [[package]]
 name = "nom"
@@ -6599,7 +6612,7 @@ dependencies = [
  "clap",
  "document-features",
  "dotenvy",
- "embedded-svc",
+ "embedded-svc 0.28.0",
  "embuild",
  "envy",
  "esp-idf-svc",

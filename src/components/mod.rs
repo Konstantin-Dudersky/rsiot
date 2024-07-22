@@ -52,6 +52,10 @@ pub mod cmp_filesystem;
 ))]
 pub mod cmp_http_client;
 
+#[cfg(feature = "cmp_esp")]
+#[cfg(riscv32imc_esp_espidf)]
+pub mod cmp_http_client_esp;
+
 #[cfg(feature = "cmp_http_client_wasm")]
 #[cfg(wasm32_unknown_unknown)]
 pub mod cmp_http_client_wasm;

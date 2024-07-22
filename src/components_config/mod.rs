@@ -3,7 +3,11 @@
 //! Конфигурация описывается в элементах языка Rust, не зависит от конкретных коммуникационных
 //! библиотек. Конкретные реализации компонентов импортируют этот крейт.
 
-#[cfg(any(feature = "cmp_http_client", feature = "cmp_http_client_wasm"))]
+#[cfg(any(
+    feature = "cmp_esp",
+    feature = "cmp_http_client",
+    feature = "cmp_http_client_wasm",
+))]
 pub mod http_client;
 
 #[cfg(feature = "cmp_influxdb")]
