@@ -45,23 +45,27 @@ async fn task_main<TMsg>(
 where
     TMsg: MsgDataBound + 'static,
 {
+    // Парсим url
+    let url = Url::parse(&config.connection_config.base_url);
+    let url = match url {
+        Ok(val) => val,
+        Err(err) => {
+            let err = err.to_string();
+            let err = format!("Cannot parse url: {}", err);
+            return Err(Error::Configuration(err));
+        }
+    };
+
     let mut set = JoinSet::<super::Result<(), TMsg>>::new();
+
     // запускаем периодические запросы
     for req in config.requests_periodic {
-        let future = task_periodic_request::<TMsg>(
-            in_out.clone(),
-            req,
-            config.connection_config.base_url.clone(),
-        );
+        let future = task_periodic_request::<TMsg>(in_out.clone(), req, url.clone());
         set.spawn(future);
     }
     // Запускаем задачи запросов на основе входного потока сообщений
     for item in config.requests_input {
-        let future = task_input_request(
-            in_out.clone(),
-            config.connection_config.base_url.clone(),
-            item,
-        );
+        let future = task_input_request(in_out.clone(), url.clone(), item);
         set.spawn(future);
     }
     while let Some(res) = set.join_next().await {

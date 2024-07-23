@@ -67,7 +67,7 @@ async fn main() -> anyhow::Result<()> {
 
     let http_config = cmp_http_client::Config::<Data> {
         connection_config: cmp_http_client::ConnectionConfig {
-            base_url: Url::parse("http://127.0.0.1:80")?,
+            base_url: "http://127.0.0.1:80".into(),
         },
         requests_input: vec![cmp_http_client::RequestInput {
             fn_input: |msg| {

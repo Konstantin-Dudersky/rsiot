@@ -45,22 +45,25 @@ async fn task_main<TMessage>(
 where
     TMessage: MsgDataBound + 'static,
 {
+    // Парсим url
+    let url = Url::parse(&config.connection_config.base_url);
+    let url = match url {
+        Ok(val) => val,
+        Err(err) => {
+            let err = err.to_string();
+            let err = format!("Cannot parse url: {}", err);
+            return Err(Error::Configuration(err));
+        }
+    };
+
     let mut task_set = JoinSet::<super::Result<()>>::new();
     // запускаем периодические запросы
     for req in config.requests_periodic {
-        let future = task_periodic_request::<TMessage>(
-            in_out.clone(),
-            req,
-            config.connection_config.base_url.clone(),
-        );
+        let future = task_periodic_request::<TMessage>(in_out.clone(), req, url.clone());
         task_set.spawn_local(future);
     }
     for item in config.requests_input {
-        let future = task_input_request(
-            in_out.clone(),
-            config.connection_config.base_url.clone(),
-            item,
-        );
+        let future = task_input_request(in_out.clone(), url.clone(), item);
         task_set.spawn_local(future);
     }
     // TODO - пересмотреть http-client. Может объединить код по-максимуму? NewType на основе

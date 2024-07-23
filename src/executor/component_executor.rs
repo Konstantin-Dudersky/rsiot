@@ -197,13 +197,14 @@ where
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::message::example_message::*;
 
     #[test]
-    #[cfg(wasm32_unknown_unknown)]
+    #[cfg(all(wasm32_unknown_unknown, feature = "cmp_leptos"))]
     #[allow(dead_code)]
     fn test_wasm() {
+        use super::*;
+        use crate::message::example_message::*;
+
         // ANCHOR: wasm_leptos
         use leptos::*;
         use tokio::task::LocalSet;

@@ -53,13 +53,20 @@ where
 {
     let mut set = JoinSet::<super::Result<()>>::new();
 
+    // Парсим url
+    let url = Url::parse(&config.connection_config.base_url);
+    let url = match url {
+        Ok(val) => val,
+        Err(err) => {
+            let err = err.to_string();
+            let err = format!("Cannot parse url: {}", err);
+            return Err(Error::Configuration(err));
+        }
+    };
+
     // запускаем периодические запросы
     for req in config.requests_periodic {
-        let future = task_periodic_request::<TMsg>(
-            in_out.clone(),
-            req,
-            config.connection_config.base_url.clone(),
-        );
+        let future = task_periodic_request::<TMsg>(in_out.clone(), req, url.clone());
         set.spawn_local(future);
     }
     // Запускаем задачи запросов на основе входного потока сообщений
