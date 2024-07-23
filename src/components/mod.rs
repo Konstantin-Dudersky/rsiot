@@ -14,9 +14,9 @@ pub mod cmp_auth;
 
 pub mod cmp_derive;
 
-#[cfg(feature = "cmp_esp")]
-#[cfg(riscv32imc_esp_espidf)]
-pub mod cmp_esp_adc;
+// #[cfg(feature = "cmp_esp")]
+// #[cfg(riscv32imc_esp_espidf)]
+// pub mod cmp_esp_adc;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]

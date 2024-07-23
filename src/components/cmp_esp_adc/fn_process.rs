@@ -1,6 +1,7 @@
 use std::{sync::Arc, time::Duration};
 
-use esp_idf_svc::hal::adc::{self, AdcChannelDriver, AdcDriver};
+use esp_idf_svc::hal::adc::AdcChannelDriver;
+use esp_idf_svc::hal::adc::{self, AdcDriver};
 use tokio::{sync::Mutex, task::JoinSet, time::sleep};
 
 use crate::{

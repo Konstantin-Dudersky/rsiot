@@ -7,7 +7,6 @@ use crate::{
 
 use super::{config::Config, fn_process::fn_process};
 
-#[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
 impl<TMsg> IComponentProcess<Config<TMsg>, TMsg> for Component<Config<TMsg>, TMsg>
 where

@@ -1,3 +1,5 @@
+use crate::executor::ComponentError;
+
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -16,4 +18,10 @@ pub enum Error {
     /// Ошибка конфигурации пользователя
     #[error("Configuration: {0}")]
     Configuration(String),
+}
+
+impl From<Error> for ComponentError {
+    fn from(value: Error) -> Self {
+        ComponentError::Execution(value.to_string())
+    }
 }

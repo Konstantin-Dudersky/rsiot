@@ -14,7 +14,7 @@ where
     TMsg: MsgDataBound + 'static,
 {
     async fn process(&self, config: Config, in_out: CmpInOut<TMsg>) -> Result<(), ComponentError> {
-        let in_out = in_out.clone_with_new_id("CMP_TEMPLATE", AuthPermissions::FullAccess);
+        let in_out = in_out.clone_with_new_id("cmp_esp_wifi", AuthPermissions::FullAccess);
         fn_process(config, in_out).await?;
         Ok(())
     }

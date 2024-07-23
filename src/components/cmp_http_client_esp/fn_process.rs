@@ -1,18 +1,23 @@
-use std::time::Duration;
+use std::{sync::Arc, time::Duration};
 
 use embedded_svc::{
     http::{client::Client as HttpClient, Method},
     io::Write,
     utils::io,
 };
+use esp_idf_svc::http::client::EspHttpConnection;
 use tokio::{
+    sync::Mutex,
     task::JoinSet,
     time::{sleep, Instant},
 };
-use tracing::{error, info};
+use tracing::{error, info, warn};
 use url::Url;
 
-use crate::{executor::CmpInOut, message::MsgDataBound};
+use crate::{
+    executor::CmpInOut,
+    message::{Message, MsgDataBound},
+};
 
 use super::{config, Error};
 
@@ -23,6 +28,9 @@ pub async fn fn_process<TMsg>(
 where
     TMsg: MsgDataBound + 'static,
 {
+    // Необходимо подождать, пока поднимется Wi-Fi
+    sleep(Duration::from_secs(2)).await;
+
     info!("Starting http-client, configuration: {:?}", config);
 
     loop {
@@ -44,6 +52,7 @@ where
     TMsg: MsgDataBound + 'static,
 {
     let mut set = JoinSet::<super::Result<()>>::new();
+
     // запускаем периодические запросы
     for req in config.requests_periodic {
         let future = task_periodic_request::<TMsg>(
@@ -51,7 +60,7 @@ where
             req,
             config.connection_config.base_url.clone(),
         );
-        set.spawn(future);
+        set.spawn_local(future);
     }
     // Запускаем задачи запросов на основе входного потока сообщений
     // for item in config.requests_input {
@@ -108,34 +117,37 @@ async fn process_request_and_response<TMsg>(
     on_success: config::CbkOnSuccess<TMsg>,
     on_failure: config::CbkOnFailure<TMsg>,
 ) -> super::Result<Vec<Message<TMsg>>> {
+    info!("Call http client");
     let response = send_request(url.clone(), request_param).await;
-    let response = match response {
-        Ok(val) => val,
-        Err(err) => match err {
-            Error::Reqwest(source) => {
-                error!("{:?}", source);
-                let msgs = (on_failure)();
-                return Ok(msgs);
-            }
-            _ => return Err(err),
-        },
-    };
-    let status = response.status();
-    let text = response.text().await?;
-    if status != StatusCode::OK {
-        let msgs = (on_failure)();
-        error!(
-            "Error on request.\nRequest params: {:?}\nResponse text: {:?}",
-            request_param, text
-        );
-        return Ok(msgs);
-    }
-    let msgs = (on_success)(&text)?;
+    // let response = match response {
+    //     Ok(val) => val,
+    //     Err(err) => match err {
+    //         Error::Reqwest(source) => {
+    //             error!("{:?}", source);
+    //             let msgs = (on_failure)();
+    //             return Ok(msgs);
+    //         }
+    //         _ => return Err(err),
+    //     },
+    // };
+    // let status = response.status();
+    // let text = response.text().await?;
+    // if status != StatusCode::OK {
+    //     let msgs = (on_failure)();
+    //     error!(
+    //         "Error on request.\nRequest params: {:?}\nResponse text: {:?}",
+    //         request_param, text
+    //     );
+    //     return Ok(msgs);
+    // }
+    // let msgs = (on_success)(&text)?;
+
+    let msgs = vec![];
     Ok(msgs)
 }
 
 /// Выполнение HTTP запроса
-async fn send_request<TMessage>(url: Url, req: &config::HttpParam) -> super::Result<Response> {
+async fn send_request(url: Url, req: &config::HttpParam) -> super::Result<()> {
     let endpoint = match req {
         config::HttpParam::Get { endpoint } => endpoint,
         config::HttpParam::Put { endpoint, body: _ } => endpoint,
@@ -145,15 +157,35 @@ async fn send_request<TMessage>(url: Url, req: &config::HttpParam) -> super::Res
         let err = err.to_string();
         Error::Configuration(err)
     })?;
-    let client = Client::new();
+    let url = url.to_string();
+    info!("Url: {}", url);
+
+    let mut client = HttpClient::wrap(EspHttpConnection::new(&Default::default()).unwrap());
+
+    let headers = [("accept", "text/plain")];
     let response = match req {
-        config::HttpParam::Get { endpoint: _ } => client.get(url).send().await?,
-        config::HttpParam::Put { endpoint: _, body } => {
-            client.put(url).body(body.to_string()).send().await?
+        config::HttpParam::Get { endpoint: _ } => {
+            let request = client.request(Method::Get, url.as_ref(), &headers);
+            let request = match request {
+                Ok(val) => val,
+                Err(err) => {
+                    let err = err.to_string();
+                    warn!("{}", err);
+                    return Ok(());
+                }
+            };
+            request.submit().unwrap()
+            // client.get(&url).unwrap().submit().unwrap()
         }
-        config::HttpParam::Post { endpoint: _, body } => {
-            client.post(url).body(body.to_string()).send().await?
-        }
+        // config::HttpParam::Put { endpoint: _, body } => {
+        //     client.put(url).body(body.to_string()).send().await?
+        // }
+        // config::HttpParam::Post { endpoint: _, body } => {
+        //     client.post(url).body(body.to_string()).send().await?
+        // }
+        _ => todo!(),
     };
-    Ok(response)
+    let status = response.status();
+    info!("<- {}", status);
+    Ok(())
 }

@@ -1,13 +1,11 @@
 use std::time::Duration;
 
-use embedded_svc::{http::Headers, io::Read};
-use esp_idf_svc::{
-    http::{
-        server::{Configuration as HttpServerConfiguration, EspHttpServer},
-        Method,
-    },
-    io::Write,
+use embedded_svc::{
+    http::{Headers, Method},
+    io::{Read, Write},
+    wifi::{self, AccessPointConfiguration, AuthMethod},
 };
+use esp_idf_svc::http::server::{Configuration as HttpServerConfiguration, EspHttpServer};
 use tokio::time::sleep;
 use tracing::{info, trace};
 
@@ -28,7 +26,7 @@ const HEADERS: [(&str, &str); 4] = [
 
 pub async fn fn_process<TMsg>(in_out: CmpInOut<TMsg>, _config: Config<TMsg>) -> super::Result<()>
 where
-    TMsg: MsgDataBound,
+    TMsg: MsgDataBound + 'static,
 {
     // Необходимо подождать, пока поднимется Wi-Fi
     sleep(Duration::from_secs(2)).await;
@@ -64,7 +62,7 @@ where
     let in_out_clone = in_out.clone();
     server
         .fn_handler("/messages", Method::Put, move |mut request| {
-            info!("Put request");
+            trace!("Put request");
 
             let len = request.content_len().unwrap_or(0) as usize;
             let mut buf = vec![0; len];
@@ -88,7 +86,7 @@ where
     let in_out_clone = in_out.clone();
     server
         .fn_handler("/messages", Method::Post, move |mut request| {
-            info!("Post request");
+            trace!("Post request");
 
             let len = request.content_len().unwrap_or(0) as usize;
             let mut buf = vec![0; len];

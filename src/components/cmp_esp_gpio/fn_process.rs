@@ -43,13 +43,21 @@ where
     TMsg: MsgDataBound,
 {
     let mut pin = PinDriver::output(config_output.peripherals).unwrap();
+
+    // Значение по-умолчанию
+    if config_output.is_low_triggered {
+        pin.set_high().unwrap();
+    } else {
+        pin.set_low().unwrap();
+    }
+
     while let Ok(msg) = in_out.recv_input().await {
         let level = (config_output.fn_input)(msg);
         let Some(level) = level else { continue };
         if config_output.is_low_triggered ^ level {
-            pin.set_low().unwrap();
-        } else {
             pin.set_high().unwrap();
+        } else {
+            pin.set_low().unwrap();
         }
     }
 }
