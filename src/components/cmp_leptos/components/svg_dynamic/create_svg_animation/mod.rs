@@ -15,3 +15,6 @@ pub use plc_drives_valve_analog::plc_drives_valve_analog;
 mod plc_drives_valve;
 #[cfg(feature = "cmp_plc")]
 pub use plc_drives_valve::plc_drives_valve;
+
+mod text_content;
+pub use text_content::text_content;

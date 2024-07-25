@@ -1,3 +1,5 @@
+//! Собрать аварии
+
 mod i;
 mod logic;
 mod q;

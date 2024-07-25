@@ -1,7 +1,11 @@
+//! Функциональный блок события
+
 mod i;
 mod logic;
 mod q;
 mod s;
+#[cfg(test)]
+mod tests;
 
 pub use i::*;
 pub use q::*;

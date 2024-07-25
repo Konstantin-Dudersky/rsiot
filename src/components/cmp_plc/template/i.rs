@@ -15,7 +15,7 @@ pub struct I {
 }
 
 /// Команда с hmi
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub enum IHmiCommand {
     /// Нет команды - по-умолчанию
     #[default]

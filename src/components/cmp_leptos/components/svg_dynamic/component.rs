@@ -159,7 +159,7 @@ fn create_effect_for_svg_input(input: &SvgInput) -> Option<()> {
 
         SvgInputSignal::Y(_) => todo!(),
 
-        SvgInputSignal::TextContent(_) => todo!(),
+        SvgInputSignal::TextContent(text) => create_svg_animation::text_content(&svg_element, text),
 
         #[cfg(feature = "cmp_plc")]
         SvgInputSignal::PlcDrivesMotor(hmi_status) => {

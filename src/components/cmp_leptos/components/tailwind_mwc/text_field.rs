@@ -60,13 +60,12 @@ pub fn TextField(
             <input
                 name="name"
                 id="name"
+                autocomplete="off"
                 class="bg-surface block w-full rounded-md border-1 border-outline py-1.5
                 text-on-surface-variant
                 shadow-sm placeholder:text-gray-400
                 focus:border-primary focus:border-2
-
                 ring-0
-
                 sm:text-sm sm:leading-6 h-14" placeholder="Jane Smith"
 
                 type=input_type.to_string()
