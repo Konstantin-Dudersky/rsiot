@@ -14,7 +14,7 @@ pub struct Q {
     pub hmi_status: QHmiStatus,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 pub struct QHmiStatus {
     pub state: State,
     pub text: String,

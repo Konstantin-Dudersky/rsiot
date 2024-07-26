@@ -2,6 +2,8 @@
 
 use serde::{Deserialize, Serialize};
 
+use crate::components::cmp_plc::plc::FbSystemData;
+
 use super::super::super::function_block_base::{FunctionBlockBase, IFunctionBlock};
 
 /// Входные данные
@@ -25,7 +27,7 @@ pub struct S {
 }
 
 impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
-    fn logic(input: &I, stat: &mut S) -> Q {
+    fn logic(input: &I, stat: &mut S, _system_data: &FbSystemData) -> Q {
         let rising_edge = input.i && !stat.prev_i;
         stat.prev_i = input.i;
 

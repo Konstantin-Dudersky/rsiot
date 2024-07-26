@@ -17,6 +17,9 @@ where
     pub output: Q,
     /// Статичные данные - сохраняются между вызовами
     pub stat: S,
+
+    /// Системные данные функционального блока
+    fb_system_data: FbSystemData,
 }
 
 impl<I, Q, S> FunctionBlockBase<I, Q, S>
@@ -29,6 +32,7 @@ where
     /// Создание экземпляря функционального блока со значениями по-умолчанию
     pub fn new() -> Self {
         Self {
+            fb_system_data: FbSystemData { first_call: true },
             ..Default::default()
         }
     }
@@ -36,6 +40,7 @@ where
     pub(crate) fn new_with_restore_stat(self, stat: S) -> Self {
         Self {
             stat,
+            fb_system_data: FbSystemData { first_call: true },
             ..Default::default()
         }
     }
@@ -43,7 +48,8 @@ where
     /// Вызов функционального блока
     pub fn call(&mut self, input: I) -> Q {
         self.input = input;
-        self.output = FunctionBlockBase::logic(&self.input, &mut self.stat);
+        self.output = FunctionBlockBase::logic(&self.input, &mut self.stat, &self.fb_system_data);
+        self.fb_system_data.first_call = false;
         self.output.clone()
     }
 }
@@ -57,5 +63,12 @@ pub trait IFunctionBlock<I, Q, S> {
     ///
     /// TODO: рассмотреть возможность добавления аргумента fn_output, чтобы блок самостоятельно
     /// мог генерировать исходящие сообщения
-    fn logic(input: &I, stat: &mut S) -> Q;
+    fn logic(input: &I, stat: &mut S, fb_system_data: &FbSystemData) -> Q;
+}
+
+/// Системные данные функционального блока
+#[derive(Clone, Default, Deserialize, Serialize)]
+pub struct FbSystemData {
+    /// true - первый вызов функционального блока
+    pub first_call: bool,
 }

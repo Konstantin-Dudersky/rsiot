@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use rsiot::components::cmp_plc::plc::{FunctionBlockBase, IFunctionBlock};
+use rsiot::components::cmp_plc::plc::{FbSystemData, FunctionBlockBase, IFunctionBlock};
 
 use super::fb1_example;
 
@@ -23,7 +23,7 @@ pub struct S {
 }
 
 impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
-    fn logic(input: &I, stat: &mut S) -> Q {
+    fn logic(input: &I, stat: &mut S, _system_data: &FbSystemData) -> Q {
         println!("in fb2");
 
         stat.fb1_inst.call(fb1_example::I { counter: 1 });

@@ -2,6 +2,8 @@
 
 use serde::Serialize;
 
+use crate::components::cmp_plc::plc::FbSystemData;
+
 use super::super::super::function_block_base::{FunctionBlockBase, IFunctionBlock};
 use super::super::super::{library::edge_detect::rising_edge, types};
 
@@ -31,7 +33,7 @@ pub struct S {
 }
 
 impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
-    fn logic(input: &I, stat: &mut S) -> Q {
+    fn logic(input: &I, stat: &mut S, _system_data: &FbSystemData) -> Q {
         if stat
             .input_rising_edge
             .call(rising_edge::I { i: input.input })

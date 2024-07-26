@@ -3,8 +3,7 @@
 use serde::Serialize;
 
 use rsiot::components::cmp_plc::plc::{
-    library::timer::ton,
-    types, {FunctionBlockBase, IFunctionBlock},
+    library::timer::ton, types, FbSystemData, FunctionBlockBase, IFunctionBlock,
 };
 
 #[derive(Clone, Default, Serialize)]
@@ -23,7 +22,7 @@ pub struct S {
 }
 
 impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
-    fn logic(input: &I, stat: &mut S) -> Q {
+    fn logic(input: &I, stat: &mut S, _system_data: &FbSystemData) -> Q {
         let ton_res = stat.timer.call(ton::I {
             input: true,
             preset_time: types::TimeDuration::from_secs(10),

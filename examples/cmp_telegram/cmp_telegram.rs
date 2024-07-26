@@ -29,13 +29,17 @@ async fn main() -> anyhow::Result<()> {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "timescaledb-storing".into(),
+        executor_name: "cmp_telegram".into(),
         fn_auth: |msg, _| Some(msg),
     };
 
     let config_telegram = cmp_telegram::Config {
-        fn_input: |_| None,
-        fn_output: |_| vec![],
+        bot_token: "7010894920:AAFMdSlQ6d3Jvosa5DGWitcI3Dpm0ZKGXj4".into(),
+        chat_id: -1002220119164,
+        fn_input: |msg| match msg.get_custom_data()? {
+            Custom::ValueInstantF64(counter) => Some(format!("Counter: {}", counter)),
+            _ => None,
+        },
     };
 
     ComponentExecutor::new(executor_config)
