@@ -184,11 +184,11 @@ where
     {
         let mut lock = cache.write().await;
         let value_from_cache = lock.get(&key);
-        if let Some(value_from_cache) = value_from_cache {
+        if let Some(_value_from_cache) = value_from_cache {
             // если в кеше более новое сообщение, отбрасываем
-            if value.ts <= value_from_cache.ts {
-                return None;
-            }
+            // if value.ts <= value_from_cache.ts {
+            //     return None;
+            // }
         }
         lock.insert(key, value);
     }

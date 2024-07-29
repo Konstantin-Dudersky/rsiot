@@ -20,6 +20,11 @@ pub fn text_content(element: &web_sys::SvgElement, new_content: &str) -> Option<
     Some(())
 }
 
+pub fn text_content_2(element: &web_sys::SvgElement, new_content: &str) -> Option<()> {
+    element.set_inner_html(new_content);
+    Some(())
+}
+
 pub fn fill(element: &web_sys::SvgElement, new_fill: MaterialTheme) -> Option<()> {
     element
         .style()
