@@ -55,12 +55,15 @@ async fn main() {
     let peripherals = Peripherals::take().unwrap();
 
     // I2C
-    let config = esp_idf_svc::hal::i2c::config::Config::new().baudrate(100_u32.kHz().into());
+    let config = esp_idf_svc::hal::i2c::config::Config::new()
+        .baudrate(100_u32.kHz().into())
+        .sda_enable_pullup(true)
+        .scl_enable_pullup(true);
 
     let i2c = I2cDriver::new(
         peripherals.i2c0,
-        peripherals.pins.gpio4,
-        peripherals.pins.gpio5,
+        peripherals.pins.gpio6,
+        peripherals.pins.gpio7,
         &config,
     )
     .unwrap();

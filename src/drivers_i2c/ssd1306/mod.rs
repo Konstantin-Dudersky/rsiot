@@ -18,7 +18,7 @@ impl SSD1306 {
             let res = driver
                 .read(
                     super::I2cSlaveAddress::Direct {
-                        slave_address: 0x77,
+                        slave_address: 0x3C,
                     },
                     0,
                 )

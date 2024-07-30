@@ -113,6 +113,7 @@ openssl = { version = "0.10", features = ["vendored"], optional = true }
 
 [target.'cfg(all(target_arch = "riscv32", target_vendor = "espressif", target_os = "espidf"))'.dependencies]
 esp-idf-svc = { version = "0.49.1", features = ["std"] }
+esp-idf-hal = { version = "*" }
 # embedded-svc = { version = "0.27.1", optional = true }
 
 

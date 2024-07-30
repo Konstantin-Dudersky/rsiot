@@ -6606,6 +6606,7 @@ dependencies = [
  "embedded-svc",
  "embuild 0.31.4",
  "envy",
+ "esp-idf-hal",
  "esp-idf-svc",
  "futures",
  "getrandom",

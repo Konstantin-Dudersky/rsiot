@@ -15,7 +15,7 @@ async fn main() {
 
     use rsiot::{
         components::{
-            cmp_esp_adc, cmp_esp_gpio, cmp_esp_mqtt_client, cmp_esp_wifi, cmp_http_server_esp,
+            cmp_esp_gpio, cmp_esp_mqtt_client, cmp_esp_wifi, cmp_http_server_esp,
             cmp_inject_periodic, cmp_logger,
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
@@ -101,19 +101,19 @@ async fn main() {
     };
 
     // ADC
-    let config_esp_adc = cmp_esp_adc::Config::<Custom> {
-        adc1: peripherals.adc1,
-        adc2: peripherals.adc2,
-        inputs: vec![cmp_esp_adc::ConfigInput {
-            peripherals: cmp_esp_adc::ConfigInputType::Gpio2(peripherals.pins.gpio2),
-            attenuation: cmp_esp_adc::ConfigInputAttenuation::Db11,
-            update_period: Duration::from_secs(1),
-            fn_output: |value| {
-                let value = value as f32 / 1000.0;
-                Message::new_custom(Custom::Analog3(value))
-            },
-        }],
-    };
+    // let config_esp_adc = cmp_esp_adc::Config::<Custom> {
+    //     adc1: peripherals.adc1,
+    //     adc2: peripherals.adc2,
+    //     inputs: vec![cmp_esp_adc::ConfigInput {
+    //         peripherals: cmp_esp_adc::ConfigInputType::Gpio2(peripherals.pins.gpio2),
+    //         attenuation: cmp_esp_adc::ConfigInputAttenuation::Db11,
+    //         update_period: Duration::from_secs(1),
+    //         fn_output: |value| {
+    //             let value = value as f32 / 1000.0;
+    //             Message::new_custom(Custom::Analog3(value))
+    //         },
+    //     }],
+    // };
 
     // MQTT
     let _config_esp_mqtt_client = cmp_esp_mqtt_client::Config::<Custom> {
@@ -145,7 +145,7 @@ async fn main() {
             .add_cmp(cmp_esp_wifi::Cmp::new(wifi_config))
             .add_cmp(cmp_esp_gpio::Cmp::new(gpio_config))
             .add_cmp(cmp_inject_periodic::Cmp::new(config_inject_periodic))
-            .add_cmp(cmp_esp_adc::Cmp::new(config_esp_adc))
+            // .add_cmp(cmp_esp_adc::Cmp::new(config_esp_adc))
             // .add_cmp(cmp_esp_mqtt_client::Cmp::new(config_esp_mqtt_client))
             .wait_result()
             .await
