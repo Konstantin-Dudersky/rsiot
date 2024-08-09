@@ -12,15 +12,18 @@ impl PhyQuantity {
     }
 
     /// Получить температуру в [℃]
-    pub fn temperature_C(&self) -> f64 {
+    pub fn temperature_C(&self) -> Result<f64, String> {
         match self.quantity_name {
-            QuantityName::Temperature => self.value - C_TO_K,
+            QuantityName::Temperature => {
+                let value = self.value - C_TO_K;
+                Ok(value)
+            }
             _ => {
                 let err = format!(
-                    "You exprect temperature, but current unit: {:?}",
-                    self.quantity_name
+                    "You exprect temperature, but current unit: {:?}; value: {:?}",
+                    self.quantity_name, self
                 );
-                panic!("{err}")
+                Err(err.to_string())
             }
         }
     }

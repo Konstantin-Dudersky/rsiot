@@ -5,7 +5,7 @@
 
 use std::time::Instant;
 
-use serde::Serialize;
+use serde::{de::Visitor, Deserialize, Serialize};
 
 use super::TimeDuration;
 
@@ -44,5 +44,31 @@ impl Serialize for TimeInstant {
         S: serde::Serializer,
     {
         serializer.serialize_u128(self.inst.elapsed().as_millis())
+    }
+}
+
+struct TimeInstantVisitor;
+
+impl<'de> Visitor<'de> for TimeInstantVisitor {
+    type Value = TimeInstant;
+
+    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+        formatter.write_str("an integer for TimeInstant")
+    }
+
+    fn visit_u128<E>(self, v: u128) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        Ok(TimeInstant::now())
+    }
+}
+
+impl<'de> Deserialize<'de> for TimeInstant {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        deserializer.deserialize_u128(TimeInstantVisitor)
     }
 }

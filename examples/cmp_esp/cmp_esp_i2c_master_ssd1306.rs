@@ -88,10 +88,10 @@ async fn main() {
     local_set.await;
 }
 
-#[cfg(not(feature = "cmp_esp"))]
-fn main() {}
+// #[cfg(not(feature = "cmp_esp"))]
+// fn main() {}
 
-#[cfg(feature = "cmp_esp")]
+// #[cfg(feature = "cmp_esp")]
 fn main() -> anyhow::Result<()> {
     use esp_idf_hal::delay::{FreeRtos, BLOCK};
     use esp_idf_hal::i2c::*;
@@ -103,8 +103,8 @@ fn main() -> anyhow::Result<()> {
 
     let peripherals = Peripherals::take()?;
     let i2c = peripherals.i2c0;
-    let sda = peripherals.pins.gpio6;
-    let scl = peripherals.pins.gpio7;
+    let sda = peripherals.pins.gpio0;
+    let scl = peripherals.pins.gpio1;
 
     println!("Starting I2C SSD1306 test");
 

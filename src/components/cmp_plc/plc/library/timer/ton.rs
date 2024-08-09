@@ -1,6 +1,6 @@
 //! Таймер TON
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::components::cmp_plc::plc::FbSystemData;
 
@@ -8,7 +8,7 @@ use super::super::super::function_block_base::{FunctionBlockBase, IFunctionBlock
 use super::super::super::{library::edge_detect::rising_edge, types};
 
 /// Входные данные
-#[derive(Clone, Default, Serialize)]
+#[derive(Clone, Default, Deserialize, Serialize)]
 pub struct I {
     /// Входной сигнал для контроля
     pub input: bool,
@@ -17,7 +17,7 @@ pub struct I {
 }
 
 /// Выходные данные
-#[derive(Clone, Default, Serialize)]
+#[derive(Clone, Default, Deserialize, Serialize)]
 pub struct Q {
     /// Устанавливается в true, когда таймер насчитал время
     pub output: bool,
@@ -26,7 +26,7 @@ pub struct Q {
 }
 
 /// Статичные данные
-#[derive(Clone, Default, Serialize)]
+#[derive(Clone, Default, Deserialize, Serialize)]
 pub struct S {
     input_rising_edge: rising_edge::FB,
     delay: types::TimeInstant,

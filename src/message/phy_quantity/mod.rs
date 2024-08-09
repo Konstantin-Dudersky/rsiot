@@ -8,7 +8,7 @@ use quantity_name::QuantityName;
 use serde::{Deserialize, Serialize};
 
 /// Физическая величина
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct PhyQuantity {
     pub(crate) value: f64,
     /// Тип физической величины
