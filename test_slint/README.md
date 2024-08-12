@@ -1,3 +1,5 @@
+cargo install cross
+
 cross build --target aarch64-unknown-linux-gnu --release;
 scp target/aarch64-unknown-linux-gnu/release/test_slint user@target:/home/user/
 

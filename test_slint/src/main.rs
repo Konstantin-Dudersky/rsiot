@@ -17,6 +17,19 @@ fn main() {
     let main_window = MainWindow::new().unwrap();
 
     let main_window_link = main_window.as_weak();
+    main_window
+        .global::<VirtualKeyboardHandler>()
+        .on_key_pressed({
+            let weak = main_window_link.clone();
+            move |key| {
+                weak.unwrap()
+                    .window()
+                    .dispatch_event(slint::platform::WindowEvent::KeyPressed { text: key.clone() });
+                weak.unwrap()
+                    .window()
+                    .dispatch_event(slint::platform::WindowEvent::KeyReleased { text: key });
+            }
+        });
 
     std::thread::spawn(move || main_executor(main_window_link));
     main_window.run().unwrap();

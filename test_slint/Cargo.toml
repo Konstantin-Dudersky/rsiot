@@ -7,7 +7,7 @@ build = "build.rs"
 
 [dependencies]
 futures = "*"
-rsiot = { path = "../rsiot", features = ["cmp_slint", "cmp_system_info"] }
+rsiot = { path = "../", features = ["cmp_slint", "cmp_system_info"] }
 serde = { version = "*", features = ["derive"] }
 tokio = { version = "*", features = ["rt-multi-thread", "macros", "time"] }
 tracing = "*"
@@ -15,9 +15,9 @@ tracing-subscriber = "*"
 
 # slint = "*"
 slint = { version = "*", features = [
-    "backend-linuxkms",
+    "backend-linuxkms-noseat",
     "renderer-skia",
 ] }
 
 [build-dependencies]
-slint-build = "1.5.0"
+slint-build = "1.7.1"

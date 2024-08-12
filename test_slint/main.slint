@@ -1,4 +1,7 @@
-import { Button } from "std-widgets.slint";
+import { Button, LineEdit } from "std-widgets.slint";
+import { VirtualKeyboardHandler, VirtualKeyboard, KeyModel } from "./ui/virtual_keyboard.slint";
+
+export { VirtualKeyboardHandler, KeyModel }
 
 export global GlobalData {
     in property <string> os_version: "OS";
@@ -35,6 +38,26 @@ export component MainWindow inherits Window {
         y: 416px;
         width: 64px;
         source: @image-url("./assets/logo_color.svg");
+    }
+
+    Button {
+        x: 400px;
+        y: 300px;
+        text: "Button";
+    }
+
+    LineEdit {
+        x: 400px;
+        y: 260px;
+        font-size: 14px;
+        placeholder-text: "Enter text here";
+    }
+
+    LineEdit {
+        x: 400px;
+        y: 340px;
+        font-size: 14px;
+        placeholder-text: "Enter text here";
     }
 
     // host_name -----------------------------------------------------------------------------------
@@ -218,5 +241,11 @@ export component MainWindow inherits Window {
         font-size: Style.font-size;
         color: Style.TEXT_COLOR;
         text: GlobalData.dev_sda_2;
+    }
+
+    VirtualKeyboard {
+        // visible: TextInputInterface.text-input-focused;
+        y: 0px;
+        visible: true;
     }
 }
