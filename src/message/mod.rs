@@ -14,6 +14,7 @@ mod msg_serde;
 mod msg_trace;
 mod phy_quantity;
 pub mod system_messages;
+mod time_to_live;
 mod timestamp;
 
 /// Пока эти модули не нужны, в будущем скорее всего можно удалить
@@ -31,6 +32,7 @@ pub use msg_data_bound::MsgDataBound;
 pub use msg_trace::MsgTrace;
 pub use phy_quantity::PhyQuantity;
 pub use rsiot_macros::message_new;
+pub use time_to_live::{TimeToLive, TimeToLiveValue};
 pub use timestamp::Timestamp;
 
 pub use serde::{Deserialize, Serialize};

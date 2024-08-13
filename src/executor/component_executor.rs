@@ -1,14 +1,19 @@
+use std::time::Duration;
 use tokio::{
     sync::{broadcast, mpsc},
     task::JoinSet,
 };
-
 use tracing::{debug, error, info, trace, warn};
 use uuid::Uuid;
 
 use crate::message::{system_messages::*, *};
 
-use super::{component::IComponent, error::ComponentError, types::FnAuth, Cache, CmpInOut};
+use super::{
+    component::IComponent, error::ComponentError, join_set_spawn, sleep, types::FnAuth, Cache,
+    CmpInOut,
+};
+
+const UPDATE_TTL_PERIOD: Duration = Duration::from_millis(200);
 
 /// Запуск коллекции компонентов в работу
 pub struct ComponentExecutor<TMsg> {
@@ -57,6 +62,7 @@ where
         let cache: Cache<TMsg> = Cache::new();
         let mut task_set: JoinSet<Result<(), ComponentError>> = JoinSet::new();
 
+        // Запускаем внутреннюю задачу
         let task_internal_handle = task_internal(
             component_output_recv,
             component_input_send.clone(),
@@ -64,12 +70,16 @@ where
             config.executor_name.clone(),
             id,
         );
+        join_set_spawn(&mut task_set, task_internal_handle);
+        // if cfg!(feature = "single-thread") {
+        //     task_set.spawn_local(task_internal_handle);
+        // } else {
+        //     task_set.spawn(task_internal_handle);
+        // }
 
-        if cfg!(feature = "single-thread") {
-            task_set.spawn_local(task_internal_handle);
-        } else {
-            task_set.spawn(task_internal_handle);
-        }
+        // Запускаем задачу обновления TTL сообщений
+        let task_update_ttl_in_cache_handle = task_update_ttl_in_cache(cache.clone());
+        join_set_spawn(&mut task_set, task_update_ttl_in_cache_handle);
 
         let cmp_in_out = CmpInOut::new(
             component_input,
@@ -157,6 +167,31 @@ where
     }
     warn!("Internal task: stop");
     Ok(())
+}
+
+/// Обновить значения времени жизни сообщений. Удаляет сообщения, время которых истекло
+async fn task_update_ttl_in_cache<TMsg>(cache: Cache<TMsg>) -> Result<(), ComponentError>
+where
+    TMsg: MsgDataBound,
+{
+    loop {
+        sleep(UPDATE_TTL_PERIOD).await;
+        let mut cache = cache.write().await;
+        let mut keys_for_delete = vec![];
+        for (key, msg) in cache.iter_mut() {
+            msg.update_time_to_live(UPDATE_TTL_PERIOD);
+            if !msg.is_alive() {
+                keys_for_delete.push(key.clone());
+            }
+        }
+        for key in keys_for_delete {
+            let remove_result = cache.remove(&key);
+            if remove_result.is_none() {
+                let err = format!("Message with key {} not found in cache", key);
+                return Err(ComponentError::Execution(err));
+            }
+        }
+    }
 }
 
 /// Сохраняем сообщение в кеше

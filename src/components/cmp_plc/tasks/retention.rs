@@ -9,13 +9,16 @@ use serde::Serialize;
 use tokio::task::JoinSet;
 use tracing::{info, warn};
 
-use crate::{executor::CmpInOut, message::MsgDataBound};
+use crate::{
+    executor::{join_set_spawn, sleep, CmpInOut},
+    message::MsgDataBound,
+};
 
 use super::super::{
     config::{ConfigRetention, ConfigRetentionRestoreResult},
     plc::{FunctionBlockBase, IFunctionBlock},
-    utils::{join_set_spawn, sleep},
 };
+
 pub struct Retention<TMsg, I, Q, S>
 where
     TMsg: MsgDataBound,

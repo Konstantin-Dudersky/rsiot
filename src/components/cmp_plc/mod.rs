@@ -29,7 +29,6 @@ pub mod plc;
 mod tasks;
 #[allow(dead_code, unused_imports)]
 mod template;
-mod utils;
 
 pub use component::Cmp;
 pub use config::{Config, ConfigRetention};

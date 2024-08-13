@@ -4,8 +4,8 @@
 //! cargo run --example cmp_esp_i2c_master_ssd1306 --target="riscv32imc-esp-espidf" --features="cmp_esp, logging" --release
 //! ```
 
-#[cfg(not(feature = "cmp_esp"))]
-// #[cfg(feature = "cmp_esp")]
+// #[cfg(not(feature = "cmp_esp"))]
+#[cfg(feature = "cmp_esp")]
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
     use std::time::Duration;
@@ -88,10 +88,10 @@ async fn main() {
     local_set.await;
 }
 
-// #[cfg(not(feature = "cmp_esp"))]
-// fn main() {}
+#[cfg(not(feature = "cmp_esp"))]
+fn main() {}
 
-// #[cfg(feature = "cmp_esp")]
+#[cfg(feature = "cmp_esp")]
 fn main() -> anyhow::Result<()> {
     use esp_idf_hal::delay::{FreeRtos, BLOCK};
     use esp_idf_hal::i2c::*;

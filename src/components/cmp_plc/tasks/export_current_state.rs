@@ -3,12 +3,13 @@ use std::sync::Arc;
 use serde::Serialize;
 use tokio::sync::Mutex;
 
-use crate::executor::CmpInOut;
-use crate::message::MsgDataBound;
+use crate::{
+    executor::{sleep, CmpInOut},
+    message::MsgDataBound,
+};
 
 use super::super::{
     plc::{FunctionBlockBase, IFunctionBlock},
-    utils::sleep,
     ConfigRetention,
 };
 

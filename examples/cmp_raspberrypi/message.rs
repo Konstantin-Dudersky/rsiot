@@ -7,4 +7,6 @@ pub enum Custom {
     SetOutput2(bool),
 }
 
+impl TimeToLive for Custom {}
+
 impl MsgDataBound for Custom {}

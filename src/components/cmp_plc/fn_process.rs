@@ -7,16 +7,14 @@ use tracing::info;
 
 use crate::{
     components::shared_tasks,
-    executor::{Cache, CmpInOut},
+    executor::{join_set_spawn, Cache, CmpInOut},
     message::MsgDataBound,
 };
 
 use super::{
     config::Config,
     plc::{FunctionBlockBase, IFunctionBlock},
-    tasks,
-    utils::join_set_spawn,
-    Error,
+    tasks, Error,
 };
 
 pub async fn fn_process<TMsg, I, Q, S>(

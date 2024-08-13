@@ -1,11 +1,11 @@
 #![allow(clippy::module_inception)]
 
-use std::fmt::Debug;
+use std::{fmt::Debug, time::Duration};
 
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use super::{MsgData, MsgDataBound, MsgTrace, Timestamp};
+use super::{MsgData, MsgDataBound, MsgTrace, TimeToLive, TimeToLiveValue, Timestamp};
 
 /// Сообщение
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -18,6 +18,8 @@ pub struct Message<TCustom> {
     pub ts: Timestamp,
     /// Путь, по котором передавалось сообщение
     pub trace: MsgTrace,
+    /// Время жизни сообщения
+    ttl: TimeToLiveValue,
 }
 
 impl<TCustom> Message<TCustom>
@@ -27,11 +29,13 @@ where
     /// Создать новое сообщение
     pub fn new(data: MsgData<TCustom>) -> Self {
         let key = define_key(&data);
+        let ttl = data.time_to_live();
         Self {
             data,
             key,
             ts: Default::default(),
             trace: MsgTrace::default(),
+            ttl,
         }
     }
 
@@ -39,11 +43,13 @@ where
     pub fn new_custom(custom_data: TCustom) -> Self {
         let data = MsgData::Custom(custom_data);
         let key = define_key(&data);
+        let ttl = data.time_to_live();
         Self {
             data,
             key,
             ts: Default::default(),
             trace: MsgTrace::default(),
+            ttl,
         }
     }
 
@@ -66,6 +72,28 @@ where
     /// сообщения, которые он же и сгенерировал
     pub fn contains_trace_item(&self, id: &Uuid) -> bool {
         self.trace.contains_trace_item(id)
+    }
+
+    /// Обновить время жизни сообщения
+    pub fn update_time_to_live(&mut self, time_step: Duration) {
+        match self.ttl {
+            TimeToLiveValue::Infinite => (),
+            TimeToLiveValue::Duration(duration) => {
+                let ttl_new = duration.checked_sub(time_step);
+                match ttl_new {
+                    Some(ttl_new) => self.ttl = TimeToLiveValue::Duration(ttl_new),
+                    None => self.ttl = TimeToLiveValue::Duration(Duration::new(0, 0)),
+                }
+            }
+        }
+    }
+
+    /// Возвращает false, если время жизни сообщения истекло
+    pub fn is_alive(&self) -> bool {
+        match self.ttl {
+            TimeToLiveValue::Infinite => true,
+            TimeToLiveValue::Duration(duration) => !duration.is_zero(),
+        }
     }
 }
 

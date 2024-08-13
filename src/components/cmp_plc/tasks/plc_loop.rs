@@ -6,13 +6,12 @@ use tokio::sync::{mpsc, Mutex};
 use tracing::{info, trace};
 
 use crate::{
-    executor::Cache,
+    executor::{sleep, Cache},
     message::{Message, MsgDataBound},
 };
 
 use super::super::{
     plc::{FunctionBlockBase, IFunctionBlock},
-    utils::sleep,
     Config,
 };
 

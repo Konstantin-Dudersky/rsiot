@@ -1,6 +1,6 @@
 //! Пример реализации сообщения. Можно использовать для тестирования компонентов
 
-use super::{Deserialize, MsgDataBound, Serialize};
+use super::{Deserialize, MsgDataBound, Serialize, TimeToLive, TimeToLiveValue};
 
 /// Пример реализации сообщения. Можно использовать для тестирования компонентов
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -23,6 +23,12 @@ pub enum Custom {
     MotorM1(Motor),
     MotorM2(Motor),
     SaveToFilesystem(u64),
+}
+
+impl TimeToLive for Custom {
+    fn time_to_live(&self) -> TimeToLiveValue {
+        TimeToLiveValue::Infinite
+    }
 }
 
 /// Пример структуры
