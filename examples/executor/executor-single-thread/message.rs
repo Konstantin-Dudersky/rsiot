@@ -1,4 +1,4 @@
-use rsiot::message::MsgDataBound;
+use rsiot::message::{MsgDataBound, TimeToLive};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -7,3 +7,5 @@ pub enum Message {
 }
 
 impl MsgDataBound for Message {}
+
+impl TimeToLive for Message {}

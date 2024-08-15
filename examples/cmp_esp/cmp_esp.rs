@@ -36,6 +36,8 @@ async fn main() {
 
     impl MsgDataBound for Custom {}
 
+    impl TimeToLive for Custom {}
+
     // cmp_http_server_esp -------------------------------------------------------------------------
     let http_server_esp_config = cmp_http_server_esp::Config {
         port: 8010,

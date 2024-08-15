@@ -1,11 +1,11 @@
-//! Пример работы с модулем PCF8575 по I2C
+//! Пример работы с экраном SSD1306 по I2C
 //!
 //! ```bash
 //! cargo run --example cmp_esp_i2c_master_ssd1306 --target="riscv32imc-esp-espidf" --features="cmp_esp, logging" --release
 //! ```
 
-// #[cfg(not(feature = "cmp_esp"))]
-#[cfg(feature = "cmp_esp")]
+#[cfg(not(feature = "cmp_esp"))]
+// #[cfg(feature = "cmp_esp")]
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
     use std::time::Duration;
@@ -92,10 +92,14 @@ async fn main() {
 fn main() {}
 
 #[cfg(feature = "cmp_esp")]
-fn main() -> anyhow::Result<()> {
+#[tokio::main(flavor = "current_thread")]
+async fn main() -> anyhow::Result<()> {
+    use std::time::Duration;
+
     use esp_idf_hal::delay::{FreeRtos, BLOCK};
     use esp_idf_hal::i2c::*;
     use esp_idf_hal::prelude::*;
+    use tokio::time::sleep;
 
     const SSD1306_ADDRESS: u8 = 0x3C;
 
@@ -116,6 +120,11 @@ fn main() -> anyhow::Result<()> {
 
     // initialze the display - don't worry about the meaning of these bytes - it's specific to SSD1306
     i2c.write(SSD1306_ADDRESS, &[0, 0xae], BLOCK)?;
+
+    loop {
+        println!("Test");
+        sleep(Duration::from_secs(1)).await;
+    }
     println!("Send 0xae");
     i2c.write(SSD1306_ADDRESS, &[0, 0xd4], BLOCK)?;
     println!("Send 0xd4");

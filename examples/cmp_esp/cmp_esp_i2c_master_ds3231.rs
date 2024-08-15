@@ -34,6 +34,8 @@ async fn main() {
 
     impl MsgDataBound for Custom {}
 
+    impl TimeToLive for Custom {}
+
     // cmp_inject_periodic -------------------------------------------------------------------------
     let mut counter = 0;
     let config_inject_periodic = cmp_inject_periodic::Config {

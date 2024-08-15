@@ -33,6 +33,8 @@ async fn main() {
 
     impl MsgDataBound for Custom {}
 
+    impl TimeToLive for Custom {}
+
     // cmp_logger ----------------------------------------------------------------------------------
     let logger_config = cmp_logger::Config::<Custom> {
         level: Level::INFO,
