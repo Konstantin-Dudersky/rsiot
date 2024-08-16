@@ -15,7 +15,7 @@ where
     TMsg: MsgDataBound + 'static,
 {
     // Необходимо подождать, пока поднимется Wi-Fi
-    sleep(Duration::from_secs(2)).await;
+    sleep(Duration::from_secs(10)).await;
     info!("Starting MQTT");
 
     let url = format!("mqtt://{}:{}", config.host, config.port);
@@ -48,8 +48,21 @@ async fn input<TMsg>(
 where
     TMsg: MsgDataBound,
 {
-    client.subscribe("rsiot/#", QoS::ExactlyOnce).await.unwrap();
+    let topic = "rsiot/#";
+    loop {
+        info!("MQTT client: trying to subscribe to topic");
+        let res = client.subscribe(topic, QoS::ExactlyOnce).await;
+        match res {
+            Ok(_) => break,
+            Err(err) => {
+                let err = format!("MQTT client: subscribtion error: {}", err);
+                warn!("{}", err);
+            }
+        }
+        sleep(Duration::from_secs(5)).await;
+    }
     info!("MQTT client subscribed to topic");
+
     while let Ok(msg) = in_out.recv_input().await {
         let topic = msg.key.replace('-', "/").to_lowercase();
         let topic = format!("rsiot/{topic}");

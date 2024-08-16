@@ -15,8 +15,4 @@ services:
 
 networks:
   network_internal:
-
-volumes:
-  surrealdb_data:
-    name: surrealdb_data
 # TODO - healtcheck

@@ -1,5 +1,5 @@
 pub use esp_idf_svc::wifi::AuthMethod as ConfigAuthMethod;
-use esp_idf_svc::{eventloop::EspSystemEventLoop, hal::modem::Modem};
+use esp_idf_svc::{eventloop::EspSystemEventLoop, hal::modem::Modem, timer::EspTaskTimerService};
 
 /// Конфигурация cmp_esp_wifi
 pub struct Config {
@@ -8,6 +8,9 @@ pub struct Config {
 
     /// Ссылка на цикл событий
     pub event_loop: EspSystemEventLoop,
+
+    /// Ссылка на таймер
+    pub timer_service: EspTaskTimerService,
 
     /// Настройка WiFi как точки доступа
     ///

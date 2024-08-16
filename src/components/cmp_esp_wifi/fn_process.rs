@@ -1,13 +1,18 @@
-use std::time::Duration;
+use std::{sync::Arc, time::Duration};
 
+use embedded_svc::wifi::Wifi;
+use esp_idf_hal::sys::EspError;
 use esp_idf_svc::{
-    eventloop::{EspEventLoop, System},
-    wifi::{BlockingWifi, ClientConfiguration, Configuration, EspWifi},
+    netif::NetifStatus,
+    wifi::{AsyncWifi, ClientConfiguration, Configuration, EspWifi, NonBlocking},
 };
-use tokio::time::sleep;
+use tokio::{sync::Mutex, task::JoinSet, time::sleep};
 use tracing::info;
 
-use crate::{executor::CmpInOut, message::MsgDataBound};
+use crate::{
+    executor::{join_set_spawn, CmpInOut},
+    message::MsgDataBound,
+};
 
 use super::Config;
 
@@ -15,15 +20,24 @@ pub async fn fn_process<TMsg>(config: Config, _in_out: CmpInOut<TMsg>) -> super:
 where
     TMsg: MsgDataBound,
 {
+    let mut task_set = JoinSet::new();
+
     let wifi_config = prepare_wifi_config(&config);
 
-    let mut driver = EspWifi::new(config.peripherals, config.event_loop.clone(), None).unwrap();
+    let driver = EspWifi::new(config.peripherals, config.event_loop.clone(), None).unwrap();
 
-    wifi_setup(&mut driver, config.event_loop, wifi_config);
+    let wifi = AsyncWifi::wrap(driver, config.event_loop, config.timer_service).unwrap();
+    let wifi = Arc::new(Mutex::new(wifi));
 
-    loop {
-        sleep(Duration::from_secs(2)).await;
+    join_set_spawn(&mut task_set, test_connection(wifi.clone()));
+
+    join_set_spawn(&mut task_set, wifi_setup(wifi, wifi_config));
+
+    while let Some(res) = task_set.join_next().await {
+        res.unwrap()
     }
+
+    Ok(())
 }
 
 fn prepare_wifi_config(config: &Config) -> Configuration {
@@ -62,14 +76,19 @@ fn prepare_wifi_config(config: &Config) -> Configuration {
 /// TODO - обработка ошибок
 /// TODO - перезапуск
 /// TODO - AsyncWifi
-pub fn wifi_setup(
-    wifi: &mut EspWifi<'static>,
-    sys_loop: EspEventLoop<System>,
+pub async fn wifi_setup<T>(
+    // wifi: &mut EspWifi<'static>,
+    // sys_loop: EspEventLoop<System>,
+    // timer_service: EspTaskTimerService,
+    wifi: Arc<Mutex<AsyncWifi<T>>>,
     configuration: Configuration,
-) {
-    let mut wifi = BlockingWifi::wrap(wifi, sys_loop).unwrap();
+) where
+    T: Wifi<Error = EspError> + NonBlocking + NetifStatus,
+{
+    let mut wifi = wifi.lock().await;
+    // let mut wifi = BlockingWifi::wrap(wifi, sys_loop).unwrap();
     wifi.set_configuration(&configuration).unwrap();
-    wifi.start().unwrap();
+    wifi.start().await.unwrap();
     info!("is wifi started: {:?}", wifi.is_started());
     info!("{:?}", wifi.get_capabilities());
 
@@ -77,11 +96,23 @@ pub fn wifi_setup(
     if matches!(configuration, Configuration::Client(_))
         || matches!(configuration, Configuration::Mixed(_, _))
     {
-        wifi.connect().unwrap();
+        wifi.connect().await.unwrap();
         info!("Wifi connected to external AP");
-        wifi.wait_netif_up().unwrap();
+        wifi.wait_netif_up().await.unwrap();
         info!("Wifi netif up");
-        let ip_info = wifi.wifi().sta_netif().get_ip_info().unwrap();
-        info!("Wifi DHCP info: {:?}", ip_info);
+        // let ip_info = wifi.wifi().sta_netif().get_ip_info().unwrap();
+        // info!("Wifi DHCP info: {:?}", ip_info);
+    }
+}
+
+async fn test_connection<T>(wifi: Arc<Mutex<AsyncWifi<T>>>)
+where
+    T: Wifi<Error = EspError> + NonBlocking + NetifStatus,
+{
+    loop {
+        let wifi = wifi.lock().await;
+        let wifi_connected = wifi.is_connected().unwrap();
+        info!("Wifi connected: {}", wifi_connected);
+        sleep(Duration::from_secs(2)).await
     }
 }

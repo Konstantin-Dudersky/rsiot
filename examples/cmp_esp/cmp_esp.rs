@@ -9,6 +9,7 @@ async fn main() {
 
     use esp_idf_svc::{
         eventloop::EspSystemEventLoop, hal::peripherals::Peripherals, sys::link_patches,
+        timer::EspTaskTimerService,
     };
     use tokio::task::LocalSet;
     use tracing::{level_filters::LevelFilter, Level};
@@ -71,11 +72,13 @@ async fn main() {
     // ESP -----------------------------------------------------------------------------------------
     let peripherals = Peripherals::take().unwrap();
     let event_loop = EspSystemEventLoop::take().unwrap();
+    let timer_service = EspTaskTimerService::new().unwrap();
 
     // wifi
     let wifi_config = cmp_esp_wifi::Config {
         peripherals: peripherals.modem,
         event_loop: event_loop.clone(),
+        timer_service,
         access_point: Some(cmp_esp_wifi::ConfigAccessPoint {
             ssid: "test_esp".into(),
         }),
