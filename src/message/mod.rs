@@ -13,6 +13,7 @@ mod msg_data_bound;
 mod msg_serde;
 mod msg_trace;
 mod phy_quantity;
+mod service;
 pub mod system_messages;
 mod time_to_live;
 mod timestamp;
@@ -32,6 +33,8 @@ pub use msg_data_bound::MsgDataBound;
 pub use msg_trace::MsgTrace;
 pub use phy_quantity::PhyQuantity;
 pub use rsiot_macros::message_new;
+pub use service::ServiceBound;
+pub use strum::EnumString;
 pub use time_to_live::{TimeToLive, TimeToLiveValue};
 pub use timestamp::Timestamp;
 

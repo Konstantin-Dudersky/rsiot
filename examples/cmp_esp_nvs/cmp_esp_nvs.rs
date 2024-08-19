@@ -18,7 +18,7 @@ async fn main() {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 10,
-        executor_name: "cmp_storage_esp_example".into(),
+        service: "cmp_storage_esp_example".into(),
         fn_auth: |msg, _| Some(msg),
     };
 

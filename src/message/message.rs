@@ -22,6 +22,10 @@ pub struct Message<TCustom> {
     pub trace: MsgTrace,
     /// Время жизни сообщения
     ttl: TimeToLiveValue,
+    /// Сервис, в котором было созданно данное сообщение.
+    ///
+    /// Устанавливается в исполнителе.
+    service_origin: Option<String>,
 }
 
 impl<TCustom> Message<TCustom>
@@ -38,6 +42,7 @@ where
             ts: Default::default(),
             trace: MsgTrace::default(),
             ttl,
+            service_origin: None,
         }
     }
 
@@ -52,6 +57,7 @@ where
             ts: Default::default(),
             trace: MsgTrace::default(),
             ttl,
+            service_origin: None,
         }
     }
 
@@ -114,6 +120,24 @@ where
                 system_messages::System::EspWifiConnected => false,
             },
             MsgData::Custom(_) => true,
+        }
+    }
+
+    /// Возращает название сервиса, в котором было создано данное сообщение.
+    /// Паникует, если название сервиса еще не установлено
+    pub fn service_origin(&self) -> String {
+        match &self.service_origin {
+            Some(service_origin) => service_origin.clone(),
+            None => panic!("service_origin not set"),
+        }
+    }
+
+    /// Устанавливает название сервиса, в котором было создано данное сообщение.
+    /// Если название уже установлено, то пропускаем
+    pub fn set_service_origin(&mut self, service: &str) {
+        match self.service_origin {
+            Some(_) => (),
+            None => self.service_origin = Some(service.to_string()),
         }
     }
 }

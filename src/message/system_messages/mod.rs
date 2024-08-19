@@ -14,8 +14,6 @@ pub use ping_pong::{Ping, Pong};
 
 use serde::{Deserialize, Serialize};
 
-use super::{Message, MsgData, MsgDataBound};
-
 /// Типы системных сообщений
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum System {

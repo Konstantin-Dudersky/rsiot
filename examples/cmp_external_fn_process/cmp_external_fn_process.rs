@@ -24,6 +24,14 @@ async fn main() {
         message::{example_message::*, *},
     };
 
+    #[allow(non_camel_case_types)]
+    #[derive(Clone, Debug)]
+    enum Services {
+        cmp_external_fn_process_single_thread,
+    }
+
+    impl ServiceBound for Services {}
+
     async fn fn_process<TMsg>(_input: CmpInOut<TMsg>) -> CmpResult {
         loop {
             info!("External fn process");
@@ -57,7 +65,7 @@ async fn main() {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "cmp_external_fn_process_single_thread".into(),
+        service: Services::cmp_external_fn_process_single_thread,
         fn_auth: |msg, _| Some(msg),
     };
 

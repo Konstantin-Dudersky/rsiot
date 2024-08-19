@@ -4,8 +4,8 @@
 //! cargo run --example cmp_esp_i2c_master_ssd1306 --target="riscv32imc-esp-espidf" --features="cmp_esp, logging" --release
 //! ```
 
-#[cfg(not(feature = "cmp_esp"))]
-// #[cfg(feature = "cmp_esp")]
+// #[cfg(not(feature = "cmp_esp"))]
+#[cfg(feature = "cmp_esp")]
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
     use std::time::Duration;

@@ -25,7 +25,7 @@ async fn main() {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "example_single_thread".into(),
+        service: "example_single_thread".into(),
         fn_auth: |_, _| None,
     };
 

@@ -29,6 +29,14 @@ fn main() -> anyhow::Result<()> {
 
     tracing_subscriber::fmt().init();
 
+    #[allow(non_camel_case_types)]
+    #[derive(Clone, Debug)]
+    enum Services {
+        example_single_thread,
+    }
+
+    impl ServiceBound for Services {}
+
     #[derive(Clone, Default, PartialEq)]
     struct ValueInstantString {
         pub f64: Option<f64>,
@@ -73,7 +81,7 @@ fn main() -> anyhow::Result<()> {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "example_single_thread".into(),
+        service: Services::example_single_thread,
         fn_auth: |msg, _| Some(msg),
     };
 

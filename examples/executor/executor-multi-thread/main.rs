@@ -14,15 +14,26 @@ mod message;
 #[cfg(all(not(feature = "single-thread"), feature = "executor"))]
 #[tokio::main(flavor = "multi_thread")]
 async fn main() {
-    use rsiot::executor::{ComponentExecutor, ComponentExecutorConfig};
+    use rsiot::{
+        executor::{ComponentExecutor, ComponentExecutorConfig},
+        message::ServiceBound,
+    };
 
     use message::Data;
 
     tracing_subscriber::fmt().init();
 
+    #[allow(non_camel_case_types)]
+    #[derive(Clone, Debug)]
+    enum Services {
+        multi_thread,
+    }
+
+    impl ServiceBound for Services {}
+
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "multi-thread".into(),
+        service: Services::multi_thread,
         fn_auth: |msg, _| Some(msg),
     };
 

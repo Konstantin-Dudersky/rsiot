@@ -22,12 +22,15 @@ pub struct ComponentExecutor<TMsg> {
 }
 
 /// Настройка исполнителя
-pub struct ComponentExecutorConfig<TMsg> {
+pub struct ComponentExecutorConfig<TMsg, TService>
+where
+    TService: ServiceBound,
+{
     /// Размер буфера канала сообщения
     pub buffer_size: usize,
 
-    /// Название исполнителя
-    pub executor_name: String,
+    /// Название сервиса
+    pub service: TService,
 
     /// Функция фильтрации сообщений в зависимости от текущей авторизации
     ///
@@ -52,7 +55,10 @@ where
     TMsg: MsgDataBound + 'static,
 {
     /// Создание коллекции компонентов
-    pub fn new(config: ComponentExecutorConfig<TMsg>) -> Self {
+    pub fn new<TService>(config: ComponentExecutorConfig<TMsg, TService>) -> Self
+    where
+        TService: ServiceBound + 'static,
+    {
         info!("ComponentExecutor start creation");
         let id = MsgTrace::generate_uuid();
         let (component_input_send, component_input) =
@@ -67,15 +73,10 @@ where
             component_output_recv,
             component_input_send.clone(),
             cache.clone(),
-            config.executor_name.clone(),
+            config.service.clone(),
             id,
         );
         join_set_spawn(&mut task_set, task_internal_handle);
-        // if cfg!(feature = "single-thread") {
-        //     task_set.spawn_local(task_internal_handle);
-        // } else {
-        //     task_set.spawn(task_internal_handle);
-        // }
 
         // Запускаем задачу обновления TTL сообщений
         let task_update_ttl_in_cache_handle = task_update_ttl_in_cache(cache.clone());
@@ -85,7 +86,7 @@ where
             component_input,
             component_output,
             cache.clone(),
-            &config.executor_name,
+            &config.service.trace_name(),
             id,
             AuthPermissions::default(),
             config.fn_auth,
@@ -141,20 +142,23 @@ where
     }
 }
 
-async fn task_internal<TMsg>(
+async fn task_internal<TMsg, TService>(
     mut input: mpsc::Receiver<Message<TMsg>>,
     output: broadcast::Sender<Message<TMsg>>,
     cache: Cache<TMsg>,
-    executor_name: String,
+    service: TService,
     executor_id: Uuid,
 ) -> Result<(), ComponentError>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     debug!("Internal task of ComponentExecutor: starting");
+    let service_name = service.trace_name();
     while let Some(mut msg) = input.recv().await {
         trace!("ComponentExecutor: new message: {:?}", msg);
-        msg.add_trace_item(&executor_id, &format!("{executor_name}::internal_bus"));
+        msg.add_trace_item(&executor_id, &format!("{}::internal_bus", service_name));
+        msg.set_service_origin(&service_name);
         let msg = save_msg_in_cache(msg, &cache).await;
         let Some(msg) = msg else { continue };
         output.send(msg).map_err(|err| {
