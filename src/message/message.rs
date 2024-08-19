@@ -5,7 +5,9 @@ use std::{fmt::Debug, time::Duration};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use super::{MsgData, MsgDataBound, MsgTrace, TimeToLive, TimeToLiveValue, Timestamp};
+use super::{
+    system_messages, MsgData, MsgDataBound, MsgTrace, TimeToLive, TimeToLiveValue, Timestamp,
+};
 
 /// Сообщение
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -93,6 +95,25 @@ where
         match self.ttl {
             TimeToLiveValue::Infinite => true,
             TimeToLiveValue::Duration(duration) => !duration.is_zero(),
+        }
+    }
+
+    /// Передавать ли сообщение между сервисами
+    ///
+    /// false - не передавать
+    /// true - передавать
+    pub fn is_share_between_services(&self) -> bool {
+        match &self.data {
+            MsgData::System(msg_data_system) => match msg_data_system {
+                system_messages::System::AuthRequestByLogin(_) => todo!(),
+                system_messages::System::AuthRequestByToken(_) => todo!(),
+                system_messages::System::AuthResponseErr(_) => todo!(),
+                system_messages::System::AuthResponseOk(_) => todo!(),
+                system_messages::System::Ping(_) => todo!(),
+                system_messages::System::Pong(_) => todo!(),
+                system_messages::System::EspWifiConnected => false,
+            },
+            MsgData::Custom(_) => true,
         }
     }
 }

@@ -33,6 +33,7 @@ async fn main() {
         BootButton(bool),
         Relay0(bool),
         Analog3(f32),
+        WiFiConnected,
     }
 
     impl MsgDataBound for Custom {}

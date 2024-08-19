@@ -14,6 +14,8 @@ pub use ping_pong::{Ping, Pong};
 
 use serde::{Deserialize, Serialize};
 
+use super::{Message, MsgData, MsgDataBound};
+
 /// Типы системных сообщений
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum System {
@@ -34,4 +36,7 @@ pub enum System {
 
     /// Проверка связи - ответ от партнера по коммуникации
     Pong(Pong),
+
+    /// Для ESP - wifi подключен
+    EspWifiConnected,
 }

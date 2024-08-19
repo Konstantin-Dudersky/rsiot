@@ -282,6 +282,16 @@ path = "examples/cmp_esp/cmp_esp.rs"
 doc-scrape-examples = true
 
 [[example]]
+name = "cmp_esp_eth_w5500"
+path = "examples/cmp_esp/cmp_esp_eth_w5500.rs"
+doc-scrape-examples = true
+
+[[example]]
+name = "cmp_esp_wifi"
+path = "examples/cmp_esp/cmp_esp_wifi.rs"
+doc-scrape-examples = true
+
+[[example]]
 name = "cmp_esp_i2c_master_ads1115"
 path = "./examples/cmp_esp/cmp_esp_i2c_master_ads1115.rs"
 

@@ -1,4 +1,4 @@
-use std::{sync::Arc, time::Duration};
+use std::time::Duration;
 
 use embedded_svc::wifi::Wifi;
 use esp_idf_hal::sys::EspError;
@@ -6,38 +6,37 @@ use esp_idf_svc::{
     netif::NetifStatus,
     wifi::{AsyncWifi, ClientConfiguration, Configuration, EspWifi, NonBlocking},
 };
-use tokio::{sync::Mutex, task::JoinSet, time::sleep};
-use tracing::info;
+use tokio::time::sleep;
+use tracing::{info, warn};
 
 use crate::{
-    executor::{join_set_spawn, CmpInOut},
-    message::MsgDataBound,
+    executor::CmpInOut,
+    message::{system_messages::System, Message, MsgData, MsgDataBound},
 };
 
 use super::Config;
 
-pub async fn fn_process<TMsg>(config: Config, _in_out: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg>(config: Config, in_out: CmpInOut<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound,
 {
-    let mut task_set = JoinSet::new();
-
     let wifi_config = prepare_wifi_config(&config);
 
     let driver = EspWifi::new(config.peripherals, config.event_loop.clone(), None).unwrap();
 
-    let wifi = AsyncWifi::wrap(driver, config.event_loop, config.timer_service).unwrap();
-    let wifi = Arc::new(Mutex::new(wifi));
+    let mut wifi = AsyncWifi::wrap(driver, config.event_loop, config.timer_service).unwrap();
 
-    join_set_spawn(&mut task_set, test_connection(wifi.clone()));
+    let mut state = ConnectionState::PreLaunch;
 
-    join_set_spawn(&mut task_set, wifi_setup(wifi, wifi_config));
-
-    while let Some(res) = task_set.join_next().await {
-        res.unwrap()
+    loop {
+        state = match state {
+            ConnectionState::PreLaunch => state_prelaunch(&mut wifi, &wifi_config).await,
+            ConnectionState::Connect => state_connect(&mut wifi, &in_out).await,
+            ConnectionState::Check => state_check(&mut wifi).await,
+            ConnectionState::Disconnect => state_disconnect(&mut wifi).await,
+            ConnectionState::OnlyAP => state_onlyap().await,
+        };
     }
-
-    Ok(())
 }
 
 fn prepare_wifi_config(config: &Config) -> Configuration {
@@ -71,48 +70,88 @@ fn prepare_wifi_config(config: &Config) -> Configuration {
     }
 }
 
-/// Запустить Wi-Fi в комбинированном режиме.
-///
-/// TODO - обработка ошибок
-/// TODO - перезапуск
-/// TODO - AsyncWifi
-pub async fn wifi_setup<T>(
-    // wifi: &mut EspWifi<'static>,
-    // sys_loop: EspEventLoop<System>,
-    // timer_service: EspTaskTimerService,
-    wifi: Arc<Mutex<AsyncWifi<T>>>,
-    configuration: Configuration,
-) where
-    T: Wifi<Error = EspError> + NonBlocking + NetifStatus,
+async fn state_prelaunch<T>(wifi: &mut AsyncWifi<T>, wifi_config: &Configuration) -> ConnectionState
+where
+    T: Wifi<Error = EspError> + NonBlocking,
 {
-    let mut wifi = wifi.lock().await;
-    // let mut wifi = BlockingWifi::wrap(wifi, sys_loop).unwrap();
-    wifi.set_configuration(&configuration).unwrap();
+    info!("Wifi state: prelaunch");
+    wifi.set_configuration(wifi_config).unwrap();
     wifi.start().await.unwrap();
     info!("is wifi started: {:?}", wifi.is_started());
     info!("{:?}", wifi.get_capabilities());
 
-    // Подключаемся к внешней точке Wi-Fi
-    if matches!(configuration, Configuration::Client(_))
-        || matches!(configuration, Configuration::Mixed(_, _))
+    if matches!(wifi_config, Configuration::Client(_))
+        || matches!(wifi_config, Configuration::Mixed(_, _))
     {
-        wifi.connect().await.unwrap();
-        info!("Wifi connected to external AP");
-        wifi.wait_netif_up().await.unwrap();
-        info!("Wifi netif up");
-        // let ip_info = wifi.wifi().sta_netif().get_ip_info().unwrap();
-        // info!("Wifi DHCP info: {:?}", ip_info);
+        ConnectionState::Connect
+    } else {
+        ConnectionState::OnlyAP
     }
 }
 
-async fn test_connection<T>(wifi: Arc<Mutex<AsyncWifi<T>>>)
+async fn state_connect<T, TMsg>(wifi: &mut AsyncWifi<T>, in_out: &CmpInOut<TMsg>) -> ConnectionState
+where
+    T: Wifi<Error = EspError> + NonBlocking + NetifStatus,
+    TMsg: MsgDataBound,
+{
+    info!("Wifi state: connect");
+    let res = wifi.connect().await;
+    if let Err(err) = res {
+        warn!("Wifi connect error: {}", err);
+        return ConnectionState::Disconnect;
+    }
+    info!("Wifi connected to external AP");
+    wifi.wait_netif_up().await.unwrap();
+    info!("Wifi netif up");
+
+    // Рассылаем сообщение - wifi подключен
+    let msg = Message::new(MsgData::System(System::EspWifiConnected));
+    in_out.send_output(msg).await.unwrap();
+
+    ConnectionState::Check
+}
+
+async fn state_check<T>(wifi: &mut AsyncWifi<T>) -> ConnectionState
+where
+    T: Wifi<Error = EspError> + NonBlocking,
+{
+    info!("Wifi state: check");
+    loop {
+        let wifi_connected = wifi.is_connected().unwrap();
+        if !wifi_connected {
+            return ConnectionState::Disconnect;
+        } else {
+            sleep(Duration::from_secs(5)).await;
+        }
+    }
+}
+
+async fn state_disconnect<T>(wifi: &mut AsyncWifi<T>) -> ConnectionState
 where
     T: Wifi<Error = EspError> + NonBlocking + NetifStatus,
 {
+    info!("Wifi state: disconnect");
+    wifi.disconnect().await.unwrap();
+    ConnectionState::Connect
+}
+
+async fn state_onlyap() -> ConnectionState {
+    info!("Wifi state: only AP");
     loop {
-        let wifi = wifi.lock().await;
-        let wifi_connected = wifi.is_connected().unwrap();
-        info!("Wifi connected: {}", wifi_connected);
-        sleep(Duration::from_secs(2)).await
+        sleep(Duration::from_secs(10)).await
     }
+}
+
+/// Состояние соединения
+enum ConnectionState {
+    /// Подготовка. Запускает точку доступа, если настроена
+    PreLaunch,
+    /// Подключение к внешней точке доступа
+    Connect,
+    /// Проверка соединения
+    Check,
+    /// Отключение
+    Disconnect,
+    /// Настроен режим только точки доступа
+    OnlyAP,
 }

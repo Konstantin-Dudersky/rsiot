@@ -3,11 +3,10 @@ use std::time::Duration;
 use embedded_svc::{
     http::{Headers, Method},
     io::{Read, Write},
-    wifi::{self, AccessPointConfiguration, AuthMethod},
 };
 use esp_idf_svc::http::server::{Configuration as HttpServerConfiguration, EspHttpServer};
 use tokio::time::sleep;
-use tracing::{info, trace};
+use tracing::trace;
 
 use crate::{
     executor::CmpInOut,

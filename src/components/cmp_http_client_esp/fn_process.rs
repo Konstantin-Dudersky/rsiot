@@ -1,13 +1,8 @@
-use std::{sync::Arc, time::Duration};
+use std::time::Duration;
 
-use embedded_svc::{
-    http::{client::Client as HttpClient, Method},
-    io::Write,
-    utils::io,
-};
+use embedded_svc::http::{client::Client as HttpClient, Method};
 use esp_idf_svc::http::client::EspHttpConnection;
 use tokio::{
-    sync::Mutex,
     task::JoinSet,
     time::{sleep, Instant},
 };
