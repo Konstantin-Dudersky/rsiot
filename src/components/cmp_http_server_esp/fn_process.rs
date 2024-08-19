@@ -6,11 +6,11 @@ use embedded_svc::{
 };
 use esp_idf_svc::http::server::{Configuration as HttpServerConfiguration, EspHttpServer};
 use tokio::time::sleep;
-use tracing::trace;
+use tracing::{info, trace, warn};
 
 use crate::{
     executor::CmpInOut,
-    message::{Message, MsgDataBound},
+    message::{system_messages, Message, MsgData, MsgDataBound},
 };
 
 use super::Config;
@@ -23,18 +23,36 @@ const HEADERS: [(&str, &str); 4] = [
     ("Access-Control-Allow-Headers", "*"),
 ];
 
-pub async fn fn_process<TMsg>(in_out: CmpInOut<TMsg>, _config: Config<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg>(mut in_out: CmpInOut<TMsg>, config: Config<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
     // Необходимо подождать, пока поднимется Wi-Fi
-    sleep(Duration::from_secs(2)).await;
+    while let Ok(msg) = in_out.recv_input().await {
+        match msg.data {
+            MsgData::System(system_messages::System::EspWifiConnected) => break,
+            _ => continue,
+        }
+    }
+    info!("Starting cmp_esp_http_server");
 
     let http_config = HttpServerConfiguration {
+        http_port: config.port,
         ..Default::default()
     };
 
-    let mut server = EspHttpServer::new(&http_config).unwrap();
+    let mut server = loop {
+        info!("trying to create EspHttpServer");
+        let server = EspHttpServer::new(&http_config);
+        match server {
+            Ok(server) => break server,
+            Err(err) => {
+                let err = format! {"Error EspHttpServer creation: {}", err};
+                warn!("{}", err);
+            }
+        }
+        sleep(Duration::from_secs(2)).await;
+    };
 
     // Запрос чтения всех сообщений
     let cache_clone = in_out.cache.clone();

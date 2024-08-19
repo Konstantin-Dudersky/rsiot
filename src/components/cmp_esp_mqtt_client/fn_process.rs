@@ -31,7 +31,6 @@ where
     info!("MQTT client created");
 
     // Необходимо подождать, пока поднимется Wi-Fi
-    sleep(Duration::from_secs(10)).await;
     while let Ok(msg) = in_out.recv_input().await {
         match msg.data {
             MsgData::System(system_messages::System::EspWifiConnected) => break,

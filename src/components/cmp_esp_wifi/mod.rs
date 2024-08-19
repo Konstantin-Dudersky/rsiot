@@ -4,6 +4,7 @@ mod component;
 mod config;
 mod error;
 mod fn_process;
+// mod wifi_manager;
 
 pub use component::Cmp;
 pub use config::{Config, ConfigAccessPoint, ConfigAuthMethod, ConfigClient};
