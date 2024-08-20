@@ -24,11 +24,13 @@
 mod component;
 mod config;
 mod error;
+#[allow(dead_code, unused_imports)]
+mod fb_template;
+#[allow(dead_code, unused_imports)]
+mod fb_template_full;
 mod fn_process;
 pub mod plc;
 mod tasks;
-#[allow(dead_code, unused_imports)]
-mod template;
 
 pub use component::Cmp;
 pub use config::{Config, ConfigRetention};

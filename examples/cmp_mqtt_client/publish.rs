@@ -11,7 +11,7 @@ use super::message;
 pub async fn publish() {
     let config_executor = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "publish".into(),
+        service: message::Services::publish,
         fn_auth: |msg, _| Some(msg),
     };
 

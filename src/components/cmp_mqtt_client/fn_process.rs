@@ -1,6 +1,7 @@
 use std::time::Duration;
 
-use rumqttc::{AsyncClient, Event, EventLoop, MqttOptions, Packet, QoS};
+use rumqttc::mqttbytes::QoS;
+use rumqttc::{AsyncClient, Event, EventLoop, MqttOptions, Packet};
 use tokio::{task::JoinSet, time::sleep};
 use tracing::{error, info, warn};
 
@@ -16,11 +17,12 @@ where
     TMsg: MsgDataBound + 'static,
 {
     loop {
+        info!("Starting");
         let res = main(config.clone(), in_out.clone()).await;
         match res {
             Ok(_) => (),
             Err(err) => {
-                error!("Error in cmp_mqtt_client: {:?}", err);
+                error!("Error in cmp_mqtt_client: {}", err);
             }
         }
         info!("Restarting...");
@@ -33,7 +35,7 @@ where
     TMsg: MsgDataBound + 'static,
 {
     let mut mqttoptions = MqttOptions::new(config.client_id, config.host, config.port);
-    mqttoptions.set_keep_alive(Duration::from_secs(5));
+    mqttoptions.set_keep_alive(Duration::from_secs(50000)); // TODO - прерывает обмен
 
     let (client, eventloop) = AsyncClient::new(mqttoptions, 10);
     client.subscribe("rsiot/#", QoS::ExactlyOnce).await?;
@@ -78,8 +80,12 @@ where
         let Some(payload) = payload else { continue };
 
         client
-            .publish(topic, QoS::ExactlyOnce, true, payload)
-            .await?
+            .publish(topic, QoS::ExactlyOnce, false, payload)
+            .await?;
+        // match res {
+        //     Ok(_) => (),
+        //     Err(err) => warn!("Error publishing to MQTT: {}", err),
+        // }
     }
     Ok(())
 }

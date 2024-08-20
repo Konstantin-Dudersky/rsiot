@@ -31,4 +31,6 @@ pub enum TimeToLiveValue {
     Infinite,
     /// Заданное время
     Duration(Duration),
+    /// Запретить кеширование
+    DisableCaching,
 }

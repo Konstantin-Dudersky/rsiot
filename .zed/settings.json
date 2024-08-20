@@ -24,7 +24,7 @@
           // ---- x86_64-unknown-linux-gnu ---------------------------------------------------------
           "target": "x86_64-unknown-linux-gnu",
           "features": [
-            "executor"
+            // "executor"
             // "single-thread",
             // "env_vars"
             // "logging"
@@ -35,7 +35,7 @@
             // "cmp_filesystem",
             // "cmp_influxdb"
             // "cmp_modbus_client"
-            // "cmp_mqtt_client"
+            "cmp_mqtt_client"
             // "cmp_plc"
             // "cmp_redis_client"
             // "cmp_slint"
@@ -50,7 +50,7 @@
           // "target": "wasm32-unknown-unknown",
           // "features": [
           // "single-thread", // Активировать обязательно !
-          //   "executor",
+          // "executor",
           //   "logging",
           // "cmp_http_client_wasm",
           // "cmp_leptos",

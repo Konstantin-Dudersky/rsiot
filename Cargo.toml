@@ -99,7 +99,7 @@ gloo = { version = "0.11.0", features = [
     "storage",
     "timers",
     "utils",
-], optional = true }
+] }
 tracing-web = { version = "0.1.3", optional = true }
 
 
@@ -115,7 +115,6 @@ openssl = { version = "0.10", features = ["vendored"], optional = true }
 [target.'cfg(all(target_arch = "riscv32", target_vendor = "espressif", target_os = "espidf"))'.dependencies]
 esp-idf-svc = { version = "0.49.1", features = ["std"] }
 esp-idf-hal = { version = "*" }
-# embedded-svc = { version = "0.27.1", optional = true }
 
 
 [target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dev-dependencies]
@@ -182,13 +181,7 @@ cmp_http_client = [
 ]
 
 ## Компонент http-клиент для платформы WASM
-cmp_http_client_wasm = [
-    "executor",
-    "dep:http",
-    "dep:instant",
-    "dep:gloo",
-    "dep:url",
-]
+cmp_http_client_wasm = ["executor", "dep:http", "dep:instant", "dep:url"]
 
 ## Компонент http-сервер
 cmp_http_server = ["executor", "dep:axum", "dep:tower-http"]
@@ -200,14 +193,7 @@ cmp_influxdb = ["executor", "dep:openssl", "dep:reqwest"]
 cmp_filesystem = ["executor", "tokio?/fs"]
 
 ## Компонент для создания интерфейсов на базе Leptos
-cmp_leptos = [
-    "executor",
-    "dep:gloo",
-    "dep:leptos",
-    "dep:palette",
-    "dep:url",
-    "dep:web-sys",
-]
+cmp_leptos = ["executor", "dep:leptos", "dep:palette", "dep:url", "dep:web-sys"]
 
 ## Компонент Modbus клиент
 cmp_modbus_client = ["executor", "dep:tokio-modbus"]
@@ -216,7 +202,7 @@ cmp_modbus_client = ["executor", "dep:tokio-modbus"]
 cmp_mqtt_client = ["executor", "dep:rumqttc"]
 
 ## Компонент ПЛК
-cmp_plc = ["executor", "dep:instant", "dep:gloo"]
+cmp_plc = ["executor", "dep:instant"]
 
 ## Работа с периферией Raspberry Pi
 cmp_raspberrypi = ["executor", "dep:rppal"]
@@ -248,7 +234,7 @@ cmp_websocket_client = [
 ]
 
 ## Компонент websocket клиента для платформы WASM
-cmp_websocket_client_wasm = ["executor", "dep:futures", "dep:gloo", "dep:url"]
+cmp_websocket_client_wasm = ["executor", "dep:futures", "dep:url"]
 
 ## Компонент websocket сервера
 cmp_websocket_server = [
@@ -259,7 +245,7 @@ cmp_websocket_server = [
 ]
 
 ## Хранение и загрузка сообщений используя Web Storage API браузера
-cmp_webstorage = ["executor", "dep:gloo"]
+cmp_webstorage = ["executor"]
 
 
 [package.metadata.docs.rs]
@@ -359,6 +345,10 @@ path = "examples/cmp_leptos/create_signal_from_msg.rs"
 [[example]]
 name = "cmp_plc"
 path = "examples/cmp_plc/cmp_plc/main.rs"
+
+[[example]]
+name = "config_plc_template"
+path = "examples/cmp_plc/config_plc_template.rs"
 
 [[example]]
 name = "cmp_redis_client_publication"

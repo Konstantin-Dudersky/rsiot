@@ -17,7 +17,18 @@ async fn main() {
     use message::Message;
     use tokio::task::LocalSet;
 
-    use rsiot::executor::{ComponentExecutor, ComponentExecutorConfig};
+    use rsiot::{
+        executor::{ComponentExecutor, ComponentExecutorConfig},
+        message::ServiceBound,
+    };
+
+    #[allow(non_camel_case_types)]
+    #[derive(Clone, Debug)]
+    enum Services {
+        single_thread,
+    }
+
+    impl ServiceBound for Services {}
 
     tracing_subscriber::fmt().init();
 
@@ -25,7 +36,7 @@ async fn main() {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        service: "example_single_thread".into(),
+        service: Services::single_thread,
         fn_auth: |_, _| None,
     };
 

@@ -10,7 +10,7 @@ use super::message;
 pub async fn subscribe() {
     let config_executor = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "subscribe".into(),
+        service: message::Services::subscribe,
         fn_auth: |msg, _| Some(msg),
     };
 

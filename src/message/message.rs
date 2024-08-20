@@ -93,6 +93,7 @@ where
                     None => self.ttl = TimeToLiveValue::Duration(Duration::new(0, 0)),
                 }
             }
+            TimeToLiveValue::DisableCaching => (),
         }
     }
 
@@ -101,6 +102,7 @@ where
         match self.ttl {
             TimeToLiveValue::Infinite => true,
             TimeToLiveValue::Duration(duration) => !duration.is_zero(),
+            TimeToLiveValue::DisableCaching => false,
         }
     }
 
