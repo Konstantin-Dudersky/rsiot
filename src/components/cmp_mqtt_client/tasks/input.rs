@@ -1,10 +1,13 @@
 use rumqttc::AsyncClient;
 
 use crate::{
-    components_config::mqtt_client::ConfigFnInput, executor::CmpInOut, message::MsgDataBound,
+    components::shared_mqtt_client::{create_payload_for_message, create_topic_for_message},
+    components_config::mqtt_client::ConfigFnInput,
+    executor::CmpInOut,
+    message::MsgDataBound,
 };
 
-use super::shared::{create_payload_for_message, create_topic_for_message, publish_on_broker};
+use super::shared::publish_on_broker;
 
 pub struct Input<TMsg>
 where
@@ -25,10 +28,7 @@ where
                 let topic = create_topic_for_message(&msg);
 
                 let payload = create_payload_for_message(&msg, self.config_fn_input);
-                let payload = match payload {
-                    Some(payload) => payload,
-                    None => continue,
-                };
+                let Some(payload) = payload else { continue };
 
                 publish_on_broker(topic, payload, &self.client).await?;
             }
