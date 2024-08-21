@@ -7,7 +7,9 @@ pub enum Custom {
     Counter(i32),
 }
 
-impl MsgDataBound for Custom {}
+impl MsgDataBound for Custom {
+    type TService = Services;
+}
 
 impl TimeToLive for Custom {}
 

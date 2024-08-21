@@ -59,7 +59,11 @@ pub enum Motor {
     Status4(bool),
 }
 
-impl MsgDataBound for Custom {}
+pub enum Service {}
+
+impl MsgDataBound for Custom {
+    type TService = Service;
+}
 
 #[cfg(test)]
 mod tests {

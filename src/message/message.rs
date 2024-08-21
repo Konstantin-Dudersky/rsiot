@@ -110,6 +110,7 @@ where
     ///
     /// false - не передавать
     /// true - передавать
+    #[deprecated]
     pub fn is_share_between_services(&self) -> bool {
         match &self.data {
             MsgData::System(msg_data_system) => match msg_data_system {
@@ -141,6 +142,15 @@ where
             Some(_) => (),
             None => self.service_origin = Some(service.to_string()),
         }
+    }
+
+    /// Разрешен ли марштур данного сообщения
+    pub fn is_route_enabled(
+        &self,
+        src: Option<TCustom::TService>,
+        dst: Option<TCustom::TService>,
+    ) -> bool {
+        self.data.is_route_enabled(src, dst)
     }
 }
 
