@@ -79,7 +79,7 @@ where
         let topic = msg.key.replace('-', "/").to_lowercase();
         let topic = format!("rsiot/{topic}");
 
-        let payload = config_fn_input(msg);
+        let payload = config_fn_input(&msg);
 
         // Ошибка выполнения fn_input
         let payload = match payload {

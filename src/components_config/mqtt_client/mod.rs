@@ -1,6 +1,6 @@
 use crate::message::{Message, MsgDataBound};
 
-pub type ConfigFnInput<TMsg> = fn(Message<TMsg>) -> anyhow::Result<Option<Vec<u8>>>;
+pub type ConfigFnInput<TMsg> = fn(&Message<TMsg>) -> anyhow::Result<Option<Vec<u8>>>;
 pub type ConfigFnOutput<TMsg> = fn(&[u8]) -> anyhow::Result<Option<Message<TMsg>>>;
 
 /// Конфигурация cmp_mqtt_client
