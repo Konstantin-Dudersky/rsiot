@@ -1,5 +1,5 @@
 use esp_idf_svc::mqtt::client::{EspAsyncMqttConnection, EventPayload};
-use tracing::{info, warn};
+use tracing::warn;
 
 use crate::{
     components_config::mqtt_client::ConfigFnOutput, executor::CmpInOut, message::MsgDataBound,
@@ -21,17 +21,16 @@ where
                 EventPayload::BeforeConnect => continue,
                 EventPayload::Connected(_) => continue,
                 EventPayload::Disconnected => {
-                    warn!("disconnected");
-                    continue;
+                    return Err(super::Error::BrokerDisconnected);
                 }
                 EventPayload::Subscribed(_) => continue,
                 EventPayload::Unsubscribed(_) => continue,
                 EventPayload::Published(_) => continue,
                 EventPayload::Received {
-                    id,
-                    topic,
+                    id: _,
+                    topic: _,
                     data,
-                    details,
+                    details: _,
                 } => data,
                 EventPayload::Deleted(_) => continue,
                 EventPayload::Error(err) => {

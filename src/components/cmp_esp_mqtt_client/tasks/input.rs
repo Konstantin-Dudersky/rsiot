@@ -37,10 +37,6 @@ where
         info!("MQTT client subscribed to topic");
 
         while let Ok(msg) = self.in_out.recv_input().await {
-            if !msg.is_share_between_services() {
-                continue;
-            }
-
             let topic = create_topic_for_message(&msg);
 
             let payload = create_payload_for_message(&msg, self.config_fn_input);

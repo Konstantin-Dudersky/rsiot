@@ -6,6 +6,7 @@ mod auth_roles;
 mod error;
 pub mod example_message;
 mod example_message_channel;
+pub mod example_service;
 mod message;
 mod message_channel;
 mod msg_data;
@@ -35,7 +36,7 @@ pub use phy_quantity::PhyQuantity;
 pub use rsiot_macros::message_new;
 pub use service::ServiceBound;
 pub use strum::EnumString;
-pub use time_to_live::{TimeToLive, TimeToLiveValue};
+pub use time_to_live::TimeToLiveValue;
 pub use timestamp::Timestamp;
 
 pub use serde::{Deserialize, Serialize};

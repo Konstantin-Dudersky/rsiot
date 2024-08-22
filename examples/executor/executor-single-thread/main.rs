@@ -19,16 +19,8 @@ async fn main() {
 
     use rsiot::{
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::ServiceBound,
+        message::example_service::*,
     };
-
-    #[allow(non_camel_case_types)]
-    #[derive(Clone, Debug)]
-    enum Services {
-        single_thread,
-    }
-
-    impl ServiceBound for Services {}
 
     tracing_subscriber::fmt().init();
 
@@ -36,7 +28,7 @@ async fn main() {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        service: Services::single_thread,
+        service: Service::example_service,
         fn_auth: |_, _| None,
     };
 

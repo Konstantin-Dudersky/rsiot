@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use serde::{de::DeserializeOwned, Serialize};
 
-use super::TimeToLive;
+use super::{ServiceBound, TimeToLiveValue};
 
 /// Ограничения на данные, которые могут содержать сообщения
 ///
@@ -14,15 +14,30 @@ use super::TimeToLive;
 /// #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 /// ```
 pub trait MsgDataBound:
-    Clone + Debug + DeserializeOwned + PartialEq + Send + Serialize + Sync + TimeToLive
+    Clone + Debug + DeserializeOwned + PartialEq + Send + Serialize + Sync
 {
-    type TService;
+    /// Перечисление, содержащее названия всех сервисов
+    type TService: ServiceBound;
 
-    /// Разрешен ли марштур данного сообщения
-    /// TODO - убрать реализацию по-умолчанию
-    fn is_route_enabled(&self, src: Option<Self::TService>, dst: Option<Self::TService>) -> bool {
-        let _ = src;
-        let _ = dst;
-        true
+    /// Разрешенные маршруты сообщения
+    fn define_enabled_routes(&self) -> Vec<(Option<Self::TService>, Option<Self::TService>)> {
+        vec![(None, None)]
+    }
+
+    /// Задать ограничение времени жизни сообщения
+    ///
+    /// # Примеры
+    ///
+    /// Все сообщения без ограничения по времени
+    ///
+    /// ```rust
+    /// impl MsgDataBound for Custom {
+    ///     fn define_time_to_live(&self) -> TimeToLiveValue {
+    ///         TimeToLiveValue::Infinite
+    ///     }
+    /// }
+    /// ```
+    fn define_time_to_live(&self) -> TimeToLiveValue {
+        TimeToLiveValue::Infinite
     }
 }

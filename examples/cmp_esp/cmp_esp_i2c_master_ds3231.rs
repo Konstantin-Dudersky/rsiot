@@ -25,6 +25,15 @@ async fn main() {
     link_patches();
     configure_logging(LevelFilter::INFO).unwrap();
 
+    // service -------------------------------------------------------------------------------------
+    #[allow(non_camel_case_types)]
+    #[derive(Debug, Clone, PartialEq)]
+    pub enum Service {
+        cmp_esp_i2c_master_bmp180,
+    }
+
+    impl ServiceBound for Service {}
+
     // message -------------------------------------------------------------------------------------
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub enum Custom {
@@ -32,9 +41,17 @@ async fn main() {
         InjectPeriodic(u8),
     }
 
-    impl MsgDataBound for Custom {}
+    impl MsgDataBound for Custom {
+        type TService = Service;
 
-    impl TimeToLive for Custom {}
+        fn define_enabled_routes(&self) -> Vec<(Option<Self::TService>, Option<Self::TService>)> {
+            vec![]
+        }
+
+        fn define_time_to_live(&self) -> rsiot::message::TimeToLiveValue {
+            TimeToLiveValue::Infinite
+        }
+    }
 
     // cmp_inject_periodic -------------------------------------------------------------------------
     let mut counter = 0;
@@ -109,7 +126,7 @@ async fn main() {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 10,
-        service: "cmp_esp_i2c_master_bmp180".into(),
+        service: Service::cmp_esp_i2c_master_bmp180,
         fn_auth: |msg, _| Some(msg),
     };
 

@@ -27,7 +27,16 @@ async fn main() {
     link_patches();
     configure_logging(LevelFilter::INFO).unwrap();
 
-    // message
+    // service -------------------------------------------------------------------------------------
+    #[allow(non_camel_case_types)]
+    #[derive(Debug, Clone, PartialEq)]
+    pub enum Service {
+        cmp_esp_example,
+    }
+
+    impl ServiceBound for Service {}
+
+    // message -------------------------------------------------------------------------------------
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub enum Custom {
         BootButton(bool),
@@ -36,9 +45,17 @@ async fn main() {
         WiFiConnected,
     }
 
-    impl MsgDataBound for Custom {}
+    impl MsgDataBound for Custom {
+        type TService = Service;
 
-    impl TimeToLive for Custom {}
+        fn define_enabled_routes(&self) -> Vec<(Option<Self::TService>, Option<Self::TService>)> {
+            vec![]
+        }
+
+        fn define_time_to_live(&self) -> rsiot::message::TimeToLiveValue {
+            TimeToLiveValue::Infinite
+        }
+    }
 
     // cmp_http_server_esp -------------------------------------------------------------------------
     let http_server_esp_config = cmp_http_server_esp::Config {
@@ -138,7 +155,7 @@ async fn main() {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 10,
-        service: "cmp_esp_example".into(),
+        service: Service::cmp_esp_example,
         fn_auth: |msg, _| Some(msg),
     };
 

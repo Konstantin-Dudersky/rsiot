@@ -30,7 +30,7 @@ fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt().init();
 
     #[allow(non_camel_case_types)]
-    #[derive(Clone, Debug)]
+    #[derive(Clone, Debug, PartialEq)]
     enum Services {
         example_single_thread,
     }

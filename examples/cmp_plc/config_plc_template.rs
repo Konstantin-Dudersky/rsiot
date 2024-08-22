@@ -1,9 +1,22 @@
 #[cfg(feature = "cmp_plc")]
 #[allow(dead_code, unused_variables)]
 fn main() {
-    // messages ------------------------------------------------------------------------------------
-    use rsiot::message::{MsgDataBound, TimeToLive};
+    // service -------------------------------------------------------------------------------------
 
+    use rsiot::message::ServiceBound;
+
+    #[allow(non_camel_case_types)]
+    #[derive(Debug, Clone, PartialEq)]
+    pub enum Service {
+        cmp_esp_example,
+    }
+
+    impl ServiceBound for Service {}
+
+    // messages ------------------------------------------------------------------------------------
+    use rsiot::message::MsgDataBound;
+
+    use rsiot::message::TimeToLiveValue;
     use serde::{Deserialize, Serialize};
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -14,9 +27,17 @@ fn main() {
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     enum ExampleGroup {}
 
-    impl MsgDataBound for Custom {}
+    impl MsgDataBound for Custom {
+        type TService = Service;
 
-    impl TimeToLive for Custom {}
+        fn define_enabled_routes(&self) -> Vec<(Option<Self::TService>, Option<Self::TService>)> {
+            vec![]
+        }
+
+        fn define_time_to_live(&self) -> rsiot::message::TimeToLiveValue {
+            TimeToLiveValue::Infinite
+        }
+    }
 
     // fb_main -------------------------------------------------------------------------------------
 

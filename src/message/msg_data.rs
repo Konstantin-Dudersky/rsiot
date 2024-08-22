@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{system_messages::*, MsgDataBound, TimeToLive, TimeToLiveValue};
+use super::{system_messages::*, MsgDataBound, TimeToLiveValue};
 
 /// Тип сообщения
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -11,31 +11,17 @@ pub enum MsgData<TCustom> {
     Custom(TCustom),
 }
 
-impl<TCustom> MsgData<TCustom>
+impl<TMsg> MsgData<TMsg>
 where
-    TCustom: MsgDataBound,
+    TMsg: MsgDataBound,
 {
-    /// Разрешен ли марштур данного сообщения
-    pub fn is_route_enabled(
-        &self,
-        src: Option<TCustom::TService>,
-        dst: Option<TCustom::TService>,
-    ) -> bool {
+    /// Задать ограничение времени жизни сообщения
+    pub fn define_time_to_live(&self) -> TimeToLiveValue {
         match &self {
-            MsgData::System(_) => true,
-            MsgData::Custom(custom) => custom.is_route_enabled(src, dst),
+            MsgData::System(_) => TimeToLiveValue::Infinite,
+            MsgData::Custom(data) => data.define_time_to_live(),
         }
     }
 }
 
-impl<Custom> TimeToLive for MsgData<Custom>
-where
-    Custom: TimeToLive,
-{
-    fn time_to_live(&self) -> super::TimeToLiveValue {
-        match self {
-            MsgData::System(_) => TimeToLiveValue::Infinite,
-            MsgData::Custom(msg_data) => msg_data.time_to_live(),
-        }
-    }
-}
+impl<TCustom> MsgData<TCustom> where TCustom: MsgDataBound {}

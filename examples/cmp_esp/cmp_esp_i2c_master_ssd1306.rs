@@ -28,13 +28,32 @@ async fn main() {
     link_patches();
     configure_logging(LevelFilter::INFO).unwrap();
 
+    // service -------------------------------------------------------------------------------------
+    #[allow(non_camel_case_types)]
+    #[derive(Debug, Clone, PartialEq)]
+    pub enum Service {
+        cmp_esp_example,
+    }
+
+    impl ServiceBound for Service {}
+
     // message -------------------------------------------------------------------------------------
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub enum Custom {
         VoltageA0(f64),
     }
 
-    impl MsgDataBound for Custom {}
+    impl MsgDataBound for Custom {
+        type TService = Service;
+
+        fn define_enabled_routes(&self) -> Vec<(Option<Self::TService>, Option<Self::TService>)> {
+            vec![]
+        }
+
+        fn define_time_to_live(&self) -> rsiot::message::TimeToLiveValue {
+            TimeToLiveValue::Infinite
+        }
+    }
 
     // cmp_logger ----------------------------------------------------------------------------------
     let logger_config = cmp_logger::Config::<Custom> {
@@ -71,7 +90,7 @@ async fn main() {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 10,
-        executor_name: "cmp_esp_i2c_master_bmp180".into(),
+        service: Service::cmp_esp_example,
         fn_auth: |msg, _| Some(msg),
     };
 
@@ -91,9 +110,10 @@ async fn main() {
 #[cfg(not(feature = "cmp_esp"))]
 fn main() {}
 
+#[allow(unused)]
 #[cfg(feature = "cmp_esp")]
 #[tokio::main(flavor = "current_thread")]
-async fn main() -> anyhow::Result<()> {
+async fn main1() -> anyhow::Result<()> {
     use std::time::Duration;
 
     use esp_idf_hal::delay::{FreeRtos, BLOCK};

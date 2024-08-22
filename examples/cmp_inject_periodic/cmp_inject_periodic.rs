@@ -14,24 +14,16 @@ async fn main() -> anyhow::Result<()> {
     use rsiot::{
         components::{cmp_inject_periodic, cmp_logger},
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_message::*, Message, ServiceBound},
+        message::{example_message::*, example_service::*, Message},
     };
 
     tracing_subscriber::fmt()
         .with_max_level(LevelFilter::DEBUG)
         .init();
 
-    #[allow(non_camel_case_types)]
-    #[derive(Clone, Debug)]
-    enum Services {
-        cmp_inject_periodic,
-    }
-
-    impl ServiceBound for Services {}
-
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        service: Services::cmp_inject_periodic,
+        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
     };
 

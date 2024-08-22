@@ -1,7 +1,12 @@
 use std::fmt::Debug;
 
 /// Ограничения для перечисления сервисов
-pub trait ServiceBound: Debug + Clone + Send {
+///
+/// Добавить макросы для стуркуры:
+/// ```rust
+/// #[derive(Debug, Clone, PartialEq)]
+/// ```
+pub trait ServiceBound: Debug + Clone + PartialEq + Send {
     /// Возвращает строку для добавления в трассировку
     fn trace_name(&self) -> String {
         let full_str = format!("{:?}", self);
@@ -20,7 +25,7 @@ mod tests {
 
     #[test]
     fn trace_name() {
-        #[derive(Debug, Clone)]
+        #[derive(Debug, Clone, PartialEq)]
         enum Services {
             Service1,
         }

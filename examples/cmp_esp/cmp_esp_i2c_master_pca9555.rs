@@ -25,6 +25,15 @@ async fn main() {
     link_patches();
     configure_logging(LevelFilter::INFO).unwrap();
 
+    // service -------------------------------------------------------------------------------------
+    #[allow(non_camel_case_types)]
+    #[derive(Debug, Clone, PartialEq)]
+    pub enum Service {
+        cmp_esp_example,
+    }
+
+    impl ServiceBound for Service {}
+
     // message -------------------------------------------------------------------------------------
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub enum Custom {
@@ -33,9 +42,17 @@ async fn main() {
         Pin02Output(bool),
     }
 
-    impl MsgDataBound for Custom {}
+    impl MsgDataBound for Custom {
+        type TService = Service;
 
-    impl TimeToLive for Custom {}
+        fn define_enabled_routes(&self) -> Vec<(Option<Self::TService>, Option<Self::TService>)> {
+            vec![]
+        }
+
+        fn define_time_to_live(&self) -> rsiot::message::TimeToLiveValue {
+            TimeToLiveValue::Infinite
+        }
+    }
 
     // cmp_logger ----------------------------------------------------------------------------------
     let logger_config = cmp_logger::Config::<Custom> {
@@ -114,7 +131,7 @@ async fn main() {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 10,
-        service: "cmp_esp_example".into(),
+        service: Service::cmp_esp_example,
         fn_auth: |msg, _| Some(msg),
     };
 

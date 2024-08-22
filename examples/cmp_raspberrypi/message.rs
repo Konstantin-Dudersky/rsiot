@@ -1,5 +1,6 @@
-use rsiot::message::*;
 use serde::{Deserialize, Serialize};
+
+use rsiot::message::{example_service::*, *};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum Custom {
@@ -7,6 +8,14 @@ pub enum Custom {
     SetOutput2(bool),
 }
 
-impl TimeToLive for Custom {}
+impl MsgDataBound for Custom {
+    type TService = Service;
 
-impl MsgDataBound for Custom {}
+    fn define_enabled_routes(&self) -> Vec<(Option<Self::TService>, Option<Self::TService>)> {
+        vec![]
+    }
+
+    fn define_time_to_live(&self) -> rsiot::message::TimeToLiveValue {
+        TimeToLiveValue::Infinite
+    }
+}

@@ -10,7 +10,7 @@ async fn main() {
     use rsiot::{
         components::{cmp_esp_nvs, cmp_inject_periodic, cmp_logger},
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_message::*, *},
+        message::{example_message::*, example_service::*, *},
     };
 
     link_patches();
@@ -18,7 +18,7 @@ async fn main() {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 10,
-        service: "cmp_storage_esp_example".into(),
+        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
     };
 

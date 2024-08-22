@@ -5,9 +5,7 @@ use std::{fmt::Debug, time::Duration};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use super::{
-    system_messages, MsgData, MsgDataBound, MsgTrace, TimeToLive, TimeToLiveValue, Timestamp,
-};
+use super::{MsgData, MsgDataBound, MsgTrace, TimeToLiveValue, Timestamp};
 
 /// Сообщение
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -35,7 +33,7 @@ where
     /// Создать новое сообщение
     pub fn new(data: MsgData<TCustom>) -> Self {
         let key = define_key(&data);
-        let ttl = data.time_to_live();
+        let ttl = data.define_time_to_live();
         Self {
             data,
             key,
@@ -50,7 +48,7 @@ where
     pub fn new_custom(custom_data: TCustom) -> Self {
         let data = MsgData::Custom(custom_data);
         let key = define_key(&data);
-        let ttl = data.time_to_live();
+        let ttl = data.define_time_to_live();
         Self {
             data,
             key,
@@ -106,26 +104,6 @@ where
         }
     }
 
-    /// Передавать ли сообщение между сервисами
-    ///
-    /// false - не передавать
-    /// true - передавать
-    #[deprecated]
-    pub fn is_share_between_services(&self) -> bool {
-        match &self.data {
-            MsgData::System(msg_data_system) => match msg_data_system {
-                system_messages::System::AuthRequestByLogin(_) => todo!(),
-                system_messages::System::AuthRequestByToken(_) => todo!(),
-                system_messages::System::AuthResponseErr(_) => todo!(),
-                system_messages::System::AuthResponseOk(_) => todo!(),
-                system_messages::System::Ping(_) => todo!(),
-                system_messages::System::Pong(_) => todo!(),
-                system_messages::System::EspWifiConnected => false,
-            },
-            MsgData::Custom(_) => true,
-        }
-    }
-
     /// Возращает название сервиса, в котором было создано данное сообщение.
     /// Паникует, если название сервиса еще не установлено
     pub fn service_origin(&self) -> String {
@@ -145,12 +123,25 @@ where
     }
 
     /// Разрешен ли марштур данного сообщения
-    pub fn is_route_enabled(
-        &self,
-        src: Option<TCustom::TService>,
-        dst: Option<TCustom::TService>,
-    ) -> bool {
-        self.data.is_route_enabled(src, dst)
+    pub fn is_route_enabled(&self, src: TCustom::TService, dst: TCustom::TService) -> bool {
+        let enabled_routes = match &self.data {
+            MsgData::System(data) => return data.define_enabled_routes(),
+            MsgData::Custom(data) => data.define_enabled_routes(),
+        };
+        for (src_enabled, dst_enabled) in enabled_routes {
+            if let Some(src_enabled) = src_enabled {
+                if src != src_enabled {
+                    continue;
+                }
+            }
+            if let Some(dst_enabled) = dst_enabled {
+                if dst != dst_enabled {
+                    continue;
+                }
+            }
+            return true;
+        }
+        false
     }
 }
 

@@ -21,16 +21,8 @@ async fn main() {
     use rsiot::{
         components::cmp_external_fn_process,
         executor::{CmpInOut, CmpResult, ComponentExecutor, ComponentExecutorConfig},
-        message::{example_message::*, *},
+        message::{example_message::*, example_service::*, *},
     };
-
-    #[allow(non_camel_case_types)]
-    #[derive(Clone, Debug)]
-    enum Services {
-        cmp_external_fn_process_single_thread,
-    }
-
-    impl ServiceBound for Services {}
 
     async fn fn_process<TMsg>(_input: CmpInOut<TMsg>) -> CmpResult {
         loop {
@@ -65,7 +57,7 @@ async fn main() {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        service: Services::cmp_external_fn_process_single_thread,
+        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
     };
 
