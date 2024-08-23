@@ -55,8 +55,7 @@ sqlx = { version = "0.7.3", features = [
     "postgres",
     "runtime-tokio",
 ], optional = true }
-# surrealdb = { version = "1.5.4", optional = true }
-surrealdb-alpha = { version = "2.0.9", optional = true }
+surrealdb = { version = "1.5.4", optional = true }
 sysinfo = { version = "0.30.7", optional = true }
 teloxide = { version = "0.12.2", optional = true, features = ["macros"] }
 tokio = { version = "^1.37.0", features = [
@@ -215,7 +214,7 @@ cmp_redis_client = ["executor", "dep:futures", "dep:redis", "dep:url"]
 cmp_slint = ["executor", "dep:slint"]
 
 ## Компонент доступа к БД SurrealDB
-cmp_surrealdb = ["executor", "dep:surrealdb-alpha"]
+cmp_surrealdb = ["executor", "dep:surrealdb"]
 
 ## Компонент получает системную информацию
 cmp_system_info = ["executor", "dep:sysinfo"]

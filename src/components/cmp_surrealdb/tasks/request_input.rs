@@ -1,4 +1,4 @@
-use tracing::info;
+use tracing::{trace, warn};
 
 use crate::{components::cmp_surrealdb::InputConfig, executor::CmpInOut, message::MsgDataBound};
 
@@ -21,10 +21,13 @@ where
                 Some(val) => val,
                 None => continue,
             };
-            info!("Execute db query: {}", query);
+            trace!("Execute db query: {}", query);
             let db_client = self.db_client.lock().await;
-            let response = db_client.query(query).await?;
-            info!("Response: {:?}", response);
+            let mut response = db_client.query(query).await?;
+            let errors = response.take_errors();
+            if !errors.is_empty() {
+                warn!("Response errors: {:?}", errors);
+            }
         }
         Ok(())
     }

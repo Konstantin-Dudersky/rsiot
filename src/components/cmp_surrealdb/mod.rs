@@ -17,5 +17,3 @@ pub use error::Error;
 
 type Result<T> = std::result::Result<T, Error>;
 type DbClient = Arc<Mutex<Surreal<Client>>>;
-
-// TODO - заменить библтиотеку surrealdb-alpha на surrealdb после выхода стабильной версии
