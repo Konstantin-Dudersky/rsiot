@@ -1,10 +1,10 @@
-use rsiot::message::{Deserialize, MsgDataBound, Serialize, TimeToLive};
+use rsiot::message::{example_service::Service, Deserialize, MsgDataBound, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum Data {
     OutputValue(u16),
 }
 
-impl TimeToLive for Data {}
-
-impl MsgDataBound for Data {}
+impl MsgDataBound for Data {
+    type TService = Service;
+}

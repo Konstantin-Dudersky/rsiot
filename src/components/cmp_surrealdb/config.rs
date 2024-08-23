@@ -25,7 +25,7 @@ pub struct Config<TMsg> {
     pub init_script: String,
 
     /// Конфигурация запросов на основе входных сообщений
-    pub input_config: Vec<InputConfig<TMsg>>,
+    pub request_input: Vec<InputConfig<TMsg>>,
 }
 
 pub type FnOnSuccess<TMessage> = fn(&String) -> Vec<TMessage>;

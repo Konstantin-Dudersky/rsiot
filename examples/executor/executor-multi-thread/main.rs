@@ -16,24 +16,16 @@ mod message;
 async fn main() {
     use rsiot::{
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::ServiceBound,
+        message::example_service::Service,
     };
 
     use message::Data;
 
     tracing_subscriber::fmt().init();
 
-    #[allow(non_camel_case_types)]
-    #[derive(Clone, Debug)]
-    enum Services {
-        multi_thread,
-    }
-
-    impl ServiceBound for Services {}
-
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        service: Services::multi_thread,
+        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
     };
 

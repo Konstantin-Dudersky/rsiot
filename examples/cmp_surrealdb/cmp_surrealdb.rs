@@ -1,7 +1,7 @@
 //! Запуск:
 //!
 //! ```bash
-//! cargo run -p rsiot-surrealdb --example surrealdb_multi_thread
+//! cargo run  --example cmp_surrealdb --features "cmp_surrealdb" --target="x86_64-unknown-linux-gnu"
 //! ```
 
 #[cfg(feature = "cmp_surrealdb")]
@@ -17,7 +17,7 @@ async fn main() -> anyhow::Result<()> {
             cmp_surrealdb::{self, InputConfig},
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{Deserialize, Message, MsgDataBound, Serialize},
+        message::{example_service::*, Deserialize, Message, MsgDataBound, Serialize},
     };
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -25,7 +25,9 @@ async fn main() -> anyhow::Result<()> {
         Request(u16),
     }
 
-    impl MsgDataBound for Custom {}
+    impl MsgDataBound for Custom {
+        type TService = Service;
+    }
 
     tracing_subscriber::fmt().init();
 
@@ -37,7 +39,7 @@ async fn main() -> anyhow::Result<()> {
         namespace: "rsiot".into(),
         database: "rsiot".into(),
         init_script: include_str!("./init.surql").into(),
-        input_config: vec![InputConfig {
+        request_input: vec![InputConfig {
             fn_input: |msg| match msg.get_custom_data()? {
                 Custom::Request(content) => {
                     let value = content;
@@ -68,7 +70,7 @@ async fn main() -> anyhow::Result<()> {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "surrealdb_multi_thread".into(),
+        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
     };
 
