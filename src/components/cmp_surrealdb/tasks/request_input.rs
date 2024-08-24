@@ -22,11 +22,23 @@ where
                 None => continue,
             };
             trace!("Execute db query: {}", query);
+
             let db_client = self.db_client.lock().await;
             let mut response = db_client.query(query).await?;
+
             let errors = response.take_errors();
-            if !errors.is_empty() {
-                warn!("Response errors: {:?}", errors);
+            let msgs = match errors.is_empty() {
+                true => {
+                    let r: Option<String> = response.take(0).unwrap();
+                    (self.input_config.fn_on_success)(&r.unwrap())
+                }
+                false => {
+                    warn!("Response errors: {:?}", errors);
+                    (self.input_config.fn_on_failure)()
+                }
+            };
+            for msg in msgs {
+                self.in_out.send_output(msg).await.unwrap();
             }
         }
         Ok(())

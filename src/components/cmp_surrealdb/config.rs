@@ -28,8 +28,8 @@ pub struct Config<TMsg> {
     pub request_input: Vec<InputConfig<TMsg>>,
 }
 
-pub type FnOnSuccess<TMessage> = fn(&String) -> Vec<TMessage>;
-pub type FnOnFailure<TMessage> = fn() -> Vec<TMessage>;
+pub type FnOnSuccess<TMessage> = fn(&String) -> Vec<Message<TMessage>>;
+pub type FnOnFailure<TMessage> = fn() -> Vec<Message<TMessage>>;
 
 /// Конфигурация запросов, которые выполняются на основе входного потока сообщений
 #[derive(Clone, Debug)]
