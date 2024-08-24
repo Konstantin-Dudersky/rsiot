@@ -1,5 +1,13 @@
 use crate::message::*;
 
+// ANCHOR: TFnInput
+type TFnInput<TMsg> = fn(Message<TMsg>) -> Option<Message<TMsg>>;
+// ANCHOR_END: TFnInput
+
+// ANCHOR: TFnOutput
+type TFnOutput<TMsg> = fn(Message<TMsg>) -> Option<Message<TMsg>>;
+// ANCHOR_END: TFnOutput
+
 /// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_webstorage.html#Config
 pub struct Config<TMsg>
 where
@@ -8,11 +16,11 @@ where
     /// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_webstorage.html#kind
     pub kind: ConfigKind,
 
-    /// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_webstorage.html#fn_input
-    pub fn_input: fn(Message<TMsg>) -> Option<Message<TMsg>>,
+    /// Сохранение сообщений в хранилище
+    pub fn_input: TFnInput<TMsg>,
 
-    /// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_webstorage.html#fn_output
-    pub fn_output: fn(Message<TMsg>) -> Option<Message<TMsg>>,
+    /// Загрузка сообщений из хранилища
+    pub fn_output: TFnOutput<TMsg>,
 }
 
 /// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_webstorage.html#ConfigKind
@@ -31,7 +39,9 @@ mod tests {
     #[allow(clippy::no_effect)]
     fn fn_input() {
         cmp_webstorage::Config::<Custom> {
+            // ANCHOR: kind
             kind: cmp_webstorage::ConfigKind::SessionStorage,
+            // ANCHOR_END: kind
             // ANCHOR: fn_input_save_all
             fn_input: Some,
             // ANCHOR_END: fn_input_save_all
