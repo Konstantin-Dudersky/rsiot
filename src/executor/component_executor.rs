@@ -243,7 +243,7 @@ where
 mod tests {
 
     #[test]
-    #[cfg(all(wasm32_unknown_unknown, feature = "cmp_leptos"))]
+    #[cfg(all(wasm32_unknown_unknown, feature = "cmp_leptos", feature = "logging"))]
     #[allow(dead_code)]
     fn test_wasm() {
         use super::*;

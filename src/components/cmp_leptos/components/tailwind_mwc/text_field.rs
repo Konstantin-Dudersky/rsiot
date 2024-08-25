@@ -8,18 +8,27 @@ pub enum TextFieldKind {
 }
 
 /// Тип HTML-элемента <input/>
-pub enum InputType {
-    /// type="text"
-    Text,
+pub enum InputHtmlType {
+    /// type="date"
+    Date,
+
     /// type="number"
     Number,
+
+    /// type="text"
+    Text,
+
+    /// type="time"
+    Time,
 }
 
-impl ToString for InputType {
+impl ToString for InputHtmlType {
     fn to_string(&self) -> String {
         match self {
-            InputType::Text => "text",
-            InputType::Number => "number",
+            InputHtmlType::Date => "date",
+            InputHtmlType::Number => "number",
+            InputHtmlType::Text => "text",
+            InputHtmlType::Time => "time",
         }
         .to_string()
     }
@@ -43,8 +52,12 @@ pub fn TextField(
     label_text: &'static str,
 
     /// Тип HTML-элемента <input/>
-    #[prop(default = InputType::Text)]
-    input_type: InputType,
+    #[prop(default = InputHtmlType::Text)]
+    input_html_type: InputHtmlType,
+
+    /// HTML placeholder
+    #[prop(default = "Default")]
+    placeholder: &'static str,
 ) -> impl IntoView {
     let (input_text, input_text_set) = create_signal(String::from(""));
 
@@ -66,9 +79,11 @@ pub fn TextField(
                 shadow-sm placeholder:text-gray-400
                 focus:border-primary focus:border-2
                 ring-0
-                sm:text-sm sm:leading-6 h-14" placeholder="Jane Smith"
+                sm:text-sm sm:leading-6 h-14"
 
-                type=input_type.to_string()
+                placeholder=placeholder
+
+                type=input_html_type.to_string()
 
                 value = move || value.get()
 
@@ -76,6 +91,10 @@ pub fn TextField(
                     if event.key() == "Enter" {
                         on_keyup_enter(&input_text.get())
                     }
+                }
+
+                on:change=move |_| {
+                    on_keyup_enter(&input_text.get())
                 }
 
                 on:input = move |ev| {

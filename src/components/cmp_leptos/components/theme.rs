@@ -1,6 +1,7 @@
 use leptos::*;
 
-const BASE_STYLE: &str = "h-full bg-background text-on-background";
+const CLASS_NAMES: &str = "h-full bg-background text-on-background";
+const STYLE: &str = "color-scheme: $color_scheme";
 
 /// Переключение темы.
 ///
@@ -18,12 +19,19 @@ pub fn Theme(
     /// - light
     #[prop(default = MaybeSignal::Static("light".into()))]
     theme: MaybeSignal<String>,
+
+    /// Свойство CSS color-scheme
+    html_color_scheme: MaybeSignal<String>,
 ) -> impl IntoView {
     create_effect(move |_| {
+        let body_element = document().get_element_by_id("body").unwrap();
+
         let theme = theme.get();
-        let el = document().get_element_by_id("body").unwrap();
-        let class_name = format!("{} {}", BASE_STYLE, theme);
-        el.set_class_name(&class_name)
+        let class_name = format!("{} {}", CLASS_NAMES, theme);
+        body_element.set_class_name(&class_name);
+
+        let style = STYLE.replace("$color_scheme", &html_color_scheme.get());
+        body_element.set_attribute("style", &style).unwrap();
     });
 
     view! {}

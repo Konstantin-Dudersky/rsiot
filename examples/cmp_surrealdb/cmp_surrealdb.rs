@@ -14,7 +14,7 @@ async fn main() -> anyhow::Result<()> {
     use rsiot::{
         components::{
             cmp_inject_periodic,
-            cmp_surrealdb::{self, InputConfig},
+            cmp_surrealdb::{self, RequestInputConfig},
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{example_service::*, Deserialize, Message, MsgDataBound, Serialize},
@@ -39,7 +39,7 @@ async fn main() -> anyhow::Result<()> {
         namespace: "rsiot".into(),
         database: "rsiot".into(),
         init_script: include_str!("./init.surql").into(),
-        request_input: vec![InputConfig {
+        request_input: vec![RequestInputConfig {
             fn_input: |msg| match msg.get_custom_data()? {
                 Custom::Request(content) => {
                     let value = content;
@@ -51,11 +51,12 @@ async fn main() -> anyhow::Result<()> {
                 }
             },
             fn_on_success: |response| {
-                info!("Response: {response}");
-                vec![]
+                info!("Response: {response:?}");
+                Ok(vec![])
             },
             fn_on_failure: Vec::new,
         }],
+        request_start: vec![],
     };
 
     let mut counter = 0;

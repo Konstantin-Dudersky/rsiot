@@ -23,7 +23,7 @@ where
         let result = task_main(input.clone(), &config).await;
         match result {
             Ok(_) => error!("SurrealDB stop execution"),
-            Err(err) => error!("SurrealDB error: {err:?}"),
+            Err(err) => error!("SurrealDB error: {err}"),
         }
         info!("Restarting...");
         sleep(Duration::from_secs(2)).await;
@@ -39,6 +39,16 @@ where
 
     let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
 
+    for request_start_config in &config.request_start {
+        let task = tasks::RequestStart {
+            in_out: input.clone(),
+            start_config: request_start_config.clone(),
+            db_client: db.clone(),
+        };
+        task_set.spawn(task.spawn());
+    }
+
+    // Запросы на основе входящих сообщений
     for request_input_config in &config.request_input {
         let task = tasks::RequestInput {
             in_out: input.clone(),
@@ -46,8 +56,6 @@ where
             db_client: db.clone(),
         };
         task_set.spawn(task.spawn());
-
-        // task_set.spawn(task_request_input(input.clone(), item.clone(), db.clone()));
     }
 
     while let Some(res) = task_set.join_next().await {
@@ -79,27 +87,5 @@ async fn init_script<TMsg>(config: &Config<TMsg>, db: DbClient) -> super::Result
     debug!("Execute init script");
     let db = db.lock().await;
     db.query(config.init_script.clone()).await?;
-    Ok(())
-}
-
-async fn task_request_input<TMsg>(
-    mut input: CmpInOut<TMsg>,
-    input_config: super::config::InputConfig<TMsg>,
-    db: DbClient,
-) -> super::Result<()>
-where
-    TMsg: MsgDataBound,
-{
-    while let Ok(msg) = input.recv_input().await {
-        let query = (input_config.fn_input)(&msg);
-        let query = match query {
-            Some(val) => val,
-            None => continue,
-        };
-        info!("Execute db query: {}", query);
-        let db = db.lock().await;
-        let response = db.query(query).await?;
-        info!("Response: {:?}", response);
-    }
     Ok(())
 }

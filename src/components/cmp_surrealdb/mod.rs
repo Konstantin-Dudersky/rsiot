@@ -12,7 +12,7 @@ mod fn_process;
 mod tasks;
 
 pub use component::Cmp;
-pub use config::{Config, InputConfig};
+pub use config::{Config, RequestInputConfig, RequestStartConfig};
 pub use error::Error;
 
 type Result<T> = std::result::Result<T, Error>;
