@@ -1,4 +1,5 @@
 use tokio::{fs::create_dir_all, task::JoinSet};
+use tracing::info;
 
 use crate::{executor::CmpInOut, message::MsgDataBound};
 
@@ -8,6 +9,7 @@ pub async fn fn_process<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> s
 where
     TMsg: MsgDataBound + 'static,
 {
+    info!("cmp_filesystem: create folders");
     create_dir_all(&config.directory)
         .await
         .map_err(Error::CreateDirError)?;

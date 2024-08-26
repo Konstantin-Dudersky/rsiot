@@ -53,7 +53,7 @@
           // "executor",
           //   "logging",
           // "cmp_http_client_wasm",
-          // "cmp_leptos",
+          // "cmp_leptos"
           // "cmp_plc"
           //   "cmp_websocket_client_wasm",
           // "cmp_webstorage"

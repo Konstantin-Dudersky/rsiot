@@ -41,7 +41,7 @@ pub fn TextField(
     value: Signal<String>,
 
     /// Событие нажатия кнопки "Enter"
-    on_keyup_enter: impl Fn(&str) + 'static,
+    on_keyup_enter: impl Fn(&str) + 'static + Copy,
 
     /// Вид поля ввода
     #[prop(default=TextFieldKind::Outline)]

@@ -87,5 +87,6 @@ async fn init_script<TMsg>(config: &Config<TMsg>, db: DbClient) -> super::Result
     debug!("Execute init script");
     let db = db.lock().await;
     db.query(config.init_script.clone()).await?;
+    debug!("Init script completed");
     Ok(())
 }
