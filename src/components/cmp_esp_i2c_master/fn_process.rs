@@ -16,6 +16,15 @@ where
 
     for device in config.devices {
         match device {
+            drivers_i2c::I2cDevices::Generic(config) => {
+                let device = drivers_i2c::generic::Device {
+                    msg_bus: in_out.clone(),
+                    config,
+                    driver: driver.clone(),
+                };
+                task_set.spawn(async move { device.spawn().await });
+            }
+
             drivers_i2c::I2cDevices::ADS1115 { address, inputs } => {
                 let driver = driver.clone();
                 let device = drivers_i2c::ads1115::ADS1115 {

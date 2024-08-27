@@ -311,6 +311,10 @@ name = "cmp_esp_i2c_master_ssd1306"
 path = "./examples/cmp_esp/cmp_esp_i2c_master_ssd1306.rs"
 
 [[example]]
+name = "cmp_esp_i2c_slave"
+path = "./examples/cmp_esp/cmp_esp_i2c_slave.rs"
+
+[[example]]
 name = "cmp_esp_nvs"
 path = "examples/cmp_esp_nvs/cmp_esp_nvs.rs"
 

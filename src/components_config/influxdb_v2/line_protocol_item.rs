@@ -3,6 +3,7 @@ use crate::message::*;
 use super::ValueType;
 
 /// Строка записи в данных в базу через HTTP API
+#[derive(Debug)]
 pub struct LineProtocolItem {
     /// measurement
     pub measurement: String,

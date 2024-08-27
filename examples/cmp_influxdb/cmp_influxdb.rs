@@ -8,7 +8,7 @@ async fn main() {
     use rsiot::{
         components::{cmp_influxdb, cmp_inject_periodic},
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_message::*, *},
+        message::{example_message::*, example_service::*, *},
     };
 
     const TOKEN: &str =
@@ -48,7 +48,7 @@ async fn main() {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "example_single_thread".into(),
+        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
     };
 

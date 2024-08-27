@@ -1,5 +1,8 @@
 use leptos::*;
 
+/// Разделитель
+///
+/// https://m3.material.io/components/divider/overview
 #[component]
 pub fn Divider() -> impl IntoView {
     view! {

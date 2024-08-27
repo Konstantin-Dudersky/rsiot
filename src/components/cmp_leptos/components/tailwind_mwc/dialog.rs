@@ -49,7 +49,7 @@ where
     view! {
         <Show when=move || visible.get()>
             <div
-                class="relative z-10"
+                class="relative z-50"
                 aria-labelledby="modal-title"
                 role="dialog"
                 aria-modal="true"
@@ -70,7 +70,7 @@ where
                     class=("opacity-100", move || visible.get())
                 ></div>
 
-                <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+                <div class="fixed inset-0 z-50 w-screen overflow-y-auto">
                     <div class="flex min-h-full justify-center p-4 text-center items-center">
                         // <!--
                         // Modal panel, show/hide based on modal state.

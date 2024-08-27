@@ -3,6 +3,7 @@
 pub mod ads1115;
 mod bmp180;
 pub mod ds3231;
+pub mod generic;
 pub mod pca9555;
 mod pcf8575;
 pub mod ssd1306;

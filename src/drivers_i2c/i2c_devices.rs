@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use crate::message::{Message, MsgDataBound};
 
-use super::I2cSlaveAddress;
+use super::{generic, I2cSlaveAddress};
 
 /// Конфигурации устройств по шине I2C
 #[derive(Clone)]
@@ -10,6 +10,9 @@ pub enum I2cDevices<TMsg>
 where
     TMsg: MsgDataBound,
 {
+    /// Общее устройство
+    Generic(generic::Config<TMsg>),
+
     /// Аналого-цифровой преобразователь
     ADS1115 {
         /// Адрес. Зависит от подключения входа ADDR:
