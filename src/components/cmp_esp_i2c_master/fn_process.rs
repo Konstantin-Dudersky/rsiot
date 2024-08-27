@@ -1,28 +1,48 @@
 use std::sync::Arc;
 
+use esp_idf_hal::{
+    i2c::{I2c, I2cDriver},
+    peripheral::Peripheral,
+};
+use esp_idf_svc::hal::{i2c, units::FromValueType};
 use tokio::{sync::Mutex, task::JoinSet};
 
 use crate::{drivers_i2c, executor::CmpInOut, message::MsgDataBound};
 
-use super::{rsiot_i2c_driver::RsiotI2cDriver, Config};
+use super::{rsiot_i2c_driver::RsiotI2cDriver, Config, ConfigBaudrate};
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg, TI2c, TPeripheral>(
+    config: Config<TMsg, TI2c, TPeripheral>,
+    in_out: CmpInOut<TMsg>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TI2c: Peripheral<P = TPeripheral> + 'static,
+    TPeripheral: I2c,
 {
-    let driver = Arc::new(Mutex::new(RsiotI2cDriver::new(config.i2c_driver)));
+    // Настраиваем I2C
+    let baudrate = match config.baudrate {
+        ConfigBaudrate::Standard => 100_u32.kHz(),
+        ConfigBaudrate::Fast => todo!(),
+    };
+    let i2c_config = i2c::config::Config::new()
+        .baudrate(baudrate.into())
+        .sda_enable_pullup(config.pullup_enable)
+        .scl_enable_pullup(config.pullup_enable);
+    let i2c = I2cDriver::new(config.i2c, config.sda, config.scl, &i2c_config).unwrap();
+    let driver = Arc::new(Mutex::new(RsiotI2cDriver::new(i2c)));
 
     let mut task_set: JoinSet<()> = JoinSet::new();
 
     for device in config.devices {
         match device {
-            drivers_i2c::I2cDevices::Generic(config) => {
-                let device = drivers_i2c::generic::Device {
+            drivers_i2c::I2cDevices::General(config) => {
+                let device = drivers_i2c::general::Device {
                     msg_bus: in_out.clone(),
                     config,
                     driver: driver.clone(),
                 };
-                task_set.spawn(async move { device.spawn().await });
+                task_set.spawn(device.spawn());
             }
 
             drivers_i2c::I2cDevices::ADS1115 { address, inputs } => {

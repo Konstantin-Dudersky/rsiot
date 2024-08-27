@@ -1,4 +1,4 @@
-use std::marker::Send;
+use std::{marker::Send, time::Duration};
 
 use async_trait::async_trait;
 use tracing::{trace, warn};
@@ -17,7 +17,8 @@ where
                 slave_address,
             } => {
                 let request = [2_u8.pow(channel as u32)];
-                self.write_platform(mux_address, &request).await?;
+                self.write_platform(mux_address, &request, Duration::from_secs(2))
+                    .await?;
                 Ok(slave_address)
             }
         }
@@ -27,9 +28,10 @@ where
         &mut self,
         address: I2cSlaveAddress,
         response_size: usize,
+        timeout: Duration,
     ) -> Result<Vec<u8>, String> {
         let address = self.mux_control(address).await?;
-        let response = self.read_platform(address, response_size).await;
+        let response = self.read_platform(address, response_size, timeout).await;
         match response {
             Ok(response) => {
                 trace!("I2C success response");
@@ -42,9 +44,14 @@ where
         }
     }
 
-    async fn write(&mut self, address: I2cSlaveAddress, request: &[u8]) -> Result<(), String> {
+    async fn write(
+        &mut self,
+        address: I2cSlaveAddress,
+        request: &[u8],
+        timeout: Duration,
+    ) -> Result<(), String> {
         let address = self.mux_control(address).await?;
-        let response = self.write_platform(address, request).await;
+        let response = self.write_platform(address, request, timeout).await;
         match response {
             Ok(_) => {
                 trace!("I2C success response");
@@ -62,10 +69,11 @@ where
         address: I2cSlaveAddress,
         request: &[u8],
         response_size: usize,
+        timeout: Duration,
     ) -> Result<Vec<u8>, String> {
         let address = self.mux_control(address).await?;
         let response = self
-            .write_read_platform(address, request, response_size)
+            .write_read_platform(address, request, response_size, timeout)
             .await;
         match response {
             Ok(response) => {
@@ -79,16 +87,26 @@ where
         }
     }
 
-    async fn read_platform(&mut self, address: u8, response_size: usize)
-        -> Result<Vec<u8>, String>;
+    async fn read_platform(
+        &mut self,
+        address: u8,
+        response_size: usize,
+        timeout: Duration,
+    ) -> Result<Vec<u8>, String>;
 
-    async fn write_platform(&mut self, address: u8, request: &[u8]) -> Result<(), String>;
+    async fn write_platform(
+        &mut self,
+        address: u8,
+        request: &[u8],
+        timeout: Duration,
+    ) -> Result<(), String>;
 
     async fn write_read_platform(
         &mut self,
         address: u8,
         request: &[u8],
         response_size: usize,
+        timeout: Duration,
     ) -> Result<Vec<u8>, String>;
 }
 

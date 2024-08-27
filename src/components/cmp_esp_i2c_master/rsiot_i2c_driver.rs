@@ -1,4 +1,7 @@
+use std::time::Duration;
+
 use async_trait::async_trait;
+use esp_idf_hal::delay::TickType;
 use esp_idf_svc::hal::i2c::I2cDriver;
 
 use crate::drivers_i2c::RsiotI2cDriverBase;
@@ -19,17 +22,23 @@ impl RsiotI2cDriverBase for RsiotI2cDriver {
         &mut self,
         address: u8,
         response_size: usize,
+        timeout: Duration,
     ) -> Result<Vec<u8>, String> {
         let mut response = vec![0; response_size];
         self.i2c
-            .read(address, &mut response, 1000)
+            .read(address, &mut response, millis_to_ticks(timeout))
             .map_err(|e| e.to_string())?;
         Ok(response)
     }
 
-    async fn write_platform(&mut self, address: u8, request: &[u8]) -> Result<(), String> {
+    async fn write_platform(
+        &mut self,
+        address: u8,
+        request: &[u8],
+        timeout: Duration,
+    ) -> Result<(), String> {
         self.i2c
-            .write(address, request, 1000)
+            .write(address, request, millis_to_ticks(timeout))
             .map_err(|e| e.to_string())?;
         Ok(())
     }
@@ -39,11 +48,18 @@ impl RsiotI2cDriverBase for RsiotI2cDriver {
         address: u8,
         request: &[u8],
         response_size: usize,
+        timeout: Duration,
     ) -> Result<Vec<u8>, String> {
         let mut response = vec![0; response_size];
         self.i2c
-            .write_read(address, request, &mut response, 1000)
+            .write_read(address, request, &mut response, millis_to_ticks(timeout))
             .map_err(|e| e.to_string())?;
         Ok(response)
     }
+}
+
+fn millis_to_ticks(millis: Duration) -> u32 {
+    let millis = millis.as_millis() as u64;
+    let tick = TickType::new_millis(millis);
+    tick.ticks()
 }
