@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
 
 use tokio::sync::Mutex;
 
@@ -43,7 +43,9 @@ where
             };
             {
                 let mut driver = self.driver.lock().await;
-                driver.write_read(self.address, &state_bytes, 2).await?;
+                driver
+                    .write_read(self.address, &state_bytes, 2, Duration::from_secs(2))
+                    .await?;
             }
         }
         Ok(())

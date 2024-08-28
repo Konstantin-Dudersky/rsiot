@@ -2,7 +2,6 @@
 
 mod config;
 mod device;
-mod tasks;
 
 pub use config::*;
 pub use device::Device;

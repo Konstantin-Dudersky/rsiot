@@ -21,6 +21,7 @@ impl SSD1306 {
                         slave_address: 0x3C,
                     },
                     0,
+                    Duration::from_secs(2),
                 )
                 .await;
 

@@ -48,6 +48,22 @@ async fn main() {
         }
     }
 
+    // I2C messages --------------------------------------------------------------------------------
+    #[derive(Deserialize, Serialize)]
+    pub enum I2cRequest {
+        Request1(u32),
+    }
+
+    #[derive(Deserialize, Serialize)]
+    pub enum I2cResponse {
+        Response1(u32),
+    }
+
+    use postcard::to_stdvec;
+    let req = I2cRequest::Request1(0);
+
+    let req = to_stdvec(&req).unwrap();
+
     // cmp_logger ----------------------------------------------------------------------------------
     let logger_config = cmp_logger::Config::<Custom> {
         level: Level::INFO,
@@ -57,7 +73,7 @@ async fn main() {
     // cmp_inject_periodic -------------------------------------------------------------------------
     let mut counter: u8 = 0;
     let config_inject_periodic = cmp_inject_periodic::Config {
-        period: Duration::from_secs(5),
+        period: Duration::from_secs(1),
         fn_periodic: move || {
             let msg = Message::new_custom(Custom::Counter(counter));
             counter += 1;
@@ -73,7 +89,7 @@ async fn main() {
         i2c: peripherals.i2c0,
         sda: peripherals.pins.gpio0.into(),
         scl: peripherals.pins.gpio1.into(),
-        slave_address: 0x02,
+        slave_address: 0x77,
         rx_buf_len: 128,
         tx_buf_len: 128,
         fn_input: |msg| {
@@ -97,7 +113,7 @@ async fn main() {
 
     local_set.spawn_local(async {
         ComponentExecutor::<Custom>::new(executor_config)
-            .add_cmp(cmp_logger::Cmp::new(logger_config))
+            // .add_cmp(cmp_logger::Cmp::new(logger_config))
             .add_cmp(cmp_inject_periodic::Cmp::new(config_inject_periodic))
             .add_cmp(cmp_esp_i2c_slave::Cmp::new(config_esp_i2c_slave))
             .wait_result()

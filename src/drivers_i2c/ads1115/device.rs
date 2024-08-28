@@ -100,14 +100,16 @@ where
                     &self.input.amplifier,
                 ));
 
-                let _ = driver.write(self.address, &request).await;
+                let _ = driver
+                    .write(self.address, &request, Duration::from_secs(2))
+                    .await;
 
                 sleep(Duration::from_millis(10)).await;
 
                 // Читаем ответ
                 let request = [0x00];
                 let response = driver
-                    .write_read(self.address, &request, 2)
+                    .write_read(self.address, &request, 2, Duration::from_secs(2))
                     .await
                     .map_err(String::from)?;
                 let volt = convert_response_to_voltage(&response, &self.input.amplifier).unwrap();

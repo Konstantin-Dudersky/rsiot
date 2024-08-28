@@ -19,7 +19,9 @@ impl PCA9555 {
 
             // read ------------------
             let request = [0];
-            let result = driver.write_read(self.address, &request, 2).await;
+            let result = driver
+                .write_read(self.address, &request, 2, Duration::from_secs(2))
+                .await;
             println!("Result read: {:?}", result);
 
             // write -----------------

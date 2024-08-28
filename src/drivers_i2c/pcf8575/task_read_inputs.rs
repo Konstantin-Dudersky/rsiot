@@ -35,7 +35,7 @@ where
             let status_current = {
                 let mut driver = self.driver.lock().await;
                 driver
-                    .write_read(self.address, &state, 2)
+                    .write_read(self.address, &state, 2, Duration::from_secs(2))
                     .await
                     .map_err(String::from)?
             };

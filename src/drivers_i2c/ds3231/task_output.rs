@@ -48,7 +48,9 @@ where
             sleep(self.period).await;
 
             let mut driver = self.driver.lock().await;
-            let res = driver.write_read(self.address, &[0x00], 19).await?;
+            let res = driver
+                .write_read(self.address, &[0x00], 19, Duration::from_secs(2))
+                .await?;
 
             let second = data_models::Second::new_from_bcd(res[0]);
             let minute = data_models::Minute::new_from_bcd(res[1]);
@@ -57,7 +59,9 @@ where
             let month = data_models::Month::new_from_bcd(res[5]);
             let year = data_models::Year::new_from_bcd(res[6]);
 
-            let res = driver.write_read(self.address, &[0x0E], 2).await?;
+            let res = driver
+                .write_read(self.address, &[0x0E], 2, Duration::from_secs(2))
+                .await?;
             println!("Control: {:?}", res[0]);
             println!("Status: {:?}", res[1]);
 

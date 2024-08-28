@@ -79,7 +79,9 @@ async fn request_calibration_data(
     let mut response;
     {
         let mut driver = driver.lock().await;
-        response = driver.write_read(address, &[0xAA], 22).await?;
+        response = driver
+            .write_read(address, &[0xAA], 22, Duration::from_secs(2))
+            .await?;
     }
     swap_msb_lsb(&mut response);
     let response =
@@ -96,12 +98,16 @@ async fn request_temperature(
     let mut response;
     {
         let mut driver = driver.lock().await;
-        driver.write(address, &[0xF4, 0x2E]).await?;
+        driver
+            .write(address, &[0xF4, 0x2E], Duration::from_secs(2))
+            .await?;
     }
     sleep(Duration::from_millis(5)).await;
     {
         let mut driver = driver.lock().await;
-        response = driver.write_read(address, &[0xF6], 2).await?;
+        response = driver
+            .write_read(address, &[0xF6], 2, Duration::from_secs(2))
+            .await?;
     }
     swap_msb_lsb(&mut response);
     let response = bincode::deserialize::<ResponseUncompensatedTemperature>(&response)
@@ -126,12 +132,20 @@ async fn request_pressure(
     };
     {
         let mut driver = driver.lock().await;
-        driver.write(address, &[0xF4, oversampling_command]).await?;
+        driver
+            .write(
+                address,
+                &[0xF4, oversampling_command],
+                Duration::from_secs(2),
+            )
+            .await?;
     }
     sleep(Duration::from_millis(26)).await;
     {
         let mut driver = driver.lock().await;
-        response = driver.write_read(address, &[0xF6], 3).await?;
+        response = driver
+            .write_read(address, &[0xF6], 3, Duration::from_secs(2))
+            .await?;
     }
     let UP = (((response[0] as u32) << 16) + ((response[1] as u32) << 8) + response[2] as u32)
         >> (8 - oversampling as u8);

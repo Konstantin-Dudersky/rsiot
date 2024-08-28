@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
 
 use tokio::sync::Mutex;
 
@@ -61,7 +61,10 @@ where
                 data_models::Month::new_from_dec(input_data.month).get_bcd(),
                 data_models::Year::new_from_dec(input_data.year).get_bcd(),
             ];
-            driver.write(self.address, &request).await.unwrap();
+            driver
+                .write(self.address, &request, Duration::from_secs(2))
+                .await
+                .unwrap();
         }
         Ok(())
     }

@@ -1,7 +1,8 @@
 use std::sync::Arc;
 
-use esp_idf_hal::{delay::BLOCK, i2c::I2cSlaveDriver};
+use esp_idf_hal::i2c::I2cSlaveDriver;
 use tokio::sync::Mutex;
+use tracing::info;
 
 use crate::{executor::CmpInOut, message::MsgDataBound};
 
@@ -25,7 +26,8 @@ where
             let buffer = (self.fn_input)(&msg);
             let Some(buffer) = buffer else { continue };
             let mut driver = self.driver.lock().await;
-            driver.write(&buffer, BLOCK).unwrap();
+            info!("Send to I2C: {:?}", buffer);
+            // driver.write(&buffer, 1000).unwrap();
         }
 
         Ok(())

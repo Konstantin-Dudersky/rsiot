@@ -1,21 +1,34 @@
 use std::time::Duration;
 
-use crate::message::{Message, MsgDataBound};
-
 use super::super::I2cSlaveAddress;
 
 /// Конфигурация
 #[derive(Clone)]
-pub struct Config<TMsg>
-where
-    TMsg: MsgDataBound,
-{
+pub struct Config {
     /// Адрес
     pub address: I2cSlaveAddress,
 
-    /// Функция преобразования полученных данных в сообщения
-    pub fn_output: fn(Vec<u8>) -> Vec<Message<TMsg>>,
+    pub requests: Vec<ConfigRequestKind>,
 
-    /// Период опроса
-    pub fn_output_period: Duration,
+    pub period: Duration,
+
+    pub fn_response: fn(usize, Vec<u8>),
+
+    /// Тайм-аут запроса
+    pub timeout: Duration,
+}
+
+#[derive(Clone)]
+
+pub enum ConfigRequestKind {
+    Read {
+        response_size: usize,
+    },
+    Write {
+        request: Vec<u8>,
+    },
+    WriteRead {
+        request: Vec<u8>,
+        response_size: usize,
+    },
 }

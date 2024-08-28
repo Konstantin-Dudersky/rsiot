@@ -11,7 +11,7 @@ where
     TMsg: MsgDataBound,
 {
     /// Общее устройство
-    General(general::Config<TMsg>),
+    General(general::Config),
 
     /// Аналого-цифровой преобразователь
     ADS1115 {

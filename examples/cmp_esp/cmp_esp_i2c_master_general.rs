@@ -76,20 +76,35 @@ async fn main() {
         scl: peripherals.pins.gpio1.into(),
         baudrate: cmp_esp_i2c_master::ConfigBaudrate::Standard,
         pullup_enable: true,
-        timeout: Duration::from_secs(1),
+        timeout: Duration::from_millis(2000),
         devices: vec![drivers_i2c::I2cDevices::General(
             drivers_i2c::general::Config {
                 address: drivers_i2c::I2cSlaveAddress::Direct {
-                    slave_address: 0x02,
+                    slave_address: 0x77,
                 },
-                fn_output: |data| {
-                    info!("Data received: {:?}", data);
-                    vec![]
-                },
-                fn_output_period: Duration::from_secs(2),
+                timeout: Duration::from_secs(2),
+                requests: vec![
+                    drivers_i2c::general::ConfigRequestKind::Write {
+                        request: vec![0x00, 2, 33, 4, 5, 6, 7, 8, 9, 10],
+                    },
+                    drivers_i2c::general::ConfigRequestKind::Write {
+                        request: vec![0x01, 22, 33],
+                    },
+                    drivers_i2c::general::ConfigRequestKind::Write {
+                        request: vec![0x00],
+                    },
+                    drivers_i2c::general::ConfigRequestKind::Read { response_size: 1 },
+                    drivers_i2c::general::ConfigRequestKind::Write {
+                        request: vec![0x01],
+                    },
+                    drivers_i2c::general::ConfigRequestKind::Read { response_size: 1 },
+                ],
+                period: Duration::from_millis(500),
+                fn_response: |index, data| info!("Response: {}; data: {:?}", index, data),
             },
         )],
     };
+
     // executor ------------------------------------------------------------------------------------
 
     let executor_config = ComponentExecutorConfig {
@@ -102,7 +117,7 @@ async fn main() {
 
     local_set.spawn_local(async {
         ComponentExecutor::<Custom>::new(executor_config)
-            .add_cmp(cmp_logger::Cmp::new(logger_config))
+            // .add_cmp(cmp_logger::Cmp::new(logger_config))
             .add_cmp(cmp_inject_periodic::Cmp::new(config_inject_periodic))
             .add_cmp(cmp_esp_i2c_master::Cmp::new(config_esp_i2c_master))
             .wait_result()
