@@ -6,6 +6,7 @@ pub mod ds3231;
 pub mod general;
 pub mod pca9555;
 mod pcf8575;
+pub mod postcard_serde;
 pub mod ssd1306;
 
 mod i2c_devices;

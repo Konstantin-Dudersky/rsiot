@@ -4,13 +4,13 @@ use esp_idf_hal::{
     delay::BLOCK,
     i2c::{I2c, I2cSlaveConfig, I2cSlaveDriver},
     peripheral::Peripheral,
+    sys::{i2c_reset_rx_fifo, i2c_reset_tx_fifo},
 };
-use postcard::{from_bytes_cobs, to_stdvec_cobs};
 use serde::{de::DeserializeOwned, Serialize};
 use tokio::task::JoinSet;
 use tracing::{info, warn};
 
-use crate::{executor::CmpInOut, message::MsgDataBound};
+use crate::{drivers_i2c::postcard_serde, executor::CmpInOut, message::MsgDataBound};
 
 use super::Config;
 
@@ -45,15 +45,28 @@ where
     let mut task_set: JoinSet<()> = JoinSet::new();
 
     task_set.spawn_blocking(move || loop {
-        let mut request_buffer: [u8; 10] = [0; 10];
-        let res = i2c_slave.read(&mut request_buffer, BLOCK);
+        // info!("Wait for request");
+        // let mut request_buffer: [u8; postcard_serde::MESSAGE_LEN] =
+        //     [0; postcard_serde::MESSAGE_LEN];
 
-        if let Err(err) = res {
-            warn!("Error reading buffer: {}", err);
-            continue;
+        let mut request_buffer = vec![];
+        let mut request_buffer_1: [u8; 1] = [0];
+        let _ = i2c_slave.read(&mut request_buffer_1, BLOCK);
+        request_buffer.push(request_buffer_1[0]);
+        while i2c_slave.read(&mut request_buffer_1, 0).is_ok() {
+            request_buffer.push(request_buffer_1[0]);
         }
 
-        let request: Result<TI2cRequest, _> = from_bytes_cobs(&mut request_buffer);
+        // unsafe { i2c_reset_rx_fifo(0) };
+        unsafe { i2c_reset_tx_fifo(0) };
+
+        // if let Err(err) = res {
+        //     warn!("Error reading buffer: {}", err);
+        //     continue;
+        // }
+
+        // info!("Request buffer: {:?}", request_buffer);
+        let request: Result<TI2cRequest, _> = postcard_serde::deserialize(&mut request_buffer);
         let request = match request {
             Ok(val) => val,
             Err(err) => {
@@ -62,7 +75,8 @@ where
                 continue;
             }
         };
-        info!("Request: {:?}", request);
+        // info!("Request: {:?}", request);
+
         let response = (config.fn_master_comm)(request);
         let response = match response {
             Ok(val) => val,
@@ -72,10 +86,10 @@ where
                 continue;
             }
         };
-        info!("Response: {:?}", response);
+        // info!("Response: {:?}", response);
 
-        let response_buffer = to_stdvec_cobs(&response);
-        let mut response_buffer = match response_buffer {
+        let response_buffer = postcard_serde::serialize(&response);
+        let response_buffer = match response_buffer {
             Ok(val) => val,
             Err(err) => {
                 let err = format!("Serialization error: {}", err);
@@ -83,12 +97,6 @@ where
                 continue;
             }
         };
-
-        if response_buffer.len() > config.buffer_len {
-            warn!("Response too large");
-            continue;
-        }
-        response_buffer.resize(config.buffer_len, 0xFF);
 
         let res = i2c_slave.write(&response_buffer, BLOCK);
         if let Err(err) = res {

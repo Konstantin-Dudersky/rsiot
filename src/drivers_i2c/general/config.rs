@@ -2,6 +2,8 @@ use std::time::Duration;
 
 use super::super::I2cSlaveAddress;
 
+pub type FnResponse = fn(usize, &mut [u8]) -> Result<(), String>;
+
 /// Конфигурация
 #[derive(Clone)]
 pub struct Config {
@@ -12,7 +14,7 @@ pub struct Config {
 
     pub period: Duration,
 
-    pub fn_response: fn(usize, Vec<u8>),
+    pub fn_response: FnResponse,
 
     /// Тайм-аут запроса
     pub timeout: Duration,

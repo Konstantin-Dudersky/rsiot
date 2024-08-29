@@ -13,7 +13,7 @@ use crate::{
     message::MsgDataBound,
 };
 
-use super::{Config, ConfigRequestKind};
+use super::{Config, ConfigRequestKind, FnResponse};
 
 /// Устройство I2C
 pub struct Device<TMsg, TDriver>
@@ -42,7 +42,7 @@ where
             sleep(self.config.period).await;
             let mut driver = self.driver.lock().await;
             for (index, req) in self.config.requests.iter().enumerate() {
-                println!("{}", index);
+                // println!("{}", index);
                 let response = process_request(
                     req,
                     &mut driver,
@@ -57,7 +57,7 @@ where
                     warn!("{}", err);
                     break;
                 }
-                sleep(Duration::from_millis(1000)).await;
+                // sleep(Duration::from_millis(100)).await;
             }
         }
     }
@@ -68,7 +68,7 @@ async fn process_request<'a, TDriver>(
     driver: &mut MutexGuard<'a, TDriver>,
     address: I2cSlaveAddress,
     timeout: Duration,
-    fn_response: fn(usize, Vec<u8>),
+    fn_response: FnResponse,
     index: usize,
 ) -> Result<(), String>
 where
@@ -76,18 +76,18 @@ where
 {
     match req {
         ConfigRequestKind::Read { response_size } => {
-            let response = driver.read(address, *response_size, timeout).await?;
-            (fn_response)(index, response);
+            let mut response = driver.read(address, *response_size, timeout).await?;
+            (fn_response)(index, &mut response)?;
         }
         ConfigRequestKind::Write { request } => driver.write(address, request, timeout).await?,
         ConfigRequestKind::WriteRead {
             request,
             response_size,
         } => {
-            let response = driver
+            let mut response = driver
                 .write_read(address, request, *response_size, timeout)
                 .await?;
-            (fn_response)(index, response);
+            (fn_response)(index, &mut response)?;
         }
     }
     Ok(())

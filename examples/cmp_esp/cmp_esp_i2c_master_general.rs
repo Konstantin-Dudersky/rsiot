@@ -22,6 +22,20 @@ async fn main() {
     link_patches();
     configure_logging(LevelFilter::INFO).unwrap();
 
+    // I2C messages --------------------------------------------------------------------------------
+    #[derive(Debug, Deserialize, Serialize)]
+    pub enum I2cRequest {
+        Request1(u32),
+    }
+
+    #[derive(Debug, Deserialize, Serialize)]
+    pub enum I2cResponse {
+        Response1(u32),
+    }
+
+    let request = I2cRequest::Request1(255);
+    let request = drivers_i2c::postcard_serde::serialize(&request).unwrap();
+
     // service -------------------------------------------------------------------------------------
     #[allow(non_camel_case_types)]
     #[derive(Debug, Clone, PartialEq)]
@@ -84,23 +98,33 @@ async fn main() {
                 },
                 timeout: Duration::from_secs(2),
                 requests: vec![
-                    drivers_i2c::general::ConfigRequestKind::Write {
-                        request: vec![0x00, 2, 33, 4, 5, 6, 7, 8, 9, 10],
+                    drivers_i2c::general::ConfigRequestKind::WriteRead {
+                        request,
+                        response_size: drivers_i2c::postcard_serde::MESSAGE_LEN,
                     },
-                    drivers_i2c::general::ConfigRequestKind::Write {
-                        request: vec![0x01, 22, 33],
-                    },
-                    drivers_i2c::general::ConfigRequestKind::Write {
-                        request: vec![0x00],
-                    },
-                    drivers_i2c::general::ConfigRequestKind::Read { response_size: 1 },
-                    drivers_i2c::general::ConfigRequestKind::Write {
-                        request: vec![0x01],
-                    },
-                    drivers_i2c::general::ConfigRequestKind::Read { response_size: 1 },
+                    // drivers_i2c::general::ConfigRequestKind::Write { request },
+                    // drivers_i2c::general::ConfigRequestKind::Read { response_size: 10 },
+                    // drivers_i2c::general::ConfigRequestKind::Write {
+                    //     request: vec![0x00, 2, 33, 4, 5, 6, 7, 8, 9, 10],
+                    // },
+                    // drivers_i2c::general::ConfigRequestKind::Write {
+                    //     request: vec![0x01, 22, 33],
+                    // },
+                    // drivers_i2c::general::ConfigRequestKind::Write {
+                    //     request: vec![0x00],
+                    // },
+                    // drivers_i2c::general::ConfigRequestKind::Read { response_size: 1 },
+                    // drivers_i2c::general::ConfigRequestKind::Write {
+                    //     request: vec![0x01],
+                    // },
+                    // drivers_i2c::general::ConfigRequestKind::Read { response_size: 1 },
                 ],
-                period: Duration::from_millis(500),
-                fn_response: |index, data| info!("Response: {}; data: {:?}", index, data),
+                period: Duration::from_millis(10),
+                fn_response: |index, data| {
+                    let response: I2cResponse = drivers_i2c::postcard_serde::deserialize(data)?;
+                    // info!("Response: {:?}", response);
+                    Ok(())
+                },
             },
         )],
     };

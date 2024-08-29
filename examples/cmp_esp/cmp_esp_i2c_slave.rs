@@ -59,11 +59,6 @@ async fn main() {
         Response1(u32),
     }
 
-    use postcard::to_stdvec;
-    let req = I2cRequest::Request1(0);
-
-    let req = to_stdvec(&req).unwrap();
-
     // cmp_logger ----------------------------------------------------------------------------------
     let logger_config = cmp_logger::Config::<Custom> {
         level: Level::INFO,
@@ -98,7 +93,9 @@ async fn main() {
             }
         },
         fn_output: |_| vec![],
-        fn_master_comm: |req: I2cRequest| Ok(I2cResponse::Response1(0)),
+        fn_master_comm: |req: I2cRequest| match req {
+            I2cRequest::Request1(data) => Ok(I2cResponse::Response1(data)),
+        },
     };
 
     // executor ------------------------------------------------------------------------------------
