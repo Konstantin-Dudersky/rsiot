@@ -1,32 +1,35 @@
-use std::sync::Arc;
+use std::fmt::Debug;
 
 use esp_idf_hal::{
     delay::BLOCK,
     i2c::{I2c, I2cSlaveConfig, I2cSlaveDriver},
     peripheral::Peripheral,
-    sys::i2c_reset_rx_fifo,
 };
-use tokio::{sync::Mutex, task::JoinSet};
-use tracing::info;
+use postcard::{from_bytes_cobs, to_stdvec_cobs};
+use serde::{de::DeserializeOwned, Serialize};
+use tokio::task::JoinSet;
+use tracing::{info, warn};
 
 use crate::{executor::CmpInOut, message::MsgDataBound};
 
-use super::{tasks, Config};
+use super::Config;
 
-pub async fn fn_process<TMsg, TI2c, TPeripheral>(
-    config: Config<TMsg, TI2c, TPeripheral>,
-    in_out: CmpInOut<TMsg>,
+pub async fn fn_process<TMsg, TI2c, TPeripheral, TI2cRequest, TI2cResponse>(
+    config: Config<TMsg, TI2c, TPeripheral, TI2cRequest, TI2cResponse>,
+    _in_out: CmpInOut<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
     TI2c: Peripheral<P = TPeripheral> + 'static,
     TPeripheral: I2c,
+    TI2cRequest: Debug + DeserializeOwned + 'static,
+    TI2cResponse: Debug + Serialize + 'static,
 {
     let i2c_idf_config = I2cSlaveConfig::new()
         .sda_enable_pullup(false)
         .scl_enable_pullup(false)
-        .tx_buffer_length(config.tx_buf_len)
-        .rx_buffer_length(config.rx_buf_len);
+        .tx_buffer_length(config.buffer_len)
+        .rx_buffer_length(config.buffer_len);
 
     let mut i2c_slave = I2cSlaveDriver::new(
         config.i2c,
@@ -36,17 +39,62 @@ where
         &i2c_idf_config,
     )
     .unwrap();
-    // let driver = Arc::new(Mutex::new(driver));
 
     info!("I2c slave drive initialized");
 
     let mut task_set: JoinSet<()> = JoinSet::new();
 
     task_set.spawn_blocking(move || loop {
-        let mut reg_addr: [u8; 10] = [0; 10];
-        let res = i2c_slave.read(&mut reg_addr, BLOCK);
-        info!("Read result: {:?}", res);
-        info!("Buffer: {:?}", reg_addr);
+        let mut request_buffer: [u8; 10] = [0; 10];
+        let res = i2c_slave.read(&mut request_buffer, BLOCK);
+
+        if let Err(err) = res {
+            warn!("Error reading buffer: {}", err);
+            continue;
+        }
+
+        let request: Result<TI2cRequest, _> = from_bytes_cobs(&mut request_buffer);
+        let request = match request {
+            Ok(val) => val,
+            Err(err) => {
+                let err = format!("Deserialization error: {}", err);
+                warn!("{}", err);
+                continue;
+            }
+        };
+        info!("Request: {:?}", request);
+        let response = (config.fn_master_comm)(request);
+        let response = match response {
+            Ok(val) => val,
+            Err(err) => {
+                let err = format!("{}", err);
+                warn!("{}", err);
+                continue;
+            }
+        };
+        info!("Response: {:?}", response);
+
+        let response_buffer = to_stdvec_cobs(&response);
+        let mut response_buffer = match response_buffer {
+            Ok(val) => val,
+            Err(err) => {
+                let err = format!("Serialization error: {}", err);
+                warn!("{}", err);
+                continue;
+            }
+        };
+
+        if response_buffer.len() > config.buffer_len {
+            warn!("Response too large");
+            continue;
+        }
+        response_buffer.resize(config.buffer_len, 0xFF);
+
+        let res = i2c_slave.write(&response_buffer, BLOCK);
+        if let Err(err) = res {
+            warn!("Error writing to buffer: {}", err);
+            continue;
+        }
     });
 
     // task_set.spawn_blocking(move || {
@@ -104,3 +152,5 @@ where
 
     Ok(())
 }
+
+// TODO - сделать расчет CRC - падает stack protection fault

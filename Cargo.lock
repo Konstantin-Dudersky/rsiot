@@ -6650,6 +6650,7 @@ dependencies = [
  "chrono",
  "clap",
  "console_error_panic_hook",
+ "crc",
  "document-features",
  "dotenvy",
  "embedded-svc",

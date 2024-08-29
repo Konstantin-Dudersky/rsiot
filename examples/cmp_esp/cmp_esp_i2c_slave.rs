@@ -49,12 +49,12 @@ async fn main() {
     }
 
     // I2C messages --------------------------------------------------------------------------------
-    #[derive(Deserialize, Serialize)]
+    #[derive(Debug, Deserialize, Serialize)]
     pub enum I2cRequest {
         Request1(u32),
     }
 
-    #[derive(Deserialize, Serialize)]
+    #[derive(Debug, Deserialize, Serialize)]
     pub enum I2cResponse {
         Response1(u32),
     }
@@ -90,8 +90,7 @@ async fn main() {
         sda: peripherals.pins.gpio0.into(),
         scl: peripherals.pins.gpio1.into(),
         slave_address: 0x77,
-        rx_buf_len: 128,
-        tx_buf_len: 128,
+        buffer_len: 128,
         fn_input: |msg| {
             let msg = msg.get_custom_data()?;
             match msg {
@@ -99,6 +98,7 @@ async fn main() {
             }
         },
         fn_output: |_| vec![],
+        fn_master_comm: |req: I2cRequest| Ok(I2cResponse::Response1(0)),
     };
 
     // executor ------------------------------------------------------------------------------------
