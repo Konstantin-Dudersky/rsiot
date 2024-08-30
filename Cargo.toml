@@ -218,7 +218,7 @@ cmp_mqtt_client = ["executor", "dep:rumqttc"]
 cmp_plc = ["executor", "dep:instant"]
 
 ## Работа с периферией Raspberry Pi
-cmp_raspberrypi = ["executor", "dep:rppal"]
+cmp_raspberrypi = ["executor", "dep:rppal", "dep:postcard"]
 
 ## Компонент клиента Redis
 cmp_redis_client = ["executor", "dep:futures", "dep:redis", "dep:url"]

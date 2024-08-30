@@ -13,7 +13,7 @@ use crate::{
     message::MsgDataBound,
 };
 
-use super::{Config, ConfigRequestKind, FnResponse};
+use super::{Config, ConfigRequestKind, Error, FnResponse};
 
 /// Устройство I2C
 pub struct Device<TMsg, TDriver>
@@ -70,24 +70,31 @@ async fn process_request<'a, TDriver>(
     timeout: Duration,
     fn_response: FnResponse,
     index: usize,
-) -> Result<(), String>
+) -> super::Result<()>
 where
     TDriver: RsiotI2cDriverBase + 'static,
 {
     match req {
         ConfigRequestKind::Read { response_size } => {
-            let mut response = driver.read(address, *response_size, timeout).await?;
-            (fn_response)(index, &mut response)?;
+            let mut response = driver
+                .read(address, *response_size, timeout)
+                .await
+                .map_err(Error::Driver)?;
+            (fn_response)(index, &mut response).map_err(Error::FnProcess)?;
         }
-        ConfigRequestKind::Write { request } => driver.write(address, request, timeout).await?,
+        ConfigRequestKind::Write { request } => driver
+            .write(address, request, timeout)
+            .await
+            .map_err(Error::Driver)?,
         ConfigRequestKind::WriteRead {
             request,
             response_size,
         } => {
             let mut response = driver
                 .write_read(address, request, *response_size, timeout)
-                .await?;
-            (fn_response)(index, &mut response)?;
+                .await
+                .map_err(Error::Driver)?;
+            (fn_response)(index, &mut response).map_err(Error::FnProcess)?;
         }
     }
     Ok(())

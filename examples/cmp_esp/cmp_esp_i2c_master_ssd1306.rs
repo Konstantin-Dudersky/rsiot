@@ -10,10 +10,7 @@
 async fn main() {
     use std::time::Duration;
 
-    use esp_idf_svc::{
-        hal::{i2c::I2cDriver, peripherals::Peripherals, units::FromValueType},
-        sys::link_patches,
-    };
+    use esp_idf_svc::{hal::peripherals::Peripherals, sys::link_patches};
     use tokio::task::LocalSet;
     use tracing::{level_filters::LevelFilter, Level};
 
@@ -65,24 +62,15 @@ async fn main() {
     let peripherals = Peripherals::take().unwrap();
 
     // I2C
-    let config = esp_idf_svc::hal::i2c::config::Config::new()
-        .baudrate(100_u32.kHz().into())
-        .scl_enable_pullup(true)
-        .scl_enable_pullup(true);
-
-    let i2c = I2cDriver::new(
-        peripherals.i2c0,
-        peripherals.pins.gpio6,
-        peripherals.pins.gpio7,
-        &config,
-    )
-    .unwrap();
 
     let devices = vec![drivers_i2c::I2cDevices::SSD1306 {}];
-
     let config_esp_i2c_master = cmp_esp_i2c_master::Config {
         timeout: Duration::from_millis(1000),
-        i2c_driver: i2c,
+        i2c: peripherals.i2c0,
+        sda: peripherals.pins.gpio4.into(),
+        scl: peripherals.pins.gpio5.into(),
+        baudrate: cmp_esp_i2c_master::ConfigBaudrate::Standard,
+        pullup_enable: true,
         devices,
     };
 

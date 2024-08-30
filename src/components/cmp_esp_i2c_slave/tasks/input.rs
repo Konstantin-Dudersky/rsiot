@@ -8,16 +8,16 @@ use crate::{executor::CmpInOut, message::MsgDataBound};
 
 use super::super::FnInput;
 
-pub struct Input<TMsg>
+pub struct Input<TMsg, TBufferData>
 where
     TMsg: MsgDataBound,
 {
     pub msg_bus: CmpInOut<TMsg>,
     pub driver: Arc<Mutex<I2cSlaveDriver<'static>>>,
-    pub fn_input: FnInput<TMsg>,
+    pub fn_input: FnInput<TMsg, TBufferData>,
 }
 
-impl<TMsg> Input<TMsg>
+impl<TMsg, TBufferData> Input<TMsg, TBufferData>
 where
     TMsg: MsgDataBound,
 {

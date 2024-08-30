@@ -59,8 +59,13 @@ async fn main() {
         Response1(u32),
     }
 
+    #[derive(Clone, Debug, Default)]
+    struct I2cBufferData {}
+
+    impl cmp_esp_i2c_slave::BufferData for I2cBufferData {}
+
     // cmp_logger ----------------------------------------------------------------------------------
-    let logger_config = cmp_logger::Config::<Custom> {
+    let _logger_config = cmp_logger::Config::<Custom> {
         level: Level::INFO,
         fn_input: |msg| Ok(Some(msg.serialize_data()?)),
     };
@@ -85,7 +90,6 @@ async fn main() {
         sda: peripherals.pins.gpio0.into(),
         scl: peripherals.pins.gpio1.into(),
         slave_address: 0x77,
-        buffer_len: 128,
         fn_input: |msg| {
             let msg = msg.get_custom_data()?;
             match msg {
@@ -93,9 +97,10 @@ async fn main() {
             }
         },
         fn_output: |_| vec![],
-        fn_master_comm: |req: I2cRequest| match req {
+        fn_i2c_comm: |req: I2cRequest| match req {
             I2cRequest::Request1(data) => Ok(I2cResponse::Response1(data)),
         },
+        buffer_data: I2cBufferData::default(),
     };
 
     // executor ------------------------------------------------------------------------------------

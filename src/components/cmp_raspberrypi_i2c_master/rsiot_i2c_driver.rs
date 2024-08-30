@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use async_trait::async_trait;
 use rppal::i2c::I2c;
 
@@ -21,6 +23,7 @@ impl RsiotI2cDriverBase for RsiotI2cDriver {
         &mut self,
         address: u8,
         response_size: usize,
+        timeout: Duration,
     ) -> Result<Vec<u8>, String> {
         self.i2c
             .set_slave_address(address as u16)
@@ -30,7 +33,12 @@ impl RsiotI2cDriverBase for RsiotI2cDriver {
         Ok(response)
     }
 
-    async fn write_platform(&mut self, address: u8, request: &[u8]) -> Result<(), String> {
+    async fn write_platform(
+        &mut self,
+        address: u8,
+        request: &[u8],
+        timeout: Duration,
+    ) -> Result<(), String> {
         self.i2c
             .set_slave_address(address as u16)
             .map_err(|e| e.to_string())?;
@@ -43,6 +51,7 @@ impl RsiotI2cDriverBase for RsiotI2cDriver {
         address: u8,
         request: &[u8],
         response_size: usize,
+        timeout: Duration,
     ) -> Result<Vec<u8>, String> {
         self.i2c
             .set_slave_address(address as u16)

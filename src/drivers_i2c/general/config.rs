@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use super::super::I2cSlaveAddress;
 
-pub type FnResponse = fn(usize, &mut [u8]) -> Result<(), String>;
+pub type FnResponse = fn(usize, &mut [u8]) -> Result<(), anyhow::Error>;
 
 /// Конфигурация
 #[derive(Clone)]
