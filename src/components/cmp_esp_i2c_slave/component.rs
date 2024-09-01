@@ -22,7 +22,7 @@ where
     TPeripheral: I2c,
     TI2cRequest: Debug + DeserializeOwned + 'static,
     TI2cResponse: Debug + Serialize + 'static,
-    TBufferData: BufferData,
+    TBufferData: BufferData + 'static,
 {
     async fn process(
         &self,

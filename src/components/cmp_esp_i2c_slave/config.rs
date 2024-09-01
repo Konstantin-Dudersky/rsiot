@@ -1,4 +1,5 @@
 use std::fmt::Debug;
+use std::time::Duration;
 
 use esp_idf_hal::{gpio::AnyIOPin, i2c::I2c, peripheral::Peripheral};
 use serde::{de::DeserializeOwned, Serialize};
@@ -8,13 +9,14 @@ use crate::message::{Message, MsgDataBound};
 use super::BufferData;
 
 /// Функция преобразования входных сообщений в данные для передачи I2C
-pub type FnInput<TMsg, TBufferData> = fn(&Message<TMsg>, &mut TBufferData) -> Option<Vec<u8>>;
+pub type FnInput<TMsg, TBufferData> = fn(&Message<TMsg>, &mut TBufferData);
 
 /// Функция для преобразования полученных данных I2C в исходящие сообщения
-pub type FnOutput<TMsg> = fn(Vec<u8>) -> Vec<Message<TMsg>>;
+pub type FnOutput<TMsg, TBufferData> = fn(&TBufferData) -> Vec<Message<TMsg>>;
 
 /// Функция для работы коммуникации I2C
-pub type FnI2cComm<TI2cRequest, TI2cResponse> = fn(TI2cRequest) -> anyhow::Result<TI2cResponse>;
+pub type FnI2cComm<TI2cRequest, TI2cResponse, TBufferData> =
+    fn(TI2cRequest, &mut TBufferData) -> anyhow::Result<TI2cResponse>;
 
 /// Конфигурация cmp_esp_i2c_slave
 pub struct Config<TMsg, TI2c, TPeripheral, TI2cRequest, TI2cResponse, TBufferData>
@@ -47,18 +49,23 @@ where
     /// ```
     pub fn_input: FnInput<TMsg, TBufferData>,
 
-    /// Функция для преобразования полученных данных I2C в исходящие сообщения
+    /// Функция для преобразования полученных данных I2C в исходящие сообщения.
+    ///
+    /// Функция вызывается по времени, с периодом вызова `fn_output_period`
     ///
     /// # Пример
     ///
     /// ```rust
     /// fn_output: |_| vec![]
     /// ```
-    pub fn_output: FnOutput<TMsg>,
+    pub fn_output: FnOutput<TMsg, TBufferData>,
+
+    /// Период вызова `fn_output`
+    pub fn_output_period: Duration,
 
     /// Функция для обработки коммуникации с мастером I2C
-    pub fn_i2c_comm: FnI2cComm<TI2cRequest, TI2cResponse>,
+    pub fn_i2c_comm: FnI2cComm<TI2cRequest, TI2cResponse, TBufferData>,
 
     /// Структура для хранения буферных данных
-    pub buffer_data: TBufferData,
+    pub buffer_data_default: TBufferData,
 }

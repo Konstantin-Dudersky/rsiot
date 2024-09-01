@@ -1,4 +1,4 @@
-use crate::{drivers_i2c::postcard_serde, executor::ComponentError};
+use crate::{components::shared_tasks, drivers_i2c::postcard_serde, executor::ComponentError};
 
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
@@ -26,6 +26,15 @@ pub enum Error {
 
     #[error("Error reading from I2C buffer: {0}")]
     ReadingFromI2cBuffer(esp_idf_hal::sys::EspError),
+
+    #[error(transparent)]
+    TaskFilterIdenticalData(shared_tasks::filter_identical_data::Error),
+
+    #[error("{0}")]
+    TaskOutput(String),
+
+    #[error(transparent)]
+    TaskToMsgBus(shared_tasks::to_cmp_output::Error),
 }
 
 impl From<Error> for ComponentError {

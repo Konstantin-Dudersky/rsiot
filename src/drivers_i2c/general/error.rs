@@ -1,3 +1,4 @@
+#[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("Error in fn_process: {0}")]

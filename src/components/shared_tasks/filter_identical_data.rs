@@ -11,7 +11,7 @@ use crate::message::{Message, MsgDataBound};
 /// одинаковым полем `data`, но с разными метками времени. Данная функция сохраняет все сообщения в кеше, и отдает только с обноволенным полем data.
 ///
 /// TODO - возможно, все-таки периодически выдавать сообщения, даже если поле `data` не изменилось
-pub struct FilterMsgsWithSameData<TMsg>
+pub struct FilterIdenticalData<TMsg>
 where
     TMsg: MsgDataBound,
 {
@@ -19,7 +19,7 @@ where
     pub output: mpsc::Sender<Message<TMsg>>,
 }
 
-impl<TMsg> FilterMsgsWithSameData<TMsg>
+impl<TMsg> FilterIdenticalData<TMsg>
 where
     TMsg: MsgDataBound,
 {

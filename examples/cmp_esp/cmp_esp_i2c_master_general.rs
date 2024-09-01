@@ -9,7 +9,7 @@ async fn main() {
 
     use esp_idf_svc::{hal::peripherals::Peripherals, sys::link_patches};
     use tokio::task::LocalSet;
-    use tracing::{level_filters::LevelFilter, Level};
+    use tracing::{info, level_filters::LevelFilter, Level};
 
     use rsiot::{
         components::{cmp_esp_i2c_master, cmp_inject_periodic, cmp_logger},
@@ -25,16 +25,21 @@ async fn main() {
     // I2C messages --------------------------------------------------------------------------------
     #[derive(Debug, Deserialize, Serialize)]
     pub enum I2cRequest {
-        Request1(u32),
+        SetCounterFromMaster(u32),
+        GetCounterFromSlave,
     }
 
     #[derive(Debug, Deserialize, Serialize)]
     pub enum I2cResponse {
-        Response1(u32),
+        Ok,
+        CounterFromSlave(u32),
     }
 
-    let request = I2cRequest::Request1(255);
-    let request = drivers_i2c::postcard_serde::serialize(&request).unwrap();
+    let request_1 = I2cRequest::GetCounterFromSlave;
+    let request_1 = drivers_i2c::postcard_serde::serialize(&request_1).unwrap();
+
+    let request_2 = I2cRequest::SetCounterFromMaster(777);
+    let request_2 = drivers_i2c::postcard_serde::serialize(&request_2).unwrap();
 
     // service -------------------------------------------------------------------------------------
     #[allow(non_camel_case_types)]
@@ -64,7 +69,7 @@ async fn main() {
     }
 
     // cmp_logger ----------------------------------------------------------------------------------
-    let logger_config = cmp_logger::Config::<Custom> {
+    let _logger_config = cmp_logger::Config::<Custom> {
         level: Level::INFO,
         fn_input: |msg| Ok(Some(msg.serialize_data()?)),
     };
@@ -97,13 +102,20 @@ async fn main() {
                     slave_address: 0x77,
                 },
                 timeout: Duration::from_secs(2),
-                requests: vec![drivers_i2c::general::ConfigRequestKind::WriteRead {
-                    request,
-                    response_size: drivers_i2c::postcard_serde::MESSAGE_LEN,
-                }],
-                period: Duration::from_millis(1000),
+                requests: vec![
+                    drivers_i2c::general::ConfigRequestKind::WriteRead {
+                        request: request_1,
+                        response_size: drivers_i2c::postcard_serde::MESSAGE_LEN,
+                    },
+                    drivers_i2c::general::ConfigRequestKind::WriteRead {
+                        request: request_2,
+                        response_size: drivers_i2c::postcard_serde::MESSAGE_LEN,
+                    },
+                ],
+                period: Duration::from_millis(500),
                 fn_response: |_index, data| {
-                    let _response: I2cResponse = drivers_i2c::postcard_serde::deserialize(data)?;
+                    let response: I2cResponse = drivers_i2c::postcard_serde::deserialize(data)?;
+                    info!("Response: {:?}", response);
                     Ok(())
                 },
             },

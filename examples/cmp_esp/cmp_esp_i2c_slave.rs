@@ -33,7 +33,8 @@ async fn main() {
     // message -------------------------------------------------------------------------------------
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub enum Custom {
-        Counter(u8),
+        Counter(u32),
+        CounterFromMaster(u32),
     }
 
     impl MsgDataBound for Custom {
@@ -51,27 +52,32 @@ async fn main() {
     // I2C messages --------------------------------------------------------------------------------
     #[derive(Debug, Deserialize, Serialize)]
     pub enum I2cRequest {
-        Request1(u32),
+        SetCounterFromMaster(u32),
+        GetCounterFromSlave,
     }
 
     #[derive(Debug, Deserialize, Serialize)]
     pub enum I2cResponse {
-        Response1(u32),
+        Ok,
+        CounterFromSlave(u32),
     }
 
     #[derive(Clone, Debug, Default)]
-    struct I2cBufferData {}
+    struct I2cBufferData {
+        pub counter_from_master: u32,
+        pub counter_from_slave: u32,
+    }
 
     impl cmp_esp_i2c_slave::BufferData for I2cBufferData {}
 
     // cmp_logger ----------------------------------------------------------------------------------
-    let _logger_config = cmp_logger::Config::<Custom> {
+    let logger_config = cmp_logger::Config::<Custom> {
         level: Level::INFO,
         fn_input: |msg| Ok(Some(msg.serialize_data()?)),
     };
 
     // cmp_inject_periodic -------------------------------------------------------------------------
-    let mut counter: u8 = 0;
+    let mut counter: u32 = 0;
     let config_inject_periodic = cmp_inject_periodic::Config {
         period: Duration::from_secs(1),
         fn_periodic: move || {
@@ -90,21 +96,36 @@ async fn main() {
         sda: peripherals.pins.gpio0.into(),
         scl: peripherals.pins.gpio1.into(),
         slave_address: 0x77,
-        fn_input: |msg| {
-            let msg = msg.get_custom_data()?;
+        fn_input: |msg, buffer_data: &mut I2cBufferData| {
+            let Some(msg) = msg.get_custom_data() else {
+                return;
+            };
             match msg {
-                Custom::Counter(data) => Some(vec![data]),
+                Custom::Counter(data) => buffer_data.counter_from_slave = data,
+                Custom::CounterFromMaster(_) => (),
             }
         },
-        fn_output: |_| vec![],
-        fn_i2c_comm: |req: I2cRequest| match req {
-            I2cRequest::Request1(data) => Ok(I2cResponse::Response1(data)),
+        fn_output: |data| {
+            let msg = Message::new_custom(Custom::CounterFromMaster(data.counter_from_master));
+            vec![msg]
         },
-        buffer_data: I2cBufferData::default(),
+        fn_output_period: Duration::from_secs(2),
+        fn_i2c_comm: |req: I2cRequest, buffer_data| {
+            let response = match req {
+                I2cRequest::SetCounterFromMaster(data) => {
+                    buffer_data.counter_from_master = data;
+                    I2cResponse::Ok
+                }
+                I2cRequest::GetCounterFromSlave => {
+                    I2cResponse::CounterFromSlave(buffer_data.counter_from_slave)
+                }
+            };
+            Ok(response)
+        },
+        buffer_data_default: I2cBufferData::default(),
     };
 
     // executor ------------------------------------------------------------------------------------
-
     let executor_config = ComponentExecutorConfig {
         buffer_size: 10,
         service: Service::cmp_esp_example,
@@ -115,7 +136,7 @@ async fn main() {
 
     local_set.spawn_local(async {
         ComponentExecutor::<Custom>::new(executor_config)
-            // .add_cmp(cmp_logger::Cmp::new(logger_config))
+            .add_cmp(cmp_logger::Cmp::new(logger_config))
             .add_cmp(cmp_inject_periodic::Cmp::new(config_inject_periodic))
             .add_cmp(cmp_esp_i2c_slave::Cmp::new(config_esp_i2c_slave))
             .wait_result()

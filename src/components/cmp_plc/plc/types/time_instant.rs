@@ -56,7 +56,7 @@ impl<'de> Visitor<'de> for TimeInstantVisitor {
         formatter.write_str("an integer for TimeInstant")
     }
 
-    fn visit_u128<E>(self, v: u128) -> Result<Self::Value, E>
+    fn visit_u128<E>(self, _v: u128) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
     {

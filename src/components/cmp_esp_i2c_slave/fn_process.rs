@@ -1,24 +1,31 @@
-use std::fmt::Debug;
+use std::{fmt::Debug, sync::Arc};
 
 use esp_idf_hal::{
-    delay::{TickType, BLOCK},
     i2c::{I2c, I2cSlaveConfig, I2cSlaveDriver},
     peripheral::Peripheral,
-    sys::i2c_reset_tx_fifo,
 };
+use futures::TryFutureExt;
 use serde::{de::DeserializeOwned, Serialize};
-use tokio::task::JoinSet;
-use tracing::{debug, trace, warn};
+use tokio::{
+    sync::{mpsc, Mutex},
+    task::JoinSet,
+};
+use tracing::debug;
 
-use crate::{drivers_i2c::postcard_serde, executor::CmpInOut, message::MsgDataBound};
+use crate::{
+    components::{cmp_esp_i2c_slave::tasks, shared_tasks},
+    executor::{join_set_spawn, CmpInOut},
+    message::MsgDataBound,
+};
 
-use super::{BufferData, Config, Error, FnI2cComm};
+use super::{BufferData, Config, Error};
 
+/// Размер буферов приема и отправки
 const BUFFER_LEN: usize = 128;
 
 pub async fn fn_process<TMsg, TI2c, TPeripheral, TI2cRequest, TI2cResponse, TBufferData>(
     config: Config<TMsg, TI2c, TPeripheral, TI2cRequest, TI2cResponse, TBufferData>,
-    _in_out: CmpInOut<TMsg>,
+    msg_bus: CmpInOut<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
@@ -26,15 +33,14 @@ where
     TPeripheral: I2c,
     TI2cRequest: Debug + DeserializeOwned + 'static,
     TI2cResponse: Debug + Serialize + 'static,
-    TBufferData: BufferData,
+    TBufferData: BufferData + 'static,
 {
     let i2c_idf_config = I2cSlaveConfig::new()
         .sda_enable_pullup(false)
         .scl_enable_pullup(false)
         .tx_buffer_length(BUFFER_LEN)
         .rx_buffer_length(BUFFER_LEN);
-
-    let mut i2c_slave = I2cSlaveDriver::new(
+    let i2c_slave = I2cSlaveDriver::new(
         config.i2c,
         config.sda,
         config.scl,
@@ -43,76 +49,61 @@ where
     )
     .unwrap();
 
+    let buffer_data = Arc::new(Mutex::new(config.buffer_data_default.clone()));
+
     debug!("I2c slave drive initialized");
 
-    let mut task_set: JoinSet<()> = JoinSet::new();
+    let buffer_size = msg_bus.max_capacity();
+    let (channel_buffer_to_filter_send, channel_buffer_to_filter_recv) = mpsc::channel(buffer_size);
+    let (channel_filter_to_output_send, channel_filter_to_output_recv) = mpsc::channel(buffer_size);
 
-    task_set.spawn_blocking(move || loop {
-        trace!("Wait for request");
+    let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
 
-        // Ждем, пока появится в буфере байт
-        let mut request_byte: [u8; 1] = [0];
-        let res = i2c_slave.read(&mut request_byte, BLOCK);
-        if let Err(err) = res {
-            warn!("Error I2C slave: {}", err);
-            continue;
-        }
+    // Задача коммуникации I2C
+    let task = tasks::I2cComm {
+        i2c_slave,
+        fn_i2c_comm: config.fn_i2c_comm,
+        buffer_data: buffer_data.clone(),
+    };
+    task_set.spawn_blocking(move || task.spawn());
 
-        let result = process_request(&mut i2c_slave, request_byte[0], config.fn_i2c_comm);
+    // Задача обработки входящих сообщений
+    let task = tasks::Input {
+        msg_bus: msg_bus.clone(),
+        fn_input: config.fn_input,
+        buffer_data: buffer_data.clone(),
+    };
+    join_set_spawn(&mut task_set, task.spawn());
 
-        if let Err(err) = result {
-            warn!("Error I2C slave: {}", err);
-            continue;
-        }
-    });
+    // Задача создания исходящих сообщений
+    let task = tasks::Output {
+        output: channel_buffer_to_filter_send,
+        fn_output: config.fn_output,
+        fn_output_period: config.fn_output_period,
+        buffer_data: buffer_data.clone(),
+    };
+    join_set_spawn(&mut task_set, task.spawn());
+
+    // Фильтрация исходящих сообщений
+    let task = shared_tasks::FilterIdenticalData {
+        input: channel_buffer_to_filter_recv,
+        output: channel_filter_to_output_send,
+    };
+    join_set_spawn(
+        &mut task_set,
+        task.spawn().map_err(Error::TaskFilterIdenticalData),
+    );
+
+    // Пересылка сообщений на выход компонента
+    let task = shared_tasks::ToCmpOutput {
+        input: channel_filter_to_output_recv,
+        cmp_in_out: msg_bus.clone(),
+    };
+    join_set_spawn(&mut task_set, task.spawn().map_err(Error::TaskToMsgBus));
 
     while let Some(res) = task_set.join_next().await {
-        res.unwrap();
+        res.unwrap()?;
     }
 
     Ok(())
 }
-
-fn process_request<TI2cRequest, TI2cResponse>(
-    i2c_slave: &mut I2cSlaveDriver,
-    first_byte: u8,
-    fn_i2c_comm: FnI2cComm<TI2cRequest, TI2cResponse>,
-) -> super::Result<()>
-where
-    TI2cRequest: Debug + DeserializeOwned + 'static,
-    TI2cResponse: Debug + Serialize + 'static,
-{
-    // Чтение буфера приема I2C
-    // Копируем данные из входного буфера побайтово. Если скопировать сразу несколько байт,
-    // могут появляться смещения
-    let mut request_buffer = vec![];
-    request_buffer.push(first_byte);
-    let mut request_byte: [u8; 1] = [0];
-    while i2c_slave.read(&mut request_byte, 0).is_ok() {
-        request_buffer.push(request_byte[0]);
-    }
-
-    // Сбрасываем буфер отправки
-    unsafe { i2c_reset_tx_fifo(i2c_slave.port()) };
-
-    // Десериализация запроса
-    let request: TI2cRequest = postcard_serde::deserialize(&mut request_buffer)?;
-    trace!("Request: {:?}", request);
-
-    // Определяем ответ по функции fn_i2c_comm
-    let response = (fn_i2c_comm)(request).map_err(Error::FnI2cComm)?;
-    trace!("Response: {:?}", response);
-
-    // Сериализация ответа
-    let response_buffer = postcard_serde::serialize(&response)?;
-
-    // Запись в буфер отправки I2C
-    let timeout = TickType::new_millis(5000).ticks();
-    i2c_slave
-        .write(&response_buffer, timeout)
-        .map_err(Error::WritingToI2cBuffer)?;
-
-    Ok(())
-}
-
-// TODO - сделать расчет CRC - падает stack protection fault

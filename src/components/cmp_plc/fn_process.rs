@@ -65,7 +65,7 @@ where
     join_set_spawn(&mut task_set, task.spawn());
 
     // Фильтрация исходящих сообщений
-    let task = shared_tasks::FilterMsgsWithSameData {
+    let task = shared_tasks::FilterIdenticalData {
         input: channel_plc_to_filter_recv,
         output: channel_filter_to_output_send,
     };
