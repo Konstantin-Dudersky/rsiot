@@ -28,7 +28,7 @@ where
     if !config.enabled {
         loop {
             warn!("Service disabled");
-            sleep(Duration::from_secs(u64::max_value())).await
+            sleep(Duration::from_secs(u64::MAX)).await
         }
     }
 

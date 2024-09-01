@@ -13,7 +13,6 @@ async fn main() -> anyhow::Result<()> {
     use serde_json::from_str;
     use tokio::time::Duration;
     use tracing::{level_filters::LevelFilter, Level};
-    use url::Url;
 
     use rsiot::{
         components::{
@@ -21,7 +20,7 @@ async fn main() -> anyhow::Result<()> {
             cmp_inject_periodic, cmp_logger,
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{Message, MsgDataBound},
+        message::{example_service::*, Message, MsgDataBound},
     };
 
     //------------------------------------------------------------------------------
@@ -34,7 +33,9 @@ async fn main() -> anyhow::Result<()> {
         HttpMethodsGetOnEventRequest(()),
     }
 
-    impl MsgDataBound for Data {}
+    impl MsgDataBound for Data {
+        type TService = Service;
+    }
 
     //------------------------------------------------------------------------------
 
@@ -107,7 +108,7 @@ async fn main() -> anyhow::Result<()> {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "http_client".into(),
+        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
     };
 

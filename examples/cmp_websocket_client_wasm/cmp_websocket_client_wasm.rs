@@ -9,12 +9,12 @@
 async fn main() {
     use rsiot::{
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::example_message::*,
+        message::{example_message::*, example_service::Service},
     };
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "cmp_websocket_client_wasm_example".into(),
+        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
     };
 

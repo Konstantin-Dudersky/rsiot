@@ -16,8 +16,7 @@
 //!
 //! В консолидолжно прочитаться это сообщение
 //!
-//! - через веб-интерфейс, перед запуском примера создать хеш с названием `rsiot-redis-client`,
-//! задать ключ `Output`. После запуска примера в консоли должно прочитаться это сообщение
+//! - через веб-интерфейс, перед запуском примера создать хеш с названием `rsiot-redis-client`, задать ключ `Output`. После запуска примера в консоли должно прочитаться это сообщение
 //!
 //! - корректный перезапуск. При отключении Redis, или передачи неправильного сообщения в Pub/Sub
 
@@ -31,7 +30,7 @@ async fn main() -> anyhow::Result<()> {
     use rsiot::{
         components::{cmp_logger, cmp_redis_client},
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_message::*, *},
+        message::{example_message::*, example_service::*, *},
     };
 
     fmt().init();
@@ -62,7 +61,7 @@ async fn main() -> anyhow::Result<()> {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "redis-client-subscription".into(),
+        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
     };
 

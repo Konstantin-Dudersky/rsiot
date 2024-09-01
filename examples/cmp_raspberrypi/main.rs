@@ -19,6 +19,7 @@ mod message;
 async fn main() {
     use std::time::Duration;
 
+    use example_service::Service;
     use rsiot::{
         components::{cmp_inject_periodic, cmp_logger, cmp_raspberrypi_gpio},
         executor::{ComponentExecutor, ComponentExecutorConfig},
@@ -70,7 +71,7 @@ async fn main() {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "cmp_raspberrypi".into(),
+        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
     };
 

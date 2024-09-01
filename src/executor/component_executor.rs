@@ -247,8 +247,9 @@ mod tests {
     #[allow(dead_code)]
     fn test_wasm() {
         use super::*;
-        use crate::message::example_message::*;
+        use crate::{logging::configure_logging, message::example_message::*};
 
+        use example_service::Service;
         // ANCHOR: wasm_leptos
         use leptos::*;
         use tokio::task::LocalSet;
@@ -273,7 +274,7 @@ mod tests {
             // config_executor ---------------------------------------------------------------------
             let config_executor = ComponentExecutorConfig {
                 buffer_size: 100,
-                service: Services::frontend,
+                service: Service::example_service,
                 fn_auth: |msg, _| Some(msg),
             };
 

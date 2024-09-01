@@ -6,7 +6,7 @@ use super::super::EventSeverity;
 /// Входная структура
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct I {
-    /// Идентификатор сообщения
+    /// Идентификатор события
     pub id: Uuid,
 
     /// Сигнал наступления события

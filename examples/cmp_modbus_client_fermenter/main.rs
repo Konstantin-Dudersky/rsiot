@@ -13,6 +13,7 @@ async fn main() -> anyhow::Result<()> {
     use rsiot::{
         components::{cmp_logger, cmp_modbus_client},
         executor::{ComponentExecutor, ComponentExecutorConfig},
+        message::example_service::Service,
     };
 
     use message::Data;
@@ -26,7 +27,7 @@ async fn main() -> anyhow::Result<()> {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "example_single_thread".into(),
+        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
     };
 

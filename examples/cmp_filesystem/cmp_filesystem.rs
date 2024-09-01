@@ -12,7 +12,7 @@ async fn main() {
     use rsiot::{
         components::{cmp_filesystem, cmp_inject_periodic, cmp_logger},
         executor::*,
-        message::{example_message::*, *},
+        message::{example_message::*, example_service::*, *},
     };
     use tracing::Level;
 
@@ -63,7 +63,7 @@ async fn main() {
     // executor ------------------------------------------------------------------------------------
     let config_executor = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "example_cmp_filesystem".into(),
+        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
     };
     ComponentExecutor::<Custom>::new(config_executor)

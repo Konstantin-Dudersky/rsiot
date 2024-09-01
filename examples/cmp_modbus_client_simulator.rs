@@ -28,7 +28,7 @@ async fn main() -> anyhow::Result<()> {
             cmp_modbus_client::{self, *},
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{Message, MsgDataBound},
+        message::{example_service::Service, Message, MsgDataBound},
     };
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -37,7 +37,9 @@ async fn main() -> anyhow::Result<()> {
         ValueRead(f64),
     }
 
-    impl MsgDataBound for Messages {}
+    impl MsgDataBound for Messages {
+        type TService = Service;
+    }
 
     // логгирование
     fmt().init();
@@ -74,7 +76,7 @@ async fn main() -> anyhow::Result<()> {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "modbus_tcp_client".into(),
+        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
     };
 

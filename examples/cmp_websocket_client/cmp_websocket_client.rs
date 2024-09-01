@@ -14,7 +14,7 @@ async fn main() -> anyhow::Result<()> {
     use rsiot::{
         components::{cmp_inject_periodic, cmp_logger, cmp_websocket_client},
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{Message, MsgDataBound},
+        message::{example_service::Service, Message, MsgDataBound},
     };
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -24,7 +24,9 @@ async fn main() -> anyhow::Result<()> {
         Tick(u64),
     }
 
-    impl MsgDataBound for Data {}
+    impl MsgDataBound for Data {
+        type TService = Service;
+    }
 
     fn fn_input(msg: &Message<Data>) -> anyhow::Result<Option<String>> {
         let text = msg.serialize()?;
@@ -89,7 +91,7 @@ async fn main() -> anyhow::Result<()> {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "rsiot-websocket-client".into(),
+        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
     };
 

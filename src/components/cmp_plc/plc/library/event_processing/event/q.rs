@@ -14,10 +14,15 @@ pub struct Q {
     pub hmi_status: QHmiStatus,
 }
 
+/// Состояние для HMI
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 pub struct QHmiStatus {
+    /// Состояние события
     pub state: State,
+    /// Текст события
     pub text: String,
+    /// Уровень события
     pub event_severity: EventSeverity,
+    /// Идентификатор события
     pub id: Uuid,
 }

@@ -38,7 +38,10 @@ mod tests {
 
     use serde::{Deserialize, Serialize};
 
-    use crate::{components::cmp_raspberrypi_gpio, message::*};
+    use crate::{
+        components::cmp_raspberrypi_gpio,
+        message::{example_service::Service, *},
+    };
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub enum Custom {
@@ -46,7 +49,9 @@ mod tests {
         SetOutput2(bool),
     }
 
-    impl MsgDataBound for Custom {}
+    impl MsgDataBound for Custom {
+        type TService = Service;
+    }
 
     #[test]
     fn test() {

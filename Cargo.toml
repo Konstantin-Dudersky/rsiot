@@ -218,7 +218,7 @@ cmp_mqtt_client = ["executor", "dep:rumqttc"]
 cmp_plc = ["executor", "dep:instant"]
 
 ## Работа с периферией Raspberry Pi
-cmp_raspberrypi = ["executor", "dep:rppal", "dep:postcard"]
+cmp_raspberrypi = ["executor", "dep:crc", "dep:rppal", "dep:postcard"]
 
 ## Компонент клиента Redis
 cmp_redis_client = ["executor", "dep:futures", "dep:redis", "dep:url"]
@@ -279,11 +279,6 @@ path = "examples/cmp_external_fn_process/cmp_external_fn_process.rs"
 [[example]]
 name = "cmp_esp"
 path = "examples/cmp_esp/cmp_esp.rs"
-doc-scrape-examples = true
-
-[[example]]
-name = "cmp_esp_eth_w5500"
-path = "examples/cmp_esp/cmp_esp_eth_w5500.rs"
 doc-scrape-examples = true
 
 [[example]]

@@ -13,6 +13,4 @@ pub use component::SvgDynamic;
 pub use svg_input::SvgInput;
 pub use svg_output::SvgOutput;
 
-use get_child_svg_elements::get_child_svg_elements;
-
 const INK_LABEL: &str = "inkscape:label";

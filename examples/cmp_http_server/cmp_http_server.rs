@@ -22,7 +22,7 @@ fn main() -> anyhow::Result<()> {
     use rsiot::{
         components::{cmp_http_server, cmp_inject_periodic, cmp_logger},
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{Message, MsgDataBound},
+        message::{example_service::Service, Message, MsgDataBound},
     };
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -32,7 +32,9 @@ fn main() -> anyhow::Result<()> {
         MsgSet(f64),
     }
 
-    impl MsgDataBound for Data {}
+    impl MsgDataBound for Data {
+        type TService = Service;
+    }
 
     tracing_subscriber::fmt()
         .with_max_level(LevelFilter::DEBUG)
@@ -69,7 +71,7 @@ fn main() -> anyhow::Result<()> {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "http-server".into(),
+        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
     };
 

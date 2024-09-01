@@ -15,7 +15,7 @@ async fn main() -> anyhow::Result<()> {
     use rsiot::{
         components::{cmp_inject_periodic, cmp_logger, cmp_redis_client},
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_message::*, *},
+        message::{example_message::*, example_service::*, *},
     };
 
     fmt().init();
@@ -57,7 +57,7 @@ async fn main() -> anyhow::Result<()> {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "redis-client-publication".into(),
+        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
     };
 

@@ -8,7 +8,7 @@ async fn main() -> anyhow::Result<()> {
     use rsiot::{
         components::{cmp_auth, cmp_inject_periodic, cmp_logger},
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_message::*, system_messages::*, *},
+        message::{example_message::*, example_service::*, system_messages::*, *},
     };
     use tracing::Level;
 
@@ -42,7 +42,7 @@ async fn main() -> anyhow::Result<()> {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "example_auth".into(),
+        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
     };
 

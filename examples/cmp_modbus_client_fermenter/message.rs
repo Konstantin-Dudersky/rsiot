@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use rsiot::message::MsgDataBound;
+use rsiot::message::{example_service::Service, MsgDataBound};
 
 #[allow(non_camel_case_types)]
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -49,4 +49,6 @@ pub enum Data {
     BZDispenserL(f32),
 }
 
-impl MsgDataBound for Data {}
+impl MsgDataBound for Data {
+    type TService = Service;
+}

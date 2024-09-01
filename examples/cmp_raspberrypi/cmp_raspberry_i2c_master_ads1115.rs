@@ -21,7 +21,7 @@ async fn main() {
         components::{cmp_logger, cmp_raspberrypi_i2c_master},
         drivers_i2c::{self, I2cSlaveAddress},
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{Message, MsgDataBound},
+        message::{example_service::Service, Message, MsgDataBound},
     };
     use serde::{Deserialize, Serialize};
     use tracing::Level;
@@ -34,7 +34,9 @@ async fn main() {
         VoltageA0(f64),
     }
 
-    impl MsgDataBound for Custom {}
+    impl MsgDataBound for Custom {
+        type TService = Service;
+    }
 
     // cmp_logger ----------------------------------------------------------------------------------
     let logger_config = cmp_logger::Config {
@@ -60,7 +62,7 @@ async fn main() {
     // executor ------------------------------------------------------------------------------------
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "cmp_raspberrypi".into(),
+        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
     };
 
