@@ -2,18 +2,21 @@
 
 use std::fmt::Debug;
 
-use postcard::{from_bytes_cobs, to_stdvec_cobs};
+use crc::{Crc, Digest, Table, CRC_32_ISCSI};
+use postcard::{from_bytes_crc32, to_stdvec_crc32};
 use serde::{de::DeserializeOwned, Serialize};
 
 /// Длина сообщения
 pub const MESSAGE_LEN: usize = 32;
+
+const CRC_DIGEST: Digest<u32, Table<1>> = Crc::<u32>::new(&CRC_32_ISCSI).digest();
 
 /// Сериализация данных в формат Postcars
 pub fn serialize<T>(data: &T) -> Result<Vec<u8>, Error>
 where
     T: Debug + Serialize,
 {
-    let mut buffer = to_stdvec_cobs(data).map_err(Error::SerializationError)?;
+    let mut buffer = to_stdvec_crc32(data, CRC_DIGEST).map_err(Error::SerializationError)?;
 
     if buffer.len() > MESSAGE_LEN {
         return Err(Error::BufferTooLarge {
@@ -30,7 +33,7 @@ pub fn deserialize<T>(buffer: &mut [u8]) -> Result<T, Error>
 where
     T: Debug + DeserializeOwned,
 {
-    from_bytes_cobs(buffer).map_err(|e| Error::DeserializationError {
+    from_bytes_crc32(buffer, CRC_DIGEST).map_err(|e| Error::DeserializationError {
         error: e,
         buffer: buffer.to_vec(),
     })
@@ -51,5 +54,3 @@ pub enum Error {
         buffer: Vec<u8>,
     },
 }
-
-// TODO - сделать расчет CRC - падает stack protection fault
