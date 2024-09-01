@@ -1,4 +1,4 @@
-//! Пример работы с модулем PCF8575 по I2C
+//! Пример работы с модулем DS3231 по I2C
 //!
 //! cargo run --example cmp_esp_i2c_master_ds3231 --target="riscv32imc-esp-espidf" --features="cmp_esp, logging" --release
 
