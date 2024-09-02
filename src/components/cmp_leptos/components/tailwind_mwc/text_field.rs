@@ -9,8 +9,14 @@ pub enum TextFieldKind {
 
 /// Тип HTML-элемента <input/>
 pub enum InputHtmlType {
+    /// type="checkbox"
+    Checkbox,
+
     /// type="date"
     Date,
+
+    /// type="datetime"
+    Datetime,
 
     /// type="number"
     Number,
@@ -25,7 +31,9 @@ pub enum InputHtmlType {
 impl ToString for InputHtmlType {
     fn to_string(&self) -> String {
         match self {
+            InputHtmlType::Checkbox => "checkbox",
             InputHtmlType::Date => "date",
+            InputHtmlType::Datetime => "datetime-local",
             InputHtmlType::Number => "number",
             InputHtmlType::Text => "text",
             InputHtmlType::Time => "time",

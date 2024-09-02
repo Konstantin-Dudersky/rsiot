@@ -11,10 +11,10 @@
 use async_trait::async_trait;
 
 #[cfg(feature = "single-thread")]
-use futures::future::LocalBoxFuture;
+pub use futures::future::LocalBoxFuture;
 
 #[cfg(not(feature = "single-thread"))]
-use futures::future::BoxFuture;
+pub use futures::future::BoxFuture;
 
 use crate::{
     executor::{CmpInOut, CmpResult, Component, ComponentError, IComponentProcess},
