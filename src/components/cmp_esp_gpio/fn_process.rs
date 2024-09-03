@@ -38,6 +38,7 @@ where
     }
 }
 
+/// Функция записи одного выхода
 async fn gpio_output<TMsg>(config_output: ConfigGpioOutput<TMsg>, mut in_out: CmpInOut<TMsg>)
 where
     TMsg: MsgDataBound,

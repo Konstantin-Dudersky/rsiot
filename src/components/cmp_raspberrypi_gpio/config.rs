@@ -31,6 +31,9 @@ pub struct ConfigOutput<TMsg> {
 
     /// Преобразование входящего сообщения в состояние пина
     pub fn_input: fn(Message<TMsg>) -> Option<bool>,
+
+    /// Подается ли напряжения в отключенном состоянии или нет
+    pub is_low_triggered: bool,
 }
 
 #[cfg(test)]
@@ -69,6 +72,7 @@ mod tests {
                     MsgData::Custom(Custom::SetOutput2(value)) => Some(value),
                     _ => None,
                 },
+                is_low_triggered: false,
             }],
             // ANCHOR_END: outputs
         };

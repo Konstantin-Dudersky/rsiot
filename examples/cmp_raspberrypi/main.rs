@@ -48,6 +48,7 @@ async fn main() {
                     MsgData::Custom(Custom::SetOutput2(value)) => Some(value),
                     _ => None,
                 },
+                is_low_triggered: false,
             },
             cmp_raspberrypi_gpio::ConfigOutput {
                 pin_number: 6,
@@ -55,6 +56,7 @@ async fn main() {
                     MsgData::Custom(Custom::SetOutput2(value)) => Some(!value),
                     _ => None,
                 },
+                is_low_triggered: false,
             },
         ],
     };

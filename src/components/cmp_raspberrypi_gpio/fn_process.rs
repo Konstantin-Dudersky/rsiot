@@ -27,7 +27,12 @@ where
 
     for output_config in config.outputs {
         let pin = gpio.get(output_config.pin_number)?.into_output();
-        task_set.spawn(output_pin(pin, output_config.fn_input, in_out.clone()));
+        task_set.spawn(output_pin(
+            pin,
+            output_config.fn_input,
+            in_out.clone(),
+            output_config.is_low_triggered,
+        ));
     }
 
     while let Some(res) = task_set.join_next().await {
@@ -83,17 +88,26 @@ async fn output_pin<TMsg>(
     mut pin: OutputPin,
     fn_input: fn(Message<TMsg>) -> Option<bool>,
     mut in_out: CmpInOut<TMsg>,
+    is_low_triggered: bool,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
 {
+    // Значение по-умолчанию
+    if is_low_triggered {
+        pin.set_high();
+    } else {
+        pin.set_low();
+    }
+
     while let Ok(msg) = in_out.recv_input().await {
         let Some(control) = (fn_input)(msg) else {
             continue;
         };
-        match control {
-            true => pin.set_high(),
-            false => pin.set_low(),
+        if is_low_triggered ^ control {
+            pin.set_high();
+        } else {
+            pin.set_low();
         }
     }
     Ok(())

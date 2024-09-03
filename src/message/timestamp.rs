@@ -1,4 +1,4 @@
-use chrono::{DateTime, FixedOffset, Utc};
+use chrono::{DateTime, FixedOffset, Timelike, Utc};
 use serde::{Deserialize, Serialize};
 
 /// Метка времени
@@ -21,6 +21,16 @@ impl Timestamp {
     /// Возвращает время Unix с наносекундной точностью
     pub fn timestamp_nanos_opt(&self) -> Option<i64> {
         self.0.timestamp_nanos_opt()
+    }
+
+    /// Часы
+    pub fn hour(&self) -> u32 {
+        self.0.hour()
+    }
+
+    /// Минуты
+    pub fn minute(&self) -> u32 {
+        self.0.minute()
     }
 }
 
