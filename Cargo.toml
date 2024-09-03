@@ -214,6 +214,9 @@ cmp_modbus_client = ["executor", "dep:tokio-modbus"]
 ## Комонент клиента MQTT
 cmp_mqtt_client = ["executor", "dep:rumqttc"]
 
+## Выполнение процесса ОС
+cmp_os_process = ["executor", "tokio?/process"]
+
 ## Компонент ПЛК
 cmp_plc = ["executor", "dep:instant"]
 

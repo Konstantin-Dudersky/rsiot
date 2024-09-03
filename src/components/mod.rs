@@ -96,6 +96,10 @@ pub mod cmp_modbus_client;
 ))]
 pub mod cmp_mqtt_client;
 
+#[cfg(feature = "cmp_os_process")]
+#[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
+pub mod cmp_os_process;
+
 #[cfg(feature = "cmp_telegram")]
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
 pub mod cmp_telegram;

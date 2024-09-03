@@ -24,7 +24,7 @@
           // ---- x86_64-unknown-linux-gnu ---------------------------------------------------------
           "target": "x86_64-unknown-linux-gnu",
           "features": [
-            "executor"
+            // "executor"
             // "single-thread",
             // "env_vars"
             // "logging"
@@ -38,6 +38,7 @@
             // "cmp_mqtt_client"
             // "cmp_plc"
             // "cmp_redis_client"
+            "cmp_os_process"
             // "cmp_slint"
             // "cmp_surrealdb"
             // "cmp_system_info"
