@@ -8,12 +8,15 @@
 #[cfg(feature = "cmp_esp")]
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
+    use std::sync::Arc;
     use std::time::Duration;
 
     use esp_idf_svc::{hal::peripherals::Peripherals, sys::link_patches};
-    use tokio::task::LocalSet;
+    use tokio::{sync::Mutex, task::LocalSet, time::sleep};
     use tracing::{level_filters::LevelFilter, Level};
 
+    use esp_idf_hal::i2c::*;
+    use esp_idf_hal::prelude::*;
     use rsiot::{
         components::{cmp_esp_i2c_master, cmp_logger},
         drivers_i2c,
@@ -58,41 +61,78 @@ async fn main() {
         fn_input: |msg| Ok(Some(msg.serialize()?)),
     };
 
-    // ESP -----------------------------------------------------------------------------------------
-    let peripherals = Peripherals::take().unwrap();
-
-    // I2C
-
-    let devices = vec![drivers_i2c::I2cDevices::SSD1306 {}];
-    let config_esp_i2c_master = cmp_esp_i2c_master::Config {
-        timeout: Duration::from_millis(1000),
-        i2c: peripherals.i2c0,
-        sda: peripherals.pins.gpio4.into(),
-        scl: peripherals.pins.gpio5.into(),
-        baudrate: cmp_esp_i2c_master::ConfigBaudrate::Standard,
-        pullup_enable: true,
-        devices,
+    use embedded_graphics::{
+        mono_font::{ascii::FONT_6X10, MonoTextStyleBuilder},
+        pixelcolor::BinaryColor,
+        prelude::*,
+        text::{Baseline, Text},
     };
+    use ssd1306::{
+        mode::BufferedGraphicsMode, prelude::*, size::DisplaySize64x32, I2CDisplayInterface,
+        Ssd1306,
+    };
+
+    let peripherals = Peripherals::take().unwrap();
+    let i2c = peripherals.i2c0;
+    let sda = peripherals.pins.gpio0;
+    let scl = peripherals.pins.gpio1;
+
+    println!("Starting I2C SSD1306 test");
+
+    let config = I2cConfig::new()
+        .baudrate(100.kHz().into())
+        .sda_enable_pullup(true)
+        .scl_enable_pullup(true);
+    let mut i2c = I2cDriver::new(i2c, sda, scl, &config).unwrap();
+
+    let i2c = Arc::new(Mutex::new(i2c));
+    let i2c_clone = i2c.clone();
+
+    loop {
+        let mut lock = i2c.lock().await;
+        let interface = I2CDisplayInterface::new(lock);
+        let mut display = Ssd1306::new(interface, DisplaySize64x32, DisplayRotation::Rotate0)
+            .into_buffered_graphics_mode();
+        display.init().unwrap();
+
+        let text_style = MonoTextStyleBuilder::new()
+            .font(&FONT_6X10)
+            .text_color(BinaryColor::On)
+            .build();
+
+        Text::with_baseline("Hello world!", Point::zero(), text_style, Baseline::Top)
+            .draw(&mut display)
+            .unwrap();
+
+        Text::with_baseline("Hello Rust!", Point::new(0, 16), text_style, Baseline::Top)
+            .draw(&mut display)
+            .unwrap();
+
+        display.flush().unwrap();
+
+        drop(lock);
+        sleep(Duration::from_secs(5)).await;
+    }
 
     // executor ------------------------------------------------------------------------------------
 
-    let executor_config = ComponentExecutorConfig {
-        buffer_size: 10,
-        service: Service::cmp_esp_example,
-        fn_auth: |msg, _| Some(msg),
-    };
+    // let executor_config = ComponentExecutorConfig {
+    //     buffer_size: 10,
+    //     service: Service::cmp_esp_example,
+    //     fn_auth: |msg, _| Some(msg),
+    // };
 
-    let local_set = LocalSet::new();
+    // let local_set = LocalSet::new();
 
-    local_set.spawn_local(async {
-        ComponentExecutor::<Custom>::new(executor_config)
-            .add_cmp(cmp_logger::Cmp::new(logger_config))
-            .add_cmp(cmp_esp_i2c_master::Cmp::new(config_esp_i2c_master))
-            .wait_result()
-            .await
-            .unwrap()
-    });
-    local_set.await;
+    // local_set.spawn_local(async {
+    //     ComponentExecutor::<Custom>::new(executor_config)
+    //         .add_cmp(cmp_logger::Cmp::new(logger_config))
+    //         .add_cmp(cmp_esp_i2c_master::Cmp::new(config_esp_i2c_master))
+    //         .wait_result()
+    //         .await
+    //         .unwrap()
+    // });
+    // local_set.await;
 }
 
 #[cfg(not(feature = "cmp_esp"))]

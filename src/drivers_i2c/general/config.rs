@@ -1,27 +1,33 @@
 use std::time::Duration;
 
+use serde::{de::DeserializeOwned, Serialize};
+
+use crate::message::{Message, MsgDataBound};
+
 use super::super::I2cSlaveAddress;
 
 /// Функция обработки ответа
 pub type FnResponse = fn(usize, &mut [u8]) -> Result<(), anyhow::Error>;
 
+pub type FnInput<TMsg> = fn(&Message<TMsg>) -> anyhow::Result<Option<Vec<u8>>>;
+
+pub type FnOutput<TMsg> = fn(Vec<u8>) -> anyhow::Result<Option<Message<TMsg>>>;
+
 /// Конфигурация
 #[derive(Clone)]
-pub struct Config {
+pub struct Config<TMsg>
+where
+    TMsg: MsgDataBound,
+{
     /// Адрес
     pub address: I2cSlaveAddress,
 
-    /// Массив запросов
-    pub requests: Vec<ConfigRequestKind>,
-
-    /// Период выполнения запросов
-    pub period: Duration,
-
-    /// Функция обработки ответа
-    pub fn_response: FnResponse,
-
     /// Тайм-аут запроса
     pub timeout: Duration,
+
+    pub fn_input: FnInput<TMsg>,
+
+    pub fn_output: FnOutput<TMsg>,
 }
 
 /// Конфигурация одного запроса
