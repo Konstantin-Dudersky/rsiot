@@ -13,6 +13,7 @@ async fn main() {
 
     use esp_idf_svc::{hal::peripherals::Peripherals, sys::link_patches};
     use tokio::{sync::Mutex, task::LocalSet, time::sleep};
+    use tracing::info;
     use tracing::{level_filters::LevelFilter, Level};
 
     use esp_idf_hal::i2c::*;
@@ -85,33 +86,34 @@ async fn main() {
         .scl_enable_pullup(true);
     let mut i2c = I2cDriver::new(i2c, sda, scl, &config).unwrap();
 
-    let i2c = Arc::new(Mutex::new(i2c));
-    let i2c_clone = i2c.clone();
+    let interface = I2CDisplayInterface::new(i2c);
+    let mut display = Ssd1306::new(interface, DisplaySize64x32, DisplayRotation::Rotate0)
+        .into_buffered_graphics_mode();
+    display.init().unwrap();
+
+    let text_style = MonoTextStyleBuilder::new()
+        .font(&FONT_6X10)
+        .text_color(BinaryColor::On)
+        .build();
+
+    Text::with_baseline("Hello world!", Point::zero(), text_style, Baseline::Top)
+        .draw(&mut display)
+        .unwrap();
+
+    Text::with_baseline("Hello Rust!", Point::new(0, 16), text_style, Baseline::Top)
+        .draw(&mut display)
+        .unwrap();
+
+    display.flush().unwrap();
+
+    let peripherals = Peripherals::take().unwrap();
+    let i2c = peripherals.i2c0;
+    let sda = peripherals.pins.gpio0;
+    let scl = peripherals.pins.gpio1;
 
     loop {
-        let mut lock = i2c.lock().await;
-        let interface = I2CDisplayInterface::new(lock);
-        let mut display = Ssd1306::new(interface, DisplaySize64x32, DisplayRotation::Rotate0)
-            .into_buffered_graphics_mode();
-        display.init().unwrap();
-
-        let text_style = MonoTextStyleBuilder::new()
-            .font(&FONT_6X10)
-            .text_color(BinaryColor::On)
-            .build();
-
-        Text::with_baseline("Hello world!", Point::zero(), text_style, Baseline::Top)
-            .draw(&mut display)
-            .unwrap();
-
-        Text::with_baseline("Hello Rust!", Point::new(0, 16), text_style, Baseline::Top)
-            .draw(&mut display)
-            .unwrap();
-
-        display.flush().unwrap();
-
-        drop(lock);
-        sleep(Duration::from_secs(5)).await;
+        info!("sleep");
+        sleep(Duration::from_secs(2)).await
     }
 
     // executor ------------------------------------------------------------------------------------
