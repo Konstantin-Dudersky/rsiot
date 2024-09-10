@@ -3,10 +3,12 @@
 pub mod ads1115;
 mod bmp180;
 pub mod ds3231;
-pub mod general;
+// TODO
+// pub mod general;
 pub mod pca9555;
 pub mod pcf8523;
 mod pcf8575;
+pub mod pm_rq8;
 pub mod postcard_serde;
 pub mod ssd1306;
 

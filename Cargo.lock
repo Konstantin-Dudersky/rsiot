@@ -5937,6 +5937,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d231b230927b5e4ad203db57bbcbee2802f6bce620b1e4a9024a07d94e2907ec"
 
 [[package]]
+name = "pm_firmware"
+version = "0.0.1"
+dependencies = [
+ "bitvec",
+ "crc",
+ "embuild 0.31.4",
+ "esp-idf-svc",
+ "postcard",
+ "serde",
+ "thiserror",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "png"
 version = "0.17.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6785,6 +6800,7 @@ dependencies = [
  "log",
  "openssl",
  "palette",
+ "pm_firmware",
  "postcard",
  "redis",
  "reqwest 0.12.7",

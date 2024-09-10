@@ -15,7 +15,7 @@ pub type FnOutput<TMsg> = fn(Vec<u8>) -> anyhow::Result<Option<Message<TMsg>>>;
 
 /// Конфигурация
 #[derive(Clone)]
-pub struct Config<TMsg>
+pub struct Config
 where
     TMsg: MsgDataBound,
 {
@@ -25,9 +25,7 @@ where
     /// Тайм-аут запроса
     pub timeout: Duration,
 
-    pub fn_input: FnInput<TMsg>,
-
-    pub fn_output: FnOutput<TMsg>,
+    pub fn_response: FnResponse,
 }
 
 /// Конфигурация одного запроса

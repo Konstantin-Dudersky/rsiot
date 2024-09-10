@@ -2,16 +2,17 @@ use std::time::Duration;
 
 use crate::message::{Message, MsgDataBound};
 
-use super::{general, I2cSlaveAddress};
+use super::I2cSlaveAddress;
 
 /// Конфигурации устройств по шине I2C
+#[allow(non_camel_case_types)]
 #[derive(Clone)]
 pub enum I2cDevices<TMsg>
 where
     TMsg: MsgDataBound,
 {
     /// Общее устройство
-    General(general::Config<TMsg>),
+    // General(general::Config),
 
     /// Аналого-цифровой преобразователь
     ADS1115 {
@@ -91,6 +92,8 @@ where
         /// Настройка пина P17
         pin_17: super::PCF8575PinMode<TMsg>,
     },
+
+    PM_RQ8(super::pm_rq8::Config<TMsg>),
 
     /// Коммуникация с LED-экраном
     SSD1306 {},

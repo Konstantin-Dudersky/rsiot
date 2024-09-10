@@ -24,7 +24,6 @@ client = ["rsiot/cmp_websocket_client"]
 name = "server1"
 required-features = ["server1"]
 
-
 [[bin]]
 name = "server2"
 required-features = ["server2"]
