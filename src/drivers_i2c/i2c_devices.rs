@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use crate::message::{Message, MsgDataBound};
 
-use super::I2cSlaveAddress;
+use super::{general, I2cSlaveAddress};
 
 /// Конфигурации устройств по шине I2C
 #[allow(non_camel_case_types)]
@@ -12,7 +12,7 @@ where
     TMsg: MsgDataBound,
 {
     /// Общее устройство
-    // General(general::Config),
+    General(general::Config<TMsg>),
 
     /// Аналого-цифровой преобразователь
     ADS1115 {

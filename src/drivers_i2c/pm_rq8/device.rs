@@ -1,6 +1,6 @@
 use std::{sync::Arc, time::Duration};
 
-use pm_firmware::plc_modules::pm_rq8_v0_0_3::I2cRequest;
+use pm_firmware_lib::pm_rq8_v0_0_3::I2cRequest;
 use tokio::sync::Mutex;
 use tracing::warn;
 
@@ -12,6 +12,7 @@ use crate::{
 
 use super::Config;
 
+/// Модуль PM-RQ8
 pub struct Device<TMsg, TDriver>
 where
     TMsg: MsgDataBound,
@@ -32,6 +33,7 @@ where
     TMsg: MsgDataBound,
     TDriver: RsiotI2cDriverBase,
 {
+    /// Запустить на выполнение
     pub async fn spawn(mut self) {
         let mut buffer = super::config::Buffer::default();
 
@@ -40,7 +42,7 @@ where
             let buffer_u8 = buffer.clone().into();
             let request = I2cRequest::SetOutputs(buffer_u8);
             let request = postcard_serde::serialize(&request).unwrap();
-            let mut response;
+            let response;
             {
                 let mut driver = self.driver.lock().await;
                 response = driver

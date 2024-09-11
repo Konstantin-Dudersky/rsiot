@@ -58,7 +58,7 @@ async fn main() {
     // cmp_inject_periodic -------------------------------------------------------------------------
     let mut counter: u8 = 0;
     let config_inject_periodic = cmp_inject_periodic::Config {
-        period: Duration::from_secs(5),
+        period: Duration::from_secs(2),
         fn_periodic: move || {
             let msg = Message::new_custom(Custom::Counter(counter));
             counter += 1;
@@ -82,10 +82,11 @@ async fn main() {
                 address: drivers_i2c::I2cSlaveAddress::Direct {
                     slave_address: 0x02,
                 },
-                fn_input: |msg, data| {
-                    let msg = msg.get_custom_data();
-
-                    data.output_0 = false
+                fn_input: |msg, buffer| {
+                    let Some(msg) = msg.get_custom_data() else {return };
+                    match msg {
+                        Custom::Counter(data) => buffer.output_0 = data % 2 == 0,
+                    }
                 },
             },
         )],

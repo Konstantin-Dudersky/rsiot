@@ -1,15 +1,11 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use serde::{de::DeserializeOwned, Serialize};
-use tokio::{
-    sync::{Mutex, MutexGuard},
-    time::sleep,
-};
+use tokio::sync::{Mutex, MutexGuard};
 use tracing::warn;
 
 use crate::{
-    drivers_i2c::{self, postcard_serde, I2cSlaveAddress, RsiotI2cDriverBase},
+    drivers_i2c::{postcard_serde, I2cSlaveAddress, RsiotI2cDriverBase},
     executor::CmpInOut,
     message::MsgDataBound,
 };
@@ -26,7 +22,7 @@ where
     pub msg_bus: CmpInOut<TMsg>,
 
     /// Конфигурация
-    pub config: Config,
+    pub config: Config<TMsg>,
 
     /// Драйвер I2C
     pub driver: Arc<Mutex<TDriver>>,
@@ -39,60 +35,60 @@ where
 {
     /// Запуск на выполнение
     pub async fn spawn(mut self) {
-        // while let Ok(msg) = self.msg_bus.recv_input().await {
-        //     let req = (self.config.fn_input)(&msg);
-        //     let req = match req {
-        //         Ok(val) => val,
-        //         Err(err) => {
-        //             warn!("Error: {}", err);
-        //             continue;
-        //         }
-        //     };
-        //     let Some(req) = req else { continue };
-        //     let mut response;
-        //     {
-        //         let mut driver = self.driver.lock().await;
-        //         response = driver
-        //             .write_read(
-        //                 self.config.address,
-        //                 &req,
-        //                 postcard_serde::MESSAGE_LEN,
-        //                 Duration::from_millis(500),
-        //             )
-        //             .await
-        //     }
-        //     let response = match response {
-        //         Ok(val) => val,
-        //         Err(err) => {
-        //             warn!("Error: {}", err);
-        //             continue;
-        //         }
-        //     };
-        //     let msg = (self.config.fn_output)(response);
-        // }
-
-        loop {
-            sleep(self.config.period).await;
-            let mut driver = self.driver.lock().await;
-            for (index, req) in self.config.requests.iter().enumerate() {
-                // println!("{}", index);
-                let response = process_request(
-                    req,
-                    &mut driver,
-                    self.config.address,
-                    self.config.timeout,
-                    self.config.fn_response,
-                    index,
-                )
-                .await;
-                if let Err(err) = response {
-                    let err = format!("Request error: {}", err);
-                    warn!("{}", err);
-                    break;
+        while let Ok(msg) = self.msg_bus.recv_input().await {
+            let req = (self.config.fn_input)(&msg);
+            let req = match req {
+                Ok(val) => val,
+                Err(err) => {
+                    warn!("Error: {}", err);
+                    continue;
                 }
-                sleep(Duration::from_millis(20)).await;
+            };
+            let Some(req) = req else { continue };
+            let response;
+            {
+                let mut driver = self.driver.lock().await;
+                response = driver
+                    .write_read(
+                        self.config.address,
+                        &req,
+                        postcard_serde::MESSAGE_LEN,
+                        Duration::from_millis(500),
+                    )
+                    .await
             }
+            let response = match response {
+                Ok(val) => val,
+                Err(err) => {
+                    warn!("Error: {}", err);
+                    continue;
+                }
+            };
+            let msg = (self.config.fn_output)(response);
         }
+
+        // loop {
+        //     sleep(self.config.period).await;
+        //     let mut driver = self.driver.lock().await;
+        //     for (index, req) in self.config.requests.iter().enumerate() {
+        //         // println!("{}", index);
+        //         let response = process_request(
+        //             req,
+        //             &mut driver,
+        //             self.config.address,
+        //             self.config.timeout,
+        //             self.config.fn_response,
+        //             index,
+        //         )
+        //         .await;
+        //         if let Err(err) = response {
+        //             let err = format!("Request error: {}", err);
+        //             warn!("{}", err);
+        //             break;
+        //         }
+        //         sleep(Duration::from_millis(20)).await;
+        //     }
+        // }
     }
 }
 

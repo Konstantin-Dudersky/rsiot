@@ -104,6 +104,15 @@ where
                 task_set.spawn(async move { device.fn_process(in_out, driver).await });
             }
 
+            drivers_i2c::I2cDevices::PM_RQ8(config) => {
+                let device = drivers_i2c::pm_rq8::Device {
+                    msg_bus: in_out.clone(),
+                    config,
+                    driver: driver.clone(),
+                };
+                task_set.spawn(device.spawn());
+            }
+
             drivers_i2c::I2cDevices::SSD1306 {} => {
                 let device = drivers_i2c::ssd1306::SSD1306 {};
                 let driver = driver.clone();

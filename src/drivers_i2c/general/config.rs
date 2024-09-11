@@ -1,7 +1,5 @@
 use std::time::Duration;
 
-use serde::{de::DeserializeOwned, Serialize};
-
 use crate::message::{Message, MsgDataBound};
 
 use super::super::I2cSlaveAddress;
@@ -15,7 +13,7 @@ pub type FnOutput<TMsg> = fn(Vec<u8>) -> anyhow::Result<Option<Message<TMsg>>>;
 
 /// Конфигурация
 #[derive(Clone)]
-pub struct Config
+pub struct Config<TMsg>
 where
     TMsg: MsgDataBound,
 {
@@ -25,7 +23,8 @@ where
     /// Тайм-аут запроса
     pub timeout: Duration,
 
-    pub fn_response: FnResponse,
+    pub fn_input: FnInput<TMsg>,
+    pub fn_output: FnOutput<TMsg>,
 }
 
 /// Конфигурация одного запроса
