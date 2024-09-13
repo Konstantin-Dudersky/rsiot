@@ -180,6 +180,7 @@ cmp_esp = [
     "dep:postcard",
     "dep:ssd1306",
     "dep:pm_firmware_lib",
+    "dep:url",
     "tokio?/time",
 ]
 
