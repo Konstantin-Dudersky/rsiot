@@ -3,6 +3,7 @@ use esp_idf_svc::hal::{
     spi::{config, Spi, SpiAnyPins, SpiDeviceDriver, SpiDriver, SpiDriverConfig},
     units::FromValueType,
 };
+use tokio::task::JoinSet;
 
 use crate::{executor::CmpInOut, message::MsgDataBound};
 
@@ -26,11 +27,10 @@ where
     )
     .unwrap();
 
-    for device in config.devices {
-        let config = config::Config::new().baudrate(13.MHz().into());
-        let spi_slave =
-            SpiDeviceDriver::new(spi_master_driver, Some(device.pin_cs), &config).unwrap();
-        (device.fn_init)(&spi_slave)
+    let mut task_set = JoinSet::new();
+
+    while let Some(res) = task_set.join_next().await {
+        res.unwrap()
     }
 
     Ok(())

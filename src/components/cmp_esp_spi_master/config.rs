@@ -32,8 +32,12 @@ where
 
 pub struct ConfigDevice<TMsg> {
     pub pin_cs: AnyIOPin,
-    pub fn_init: for<'a> fn(&SpiDeviceDriver<'a, SpiDriver<'a>>),
-    pub fn_input: fn(&Message<TMsg>),
+
+    pub fn_init: for<'a> fn(&SpiDeviceDriver<'a, &SpiDriver<'a>>),
+
+    pub fn_input: for<'a> fn(&Message<TMsg>, &SpiDeviceDriver<'a, &SpiDriver<'a>>),
+
     pub fn_output: fn() -> Vec<Message<TMsg>>,
+
     pub fn_output_period: Duration,
 }
