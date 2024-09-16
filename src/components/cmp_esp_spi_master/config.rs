@@ -8,6 +8,7 @@ use esp_idf_svc::hal::{
 
 use crate::message::{Message, MsgDataBound};
 
+/// Конфигурация компонента cmp_esp_spi_master
 pub struct Config<TMsg, TSpi, TPeripheral>
 where
     TMsg: MsgDataBound,
@@ -26,18 +27,24 @@ where
     /// Пин SCK
     pub pin_sck: AnyIOPin,
 
-    /// Массив устройств на шине SPI
+    /// Массив конфигураций подчиненных устройств на шине SPI
     pub devices: Vec<ConfigDevice<TMsg>>,
+
+    /// Период вызова функций fn_output всех устройств
+    pub fn_output_period: Duration,
 }
 
+/// Конфигурация подчиненных устройств на шине SPI
 pub struct ConfigDevice<TMsg> {
+    /// Пин CS
     pub pin_cs: AnyIOPin,
 
-    pub fn_init: for<'a> fn(&SpiDeviceDriver<'a, &SpiDriver<'a>>),
+    /// Функция инициализации
+    pub fn_init: for<'a> fn(&mut SpiDeviceDriver<'a, &SpiDriver<'a>>),
 
-    pub fn_input: for<'a> fn(&Message<TMsg>, &SpiDeviceDriver<'a, &SpiDriver<'a>>),
+    /// Функция преобразования входящих сообщений в команды SPI
+    pub fn_input: for<'a> fn(&Message<TMsg>, &mut SpiDeviceDriver<'a, &SpiDriver<'a>>),
 
-    pub fn_output: fn() -> Vec<Message<TMsg>>,
-
-    pub fn_output_period: Duration,
+    /// Функция преобразования данных из SPI в исходящие сообщения
+    pub fn_output: for<'a> fn(&mut SpiDeviceDriver<'a, &SpiDriver<'a>>) -> Vec<Message<TMsg>>,
 }

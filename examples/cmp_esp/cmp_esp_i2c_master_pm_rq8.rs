@@ -9,7 +9,7 @@ async fn main() {
 
     use esp_idf_svc::{hal::peripherals::Peripherals, sys::link_patches};
     use tokio::task::LocalSet;
-    use tracing::{info, level_filters::LevelFilter, Level};
+    use tracing::{level_filters::LevelFilter, Level};
 
     use rsiot::{
         components::{cmp_esp_i2c_master, cmp_inject_periodic, cmp_logger},
@@ -83,7 +83,9 @@ async fn main() {
                     slave_address: 0x02,
                 },
                 fn_input: |msg, buffer| {
-                    let Some(msg) = msg.get_custom_data() else {return };
+                    let Some(msg) = msg.get_custom_data() else {
+                        return;
+                    };
                     match msg {
                         Custom::Counter(data) => buffer.output_0 = data % 2 == 0,
                     }

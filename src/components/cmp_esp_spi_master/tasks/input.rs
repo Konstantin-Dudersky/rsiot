@@ -13,9 +13,10 @@ impl<TMsg> Input<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    pub async fn spawn(mut self) {
+    pub async fn spawn(mut self) -> super::Result<()> {
         while let Ok(msg) = self.input.recv_input().await {
             self.output.send(InnerMessage::Message(msg)).await.unwrap();
         }
+        Ok(())
     }
 }

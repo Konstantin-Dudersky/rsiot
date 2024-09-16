@@ -34,7 +34,7 @@ pub enum Error {
     TaskOutput(String),
 
     #[error(transparent)]
-    TaskToMsgBus(shared_tasks::to_cmp_output::Error),
+    TaskToMsgBus(shared_tasks::mpsc_to_msg_bus::Error),
 }
 
 impl From<Error> for ComponentError {

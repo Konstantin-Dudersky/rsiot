@@ -93,6 +93,7 @@ where
         pin_17: super::PCF8575PinMode<TMsg>,
     },
 
+    /// Коммуникация с модулем PM-RQ8
     PM_RQ8(super::pm_rq8::Config<TMsg>),
 
     /// Коммуникация с LED-экраном

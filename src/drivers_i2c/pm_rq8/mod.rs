@@ -1,3 +1,5 @@
+//! Коммуникация с модулем PM-RQ8
+
 mod config;
 mod device;
 

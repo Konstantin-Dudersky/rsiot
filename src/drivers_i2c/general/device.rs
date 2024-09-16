@@ -64,7 +64,7 @@ where
                     continue;
                 }
             };
-            let msg = (self.config.fn_output)(response);
+            let _msg = (self.config.fn_output)(response);
         }
 
         // loop {

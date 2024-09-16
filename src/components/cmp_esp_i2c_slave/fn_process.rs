@@ -95,7 +95,7 @@ where
     );
 
     // Пересылка сообщений на выход компонента
-    let task = shared_tasks::ToCmpOutput {
+    let task = shared_tasks::MpscToMsgBus {
         input: channel_filter_to_output_recv,
         cmp_in_out: msg_bus.clone(),
     };

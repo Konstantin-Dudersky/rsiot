@@ -10,7 +10,7 @@ pub struct Period<TMsg> {
 }
 
 impl<TMsg> Period<TMsg> {
-    pub async fn spawn(self) {
+    pub async fn spawn(self) -> super::Result<()> {
         loop {
             self.output.send(InnerMessage::Periodic).await.unwrap();
             sleep(self.period).await

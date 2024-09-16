@@ -54,7 +54,7 @@ where
                     )
                     .await
             }
-            let response = match response {
+            let _response = match response {
                 Ok(val) => val,
                 Err(err) => {
                     warn!("Error: {}", err);

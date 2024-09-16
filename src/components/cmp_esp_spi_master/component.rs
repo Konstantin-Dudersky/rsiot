@@ -18,7 +18,7 @@ impl<TMsg, TSpi, TPeripheral> IComponentProcess<Config<TMsg, TSpi, TPeripheral>,
 where
     TMsg: MsgDataBound + 'static,
     TSpi: Peripheral<P = TPeripheral> + 'static,
-    TPeripheral: Spi + SpiAnyPins,
+    TPeripheral: Spi + SpiAnyPins + 'static,
 {
     async fn process(
         &self,

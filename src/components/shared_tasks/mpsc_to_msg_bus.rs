@@ -6,7 +6,7 @@ use crate::{
 };
 
 /// Задача перенаправления сообещений из канала `mpsc` в `CmpInOut`
-pub struct ToCmpOutput<TMsg>
+pub struct MpscToMsgBus<TMsg>
 where
     TMsg: MsgDataBound,
 {
@@ -14,7 +14,7 @@ where
     pub cmp_in_out: CmpInOut<TMsg>,
 }
 
-impl<TMsg> ToCmpOutput<TMsg>
+impl<TMsg> MpscToMsgBus<TMsg>
 where
     TMsg: MsgDataBound,
 {

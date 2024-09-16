@@ -1,4 +1,4 @@
-use crate::executor::ComponentError;
+use crate::{components::shared_tasks, executor::ComponentError};
 
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
@@ -14,6 +14,12 @@ pub enum Error {
 
     #[error("TokioTaskJoin: {0}")]
     TokioTaskJoin(#[from] tokio::task::JoinError),
+
+    #[error(transparent)]
+    TaskMpscToMsgBus(shared_tasks::mpsc_to_msg_bus::Error),
+
+    #[error(transparent)]
+    TaskFilter(shared_tasks::filter_identical_data::Error),
 }
 
 impl From<Error> for ComponentError {
