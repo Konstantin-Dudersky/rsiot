@@ -7,7 +7,11 @@ use esp_idf_hal::{
 use esp_idf_svc::hal::{i2c, units::FromValueType};
 use tokio::{sync::Mutex, task::JoinSet};
 
-use crate::{drivers_i2c, executor::CmpInOut, message::MsgDataBound};
+use crate::{
+    drivers_i2c,
+    executor::{join_set_spawn, CmpInOut},
+    message::MsgDataBound,
+};
 
 use super::{rsiot_i2c_driver::RsiotI2cDriver, Config, ConfigBaudrate};
 
@@ -124,13 +128,22 @@ where
                 task_set.spawn(async move { device.fn_process(in_out, driver).await });
             }
 
+            drivers_i2c::I2cDevices::PM_DI16(config) => {
+                let device = drivers_i2c::pm_di16::Device {
+                    msg_bus: in_out.clone(),
+                    config,
+                    driver: driver.clone(),
+                };
+                join_set_spawn(&mut task_set, device.spawn());
+            }
+
             drivers_i2c::I2cDevices::PM_RQ8(config) => {
                 let device = drivers_i2c::pm_rq8::Device {
                     msg_bus: in_out.clone(),
                     config,
                     driver: driver.clone(),
                 };
-                task_set.spawn(device.spawn());
+                join_set_spawn(&mut task_set, device.spawn());
             }
 
             drivers_i2c::I2cDevices::SSD1306 {} => {

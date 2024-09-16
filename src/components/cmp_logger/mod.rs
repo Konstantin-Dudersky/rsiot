@@ -1,7 +1,8 @@
 //! Компонент для логгирования сообщений
 
 use async_trait::async_trait;
-use tracing::{debug, error, info, trace, warn, Level};
+pub use tracing::Level;
+use tracing::{debug, error, info, trace, warn};
 
 use crate::{
     executor::{CmpInOut, Component, ComponentError, IComponentProcess},

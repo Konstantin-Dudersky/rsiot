@@ -112,6 +112,7 @@ async fn main() {
         inputs: vec![cmp_esp_gpio::ConfigGpioInput {
             peripherals: peripherals.pins.gpio0.into(),
             fn_output: |value| Message::new_custom(Custom::BootButton(value)),
+            pull: cmp_esp_gpio::Pull::Down,
         }],
         outputs: vec![cmp_esp_gpio::ConfigGpioOutput {
             peripherals: peripherals.pins.gpio1.into(),

@@ -1,3 +1,4 @@
+use esp_idf_hal::gpio::{AnyIOPin, Pull};
 use esp_idf_svc::hal::gpio::{AnyInputPin, AnyOutputPin};
 
 use crate::message::{Message, MsgDataBound};
@@ -19,10 +20,12 @@ where
     TMsg: MsgDataBound,
 {
     /// Пин
-    pub peripherals: AnyInputPin,
+    pub peripherals: AnyIOPin,
 
     /// Функция преобразования значения пина в сообщение
     pub fn_output: fn(bool) -> Message<TMsg>,
+
+    pub pull: Pull,
 }
 
 /// Конфигурация одного выхода
@@ -53,6 +56,8 @@ mod tests {
         message::{example_message::*, Message, MsgData},
     };
 
+    use super::Pull;
+
     #[test]
     fn test() {
         let peripherals = Peripherals::take().unwrap();
@@ -62,6 +67,7 @@ mod tests {
             inputs: vec![cmp_esp_gpio::ConfigGpioInput {
                 peripherals: peripherals.pins.gpio9.into(),
                 fn_output: |value| Message::new_custom(Custom::EspBootButton(value)),
+                pull: Pull::Down,
             }],
             // ANCHOR_END: inputs
             // ANCHOR: outputs

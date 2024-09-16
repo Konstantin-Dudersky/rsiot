@@ -29,6 +29,8 @@ where
     TMsg: MsgDataBound,
 {
     let mut pin = PinDriver::input(config_input.peripherals).unwrap();
+    pin.set_pull(config_input.pull).unwrap();
+
     loop {
         let level = pin.get_level();
         let level = gpio_level_to_bool(&level);

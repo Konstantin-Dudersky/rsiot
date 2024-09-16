@@ -93,6 +93,9 @@ where
         pin_17: super::PCF8575PinMode<TMsg>,
     },
 
+    /// Коммуникация с модулем PM-DI16
+    PM_DI16(super::pm_di16::Config<TMsg>),
+
     /// Коммуникация с модулем PM-RQ8
     PM_RQ8(super::pm_rq8::Config<TMsg>),
 

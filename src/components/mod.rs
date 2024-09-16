@@ -162,7 +162,7 @@ pub mod cmp_websocket_server;
 pub mod cmp_webstorage;
 
 #[allow(dead_code, unused_imports)]
-mod shared_tasks;
+pub mod shared_tasks;
 
 #[cfg(any(feature = "cmp_esp", feature = "cmp_mqtt_client"))]
 mod shared_mqtt_client;
