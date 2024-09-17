@@ -2,4 +2,4 @@ mod output;
 
 pub use output::Output;
 
-use super::Result;
+use super::{Error, Result};

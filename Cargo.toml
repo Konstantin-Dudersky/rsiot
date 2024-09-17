@@ -363,6 +363,10 @@ name = "cmp_raspberry_i2c_master_pcf8575"
 path = "./examples/cmp_raspberrypi/cmp_raspberry_i2c_master_pcf8575.rs"
 
 [[example]]
+name = "cmp_raspberry_i2c_master_pm_di16"
+path = "./examples/cmp_raspberrypi/cmp_raspberry_i2c_master_pm_di16.rs"
+
+[[example]]
 name = "cmp_raspberry_i2c_master_pm_rq8"
 path = "./examples/cmp_raspberrypi/cmp_raspberry_i2c_master_pm_rq8.rs"
 

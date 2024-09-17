@@ -1,6 +1,6 @@
 use tokio::task::JoinSet;
 
-use crate::executor::CmpInOut;
+use crate::executor::{join_set_spawn, CmpInOut};
 use crate::message::*;
 
 use super::{Config, DeriveItemProcess, Error};
@@ -12,7 +12,10 @@ where
     let mut task_set = JoinSet::new();
 
     for item in config.derive_items {
-        task_set.spawn(task_process_derive_item(in_out.clone(), item));
+        join_set_spawn(
+            &mut task_set,
+            task_process_derive_item(in_out.clone(), item),
+        );
     }
 
     while let Some(res) = task_set.join_next().await {

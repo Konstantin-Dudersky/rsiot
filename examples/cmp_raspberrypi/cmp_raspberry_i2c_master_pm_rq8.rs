@@ -59,9 +59,7 @@ async fn main() {
     let config_raspberrypi_i2c_master = cmp_raspberrypi_i2c_master::Config {
         devices: vec![drivers_i2c::I2cDevices::PM_RQ8(
             drivers_i2c::pm_rq8::Config {
-                address: drivers_i2c::I2cSlaveAddress::Direct {
-                    slave_address: 0x02,
-                },
+                address: drivers_i2c::I2cSlaveAddress::Direct { slave_address: 20 },
                 fn_input: |msg, buffer| {
                     let Some(msg) = msg.get_custom_data() else {
                         return;

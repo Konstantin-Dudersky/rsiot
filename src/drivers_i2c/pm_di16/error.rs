@@ -1,5 +1,6 @@
-use crate::components::shared_tasks;
+use crate::{components::shared_tasks, drivers_i2c::postcard_serde};
 
+#[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error(transparent)]
@@ -7,4 +8,13 @@ pub enum Error {
 
     #[error(transparent)]
     TaskMpscToMsgBus(shared_tasks::mpsc_to_msg_bus::Error),
+
+    #[error(transparent)]
+    Serde(#[from] postcard_serde::Error),
+
+    #[error("{0}")]
+    I2c(String),
+
+    #[error("Tokio mpsc send error: {0}")]
+    TokioSyncMpscSender(String),
 }
