@@ -4,9 +4,6 @@ use crate::message::{Message, MsgDataBound};
 
 use super::super::I2cSlaveAddress;
 
-/// Функция обработки ответа
-pub type FnResponse = fn(usize, &mut [u8]) -> Result<(), anyhow::Error>;
-
 /// Функция преобразования входящих сообщений в данные запроса по I2C
 pub type FnInput<TMsg> = fn(&Message<TMsg>) -> anyhow::Result<Option<Vec<u8>>>;
 
@@ -30,26 +27,4 @@ where
 
     /// Функция преобразования данных ответа I2C в исходящие сообщения
     pub fn_output: FnOutput<TMsg>,
-}
-
-/// Конфигурация одного запроса
-#[derive(Clone)]
-pub enum ConfigRequestKind {
-    /// Запрос read
-    Read {
-        /// Кол-во байт чтения
-        response_size: usize,
-    },
-    /// Запрос write
-    Write {
-        /// Данные для записи
-        request: Vec<u8>,
-    },
-    /// Запрос write_read
-    WriteRead {
-        /// Данные для записи
-        request: Vec<u8>,
-        /// Кол-во байт чтения
-        response_size: usize,
-    },
 }

@@ -1,3 +1,5 @@
+//! Задачи, которые можно использовать в других компонентах
+
 pub mod filter_identical_data;
 pub mod mpsc_to_msg_bus;
 
