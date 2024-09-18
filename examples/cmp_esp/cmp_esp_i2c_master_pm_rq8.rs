@@ -85,7 +85,16 @@ async fn main() {
                         return;
                     };
                     match msg {
-                        Custom::Counter(data) => buffer.output_0 = data % 2 == 0,
+                        Custom::Counter(data) => {
+                            buffer.output_0 = data % 2 == 0;
+                            buffer.output_1 = data % 2 == 0;
+                            buffer.output_2 = data % 2 == 0;
+                            buffer.output_3 = data % 2 == 0;
+                            buffer.output_4 = data % 2 == 0;
+                            buffer.output_5 = data % 2 == 0;
+                            buffer.output_6 = data % 2 == 0;
+                            buffer.output_7 = data % 2 == 0;
+                        }
                     }
                 },
             },

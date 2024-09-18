@@ -4,7 +4,10 @@ use web_sys::SvgElement;
 use crate::components::cmp_plc::plc::library::drives::motor::{QHmiStatus, QState};
 
 use super::{
-    super::{super::material_theme::MaterialTheme, change_svg_prop, get_child_svg_elements},
+    super::{
+        super::material_theme::MaterialTheme, change_svg_prop,
+        get_child_svg_elements::get_child_svg_elements,
+    },
     plc_drives_shared,
 };
 

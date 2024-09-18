@@ -6,7 +6,7 @@ use crate::components::cmp_plc::plc::library::drives::{
 };
 
 use super::{
-    super::super::tailwind_mwc::{Dialog, InputType, TextField},
+    super::super::tailwind_mwc::{Dialog, InputHtmlType, TextField},
     shared::SelectMode,
 };
 
@@ -87,7 +87,7 @@ fn Content(
                             let mv = mv.parse::<f64>().unwrap();
                             hmi_command.set(IHmiCommand::mv_hmi(mv));
                         }
-                        input_type = InputType::Number
+                        input_html_type = InputHtmlType::Number
                     />
                 </div>
 
@@ -103,7 +103,7 @@ fn Content(
                     <TextField
                         value = move || hmi_status.get().rbk.to_string()
                         on_keyup_enter = move |_| ()
-                        input_type = InputType::Number
+                        input_html_type = InputHtmlType::Number
                     />
                 </div>
 
