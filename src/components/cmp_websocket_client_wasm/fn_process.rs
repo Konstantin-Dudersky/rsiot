@@ -12,7 +12,10 @@ use tokio::task::JoinSet;
 use tracing::{info, trace, warn};
 use url::Url;
 
-use crate::{executor::CmpInOut, message::MsgDataBound};
+use crate::{
+    executor::{join_set_spawn, CmpInOut},
+    message::MsgDataBound,
+};
 
 use super::{Config, Error};
 
@@ -32,7 +35,7 @@ where
     }
 }
 
-async fn task_main<TMessage>(config: Config<TMessage>, input: CmpInOut<TMessage>) -> super::Result
+async fn task_main<TMessage>(config: Config<TMessage>, msg_bus: CmpInOut<TMessage>) -> super::Result
 where
     TMessage: MsgDataBound + 'static,
 {
@@ -43,8 +46,14 @@ where
     let (write_stream, read_stream) = ws.split();
 
     let mut task_set: JoinSet<super::Result> = JoinSet::new();
-    task_set.spawn_local(task_input(config.clone(), input.clone(), write_stream));
-    task_set.spawn_local(task_output(config, input, read_stream));
+
+    // Отправка входящих сообщений на Websocket сервер
+    let task = task_input(config.clone(), msg_bus.clone(), write_stream);
+    join_set_spawn(&mut task_set, task);
+
+    // Данные от сервера в исходящий поток сообщений
+    let task = task_output(config, msg_bus, read_stream);
+    join_set_spawn(&mut task_set, task);
 
     while let Some(task_result) = task_set.join_next().await {
         task_result??
@@ -71,7 +80,7 @@ where
         trace!("New message send to Websocker server: {:?}", ws_msg);
         write_stream.send(ws_msg).await?;
     }
-    Ok(())
+    Err(Error::TaskInput)
 }
 
 /// Задача получения текста из Websoket сервера и преобразование в исходящий поток сообщений
@@ -102,5 +111,5 @@ where
             output.send_output(msg).await.map_err(Error::CmpOutput)?;
         }
     }
-    Ok(())
+    Err(Error::TaskOutput)
 }

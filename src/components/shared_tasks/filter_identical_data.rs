@@ -15,7 +15,10 @@ pub struct FilterIdenticalData<TMsg>
 where
     TMsg: MsgDataBound,
 {
+    /// Входящие сообщения
     pub input: mpsc::Receiver<Message<TMsg>>,
+
+    /// Исходящие сообщения
     pub output: mpsc::Sender<Message<TMsg>>,
 }
 
@@ -23,6 +26,7 @@ impl<TMsg> FilterIdenticalData<TMsg>
 where
     TMsg: MsgDataBound,
 {
+    /// Запуск на выполнение
     pub async fn spawn(mut self) -> Result<(), Error> {
         let mut cache: HashMap<String, Message<TMsg>> = HashMap::new();
 
@@ -55,5 +59,6 @@ where
     }
 }
 
+#[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {}

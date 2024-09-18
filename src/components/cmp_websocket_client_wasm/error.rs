@@ -25,4 +25,10 @@ pub enum Error {
 
     #[error(transparent)]
     BadUrl(url::ParseError),
+
+    #[error("TaskOutput")]
+    TaskOutput,
+
+    #[error("TaskInput")]
+    TaskInput,
 }
