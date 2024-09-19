@@ -5,7 +5,7 @@ use gloo::dialogs::alert;
 use leptos::*;
 use tracing::{info, warn};
 use uuid::Uuid;
-use wasm_bindgen::{closure::Closure, JsCast, JsValue};
+use wasm_bindgen::{closure::Closure, JsCast};
 
 use super::create_svg_animation;
 
@@ -71,36 +71,6 @@ where
     view! { <div id=id node_ref=div_ref inner_html=file></div> }
 }
 
-#[deprecated]
-fn change_svg_element(svg_input: &SvgInput, element: &web_sys::SvgElement) -> Result<(), JsValue> {
-    match svg_input.signal {
-        SvgInputSignal::Fill(sig) => {
-            let value = sig.get();
-            let value = format!("#{:x}", value);
-            element.style().set_property("fill", &value)
-        }
-
-        SvgInputSignal::TextContent(sig) => {
-            element.set_inner_html(&sig.get());
-            Ok(())
-        }
-
-        SvgInputSignal::Y(sig) => {
-            let value = sig.get().to_string();
-            element.set_attribute("y", &value)
-        }
-
-        #[cfg(feature = "cmp_plc")]
-        SvgInputSignal::PlcDrivesMotor(_) => Ok(()),
-
-        #[cfg(feature = "cmp_plc")]
-        SvgInputSignal::PlcDrivesValveAnalog(_) => Ok(()),
-
-        #[cfg(feature = "cmp_plc")]
-        SvgInputSignal::PlcDrivesValve(_) => Ok(()),
-    }
-}
-
 /// Извлечение id элемента из события
 fn extract_id_from_event(event: Event) -> Option<String> {
     let target = event.current_target()?;
@@ -155,9 +125,7 @@ fn create_effect_for_svg_input(input: &SvgInput) -> Option<()> {
     let svg_element = get_svg_element_by_id(&input.id)?;
 
     match input.signal {
-        SvgInputSignal::Fill(_) => todo!(),
-
-        SvgInputSignal::Y(_) => todo!(),
+        SvgInputSignal::Fill(color) => create_svg_animation::fill(&svg_element, color),
 
         SvgInputSignal::TextContent(text) => create_svg_animation::text_content(&svg_element, text),
 
@@ -176,13 +144,5 @@ fn create_effect_for_svg_input(input: &SvgInput) -> Option<()> {
             create_svg_animation::plc_drives_valve(&svg_element, hmi_status)?
         }
     }
-
-    let result = change_svg_element(input, &svg_element);
-    if let Err(err) = result {
-        warn!(
-            "Cannot set attribute TODO of svg element with id '{}' :{:?}",
-            input.id, err
-        )
-    };
     Some(())
 }

@@ -5,6 +5,8 @@ pub use super::super::select_mode::QMode;
 /// Область памяти output
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct Q {
+    /// Команда на управление
+    pub control: bool,
     /// Статус для вывода на hmi
     pub hmi_status: QHmiStatus,
 }

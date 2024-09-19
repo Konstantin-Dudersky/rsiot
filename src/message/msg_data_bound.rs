@@ -4,8 +4,6 @@ use serde::{de::DeserializeOwned, Serialize};
 
 use super::{ServiceBound, TimeToLiveValue};
 
-type EnabledRoutes<TService> = Vec<(Option<TService>, Option<TService>)>;
-
 /// Ограничения на данные, которые могут содержать сообщения
 ///
 /// На перечислениях можно автоматически реализовывать трейты:
@@ -22,7 +20,7 @@ pub trait MsgDataBound:
     type TService: ServiceBound;
 
     /// Разрешенные маршруты сообщения
-    fn define_enabled_routes(&self) -> EnabledRoutes<Self::TService> {
+    fn define_enabled_routes(&self) -> Vec<(Option<Self::TService>, Option<Self::TService>)> {
         vec![(None, None)]
     }
 

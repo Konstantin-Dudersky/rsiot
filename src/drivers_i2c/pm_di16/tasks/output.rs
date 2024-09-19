@@ -114,6 +114,7 @@ where
                 msgs.push((self.fn_output_b_7)(b7));
 
                 for msg in msgs {
+                    let Some(msg) = msg else { continue };
                     self.output
                         .send(msg)
                         .await

@@ -27,7 +27,7 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
         QMode::Manual => match input.hmi_command {
             IHmiCommand::man_open => true,
             IHmiCommand::man_close => false,
-            _ => false,
+            _ => stat.control,
         },
         QMode::Oos => false,
     };
@@ -41,6 +41,7 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
     };
 
     Q {
+        control: stat.control,
         hmi_status: QHmiStatus {
             state,
             mode,

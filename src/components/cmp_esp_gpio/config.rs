@@ -1,5 +1,4 @@
-use esp_idf_hal::gpio::{AnyIOPin, Pull};
-use esp_idf_svc::hal::gpio::{AnyInputPin, AnyOutputPin};
+use esp_idf_svc::hal::gpio::{AnyIOPin, AnyOutputPin, Pull};
 
 use crate::message::{Message, MsgDataBound};
 
@@ -25,6 +24,7 @@ where
     /// Функция преобразования значения пина в сообщение
     pub fn_output: fn(bool) -> Message<TMsg>,
 
+    /// Подключение резистора подтяжки
     pub pull: Pull,
 }
 

@@ -5,7 +5,7 @@ use crate::{
     message::{Message, MsgDataBound},
 };
 
-pub type FnOutput<TMsg> = fn(bool) -> Message<TMsg>;
+pub type FnOutput<TMsg> = fn(bool) -> Option<Message<TMsg>>;
 
 /// Настройка модулуля коммуникации с модулем PM-DI16
 #[derive(Clone)]

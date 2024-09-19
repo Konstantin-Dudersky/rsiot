@@ -102,11 +102,17 @@ where
             Message::Text(value) => value,
             Message::Bytes(_) => todo!(),
         };
-        let msgs = (config.fn_output)(&msg).map_err(Error::FnOutput)?;
+
+        let msgs = (config.fn_output)(&msg).map_err(Error::FnOutput);
         let msgs = match msgs {
-            Some(msgs) => msgs,
-            None => continue,
+            Ok(val) => val,
+            Err(err) => {
+                warn!("{err}");
+                continue;
+            }
         };
+
+        let Some(msgs) = msgs else { continue };
         for msg in msgs {
             output.send_output(msg).await.map_err(Error::CmpOutput)?;
         }

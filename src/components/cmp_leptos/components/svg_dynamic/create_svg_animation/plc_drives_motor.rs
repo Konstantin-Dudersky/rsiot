@@ -19,7 +19,9 @@ pub fn plc_drives_motor(svg_element: &SvgElement, hmi_status: Signal<QHmiStatus>
         let Some(label) = label else { continue };
         match label.as_str() {
             "mode" => plc_drives_shared::mode(&element, hmi_status.get().mode),
+
             "mode_text" => plc_drives_shared::mode_text(&element, hmi_status.get().mode),
+
             "state" => match hmi_status.get().state {
                 QState::Stop => {
                     change_svg_prop::fill(&element, MaterialTheme::sys_color_surface);

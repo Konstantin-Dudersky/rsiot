@@ -1,13 +1,12 @@
 use leptos::*;
-use palette::Srgb;
 
+use crate::components::cmp_leptos::components::MaterialTheme;
 #[cfg(feature = "cmp_plc")]
 use crate::components::cmp_plc::plc::library;
 
 #[derive(Clone)]
 pub(crate) enum SvgInputSignal {
-    Fill(Signal<Srgb<u8>>),
-    Y(Signal<f64>),
+    Fill(Signal<MaterialTheme>),
     TextContent(Signal<String>),
 
     #[cfg(feature = "cmp_plc")]
@@ -31,18 +30,11 @@ pub struct SvgInput {
 
 impl SvgInput {
     /// Заливка цветом
-    pub fn fill(id: &str, signal: impl Into<Signal<Srgb<u8>>>) -> Self {
+    // pub fn fill(id: &str, signal: impl Into<Signal<Srgb<u8>>>) -> Self {
+    pub fn fill(id: &str, signal: impl Into<Signal<MaterialTheme>>) -> Self {
         Self {
             id: id.to_string(),
             signal: SvgInputSignal::Fill(signal.into()),
-        }
-    }
-
-    /// Смещение по оси Y
-    pub fn y(id: &str, signal: impl Into<Signal<f64>>) -> Self {
-        Self {
-            id: id.to_string(),
-            signal: SvgInputSignal::Y(signal.into()),
         }
     }
 

@@ -51,13 +51,13 @@
           "target": "wasm32-unknown-unknown",
           "features": [
             "single-thread", // Активировать обязательно !
-            "executor",
-            "logging",
-            "cmp_http_client_wasm",
+            //   "executor",
+            //   "logging",
+            //   "cmp_http_client_wasm",
             "cmp_leptos",
             "cmp_plc",
-            "cmp_websocket_client_wasm",
-            "cmp_webstorage"
+            "cmp_websocket_client_wasm"
+            //   "cmp_webstorage"
           ]
         }
       }
