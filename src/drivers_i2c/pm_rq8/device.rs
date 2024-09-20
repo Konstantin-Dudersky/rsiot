@@ -2,7 +2,7 @@ use std::{sync::Arc, time::Duration};
 
 use pm_firmware_lib::pm_rq8_v0_0_3::I2cRequest;
 use tokio::sync::Mutex;
-use tracing::warn;
+use tracing::{info, warn};
 
 use crate::{
     drivers_i2c::{postcard_serde, RsiotI2cDriverBase},
@@ -36,9 +36,17 @@ where
     /// Запустить на выполнение
     pub async fn spawn(mut self) {
         let mut buffer = super::config::Buffer::default();
+        let mut old_buffer = buffer.clone();
 
         while let Ok(msg) = self.msg_bus.recv_input().await {
             (self.config.fn_input)(&msg, &mut buffer);
+
+            if buffer == old_buffer {
+                continue;
+            } else {
+                old_buffer = buffer.clone();
+            }
+
             let buffer_u8 = buffer.clone().into();
             let request = I2cRequest::SetOutputs(buffer_u8);
             let request = postcard_serde::serialize(&request).unwrap();
@@ -50,7 +58,7 @@ where
                         self.config.address,
                         &request,
                         postcard_serde::MESSAGE_LEN,
-                        Duration::from_millis(500),
+                        Duration::from_millis(100),
                     )
                     .await
             }

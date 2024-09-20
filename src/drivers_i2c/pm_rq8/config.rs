@@ -18,7 +18,7 @@ where
 }
 
 /// Буфер данных коммуникации с модулем PM-RQ8
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct Buffer {
     /// Состояние выхода 0
     pub output_0: bool,

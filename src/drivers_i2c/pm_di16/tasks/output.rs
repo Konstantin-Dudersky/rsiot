@@ -68,7 +68,7 @@ where
                     self.address,
                     &req,
                     postcard_serde::MESSAGE_LEN,
-                    Duration::from_millis(200),
+                    Duration::from_millis(100),
                 )
                 .await
                 .map_err(super::Error::I2c)?

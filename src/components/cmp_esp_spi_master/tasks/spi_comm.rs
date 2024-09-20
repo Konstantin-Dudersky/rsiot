@@ -1,9 +1,14 @@
+use std::time::Duration;
+
 use esp_idf_svc::hal::{
     peripheral::Peripheral,
     spi::{config, Spi, SpiAnyPins, SpiDeviceDriver, SpiDriver, SpiDriverConfig},
     units::FromValueType,
 };
-use tokio::sync::mpsc::{Receiver, Sender};
+use tokio::{
+    sync::mpsc::{Receiver, Sender},
+    time::sleep,
+};
 
 use crate::message::{Message, MsgDataBound};
 
@@ -27,6 +32,9 @@ where
     TPeripheral: Spi + SpiAnyPins,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
+        // TODO - в модуле выходов ошибка stack protection
+        // sleep(Duration::from_secs(2)).await;
+
         let spi_master_driver = SpiDriver::new(
             self.config.spi,
             self.config.pin_sck,

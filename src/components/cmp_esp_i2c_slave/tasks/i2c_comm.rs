@@ -87,16 +87,17 @@ where
     trace!("Request: {:?}", request);
 
     // Определяем ответ по функции fn_i2c_comm
-    let mut buffer_data = buffer_data.blocking_lock();
-    let response = (fn_i2c_comm)(request, &mut buffer_data).map_err(super::Error::FnI2cComm)?;
+    let response = {
+        let mut buffer_data = buffer_data.blocking_lock();
+        (fn_i2c_comm)(request, &mut buffer_data).map_err(super::Error::FnI2cComm)?
+    };
     trace!("Response: {:?}", response);
-    drop(buffer_data);
 
     // Сериализация ответа
     let response_buffer = postcard_serde::serialize(&response)?;
 
     // Запись в буфер отправки I2C
-    let timeout = TickType::new_millis(5000).ticks();
+    let timeout = TickType::new_millis(100).ticks();
     i2c_slave
         .write(&response_buffer, timeout)
         .map_err(super::Error::WritingToI2cBuffer)?;
