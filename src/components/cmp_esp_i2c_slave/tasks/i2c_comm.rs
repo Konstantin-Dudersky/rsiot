@@ -55,7 +55,6 @@ where
 }
 
 // TODO - сделать вызов fn_output после коммуникации
-
 fn process_request<TI2cRequest, TI2cResponse, TBufferData>(
     i2c_slave: &mut I2cSlaveDriver,
     first_byte: u8,

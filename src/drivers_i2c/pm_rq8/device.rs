@@ -1,14 +1,19 @@
 use std::{sync::Arc, time::Duration};
 
-use pm_firmware_lib::pm_rq8_v0_0_3::I2cRequest;
-use tokio::sync::Mutex;
-use tracing::{info, warn};
+use futures::TryFutureExt;
+use tokio::{
+    sync::{mpsc::channel, Mutex},
+    task::JoinSet,
+};
 
 use crate::{
-    drivers_i2c::{postcard_serde, RsiotI2cDriverBase},
-    executor::CmpInOut,
+    components::shared_tasks,
+    drivers_i2c::RsiotI2cDriverBase,
+    executor::{join_set_spawn, CmpInOut},
     message::MsgDataBound,
 };
+
+use super::tasks;
 
 use super::Config;
 
@@ -30,45 +35,65 @@ where
 
 impl<TMsg, TDriver> Device<TMsg, TDriver>
 where
-    TMsg: MsgDataBound,
-    TDriver: RsiotI2cDriverBase,
+    TMsg: MsgDataBound + 'static,
+    TDriver: RsiotI2cDriverBase + 'static,
 {
     /// Запустить на выполнение
-    pub async fn spawn(mut self) {
-        let mut buffer = super::config::Buffer::default();
-        let mut old_buffer = buffer.clone();
+    pub async fn spawn(self) {
+        let buffer = super::config::Buffer::default();
+        let buffer: Arc<Mutex<super::config::Buffer>> = buffer.into();
 
-        while let Ok(msg) = self.msg_bus.recv_input().await {
-            (self.config.fn_input)(&msg, &mut buffer);
+        let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
 
-            if buffer == old_buffer {
-                continue;
-            } else {
-                old_buffer = buffer.clone();
-            }
+        let (ch_0_send, ch_0_recv) = channel(100);
+        let (ch_1_send, ch_1_recv) = channel(100);
+        let (ch_2_send, ch_2_recv) = channel(100);
 
-            let buffer_u8 = buffer.clone().into();
-            let request = I2cRequest::SetOutputs(buffer_u8);
-            let request = postcard_serde::serialize(&request).unwrap();
-            let response;
-            {
-                let mut driver = self.driver.lock().await;
-                response = driver
-                    .write_read(
-                        self.config.address,
-                        &request,
-                        postcard_serde::MESSAGE_LEN,
-                        Duration::from_millis(100),
-                    )
-                    .await
-            }
-            let _response = match response {
-                Ok(val) => val,
-                Err(err) => {
-                    warn!("Error: {}", err);
-                    continue;
-                }
-            };
+        // Входящие сообщения в канал mpsc
+        let task = shared_tasks::msg_bus_to_mpsc::MsgBusToMpsc {
+            msg_bus: self.msg_bus.clone(),
+            output: ch_0_send,
+        };
+        join_set_spawn(
+            &mut task_set,
+            task.spawn().map_err(super::Error::TaskMsgBusToMpsc),
+        );
+
+        // Обработка входящих сообщений
+        let task = tasks::Input {
+            input: ch_0_recv,
+            output: ch_1_send.clone(),
+            fn_input: self.config.fn_input,
+            buffer: buffer.clone(),
+        };
+        join_set_spawn(&mut task_set, task.spawn());
+
+        // Периодическая отправка, для надежности
+        let task = tasks::InputPeriodic {
+            output: ch_1_send,
+            buffer,
+            period: Duration::from_millis(1000),
+        };
+        join_set_spawn(&mut task_set, task.spawn());
+
+        // Коммуникация I2C
+        let task = tasks::I2cComm {
+            input: ch_1_recv,
+            output: ch_2_send,
+            i2c_driver: self.driver.clone(),
+            address: self.config.address,
+        };
+        join_set_spawn(&mut task_set, task.spawn());
+
+        // Обработка ответа
+        let task = tasks::Output {
+            input: ch_2_recv,
+            output: self.msg_bus,
+        };
+        join_set_spawn(&mut task_set, task.spawn());
+
+        while let Some(res) = task_set.join_next().await {
+            res.unwrap().unwrap();
         }
     }
 }

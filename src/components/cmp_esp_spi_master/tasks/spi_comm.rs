@@ -1,14 +1,9 @@
-use std::time::Duration;
-
 use esp_idf_svc::hal::{
     peripheral::Peripheral,
     spi::{config, Spi, SpiAnyPins, SpiDeviceDriver, SpiDriver, SpiDriverConfig},
     units::FromValueType,
 };
-use tokio::{
-    sync::mpsc::{Receiver, Sender},
-    time::sleep,
-};
+use tokio::sync::mpsc::{Receiver, Sender};
 
 use crate::message::{Message, MsgDataBound};
 
@@ -32,9 +27,6 @@ where
     TPeripheral: Spi + SpiAnyPins,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
-        // TODO - в модуле выходов ошибка stack protection
-        // sleep(Duration::from_secs(2)).await;
-
         let spi_master_driver = SpiDriver::new(
             self.config.spi,
             self.config.pin_sck,
@@ -86,7 +78,6 @@ where
 }
 
 struct SpiSlaveConfig<TMsg> {
-    // pub fn_init: for<'a> fn(&'a mut SpiDeviceDriver<'a, &'a SpiDriver<'a>>),
     pub fn_init: for<'a> fn(&mut SpiDeviceDriver<'a, &SpiDriver<'a>>),
     pub fn_input: for<'a> fn(&Message<TMsg>, &mut SpiDeviceDriver<'a, &SpiDriver<'a>>),
     pub fn_output: for<'a> fn(&mut SpiDeviceDriver<'a, &SpiDriver<'a>>) -> Vec<Message<TMsg>>,

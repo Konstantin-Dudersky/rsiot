@@ -3,6 +3,8 @@ use std::{marker::Send, time::Duration};
 use async_trait::async_trait;
 use tracing::{trace, warn};
 
+// TODO - добавить тип ошибки вместо String
+
 #[async_trait]
 pub trait RsiotI2cDriverBase
 where

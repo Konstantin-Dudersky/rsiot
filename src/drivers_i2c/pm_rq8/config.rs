@@ -1,3 +1,7 @@
+use std::sync::Arc;
+
+use tokio::sync::Mutex;
+
 use crate::{
     drivers_i2c::I2cSlaveAddress,
     message::{Message, MsgDataBound},
@@ -66,5 +70,11 @@ impl From<Buffer> for u8 {
             sum += 2_u8.pow(7);
         }
         sum
+    }
+}
+
+impl From<Buffer> for Arc<Mutex<Buffer>> {
+    fn from(value: Buffer) -> Self {
+        Arc::new(Mutex::new(value))
     }
 }
