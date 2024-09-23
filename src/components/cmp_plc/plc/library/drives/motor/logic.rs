@@ -45,6 +45,7 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
             },
             mode,
             state: stat.state,
+            start: stat.state == QState::Start,
         },
         start: stat.state == QState::Start,
     }

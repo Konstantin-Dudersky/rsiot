@@ -53,6 +53,7 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
                 mode_local: stat.mode.output.hmi_status.hmi_permission.mode_local,
                 mode_oos: stat.mode.output.hmi_status.hmi_permission.mode_oos,
             },
+            control: stat.control,
         },
     }
 }

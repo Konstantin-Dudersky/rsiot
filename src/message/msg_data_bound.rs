@@ -20,6 +20,7 @@ pub trait MsgDataBound:
     type TService: ServiceBound;
 
     /// Разрешенные маршруты сообщения
+    #[allow(clippy::type_complexity)]
     fn define_enabled_routes(&self) -> Vec<(Option<Self::TService>, Option<Self::TService>)> {
         vec![(None, None)]
     }

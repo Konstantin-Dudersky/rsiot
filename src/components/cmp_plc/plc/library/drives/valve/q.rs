@@ -22,6 +22,9 @@ pub struct QHmiStatus {
 
     /// Разрешения для работы с hmi
     pub hmi_permission: QHmiPermission,
+
+    /// true - команда на управление
+    pub control: bool,
 }
 
 /// Разрешения для работы с hmi
