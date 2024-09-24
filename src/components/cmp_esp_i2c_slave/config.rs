@@ -68,4 +68,6 @@ where
 
     /// Структура для хранения буферных данных
     pub buffer_data_default: TBufferData,
+
+    pub start_delay: Duration,
 }

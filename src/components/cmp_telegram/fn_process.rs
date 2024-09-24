@@ -1,27 +1,31 @@
-use std::sync::Arc;
+use tokio::task::JoinSet;
 
-use teloxide::prelude::*;
-use teloxide::prelude::{Bot, ChatId};
-use tokio::sync::Mutex;
+use crate::{
+    executor::{join_set_spawn, CmpInOut},
+    message::MsgDataBound,
+};
 
-use crate::{executor::CmpInOut, message::MsgDataBound};
+use super::{tasks, Config, TelegramBot};
 
-use super::Config;
-
-pub async fn fn_process<TMsg>(config: Config<TMsg>, _in_out: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg>(config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> super::Result<()>
 where
-    TMsg: MsgDataBound,
+    TMsg: MsgDataBound + 'static,
 {
-    let bot = Arc::new(Mutex::new(Bot::new(config.bot_token)));
+    let bot = TelegramBot::new(config.bot_token, config.chat_id);
 
-    task_fn_input(bot).await?;
-    Ok(())
-}
+    let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
 
-async fn task_fn_input(bot: Arc<Mutex<Bot>>) -> super::Result<()> {
-    let bot = bot.lock().await;
-    bot.send_message(ChatId(-1002220119164), " ⚠️ ❗ alarm!!")
-        .await
-        .unwrap();
+    // Обработка входящих сообщений
+    let task = tasks::Input {
+        input: msg_bus,
+        bot,
+        fn_input: config.fn_input,
+    };
+    join_set_spawn(&mut task_set, task.spawn());
+
+    while let Some(res) = task_set.join_next().await {
+        res.unwrap().unwrap();
+    }
+
     Ok(())
 }

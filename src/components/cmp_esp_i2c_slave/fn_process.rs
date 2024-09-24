@@ -9,6 +9,7 @@ use serde::{de::DeserializeOwned, Serialize};
 use tokio::{
     sync::{mpsc, Mutex},
     task::JoinSet,
+    time::sleep,
 };
 use tracing::debug;
 
@@ -35,6 +36,8 @@ where
     TI2cResponse: Debug + Serialize + 'static,
     TBufferData: BufferData + 'static,
 {
+    sleep(config.start_delay).await;
+
     let i2c_idf_config = I2cSlaveConfig::new()
         .sda_enable_pullup(false)
         .scl_enable_pullup(false)

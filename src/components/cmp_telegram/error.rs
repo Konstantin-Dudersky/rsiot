@@ -11,6 +11,9 @@ pub enum Error {
 
     #[error("TokioTaskJoin: {0}")]
     TokioTaskJoin(#[from] tokio::task::JoinError),
+
+    #[error("TaskEndInput")]
+    TaskEndInput,
 }
 
 impl From<Error> for ComponentError {
