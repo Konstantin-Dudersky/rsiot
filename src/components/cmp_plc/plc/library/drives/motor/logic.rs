@@ -17,10 +17,12 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
     // Команда на запуск
     stat.state = match mode {
         QMode::Auto => {
-            if input.auto_start {
+            if input.auto_stop {
+                QState::Stop
+            } else if input.auto_start {
                 QState::Start
             } else {
-                QState::Stop
+                stat.state
             }
         }
         QMode::Local => QState::Stop,
@@ -30,6 +32,12 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
             _ => stat.state,
         },
         QMode::Oos => QState::Stop,
+    };
+
+    // Блокировка работы
+    stat.state = match input.intlock {
+        true => stat.state,
+        false => QState::Stop,
     };
 
     Q {

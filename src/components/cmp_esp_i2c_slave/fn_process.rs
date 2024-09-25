@@ -36,8 +36,6 @@ where
     TI2cResponse: Debug + Serialize + 'static,
     TBufferData: BufferData + 'static,
 {
-    sleep(config.start_delay).await;
-
     let i2c_idf_config = I2cSlaveConfig::new()
         .sda_enable_pullup(false)
         .scl_enable_pullup(false)
@@ -67,6 +65,7 @@ where
         i2c_slave,
         fn_i2c_comm: config.fn_i2c_comm,
         buffer_data: buffer_data.clone(),
+        start_delay: config.start_delay,
     };
     task_set.spawn_blocking(move || task.spawn());
 

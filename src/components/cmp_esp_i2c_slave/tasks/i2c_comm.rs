@@ -1,4 +1,4 @@
-use std::{fmt::Debug, sync::Arc};
+use std::{fmt::Debug, sync::Arc, thread::sleep, time::Duration};
 
 use esp_idf_hal::{
     delay::{TickType, BLOCK},
@@ -15,6 +15,7 @@ pub struct I2cComm<TI2cRequest, TI2cResponse, TBufferData> {
     pub i2c_slave: I2cSlaveDriver<'static>,
     pub fn_i2c_comm: FnI2cComm<TI2cRequest, TI2cResponse, TBufferData>,
     pub buffer_data: Arc<Mutex<TBufferData>>,
+    pub start_delay: Duration,
 }
 
 /// Таймаут ожидания нового символа. Если задать 0, то будут ошибки передачи
@@ -26,6 +27,8 @@ where
     TI2cResponse: Debug + Serialize + 'static,
 {
     pub fn spawn(mut self) -> super::Result<()> {
+        sleep(self.start_delay);
+
         loop {
             trace!("Wait for request");
 

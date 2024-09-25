@@ -48,7 +48,7 @@ where
         };
         handle_request(datapoints, config.clone()).await?;
     }
-    Ok(())
+    Err(super::Error::TaskEndInput)
 }
 
 async fn handle_request<TMsg>(

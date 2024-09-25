@@ -18,6 +18,9 @@ pub struct I {
     /// Переключение в режим oos из контроллера
     pub mode_oos: bool,
 
+    /// false - блокировка работы
+    pub intlock: bool,
+
     /// Команда с hmi
     pub hmi_command: IHmiCommand,
 

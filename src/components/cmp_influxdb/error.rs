@@ -1,4 +1,5 @@
 /// Ошибки cmp_influxdb
+#[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     /// Reqwest
@@ -21,4 +22,7 @@ pub enum Error {
     /// Config
     #[error(transparent)]
     Config(#[from] crate::components_config::influxdb_v2::Error),
+
+    #[error("TaskEndInput")]
+    TaskEndInput,
 }
