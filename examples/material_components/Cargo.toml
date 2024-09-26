@@ -13,6 +13,7 @@ rsiot = { path = "../../.", features = [
     "logging",
     "cmp_leptos",
     "cmp_plc",
+    "cmp_webstorage",
 ] }
 serde = { version = "*", features = ["derive"] }
 tokio = { version = "*" }

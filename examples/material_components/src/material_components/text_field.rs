@@ -1,6 +1,6 @@
 use leptos::*;
 
-use rsiot::components::cmp_leptos::components::tailwind_mwc::{InputType, TextField};
+use rsiot::components::cmp_leptos::components::tailwind_mwc::{InputHtmlType, TextField};
 use tracing::info;
 
 #[component]
@@ -18,7 +18,7 @@ pub fn TextFieldView() -> impl IntoView {
                 info!("New value: {}", new_value);
                 test_str_set.set(new_value.to_string())
             }
-            input_type=InputType::Number
+            input_html_type=InputHtmlType::Number
         />
 
     }

@@ -83,6 +83,7 @@ fn main() -> anyhow::Result<()> {
         buffer_size: 100,
         service: Services::example_single_thread,
         fn_auth: |msg, _| Some(msg),
+        delay_publish: Duration::from_secs(0),
     };
 
     #[cfg(not(feature = "single-thread"))]

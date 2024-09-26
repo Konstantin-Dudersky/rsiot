@@ -14,6 +14,8 @@ mod message;
 #[cfg(all(feature = "single-thread", feature = "executor"))]
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
+    use std::time::Duration;
+
     use message::Message;
     use tokio::task::LocalSet;
 
@@ -30,6 +32,7 @@ async fn main() {
         buffer_size: 100,
         service: Service::example_service,
         fn_auth: |_, _| None,
+        delay_publish: Duration::from_secs(0),
     };
 
     local_set.spawn_local(async {

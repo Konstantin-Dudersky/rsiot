@@ -69,5 +69,7 @@ where
     /// Структура для хранения буферных данных
     pub buffer_data_default: TBufferData,
 
-    pub start_delay: Duration,
+    /// Задержка запуска обмена по I2C. Может потребоваться, чтобы подождать инициализации
+    /// других устройств, например по шине SPI
+    pub start_i2ccomm_delay: Duration,
 }

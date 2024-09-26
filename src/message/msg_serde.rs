@@ -2,7 +2,7 @@ use serde::{de::DeserializeOwned, Serialize};
 
 use super::{message::Message, MsgData};
 
-use serde_json::{from_str as deserialize, to_string as serialize};
+use serde_json::{from_str as deserialize, to_string as serialize, to_string_pretty};
 
 impl<TData> Message<TData>
 where
@@ -11,6 +11,18 @@ where
     /// Сериализация сообщений в json
     pub fn serialize(&self) -> Result<String, super::Error> {
         let json = serialize::<Self>(self);
+        match json {
+            Ok(value) => Ok(value),
+            Err(error) => {
+                let error = error.to_string();
+                Err(super::Error::Serialization(error))
+            }
+        }
+    }
+
+    /// Сериализация сообщений в json
+    pub fn serialize_json_pretty(&self) -> Result<String, super::Error> {
+        let json = to_string_pretty::<Self>(self);
         match json {
             Ok(value) => Ok(value),
             Err(error) => {

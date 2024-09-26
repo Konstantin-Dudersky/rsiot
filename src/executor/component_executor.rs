@@ -48,6 +48,13 @@ where
     /// |msg, _| Some(msg)
     /// ```
     pub fn_auth: FnAuth<TMsg>,
+
+    /// Задержка публикации сообщений
+    ///
+    /// Рассылка сообщений осуществляется по каналу broadcast. При инициализации компоненты
+    /// получают только новые сообщения. Эта задержка нужна для того, чтобы компоненты успели
+    /// запуститься.
+    pub delay_publish: Duration,
 }
 
 impl<TMsg> ComponentExecutor<TMsg>
@@ -75,6 +82,7 @@ where
             cache.clone(),
             config.service.clone(),
             id,
+            config.delay_publish,
         );
         join_set_spawn(&mut task_set, task_internal_handle);
 
@@ -148,6 +156,7 @@ async fn task_internal<TMsg, TService>(
     cache: Cache<TMsg>,
     service: TService,
     executor_id: Uuid,
+    delay_publish: Duration,
 ) -> Result<(), ComponentError>
 where
     TMsg: MsgDataBound,
@@ -155,6 +164,10 @@ where
 {
     debug!("Internal task of ComponentExecutor: starting");
     let service_name = service.trace_name();
+
+    // Задержка, чтобы компоненты успели запуститься и подписаться на получение сообщений
+    sleep(delay_publish).await;
+
     while let Some(mut msg) = input.recv().await {
         trace!("ComponentExecutor: new message: {:?}", msg);
         msg.add_trace_item(&executor_id, &format!("{}::internal_bus", service_name));

@@ -61,6 +61,7 @@ pub enum MaterialTheme {
 }
 
 impl MaterialTheme {
+    /// Преобразование варианта перечисления в переменную CSS
     pub fn css_var(&self) -> String {
         match self {
             MaterialTheme::sys_color_primary => "var(--md-sys-color-primary)",

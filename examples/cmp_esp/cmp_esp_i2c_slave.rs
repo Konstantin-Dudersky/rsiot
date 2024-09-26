@@ -123,6 +123,7 @@ async fn main() {
             Ok(response)
         },
         buffer_data_default: I2cBufferData::default(),
+        start_i2ccomm_delay: Duration::from_millis(0),
     };
 
     // executor ------------------------------------------------------------------------------------

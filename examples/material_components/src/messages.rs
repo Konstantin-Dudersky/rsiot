@@ -1,4 +1,7 @@
-use rsiot::{components::cmp_plc::plc::library::drives, message::*};
+use rsiot::{
+    components::cmp_plc::plc::library::drives,
+    message::{example_service::Service, *},
+};
 use serde::{Deserialize, Serialize};
 
 #[allow(non_camel_case_types)]
@@ -14,4 +17,6 @@ pub enum Custom {
     valve_hmi_status(drives::valve::QHmiStatus),
 }
 
-impl MsgDataBound for Custom {}
+impl MsgDataBound for Custom {
+    type TService = Service;
+}

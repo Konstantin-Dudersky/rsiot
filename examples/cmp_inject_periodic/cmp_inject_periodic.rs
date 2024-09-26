@@ -25,6 +25,7 @@ async fn main() -> anyhow::Result<()> {
         buffer_size: 100,
         service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
+        delay_publish: Duration::from_secs(0),
     };
 
     let logger_config = cmp_logger::Config {

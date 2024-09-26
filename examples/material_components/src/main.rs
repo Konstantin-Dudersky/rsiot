@@ -8,10 +8,10 @@ use std::time::Duration;
 
 use leptos::*;
 use rsiot::{
-    components::{cmp_leptos, cmp_plc},
+    components::{cmp_leptos, cmp_plc, cmp_webstorage},
     executor::{ComponentExecutor, ComponentExecutorConfig},
     logging::configure_logging,
-    message::Message,
+    message::{example_service::Service, Message},
 };
 use tokio::task::LocalSet;
 
@@ -33,6 +33,8 @@ fn main() -> anyhow::Result<()> {
     let config_plc = cmp_plc::Config {
         fn_cycle_init: |input: &mut plc::fb_main::I| {
             input.motor_hmi_command = Default::default();
+            input.valve_analog_hmi_command = Default::default();
+            input.valve_hmi_command = Default::default();
         },
         fn_input: |input: &mut plc::fb_main::I, msg: &Message<Custom>| {
             let Some(msg) = msg.get_custom_data() else {
@@ -57,11 +59,25 @@ fn main() -> anyhow::Result<()> {
         retention: None,
     };
 
+    // cmp_webstorage ------------------------------------------------------------------------------
+    let config_webstorage = cmp_webstorage::Config {
+        kind: cmp_webstorage::ConfigKind::SessionStorage,
+        fn_input: |msg| {
+            let key = msg.key.clone();
+            let value = msg.serialize()?;
+            let item = cmp_webstorage::ConfigWebstorageItem { key, value };
+            Ok(Some(item))
+        },
+        fn_output: |_| Ok(None),
+        default_items: vec![],
+    };
+
     // executor ------------------------------------------------------------------------------------
     let config_executor = ComponentExecutorConfig {
         buffer_size: 100,
-        executor_name: "material_components".into(),
+        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
+        delay_publish: Duration::from_millis(100),
     };
 
     let context = LocalSet::new();
@@ -69,6 +85,7 @@ fn main() -> anyhow::Result<()> {
         ComponentExecutor::<Custom>::new(config_executor)
             .add_cmp(cmp_leptos::Cmp::new(config_leptos))
             .add_cmp(cmp_plc::Cmp::new(config_plc))
+            .add_cmp(cmp_webstorage::Cmp::new(config_webstorage))
             .wait_result()
             .await?;
         Ok(()) as anyhow::Result<()>

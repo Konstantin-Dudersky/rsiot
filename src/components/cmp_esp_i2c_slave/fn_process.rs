@@ -9,7 +9,6 @@ use serde::{de::DeserializeOwned, Serialize};
 use tokio::{
     sync::{mpsc, Mutex},
     task::JoinSet,
-    time::sleep,
 };
 use tracing::debug;
 
@@ -65,7 +64,7 @@ where
         i2c_slave,
         fn_i2c_comm: config.fn_i2c_comm,
         buffer_data: buffer_data.clone(),
-        start_delay: config.start_delay,
+        start_delay: config.start_i2ccomm_delay,
     };
     task_set.spawn_blocking(move || task.spawn());
 
