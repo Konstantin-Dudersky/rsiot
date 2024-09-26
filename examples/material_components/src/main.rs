@@ -20,7 +20,6 @@ use messages::*;
 
 fn main() -> anyhow::Result<()> {
     console_error_panic_hook::set_once();
-
     configure_logging("info").unwrap();
 
     // cmp_leptos ----------------------------------------------------------------------------------
@@ -62,14 +61,9 @@ fn main() -> anyhow::Result<()> {
     // cmp_webstorage ------------------------------------------------------------------------------
     let config_webstorage = cmp_webstorage::Config {
         kind: cmp_webstorage::ConfigKind::SessionStorage,
-        fn_input: |msg| {
-            let key = msg.key.clone();
-            let value = msg.serialize()?;
-            let item = cmp_webstorage::ConfigWebstorageItem { key, value };
-            Ok(Some(item))
-        },
-        fn_output: |_| Ok(None),
-        default_items: vec![],
+        fn_input: Some,
+        fn_output: |_| None,
+        default_messages: vec![],
     };
 
     // executor ------------------------------------------------------------------------------------
@@ -81,6 +75,7 @@ fn main() -> anyhow::Result<()> {
     };
 
     let context = LocalSet::new();
+
     context.spawn_local(async move {
         ComponentExecutor::<Custom>::new(config_executor)
             .add_cmp(cmp_leptos::Cmp::new(config_leptos))
@@ -90,6 +85,8 @@ fn main() -> anyhow::Result<()> {
             .await?;
         Ok(()) as anyhow::Result<()>
     });
+
     spawn_local(context);
+
     Ok(())
 }

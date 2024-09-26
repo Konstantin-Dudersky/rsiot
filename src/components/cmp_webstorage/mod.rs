@@ -4,9 +4,10 @@ mod component;
 mod config;
 mod error;
 mod fn_process;
+mod tasks;
 
 pub use component::Cmp;
-pub use config::{Config, ConfigKind, ConfigWebstorageItem};
+pub use config::{Config, ConfigKind};
 pub use error::Error;
 
 type Result<T> = std::result::Result<T, error::Error>;

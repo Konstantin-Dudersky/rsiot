@@ -1,53 +1,52 @@
-use std::collections::HashMap;
+use futures::TryFutureExt;
+use tokio::{sync::mpsc::channel, task::JoinSet};
 
-use gloo::storage::{LocalStorage, SessionStorage, Storage};
+use crate::{
+    components::shared_tasks,
+    executor::{join_set_spawn, CmpInOut},
+    message::*,
+};
 
-use crate::{executor::CmpInOut, message::*};
+use super::{tasks, Config};
 
-use super::{Config, ConfigKind, ConfigWebstorageItem};
-
-pub async fn fn_process<TMsg>(config: Config<TMsg>, mut in_out: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg>(config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> super::Result<()>
 where
-    TMsg: MsgDataBound,
+    TMsg: MsgDataBound + 'static,
 {
-    load_from_storage(&config, &in_out).await?;
-    while let Ok(msg) = in_out.recv_input().await {
-        let item = (config.fn_input)(msg).map_err(super::Error::FnInput)?;
-        let Some(item) = item else { continue };
-        match config.kind {
-            ConfigKind::LocalStorage => LocalStorage::set(item.key, item.value)?,
-            ConfigKind::SessionStorage => SessionStorage::set(item.key, item.value)?,
-        };
-        load_from_storage(&config, &in_out).await?;
-    }
-    Ok(())
-}
+    let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
 
-/// Загрузка из WebStorage
-async fn load_from_storage<TMsg>(
-    config: &Config<TMsg>,
-    in_out: &CmpInOut<TMsg>,
-) -> super::Result<()>
-where
-    TMsg: MsgDataBound,
-{
-    let mut items: HashMap<String, String> = match config.kind {
-        ConfigKind::LocalStorage => LocalStorage::get_all()?,
-        ConfigKind::SessionStorage => SessionStorage::get_all()?,
+    let (task_msg_bus_to_mpsc_output, task_input_input) = channel(msg_bus.max_capacity());
+
+    // Со входа компонента на задачу Input
+    let task_0 = shared_tasks::msg_bus_to_mpsc::MsgBusToMpsc {
+        msg_bus: msg_bus.clone(),
+        output: task_msg_bus_to_mpsc_output,
     };
+    join_set_spawn(
+        &mut task_set,
+        task_0.spawn().map_err(super::Error::TaskMsgBusToMpsc),
+    );
 
-    // Добавляем значения по-умолчанию
-    for ConfigWebstorageItem { key, value } in &config.default_items {
-        if !items.contains_key(key) {
-            items.insert(key.clone(), value.clone());
-        }
+    // Обработка входящих сообщений
+    let task_1 = tasks::Input {
+        input: task_input_input,
+        storage_kind: config.kind,
+        fn_input: config.fn_input,
+    };
+    join_set_spawn(&mut task_set, task_1.spawn());
+
+    // Загрузка значений из хранилища и отправка исходящих сообщений
+    let task_2 = tasks::Output {
+        output: todo!(),
+        storage_kind: todo!(),
+        default_messages: todo!(),
+        fn_output: todo!(),
+    };
+    join_set_spawn(&mut task_set, task_2.spawn());
+
+    while let Some(res) = task_set.join_next().await {
+        res??;
     }
 
-    for (key, value) in items.into_iter() {
-        let item = ConfigWebstorageItem { key, value };
-        let msg = (config.fn_output)(item).map_err(super::Error::FnOutput)?;
-        let Some(msg) = msg else { continue };
-        in_out.send_output(msg).await?;
-    }
     Ok(())
 }
