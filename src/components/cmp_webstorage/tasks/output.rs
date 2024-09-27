@@ -5,13 +5,13 @@ use gloo::storage::{LocalStorage, SessionStorage, Storage};
 use crate::message::{Message, MsgDataBound};
 
 use super::{
-    super::{config::FnOutput, ConfigKind},
+    super::{config::FnOutput, ConfigStorageKind},
     TaskOutput,
 };
 
 pub struct Output<TMsg> {
     pub output: TaskOutput<TMsg>,
-    pub storage_kind: ConfigKind,
+    pub storage_kind: ConfigStorageKind,
     pub default_messages: Vec<Message<TMsg>>,
     pub fn_output: FnOutput<TMsg>,
 }
@@ -23,8 +23,8 @@ where
     pub async fn spawn(self) -> super::Result<()> {
         // Загружаем из хранилища все значения
         let mut msgs: HashMap<String, Message<TMsg>> = match self.storage_kind {
-            ConfigKind::LocalStorage => LocalStorage::get_all()?,
-            ConfigKind::SessionStorage => SessionStorage::get_all()?,
+            ConfigStorageKind::LocalStorage => LocalStorage::get_all()?,
+            ConfigStorageKind::SessionStorage => SessionStorage::get_all()?,
         };
 
         // Добавляем значения по-умолчанию

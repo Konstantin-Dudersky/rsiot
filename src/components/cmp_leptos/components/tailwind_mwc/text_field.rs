@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use leptos::*;
 use web_sys::KeyboardEvent;
 
@@ -28,19 +30,34 @@ pub enum InputHtmlType {
     Time,
 }
 
-impl ToString for InputHtmlType {
-    fn to_string(&self) -> String {
-        match self {
+impl Display for InputHtmlType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let txt = match self {
             InputHtmlType::Checkbox => "checkbox",
             InputHtmlType::Date => "date",
             InputHtmlType::Datetime => "datetime-local",
             InputHtmlType::Number => "number",
             InputHtmlType::Text => "text",
             InputHtmlType::Time => "time",
-        }
-        .to_string()
+        };
+        write!(f, "{}", txt)
     }
 }
+
+// TODO - delete after test
+// impl ToString for InputHtmlType {
+//     fn to_string(&self) -> String {
+//         match self {
+//             InputHtmlType::Checkbox => "checkbox",
+//             InputHtmlType::Date => "date",
+//             InputHtmlType::Datetime => "datetime-local",
+//             InputHtmlType::Number => "number",
+//             InputHtmlType::Text => "text",
+//             InputHtmlType::Time => "time",
+//         }
+//         .to_string()
+//     }
+// }
 
 #[component]
 pub fn TextField(

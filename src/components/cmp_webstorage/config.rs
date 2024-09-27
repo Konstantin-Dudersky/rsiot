@@ -1,20 +1,16 @@
 use crate::message::*;
 
-// ANCHOR: TFnInput
 pub type FnInput<TMsg> = fn(Message<TMsg>) -> Option<Message<TMsg>>;
-// ANCHOR_END: TFnInput
 
-// ANCHOR: TFnOutput
 pub type FnOutput<TMsg> = fn(Message<TMsg>) -> Option<Message<TMsg>>;
-// ANCHOR_END: TFnOutput
 
-/// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_webstorage.html#Config
+/// Конфигуреция cmp_webstorage
 pub struct Config<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    /// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_webstorage.html#kind
-    pub kind: ConfigKind,
+    /// Вид хранилища
+    pub storage_kind: ConfigStorageKind,
 
     /// Сохранение сообщений в хранилище
     pub fn_input: FnInput<TMsg>,
@@ -32,7 +28,7 @@ where
 {
     fn default() -> Self {
         Self {
-            kind: ConfigKind::LocalStorage,
+            storage_kind: ConfigStorageKind::LocalStorage,
             fn_input: |_| None,
             fn_output: |_| None,
             default_messages: vec![],
@@ -40,11 +36,12 @@ where
     }
 }
 
-/// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_webstorage.html#ConfigKind
-pub enum ConfigKind {
-    /// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_webstorage.html#LocalStorage
+/// Вид хранилища - localstorage или sessionStorage
+#[derive(Clone, Copy)]
+pub enum ConfigStorageKind {
+    /// Сохраняет данные при перезапуске браузера
     LocalStorage,
-    /// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_webstorage.html#SessionStorage
+    /// Сохраняет данные. При перезапуске браузера данные теряются
     SessionStorage,
 }
 

@@ -15,12 +15,15 @@ where
 {
     let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
 
-    let (task_msg_bus_to_mpsc_output, task_input_input) = channel(msg_bus.max_capacity());
+    let channel_capacity = msg_bus.max_capacity();
+
+    let (taskout_msgbus_to_mpsc, taskin_input) = channel(channel_capacity);
+    let (taskout_output, taskin_mpsc_to_msgbus) = channel(channel_capacity);
 
     // Со входа компонента на задачу Input
     let task_0 = shared_tasks::msg_bus_to_mpsc::MsgBusToMpsc {
         msg_bus: msg_bus.clone(),
-        output: task_msg_bus_to_mpsc_output,
+        output: taskout_msgbus_to_mpsc,
     };
     join_set_spawn(
         &mut task_set,
@@ -29,20 +32,30 @@ where
 
     // Обработка входящих сообщений
     let task_1 = tasks::Input {
-        input: task_input_input,
-        storage_kind: config.kind,
+        input: taskin_input,
+        storage_kind: config.storage_kind,
         fn_input: config.fn_input,
     };
     join_set_spawn(&mut task_set, task_1.spawn());
 
     // Загрузка значений из хранилища и отправка исходящих сообщений
     let task_2 = tasks::Output {
-        output: todo!(),
-        storage_kind: todo!(),
-        default_messages: todo!(),
-        fn_output: todo!(),
+        output: taskout_output,
+        storage_kind: config.storage_kind,
+        default_messages: config.default_messages,
+        fn_output: config.fn_output,
     };
     join_set_spawn(&mut task_set, task_2.spawn());
+
+    // Отправка исходящих сообщений
+    let task_3 = shared_tasks::mpsc_to_msg_bus::MpscToMsgBus {
+        input: taskin_mpsc_to_msgbus,
+        cmp_in_out: msg_bus.clone(),
+    };
+    join_set_spawn(
+        &mut task_set,
+        task_3.spawn().map_err(super::Error::TaskMpscToMsgBus),
+    );
 
     while let Some(res) = task_set.join_next().await {
         res??;
