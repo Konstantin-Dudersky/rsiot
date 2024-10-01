@@ -21,6 +21,20 @@ pub struct ConfigInput<TMsg> {
 
     /// Преобразование состояния пина в исходящее сообщение
     pub fn_output: fn(bool) -> Message<TMsg>,
+
+    /// Режим подтяжки резисторов
+    pub pull_mode: PullMode,
+}
+
+/// Режим подтяжки резисторов
+#[derive(Clone)]
+pub enum PullMode {
+    /// Нет подтяжки
+    Floating,
+    /// Подтяжка к плюсу питания
+    Up,
+    /// Подтяжка к минусу питания
+    Down,
 }
 
 /// Обработка одного выхода

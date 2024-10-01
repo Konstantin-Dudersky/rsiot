@@ -8,7 +8,7 @@ use crate::{
     message::{Message, MsgDataBound},
 };
 
-use super::{Config, Error};
+use super::{Config, Error, PullMode};
 
 const INPUT_READ_DELAY: Duration = Duration::from_millis(100);
 
@@ -21,7 +21,12 @@ where
     let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
 
     for input_config in config.inputs {
-        let pin = gpio.get(input_config.pin_number)?.into_input();
+        let pin = gpio.get(input_config.pin_number)?;
+        let pin = match input_config.pull_mode {
+            PullMode::Floating => pin.into_input(),
+            PullMode::Up => pin.into_input_pullup(),
+            PullMode::Down => pin.into_input_pulldown(),
+        };
         task_set.spawn(input_pin(pin, input_config.fn_output, in_out.clone()));
     }
 

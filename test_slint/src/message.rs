@@ -1,4 +1,4 @@
-use rsiot::message::MsgDataBound;
+use rsiot::message::{example_service::Service, MsgDataBound};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -15,6 +15,13 @@ pub enum Custom {
 
     DiskDevSda1(String),
     DiskDevSda2(String),
+
+    GpioTab(bool),
+    Gpio1(bool),
+    Gpio2(bool),
+    GpioBackspace(bool),
 }
 
-impl MsgDataBound for Custom {}
+impl MsgDataBound for Custom {
+    type TService = Service;
+}

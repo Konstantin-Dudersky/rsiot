@@ -1,0 +1,14 @@
+{
+  "lsp": {
+    "rust-analyzer": {
+      "initialization_options": {
+        "check": {
+          "command": "clippy"
+        },
+        "cargo": {
+          "target": "aarch64-unknown-linux-gnu"
+        }
+      }
+    }
+  }
+}
