@@ -29,33 +29,6 @@ where
                 self.input_config.fn_on_failure,
             )
             .await?;
-
-            // trace!("Execute db query: {}", query);
-
-            // let db_client = self.db_client.lock().await;
-            // let mut response = db_client.query(query).await?;
-
-            // let errors = response.take_errors();
-            // let msgs = match errors.is_empty() {
-            //     true => {
-            //         let on_success = (self.input_config.fn_on_success)(response);
-            //         match on_success {
-            //             Ok(msgs) => msgs,
-            //             Err(err) => {
-            //                 let err = format!("Error in fn_on_success: {}", err);
-            //                 warn!("{}", err);
-            //                 continue;
-            //             }
-            //         }
-            //     }
-            //     false => {
-            //         warn!("Response errors: {:?}", errors);
-            //         (self.input_config.fn_on_failure)()
-            //     }
-            // };
-            // for msg in msgs {
-            //     self.in_out.send_output(msg).await.unwrap();
-            // }
         }
         Ok(())
     }

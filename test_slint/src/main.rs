@@ -135,7 +135,6 @@ async fn main_executor(slint_inst: Weak<MainWindow>) {
                         if !value {
                             return;
                         }
-                        // let key: SharedString = slint::platform::Key;
                         let key: SharedString = SharedString::from("1");
                         window
                             .upgrade_in_event_loop(move |h| {
@@ -152,7 +151,6 @@ async fn main_executor(slint_inst: Weak<MainWindow>) {
                         if !value {
                             return;
                         }
-                        // let key: SharedString = slint::platform::Key;
                         let key: SharedString = SharedString::from("2");
                         window
                             .upgrade_in_event_loop(move |h| {
@@ -170,7 +168,6 @@ async fn main_executor(slint_inst: Weak<MainWindow>) {
                             return;
                         }
                         let key: SharedString = slint::platform::Key::Backspace.into();
-                        // let key: SharedString = SharedString::from("1");
                         window
                             .upgrade_in_event_loop(move |h| {
                                 h.window().dispatch_event(
@@ -278,7 +275,6 @@ async fn main_executor(slint_inst: Weak<MainWindow>) {
         .add_cmp(cmp_slint::Cmp::new(slint_config))
         .add_cmp(cmp_system_info::Cmp::new(config_system_info))
         .add_cmp(cmp_raspberrypi_gpio::Cmp::new(config_raspberrypy))
-        // .add_cmp(cmp_logger::Cmp::new(config_logger))
         .wait_result()
         .await
         .unwrap();

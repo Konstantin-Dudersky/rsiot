@@ -1,6 +1,6 @@
 cargo install cross
 
-cross build --target aarch64-unknown-linux-gnu --release; scp target/aarch64-unknown-linux-gnu/release/test_slint user@target:/home/user/
+cross build --target aarch64-unknown-linux-gnu --release; scp target/aarch64-unknown-linux-gnu/release/test_slint user@target:/home/user/; ssh user@target 'SLINT_KMS_ROTATION=270 /home/user/test_slint'
 
 sudo apt install libxkbcommon-x11-0 libinput10 libgbm-dev
 

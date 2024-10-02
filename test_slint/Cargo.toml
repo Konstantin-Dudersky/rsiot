@@ -24,4 +24,3 @@ slint = { version = "*", features = [
 
 [build-dependencies]
 slint-build = "*"
-# slint-build = "1.7.1"

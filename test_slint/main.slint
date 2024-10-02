@@ -25,13 +25,14 @@ export global GlobalData {
 
 global Style {
     in property <length> font-size: 16pt;
-    in property <color> TEXT_COLOR: black;
+    // in property <color> TEXT_COLOR: black;
+    in property <length> font-size-2: 26pt;
 }
 
 export component MainWindow inherits Window {
     width: 800px;
     height: 480px;
-    background: white;
+    // background: white;
 
     Image {
         x: 0px;
@@ -42,22 +43,24 @@ export component MainWindow inherits Window {
 
     Button {
         x: 400px;
-        y: 300px;
+        y: 200px;
         text: "Button 1";
     }
 
     LineEdit {
         x: 400px;
-        y: 340px;
-        font-size: 14px;
-        placeholder-text: "Enter text here";
+        y: 280px;
+        width: 200px;
+        font-size: Style.font-size-2;
+        placeholder-text: "Text 1";
     }
 
     LineEdit {
         x: 400px;
-        y: 380px;
-        font-size: 14px;
-        placeholder-text: "Enter text here";
+        y: 360px;
+        width: 200px;
+        font-size: Style.font-size-2;
+        placeholder-text: "Text 2";
     }
 
     // host_name -----------------------------------------------------------------------------------
@@ -65,7 +68,7 @@ export component MainWindow inherits Window {
         x: 8px;
         y: 8px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: "Host:";
     }
 
@@ -73,7 +76,7 @@ export component MainWindow inherits Window {
         x: 80px;
         y: 8px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: GlobalData.host_name;
     }
 
@@ -82,7 +85,7 @@ export component MainWindow inherits Window {
         x: 8px;
         y: 40px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: "OS:";
     }
 
@@ -90,7 +93,7 @@ export component MainWindow inherits Window {
         x: 80px;
         y: 40px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: GlobalData.os_version;
     }
 
@@ -99,7 +102,7 @@ export component MainWindow inherits Window {
         x: 8px;
         y: 72px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: "Networks:";
     }
 
@@ -107,7 +110,7 @@ export component MainWindow inherits Window {
         x: 40px;
         y: 104px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: "eth0:";
     }
 
@@ -115,7 +118,7 @@ export component MainWindow inherits Window {
         x: 80px;
         y: 136px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: GlobalData.eth0_mac;
     }
 
@@ -123,7 +126,7 @@ export component MainWindow inherits Window {
         x: 40px;
         y: 168px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: "wlan0:";
     }
 
@@ -131,7 +134,7 @@ export component MainWindow inherits Window {
         x: 80px;
         y: 200px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: GlobalData.wlan0_mac;
     }
 
@@ -140,7 +143,7 @@ export component MainWindow inherits Window {
         x: 8px;
         y: 232px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: "CPU:";
     }
 
@@ -148,7 +151,7 @@ export component MainWindow inherits Window {
         x: 80px;
         y: 232px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: GlobalData.cpu_load;
     }
 
@@ -157,7 +160,7 @@ export component MainWindow inherits Window {
         x: 8px;
         y: 264px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: "Temp:";
     }
 
@@ -165,7 +168,7 @@ export component MainWindow inherits Window {
         x: 80px;
         y: 264px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: GlobalData.cpu_temp;
     }
 
@@ -174,7 +177,7 @@ export component MainWindow inherits Window {
         x: 8px;
         y: 296px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: "RAM:";
     }
 
@@ -182,7 +185,7 @@ export component MainWindow inherits Window {
         x: 80px;
         y: 296px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: GlobalData.memory;
     }
 
@@ -190,7 +193,7 @@ export component MainWindow inherits Window {
         x: 8px;
         y: 328px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: "Swap:";
     }
 
@@ -198,7 +201,7 @@ export component MainWindow inherits Window {
         x: 80px;
         y: 328px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: GlobalData.swap;
     }
 
@@ -207,7 +210,7 @@ export component MainWindow inherits Window {
         x: 400px;
         y: 8px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: "Disks:";
     }
 
@@ -215,7 +218,7 @@ export component MainWindow inherits Window {
         x: 440px;
         y: 40px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: "/dev/sda1:";
     }
 
@@ -223,7 +226,7 @@ export component MainWindow inherits Window {
         x: 560px;
         y: 40px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: GlobalData.dev_sda_1;
     }
 
@@ -231,7 +234,7 @@ export component MainWindow inherits Window {
         x: 440px;
         y: 72px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: "/dev/sda2:";
     }
 
@@ -239,7 +242,7 @@ export component MainWindow inherits Window {
         x: 560px;
         y: 72px;
         font-size: Style.font-size;
-        color: Style.TEXT_COLOR;
+        // color: Style.TEXT_COLOR;
         text: GlobalData.dev_sda_2;
     }
 
