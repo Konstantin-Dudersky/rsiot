@@ -12,16 +12,16 @@
           // "cmp_slint"
           // ]
           // ---- aarch64-unknown-linux-gnu --------------------------------------------------------
-          "target": "aarch64-unknown-linux-gnu",
-          "features": [
-            // "cmp_plc",
-            "cmp_raspberrypi",
-            "cmp_slint"
-            // "cmp_telegram"
-          ]
+          // "target": "aarch64-unknown-linux-gnu",
+          // "features": [
+          // "cmp_plc",
+          // "cmp_raspberrypi",
+          // "cmp_slint"
+          // "cmp_telegram"
+          // ]
           // ---- riscv32imc-esp-espidf ------------------------------------------------------------
-          // "target": "riscv32imc-esp-espidf",
-          // "features": ["executor", "logging", "cmp_esp", "cmp_plc"]
+          "target": "riscv32imc-esp-espidf",
+          "features": ["executor", "logging", "cmp_esp", "cmp_plc"]
           // ---- x86_64-unknown-linux-gnu ---------------------------------------------------------
           // "target": "x86_64-unknown-linux-gnu",
           // "features": [

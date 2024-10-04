@@ -3,6 +3,8 @@
 #[cfg(feature = "cmp_esp")]
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
+    use std::time::Duration;
+
     use esp_idf_svc::{log::EspLogger, sys::link_patches};
     use tokio::task::LocalSet;
     use tracing::Level;
@@ -20,6 +22,7 @@ async fn main() {
         buffer_size: 10,
         service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
+        delay_publish: Duration::from_millis(100),
     };
 
     // cmp_inject_periodic -------------------------------------------------------------------------

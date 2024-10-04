@@ -116,6 +116,7 @@ async fn main() {
         buffer_size: 10,
         service: Service::cmp_esp_i2c_master_bmp180,
         fn_auth: |msg, _| Some(msg),
+        delay_publish: Duration::from_millis(100),
     };
 
     let local_set = LocalSet::new();

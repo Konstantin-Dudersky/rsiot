@@ -5,6 +5,8 @@
 #[cfg(feature = "cmp_esp")]
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
+    use std::time::Duration;
+
     use esp_idf_svc::{
         eventloop::EspSystemEventLoop, hal::peripherals::Peripherals, sys::link_patches,
         timer::EspTaskTimerService,
@@ -81,6 +83,7 @@ async fn main() {
         buffer_size: 10,
         service: Service::cmp_esp_example,
         fn_auth: |msg, _| Some(msg),
+        delay_publish: Duration::from_millis(100),
     };
 
     let local_set = LocalSet::new();

@@ -91,6 +91,9 @@ web-sys = { version = "0.3.68", features = [
     "Location",
     "Window",
 ], optional = true }
+ws2812-esp32-rmt-driver = { version = "*", features = [
+    "smart-leds-trait",
+], optional = true }
 
 rsiot-macros = { version = "0.0.72" }
 
@@ -180,6 +183,7 @@ cmp_esp = [
     "dep:postcard",
     "dep:ssd1306",
     "dep:pm_firmware_lib",
+    "dep:ws2812-esp32-rmt-driver",
     "dep:url",
     "tokio?/time",
 ]
@@ -341,6 +345,10 @@ path = "./examples/cmp_esp/cmp_esp_i2c_slave.rs"
 [[example]]
 name = "cmp_esp_nvs"
 path = "examples/cmp_esp_nvs/cmp_esp_nvs.rs"
+
+[[example]]
+name = "cmp_esp_led"
+path = "examples/cmp_esp/cmp_esp_led.rs"
 
 [[example]]
 name = "cmp_filesystem"

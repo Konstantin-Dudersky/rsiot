@@ -6828,6 +6828,7 @@ dependencies = [
  "url",
  "uuid",
  "web-sys",
+ "ws2812-esp32-rmt-driver",
 ]
 
 [[package]]
@@ -7639,6 +7640,15 @@ name = "smallvec"
 version = "1.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3c5e1a9a646d36c3599cd173a41282daf47c44583ad367b8e6837255952e5c67"
+
+[[package]]
+name = "smart-leds-trait"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0bc64ee02bbbf469603016df746c0ed224f263280b6ebb49b7ebadbff375c572"
+dependencies = [
+ "rgb",
+]
 
 [[package]]
 name = "smithay-client-toolkit"
@@ -10191,6 +10201,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5d129932f4644ac2396cb456385cbf9e63b5b30c6e8dc4820bdca4eb082037a5"
 dependencies = [
  "winapi",
+]
+
+[[package]]
+name = "ws2812-esp32-rmt-driver"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "37a7e265ef2e6a32c77ca0cf94b0c7c1cf96e4a817b2bba872f78392fab97717"
+dependencies = [
+ "embuild 0.31.4",
+ "esp-idf-hal",
+ "esp-idf-sys",
+ "smart-leds-trait",
+ "thiserror",
 ]
 
 [[package]]

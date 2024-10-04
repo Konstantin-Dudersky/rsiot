@@ -1,6 +1,6 @@
-//! Пример работы с модулем PCF8575 по I2C
+//! Example based on developer board ESP32-C3
 //!
-//! cargo run --example cmp_esp_i2c_master_bmp180 --target="riscv32imc-esp-espidf" --features="cmp_esp, logging" --release
+//! cargo run --example cmp_esp_led --target="riscv32imc-esp-espidf" --features="cmp_esp, logging" --release
 
 #[cfg(feature = "cmp_esp")]
 #[tokio::main(flavor = "current_thread")]
@@ -8,12 +8,12 @@ async fn main() {
     use std::time::Duration;
 
     use esp_idf_svc::{hal::peripherals::Peripherals, sys::link_patches};
+    use getrandom::getrandom;
     use tokio::task::LocalSet;
-    use tracing::{info, level_filters::LevelFilter, Level};
+    use tracing::{level_filters::LevelFilter, Level};
 
     use rsiot::{
-        components::{cmp_esp_i2c_master, cmp_logger},
-        drivers_i2c,
+        components::{cmp_esp_led, cmp_inject_periodic, cmp_logger},
         executor::{ComponentExecutor, ComponentExecutorConfig},
         logging::configure_logging,
         message::*,
@@ -26,7 +26,7 @@ async fn main() {
     #[allow(non_camel_case_types)]
     #[derive(Debug, Clone, PartialEq)]
     pub enum Service {
-        cmp_esp_i2c_master_bmp180,
+        cmp_esp_example,
     }
 
     impl ServiceBound for Service {}
@@ -34,7 +34,7 @@ async fn main() {
     // message -------------------------------------------------------------------------------------
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub enum Custom {
-        VoltageA0(f64),
+        LedColor(cmp_esp_led::ConfigRgb),
     }
 
     impl MsgDataBound for Custom {
@@ -49,41 +49,47 @@ async fn main() {
         }
     }
 
+    let peripherals = Peripherals::take().unwrap();
+
     // cmp_logger ----------------------------------------------------------------------------------
     let logger_config = cmp_logger::Config::<Custom> {
         level: Level::INFO,
-        fn_input: |msg| Ok(Some(msg.serialize()?)),
+        fn_input: |msg| Ok(Some(msg.serialize_data()?)),
     };
 
-    // ESP -----------------------------------------------------------------------------------------
-    let peripherals = Peripherals::take().unwrap();
-
-    let devices = vec![drivers_i2c::I2cDevices::BMP180 {
-        address: drivers_i2c::I2cSlaveAddress::Direct {
-            slave_address: 0x77,
+    // cmp_inject_periodic -------------------------------------------------------------------------
+    let config_inject_periodic = cmp_inject_periodic::Config {
+        period: Duration::from_millis(1000),
+        fn_periodic: move || {
+            let mut random = [0u8; 3];
+            getrandom(&mut random).unwrap();
+            let msg = Message::new_custom(Custom::LedColor(cmp_esp_led::ConfigRgb {
+                r: random[0],
+                g: random[1],
+                b: random[2],
+            }));
+            vec![msg]
         },
-        fn_output: |data| {
-            info!("{data:?}");
-            vec![]
-        },
-        oversampling: drivers_i2c::BMP180Oversampling::HighResolution,
-    }];
+    };
 
-    let config_esp_i2c_master = cmp_esp_i2c_master::Config {
-        timeout: Duration::from_millis(1000),
-        i2c: peripherals.i2c0,
-        sda: peripherals.pins.gpio4.into(),
-        scl: peripherals.pins.gpio5.into(),
-        baudrate: cmp_esp_i2c_master::ConfigBaudrate::Standard,
-        pullup_enable: true,
-        devices,
+    // cmp_esp_led ---------------------------------------------------------------------------------
+    let config_esp_led = cmp_esp_led::Config {
+        pin: peripherals.pins.gpio0.into(),
+        rmt_channel: peripherals.rmt.channel0,
+        led_count: 100,
+        fn_input: |msg| {
+            let msg = msg.get_custom_data()?;
+            match msg {
+                Custom::LedColor(config_rgb) => Some(config_rgb),
+            }
+        },
     };
 
     // executor ------------------------------------------------------------------------------------
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 10,
-        service: Service::cmp_esp_i2c_master_bmp180,
+        service: Service::cmp_esp_example,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
     };
@@ -93,7 +99,8 @@ async fn main() {
     local_set.spawn_local(async {
         ComponentExecutor::<Custom>::new(executor_config)
             .add_cmp(cmp_logger::Cmp::new(logger_config))
-            .add_cmp(cmp_esp_i2c_master::Cmp::new(config_esp_i2c_master))
+            .add_cmp(cmp_esp_led::Cmp::new(config_esp_led))
+            .add_cmp(cmp_inject_periodic::Cmp::new(config_inject_periodic))
             .wait_result()
             .await
             .unwrap()
