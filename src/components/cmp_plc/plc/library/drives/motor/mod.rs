@@ -20,7 +20,7 @@ use logic::logic;
 pub type FB = FunctionBlockBase<I, Q, S>;
 
 impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
-    fn logic(input: &I, stat: &mut S, _system_data: &FbSystemData) -> Q {
+    fn logic(input: &mut I, stat: &mut S, _system_data: &FbSystemData) -> Q {
         logic(input, stat)
     }
 }

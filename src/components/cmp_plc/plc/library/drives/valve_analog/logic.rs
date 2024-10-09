@@ -4,7 +4,7 @@ use super::{QHmiPermission, QHmiStatus, QMode, QState, I, Q, S};
 
 pub fn logic(input: &I, stat: &mut S) -> Q {
     // Выбор режима
-    stat.mode.call(select_mode::I {
+    stat.mode.call(&mut select_mode::I {
         mode_source: input.mode_source,
         mode_auto: input.mode_auto,
         mode_man: input.mode_man,
@@ -15,7 +15,7 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
     let mode = stat.mode.output.mode;
 
     // Выбор задания
-    stat.mv.call(select_sp::I {
+    stat.mv.call(&mut select_sp::I {
         sp_en_source: input.mv_en_source,
         sp_hmi_en: input.mv_hmi_en,
         sp_plc_en: input.mv_plc_en,

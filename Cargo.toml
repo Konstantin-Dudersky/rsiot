@@ -280,6 +280,9 @@ cmp_websocket_server = [
 ## Хранение и загрузка сообщений используя Web Storage API браузера
 cmp_webstorage = ["executor"]
 
+## Компиляция документации
+rustdoc = []
+
 
 [package.metadata.docs.rs]
 all-features = true

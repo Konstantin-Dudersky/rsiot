@@ -46,9 +46,9 @@ where
     }
 
     /// Вызов функционального блока
-    pub fn call(&mut self, input: I) -> Q {
-        self.input = input;
-        self.output = FunctionBlockBase::logic(&self.input, &mut self.stat, &self.fb_system_data);
+    pub fn call(&mut self, input: &mut I) -> Q {
+        self.output = FunctionBlockBase::logic(input, &mut self.stat, &self.fb_system_data);
+        self.input = input.clone();
         self.fb_system_data.first_call = false;
         self.output.clone()
     }
@@ -63,7 +63,7 @@ pub trait IFunctionBlock<I, Q, S> {
     ///
     /// TODO: рассмотреть возможность добавления аргумента fn_output, чтобы блок самостоятельно
     /// мог генерировать исходящие сообщения
-    fn logic(input: &I, stat: &mut S, fb_system_data: &FbSystemData) -> Q;
+    fn logic(input: &mut I, stat: &mut S, fb_system_data: &FbSystemData) -> Q;
 }
 
 /// Системные данные функционального блока

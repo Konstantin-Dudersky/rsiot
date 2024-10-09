@@ -4,7 +4,7 @@ use super::super::select_mode;
 
 pub fn logic(input: &I, stat: &mut S) -> Q {
     // Выбор режима
-    stat.mode.call(select_mode::I {
+    stat.mode.call(&mut select_mode::I {
         mode_source: input.mode_source,
         mode_auto: input.mode_auto,
         mode_man: input.mode_man,

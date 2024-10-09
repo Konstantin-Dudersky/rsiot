@@ -56,7 +56,7 @@ fn main() {
         pub struct S {}
 
         impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
-            fn logic(input: &I, stat: &mut S, _system_data: &FbSystemData) -> Q {
+            fn logic(input: &mut I, stat: &mut S, _system_data: &FbSystemData) -> Q {
                 Q {}
             }
         }

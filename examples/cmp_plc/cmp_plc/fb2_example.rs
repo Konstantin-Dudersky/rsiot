@@ -2,13 +2,16 @@
 
 use serde::Serialize;
 
-use rsiot::components::cmp_plc::plc::{FbSystemData, FunctionBlockBase, IFunctionBlock};
+use rsiot::components::cmp_plc::plc::{
+    types::Resettable, FbSystemData, FunctionBlockBase, IFunctionBlock,
+};
 
 use super::fb1_example;
 
-#[derive(Clone, Default, Serialize)]
+#[derive(Clone, Debug, Default, Serialize)]
 pub struct I {
     pub counter: u32,
+    pub resettable: Resettable<bool>,
 }
 
 #[derive(Clone, Default, Serialize)]
@@ -23,10 +26,12 @@ pub struct S {
 }
 
 impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
-    fn logic(input: &I, stat: &mut S, _system_data: &FbSystemData) -> Q {
-        println!("in fb2");
+    fn logic(input: &mut I, stat: &mut S, _system_data: &FbSystemData) -> Q {
+        stat.fb1_inst.call(&mut fb1_example::I { counter: 1 });
 
-        stat.fb1_inst.call(fb1_example::I { counter: 1 });
+        if input.resettable.get() {
+            println!("Input resettable 1 TRUE");
+        }
 
         Q {
             out_counter: input.counter * 2,
@@ -34,4 +39,4 @@ impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
     }
 }
 
-pub type _FunctionBlock = FunctionBlockBase<I, Q, S>;
+pub type FB = FunctionBlockBase<I, Q, S>;

@@ -30,9 +30,8 @@ where
     /// Функция преобразования входящих сообщений во входную структуру ПЛК.
     ///
     /// **Примеры**
-    ///
     /// ```rust
-    /// fn_input: |input: &mut fb_main::I, msg: &Message<Custom>| match msg {}
+    #[doc = include_str!("./tests/config_fn_input.rs")]
     /// ```
     pub fn_input: fn(&mut I, &Message<TMsg>) -> (),
 

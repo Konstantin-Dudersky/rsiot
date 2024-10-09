@@ -2,6 +2,7 @@ use rsiot::message::{example_service::Service, Deserialize, MsgDataBound, Serial
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum Data {
+    InjectPeriodic(bool),
     OutputValue(u16),
 }
 

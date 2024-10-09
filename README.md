@@ -2,7 +2,7 @@
 
 Компоненты для построения системы сбора, обработки и визуализации данных
 
-[Документация](https://konstantin-dudersky.github.io/rsiot-docs/)
+[Документация](https://konstantin-dudersky.github.io/rsiot-docs/x86_64-unknown-linux-gnu/rsiot/index.html)
 
 ## Обзор
 

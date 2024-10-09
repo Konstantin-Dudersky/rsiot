@@ -33,10 +33,10 @@ pub struct S {
 }
 
 impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
-    fn logic(input: &I, stat: &mut S, _system_data: &FbSystemData) -> Q {
+    fn logic(input: &mut I, stat: &mut S, _system_data: &FbSystemData) -> Q {
         if stat
             .input_rising_edge
-            .call(rising_edge::I { i: input.input })
+            .call(&mut rising_edge::I { i: input.input })
             .q
         {
             stat.delay = types::TimeInstant::now();

@@ -27,7 +27,7 @@ pub struct S {
 }
 
 impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
-    fn logic(input: &I, stat: &mut S, _system_data: &FbSystemData) -> Q {
+    fn logic(input: &mut I, stat: &mut S, _system_data: &FbSystemData) -> Q {
         let rising_edge = input.i && !stat.prev_i;
         stat.prev_i = input.i;
 

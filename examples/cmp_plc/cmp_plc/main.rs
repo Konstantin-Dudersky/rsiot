@@ -19,7 +19,10 @@ async fn main() -> anyhow::Result<()> {
     use tracing::Level;
 
     use rsiot::{
-        components::{cmp_logger, cmp_plc},
+        components::{
+            cmp_inject_periodic, cmp_logger,
+            cmp_plc::{self, plc::types::Resettable},
+        },
         executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{example_service::*, Message},
     };
@@ -28,29 +31,32 @@ async fn main() -> anyhow::Result<()> {
 
     tracing_subscriber::fmt().init();
 
+    // cmp_inject_periodic -------------------------------------------------------------------------
+    let config_inject_periodic = cmp_inject_periodic::Config {
+        period: Duration::from_secs(10),
+        fn_periodic: move || {
+            let msg = Message::new_custom(Data::InjectPeriodic(true));
+            vec![msg]
+        },
+    };
+
+    // cmp_plc -------------------------------------------------------------------------------------
+
     let plc_config = cmp_plc::Config {
-        fn_cycle_init: |_input: &mut fb1_example::I| {},
-        fn_input: |_input: &mut fb1_example::I, msg: &Message<Data>| {
-            let msg = match msg.get_custom_data() {
-                Some(val) => val,
-                None => return,
+        fn_cycle_init: |_input: &mut fb2_example::I| {},
+        fn_input: |input: &mut fb2_example::I, msg: &Message<Data>| {
+            let Some(msg) = msg.get_custom_data() else {
+                return;
             };
             match msg {
                 Data::OutputValue(_) => (),
+                Data::InjectPeriodic(_value) => input.resettable = Resettable::new(true),
             }
         },
-        fn_output: |data: &fb1_example::Q| {
-            let msg = Message::new_custom(Data::OutputValue(data.out_counter));
-            vec![msg]
-        },
-        fb_main: fb1_example::FB::new(),
+        fn_output: |_data: &fb2_example::Q| vec![],
+        fb_main: fb2_example::FB::new(),
         period: Duration::from_secs(2),
-        retention: Some(cmp_plc::ConfigRetention {
-            save_period: Duration::from_secs(1),
-            fn_export: |_, _, _| None,
-            fn_import_static: |_| Ok(None),
-            restore_timeout: Duration::from_secs(2),
-        }),
+        retention: None,
     };
 
     let logger_config = cmp_logger::Config {
@@ -62,11 +68,13 @@ async fn main() -> anyhow::Result<()> {
         buffer_size: 100,
         service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
+        delay_publish: Duration::from_millis(100),
     };
 
     ComponentExecutor::<message::Data>::new(executor_config)
         .add_cmp(cmp_plc::Cmp::new(plc_config))
         .add_cmp(cmp_logger::Cmp::new(logger_config))
+        .add_cmp(cmp_inject_periodic::Cmp::new(config_inject_periodic))
         .wait_result()
         .await?;
 

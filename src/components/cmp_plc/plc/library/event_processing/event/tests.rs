@@ -14,7 +14,7 @@ fn act_ack_noact() {
     assert_eq!(ev.output.state, State::NoAct_Ack);
 
     // Событие не наступило
-    ev.call(I {
+    ev.call(&mut I {
         id,
         signal: false,
         hmi_command: IHmiCommand::NoCommand,
@@ -23,7 +23,7 @@ fn act_ack_noact() {
     assert_eq!(ev.output.state, State::NoAct_Ack);
 
     // Событие наступило
-    ev.call(I {
+    ev.call(&mut I {
         id,
         signal: true,
         hmi_command: IHmiCommand::NoCommand,
@@ -32,7 +32,7 @@ fn act_ack_noact() {
     assert_eq!(ev.output.state, State::Act_NoAck);
 
     // Квитируем другое событие
-    ev.call(I {
+    ev.call(&mut I {
         id,
         signal: true,
         hmi_command: IHmiCommand::Ack(uuid!("47d7fb4b-797c-4ae6-b067-120aa418f115")),
@@ -41,7 +41,7 @@ fn act_ack_noact() {
     assert_eq!(ev.output.state, State::Act_NoAck);
 
     // Квитируем данное событие
-    ev.call(I {
+    ev.call(&mut I {
         id,
         signal: true,
         hmi_command: IHmiCommand::Ack(id),
@@ -50,7 +50,7 @@ fn act_ack_noact() {
     assert_eq!(ev.output.state, State::Act_Ack);
 
     // Событие ушло
-    ev.call(I {
+    ev.call(&mut I {
         id,
         signal: false,
         hmi_command: IHmiCommand::Ack(id),
@@ -67,7 +67,7 @@ fn act_noact_ack() {
     assert_eq!(ev.output.state, State::NoAct_Ack);
 
     // Событие не наступило
-    ev.call(I {
+    ev.call(&mut I {
         id,
         signal: false,
         hmi_command: IHmiCommand::NoCommand,
@@ -76,7 +76,7 @@ fn act_noact_ack() {
     assert_eq!(ev.output.state, State::NoAct_Ack);
 
     // Событие наступило
-    ev.call(I {
+    ev.call(&mut I {
         id,
         signal: true,
         hmi_command: IHmiCommand::NoCommand,
@@ -85,7 +85,7 @@ fn act_noact_ack() {
     assert_eq!(ev.output.state, State::Act_NoAck);
 
     // Событие ушло
-    ev.call(I {
+    ev.call(&mut I {
         id,
         signal: false,
         hmi_command: IHmiCommand::NoCommand,
@@ -94,7 +94,7 @@ fn act_noact_ack() {
     assert_eq!(ev.output.state, State::NoAct_NoAck);
 
     // Квитируем данное событие
-    ev.call(I {
+    ev.call(&mut I {
         id,
         signal: false,
         hmi_command: IHmiCommand::Ack(id),

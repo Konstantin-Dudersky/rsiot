@@ -14,6 +14,8 @@ mod message;
 #[cfg(all(not(feature = "single-thread"), feature = "executor"))]
 #[tokio::main(flavor = "multi_thread")]
 async fn main() {
+    use std::time::Duration;
+
     use rsiot::{
         executor::{ComponentExecutor, ComponentExecutorConfig},
         message::example_service::Service,
@@ -27,6 +29,7 @@ async fn main() {
         buffer_size: 100,
         service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
+        delay_publish: Duration::from_millis(100),
     };
 
     ComponentExecutor::<Data>::new(executor_config)

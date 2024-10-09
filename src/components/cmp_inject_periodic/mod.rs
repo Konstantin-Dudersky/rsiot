@@ -13,7 +13,7 @@ use crate::{
 pub struct Config<TMsg, TFnPeriodic>
 where
     TMsg: Clone,
-    TFnPeriodic: FnMut() -> Vec<Message<TMsg>>,
+    TFnPeriodic: FnMut() -> Vec<Message<TMsg>> + Send + Sync,
 {
     /// Период вызова
     pub period: Duration,
@@ -51,7 +51,7 @@ async fn fn_process<TMsg, TFnPeriodic>(
 ) -> Result<(), ComponentError>
 where
     TMsg: MsgDataBound,
-    TFnPeriodic: FnMut() -> Vec<Message<TMsg>>,
+    TFnPeriodic: FnMut() -> Vec<Message<TMsg>> + Send + Sync,
 {
     loop {
         let begin = Instant::now();
