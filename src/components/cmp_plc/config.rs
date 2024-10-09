@@ -66,6 +66,26 @@ where
     pub retention: Option<ConfigRetention<TMsg, I, Q, S>>,
 }
 
+impl<TMsg, I, Q, S> Default for Config<TMsg, I, Q, S>
+where
+    TMsg: MsgDataBound,
+    I: Clone + Default + Serialize,
+    Q: Clone + Default + Serialize,
+    S: Clone + Default + Serialize,
+    FunctionBlockBase<I, Q, S>: IFunctionBlock<I, Q, S>,
+{
+    fn default() -> Self {
+        Self {
+            fn_cycle_init: |_| (),
+            fn_input: |_, _| (),
+            fn_output: |_| vec![],
+            fb_main: FunctionBlockBase::new(),
+            period: Duration::default(),
+            retention: None,
+        }
+    }
+}
+
 /// Настройка сохранения и восстановления области Static
 #[derive(Clone)]
 pub struct ConfigRetention<TMsg, I, Q, S>

@@ -1,13 +1,28 @@
 use crate::message::*;
 
-/// https://konstantin-dudersky.github.io/rsiot-docs/components/cmp_auth.html
+/// Конфигурация
 #[derive(Clone)]
 pub struct Config {
-    ///  https://konstantin-dudersky.github.io/rsiot-docs/components/cmp_auth.html#secret_key
+    /// Секретный ключ для валидации токенов
     pub secret_key: String,
 
-    /// https://konstantin-dudersky.github.io/rsiot-docs/components/cmp_auth.html#store
+    /// Хранилище данных доступа
+    ///
+    /// **Примеры**
+    ///
+    /// ```rust
+    #[doc = include_str!("./test/config_store.rs")]
+    /// ```
     pub store: ConfigStore,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            secret_key: Default::default(),
+            store: ConfigStore::Local(vec![]),
+        }
+    }
 }
 
 /// Тип хранилища данных доступа
@@ -31,24 +46,4 @@ pub struct ConfigStoreLocalItem {
 
     /// Роль
     pub role: AuthPermissions,
-}
-
-#[cfg(test)]
-mod tests {
-
-    use crate::{components::cmp_auth, message::AuthPermissions};
-
-    #[test]
-    fn test1() {
-        let _auth_config = cmp_auth::Config {
-            secret_key: "secret_key".into(),
-            // ANCHOR: store_local
-            store: cmp_auth::ConfigStore::Local(vec![cmp_auth::ConfigStoreLocalItem {
-                login: "admin".into(),
-                password: "admin".into(),
-                role: AuthPermissions::Admin,
-            }]),
-            // ANCHOR_END: store_local
-        };
-    }
 }

@@ -1,12 +1,17 @@
-//! Хранение и загрузка сообщений используя LocalStorage или SessionStorage браузера. Подробнее на #link("https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API")[MDN].
+//! Хранение и загрузка сообщений используя LocalStorage или SessionStorage браузера.
 //!
-//! Используется модуль `storage` библиотеки #link("https://docs.rs/gloo/latest/gloo/storage/index.html")[gloo].
+//! Подробнее на [MDN](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API).
+//!
+//! Используется модуль `storage` библиотеки [gloo](https://docs.rs/gloo/latest/gloo/storage/index.html).
 
 mod component;
 mod config;
 mod error;
 mod fn_process;
 mod tasks;
+
+#[cfg(test)]
+mod test;
 
 pub use component::Cmp;
 pub use config::{Config, ConfigStorageKind};
