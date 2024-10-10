@@ -54,6 +54,7 @@
           "features": [
             "single-thread", // Активировать обязательно !
             //   "executor",
+            "rustdoc",
             //   "logging",
             //   "cmp_http_client_wasm",
             // "cmp_leptos",

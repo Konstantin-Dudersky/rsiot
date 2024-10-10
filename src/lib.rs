@@ -78,18 +78,23 @@
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 #![warn(missing_docs)]
 
-#[cfg(feature = "executor")]
-pub mod components;
 mod components_config;
-#[cfg(any(feature = "cmp_esp", feature = "cmp_raspberrypi"))]
-pub mod drivers_i2c;
-#[cfg(feature = "env_vars")]
-pub mod env_vars;
-#[cfg(feature = "executor")]
-pub mod executor;
-#[cfg(feature = "logging")]
-pub mod logging;
 pub mod message;
 
+#[cfg(feature = "executor")]
+pub mod components;
+
+#[cfg(any(feature = "cmp_esp", feature = "cmp_raspberrypi"))]
+pub mod drivers_i2c;
+
+#[cfg(feature = "env_vars")]
+pub mod env_vars;
+
+#[cfg(feature = "executor")]
+pub mod executor;
+
+#[cfg(feature = "logging")]
+pub mod logging;
+
 #[cfg(feature = "rustdoc")]
-pub mod external_services;
+pub mod doc;

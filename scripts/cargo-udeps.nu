@@ -1,4 +1,4 @@
-use shared.nu print_header
+use scripts/shared.nu print_header
 
 let targets = open target_config.json
 let targets = $targets.targets

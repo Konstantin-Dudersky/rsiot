@@ -1,6 +1,6 @@
 # Подготовка к публикации
 
-use shared.nu print_header
+use scripts/shared.nu print_header
 
 let RSIOT_DOCS = "../rsiot-docs/src"
 let RSIOT_DOCS_RUSTDOC = $"($RSIOT_DOCS)/rustdoc"

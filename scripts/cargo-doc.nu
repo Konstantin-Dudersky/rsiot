@@ -1,4 +1,4 @@
-use shared.nu print_header
+use scripts/shared.nu print_header
 
 let targets = open target_config.json
 let targets = $targets.targets
@@ -10,7 +10,7 @@ for target in $targets {
     print_header $"cargo doc - ($target.name) / ($features) / ($add_feat)"
 
     # generate docs
-    let command = $'cargo ($target.toolchain) rustdoc --target ($target.name) --features="($features), ($add_feat), logging" --no-deps'
+    let command = $'cargo ($target.toolchain) doc --target ($target.name) --features="($features), ($add_feat), logging" --no-deps'
     print $"execute command: ($command)\n"
     nu -c $command
 
