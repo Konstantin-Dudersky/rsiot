@@ -10,6 +10,8 @@ use tracing_web::{performance_layer, MakeWebConsoleWriter};
 ///
 /// Логи выводятся в консоль
 pub fn configure_logging(rust_log: &str) -> super::Result<()> {
+    console_error_panic_hook::set_once();
+
     let fmt_layer = tracing_subscriber::fmt::layer()
         .with_ansi(false)
         .with_timer(ChronoLocal::rfc_3339())

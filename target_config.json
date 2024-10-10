@@ -18,6 +18,7 @@
         "cmp_redis_client",
         "cmp_slint",
         "cmp_surrealdb",
+        "cmp_system_info",
         "cmp_telegram",
         "cmp_timescaledb",
         "cmp_websocket_client",
@@ -57,6 +58,7 @@
         "cmp_redis_client",
         "cmp_slint",
         "cmp_surrealdb",
+        "cmp_system_info",
         "cmp_telegram",
         "cmp_timescaledb",
         "cmp_websocket_client",
@@ -64,12 +66,6 @@
         "env_vars"
       ],
       "add_feat": ["", "single-thread"]
-    },
-    {
-      "name": "riscv32imc-esp-espidf",
-      "toolchain": "+nightly",
-      "features": ["cmp_esp", "cmp_plc", "executor"],
-      "add_feat": ["single-thread"]
     },
     {
       "name": "wasm32-unknown-unknown",
@@ -83,6 +79,12 @@
         "cmp_websocket_client_wasm",
         "cmp_webstorage"
       ],
+      "add_feat": ["single-thread"]
+    },
+    {
+      "name": "riscv32imc-esp-espidf",
+      "toolchain": "+nightly",
+      "features": ["cmp_esp", "cmp_plc", "executor"],
       "add_feat": ["single-thread"]
     }
   ]

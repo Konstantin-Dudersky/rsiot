@@ -5,6 +5,9 @@ mod config;
 mod error;
 mod fn_process;
 
+#[cfg(test)]
+mod test;
+
 pub use component::Cmp;
 pub use config::{Config, ConfigGpioInput, ConfigGpioOutput};
 pub use error::Error;

@@ -1,7 +1,7 @@
 use super::super::{PhyQuantity, QuantityName};
 
 impl PhyQuantity {
-    /// Задать длину в [м]
+    /// Задать длину в \[м\]
     pub fn new_length_m(value: f64) -> Self {
         Self {
             value,

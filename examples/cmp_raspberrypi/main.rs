@@ -40,6 +40,7 @@ async fn main() {
         inputs: vec![cmp_raspberrypi_gpio::ConfigInput {
             pin_number: 4,
             fn_output: |value| Message::new_custom(Custom::Input4State(value)),
+            pull_mode: cmp_raspberrypi_gpio::PullMode::Down,
         }],
         outputs: vec![
             cmp_raspberrypi_gpio::ConfigOutput {
@@ -75,6 +76,7 @@ async fn main() {
         buffer_size: 100,
         service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
+        delay_publish: Duration::from_millis(100),
     };
 
     ComponentExecutor::<Custom>::new(executor_config)

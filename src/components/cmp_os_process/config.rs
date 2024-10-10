@@ -1,5 +1,6 @@
 use crate::message::{Message, MsgDataBound};
 
+/// Конфигурация компонента cmp_os_process
 #[derive(Clone)]
 pub struct Config<TMsg>
 where

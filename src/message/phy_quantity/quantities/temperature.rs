@@ -3,7 +3,7 @@ use super::super::{PhyQuantity, QuantityName};
 const C_TO_K: f64 = 273.15;
 
 impl PhyQuantity {
-    /// Задать температуру в [℃]
+    /// Задать температуру в \[℃\]
     pub fn new_temperature_C(value: f64) -> Self {
         Self {
             value: value + C_TO_K,
@@ -11,7 +11,7 @@ impl PhyQuantity {
         }
     }
 
-    /// Получить температуру в [℃]
+    /// Получить температуру в \[℃\]
     pub fn temperature_C(&self) -> Result<f64, String> {
         match self.quantity_name {
             QuantityName::Temperature => {

@@ -19,7 +19,6 @@ use app::*;
 use messages::*;
 
 fn main() -> anyhow::Result<()> {
-    console_error_panic_hook::set_once();
     configure_logging("info").unwrap();
 
     // cmp_leptos ----------------------------------------------------------------------------------

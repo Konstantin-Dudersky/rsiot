@@ -1,4 +1,4 @@
-//! Сериализация / десериализация, используя Postcard - https://postcard.jamesmunns.com/intro
+//! Сериализация / десериализация, используя Postcard - <https://postcard.jamesmunns.com/intro>
 
 use std::fmt::Debug;
 

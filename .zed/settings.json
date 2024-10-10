@@ -9,11 +9,13 @@
           // ---- aarch64_linux_android ------------------------------------------------------------
           // "target": "aarch64-linux-android",
           // "features": [
-          // "cmp_slint"
+          // "cmp_slint",
+          // "rustdoc"
           // ]
           // ---- aarch64-unknown-linux-gnu --------------------------------------------------------
           // "target": "aarch64-unknown-linux-gnu",
           // "features": [
+          // "rustdoc",
           // "cmp_plc",
           // "cmp_raspberrypi",
           // "cmp_slint"
@@ -53,14 +55,14 @@
           "target": "wasm32-unknown-unknown",
           "features": [
             "single-thread", // Активировать обязательно !
-            //   "executor",
             "rustdoc",
-            //   "logging",
+            //   "executor",
+            "logging",
             //   "cmp_http_client_wasm",
-            // "cmp_leptos",
+            "cmp_leptos"
             // "cmp_plc",
             // "cmp_websocket_client_wasm"
-            "cmp_webstorage"
+            // "cmp_webstorage"
           ]
         }
       }

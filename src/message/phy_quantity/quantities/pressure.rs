@@ -1,7 +1,7 @@
 use super::super::{PhyQuantity, QuantityName};
 
 impl PhyQuantity {
-    /// Задать давление в [Па]
+    /// Задать давление в \[Па\]
     pub fn new_pressure_Pa(value: f64) -> Self {
         Self {
             value,
@@ -9,7 +9,7 @@ impl PhyQuantity {
         }
     }
 
-    /// Получить давление в [Па]
+    /// Получить давление в \[Па\]
     pub fn pressure_Pa(&self) -> Result<f64, String> {
         match self.quantity_name {
             QuantityName::Pressure => {
@@ -26,7 +26,7 @@ impl PhyQuantity {
         }
     }
 
-    /// Получить давление в [мм рт столба]
+    /// Получить давление в \[мм рт столба\]
     pub fn pressure_mmHg(&self) -> Result<f64, String> {
         match self.quantity_name {
             QuantityName::Pressure => {

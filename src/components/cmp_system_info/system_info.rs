@@ -38,16 +38,16 @@ pub struct SystemInfoNetwork {
 /// Информация о потребленной памяти
 #[derive(Debug, Default)]
 pub struct SystemInfoMemory {
-    /// Доступный размер оперативной памяти, [MB]
+    /// Доступный размер оперативной памяти, \[MB\]
     pub total_memory_mb: f32,
 
-    /// Используемый размер оперативной памяти, [MB]
+    /// Используемый размер оперативной памяти, \[MB\]
     pub used_memory_mb: f32,
 
-    /// Общий размер swap, [MB]
+    /// Общий размер swap, \[MB\]
     pub total_swap_mb: f32,
 
-    /// Используемый размер swap, [MB]
+    /// Используемый размер swap, \[MB\]
     pub used_swap_mb: f32,
 }
 
@@ -57,9 +57,9 @@ pub struct SystemInfoDisk {
     /// Название
     pub name: String,
 
-    /// Занятое пространство, [GB]
+    /// Занятое пространство, \[GB\]
     pub used_space_gb: f32,
 
-    /// Общее пространство, [GB]
+    /// Общее пространство, \[GB\]
     pub total_space_gb: f32,
 }

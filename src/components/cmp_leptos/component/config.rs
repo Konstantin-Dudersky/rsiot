@@ -1,14 +1,20 @@
 use leptos::*;
 
-/// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_leptos.html#config
+/// Конфигурация компонента cmp_leptos
 pub struct Config<TView, TIntoView>
 where
     TView: Fn() -> TIntoView,
     TIntoView: IntoView,
 {
-    /// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_leptos.html#body_component
+    /// Корневой компонент для монтирования
+    ///
+    /// **Примеры**
+    ///
+    /// ```rust
+    /// body_component: || view! { <App/> }
+    /// ```
     pub body_component: TView,
 
-    /// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_leptos.html#hostname
+    /// Имя хоста, на котором развернуто веб-приложение
     pub hostname: String,
 }

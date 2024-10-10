@@ -2,18 +2,85 @@
 //!
 //! Документация по платформам:
 //!
-//! - [x86_64-unknown-linux-gnu](https://konstantin-dudersky.github.io/rsiot-docs/x86_64-unknown-linux-gnu/rsiot/index.html)
-//! - [aarch64-linux-android](https://konstantin-dudersky.github.io/rsiot-docs/aarch64-linux-android/rsiot/index.html)
-//! - [aarch64-unknown-linux-gnu](https://konstantin-dudersky.github.io/rsiot-docs/aarch64-unknown-linux-gnu/rsiot/index.html)
-//! - [riscv32imc-esp-espidf](https://konstantin-dudersky.github.io/rsiot-docs/riscv32imc-esp-espidf/rsiot/index.html)
-//! - [wasm32-unknown-unknown](https://konstantin-dudersky.github.io/rsiot-docs/wasm32-unknown-unknown/rsiot/index.html)
+//! - [x86_64-unknown-linux-gnu](../../x86_64-unknown-linux-gnu/rsiot/index.html)
+//! - [aarch64-linux-android](../../aarch64-linux-android/rsiot/index.html)
+//! - [aarch64-unknown-linux-gnu](../../aarch64-unknown-linux-gnu/rsiot/index.html)
+//! - [riscv32imc-esp-espidf](../../riscv32imc-esp-espidf/rsiot/index.html)
+//! - [wasm32-unknown-unknown](../../wasm32-unknown-unknown/rsiot/index.html)
 //!
 //! ## Обзор
+//!
+//! Набор компонентов для создания системы управления и диспетчиризации.
+//!
+//! Клиентское подключение:
+//!
+//! - cmp_http_client_wasm
+//! - cmp_http_client
+//! - cmp_modbus_client
+//! - cmp_websocket_client_wasm
+//! - cmp_websocket_client
+//!
+//! Сервера:
+//!
+//! - cmp_http_server_esp
+//! - cmp_http_server
+//! - cmp_websocket_server
+//!
+//! Брокеры сообщений:
+//!
+//! - cmp_esp_mqtt_client
+//! - cmp_mqtt_client
+//! - cmp_redis_client
+//!
+//! Интерфейс пользователя:
+//!
+//! - cmp_leptos
+//! - cmp_slint
+//!
+//! Авторизация:
+//!
+//! - cmp_auth
+//!
+//! Сохранение данных:
+//!
+//! - cmp_esp_nvs
+//! - cmp_influxdb
+//! - cmp_surrealdb
+//! - cmp_timescaledb
+//! - cmp_webstorage
+//!
+//! Взаимодействие с аппаратной частью:
+//!
+//! - cmp_esp_adc
+//! - cmp_esp_gpio
+//! - cmp_esp_i2c_master
+//! - cmp_esp_i2c_slave
+//! - cmp_esp_led
+//! - cmp_esp_mqtt_client
+//! - cmp_esp_spi_master
+//! - cmp_esp_wifi
+//! - cmp_raspberrypi_gpio
+//!
+//! Логика исполнения
+//!
+//! - cmp_plc
+//!
+//! Систеная информация
+//!
+//! - cmp_system_info
+//!
+//! Служебные компоненты:
+//!
+//! - cmp_add_input_stream
+//! - cmp_add_output_stream
+//! - cmp_derive
+//! - cmp_external_fn_process
+//! - cmp_inject_periodic
+//! - cmp_logger
 //!
 #![doc = include_str!("../doc/Новая концепция-2024-01-03-10-46.svg")]
 //! ![](./rsiot/doc/Новая%20концепция-2024-01-03-10-46.svg)
 //!
-
 //!
 //! ## Описание
 //!
@@ -76,6 +143,7 @@
 //!  ## Флаги `feature`:
 #![doc = document_features::document_features!()]
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
+#![warn(rustdoc::bare_urls)]
 #![warn(missing_docs)]
 
 mod components_config;

@@ -2,15 +2,40 @@ use esp_idf_svc::hal::gpio::{AnyIOPin, AnyOutputPin, Pull};
 
 use crate::message::{Message, MsgDataBound};
 
-/// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_auth.html#config
+/// Конфигурация компонента cmp_esp_gpio
 pub struct Config<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    /// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_esp_gpio.html#inputs
+    /// Конфигурация входов
+    ///
+    /// **Примеры**
+    ///
+    /// ```rust
+    #[doc = include_str!("test/config_inputs.rs")]
+    /// ```
     pub inputs: Vec<ConfigGpioInput<TMsg>>,
-    /// https://konstantin-dudersky.github.io/rsiot-docs/1_components/cmp_esp_gpio.html#outputs
+
+    /// Конфигурация выходов
+    ///
+    /// **Примеры**
+    ///
+    /// ```rust
+    #[doc = include_str!("test/config_outputs.rs")]
+    /// ```
     pub outputs: Vec<ConfigGpioOutput<TMsg>>,
+}
+
+impl<TMsg> Default for Config<TMsg>
+where
+    TMsg: MsgDataBound,
+{
+    fn default() -> Self {
+        Self {
+            inputs: vec![],
+            outputs: vec![],
+        }
+    }
 }
 
 /// Конфигурация одного входа
@@ -45,41 +70,4 @@ where
 
     /// Подается ли напряжения в отключенном состоянии или нет
     pub is_low_triggered: bool,
-}
-
-#[cfg(test)]
-mod tests {
-    use esp_idf_svc::hal::peripherals::Peripherals;
-
-    use crate::{
-        components::cmp_esp_gpio,
-        message::{example_message::*, Message, MsgData},
-    };
-
-    use super::Pull;
-
-    #[test]
-    fn test() {
-        let peripherals = Peripherals::take().unwrap();
-
-        let _gpio_config = cmp_esp_gpio::Config {
-            // ANCHOR: inputs
-            inputs: vec![cmp_esp_gpio::ConfigGpioInput {
-                peripherals: peripherals.pins.gpio9.into(),
-                fn_output: |value| Message::new_custom(Custom::EspBootButton(value)),
-                pull: Pull::Down,
-            }],
-            // ANCHOR_END: inputs
-            // ANCHOR: outputs
-            outputs: vec![cmp_esp_gpio::ConfigGpioOutput {
-                peripherals: peripherals.pins.gpio1.into(),
-                fn_input: |msg| match msg.data {
-                    MsgData::Custom(Custom::EspRelay(value)) => Some(value),
-                    _ => None,
-                },
-                is_low_triggered: false,
-            }],
-            // ANCHOR_END: outputs
-        };
-    }
 }

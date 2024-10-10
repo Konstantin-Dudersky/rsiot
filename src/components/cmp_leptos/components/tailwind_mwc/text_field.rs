@@ -5,7 +5,7 @@ use web_sys::KeyboardEvent;
 
 /// Тип визуального отображения
 pub enum TextFieldKind {
-    /// https://m3.material.io/components/text-fields/specs#68b00bd6-ab40-4b4f-93d9-ed1fbbc5d06e
+    /// <https://m3.material.io/components/text-fields/specs#68b00bd6-ab40-4b4f-93d9-ed1fbbc5d06e>
     Outline,
 }
 
@@ -43,21 +43,6 @@ impl Display for InputHtmlType {
         write!(f, "{}", txt)
     }
 }
-
-// TODO - delete after test
-// impl ToString for InputHtmlType {
-//     fn to_string(&self) -> String {
-//         match self {
-//             InputHtmlType::Checkbox => "checkbox",
-//             InputHtmlType::Date => "date",
-//             InputHtmlType::Datetime => "datetime-local",
-//             InputHtmlType::Number => "number",
-//             InputHtmlType::Text => "text",
-//             InputHtmlType::Time => "time",
-//         }
-//         .to_string()
-//     }
-// }
 
 #[component]
 pub fn TextField(
@@ -130,6 +115,3 @@ pub fn TextField(
         </div>
     }
 }
-
-// ring-1 ring-inset ring-gray-300
-// focus:ring-2 focus:ring-inset focus:ring-indigo-600

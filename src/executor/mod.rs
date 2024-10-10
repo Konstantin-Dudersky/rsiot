@@ -1,4 +1,10 @@
 //! Исполнитель - структура для запуска компонентов
+//!
+//! # Пример с WASM и cmp_leptos
+//!
+//! ```rust
+#![doc = include_str!("./test/executor_wasm_leptos.rs")]
+//! ```
 
 mod cache;
 mod cmp_in_out;
@@ -8,6 +14,9 @@ mod error;
 mod join_set_spawn;
 mod sleep;
 mod types;
+
+#[cfg(test)]
+mod test;
 
 pub use cache::Cache;
 pub use cmp_in_out::CmpInOut;

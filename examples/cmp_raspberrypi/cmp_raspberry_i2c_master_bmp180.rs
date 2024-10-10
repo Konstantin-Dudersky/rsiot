@@ -15,6 +15,8 @@
 #[cfg(feature = "cmp_raspberrypi")]
 #[tokio::main]
 async fn main() {
+    use std::time::Duration;
+
     use rsiot::{
         components::{cmp_logger, cmp_raspberrypi_i2c_master},
         drivers_i2c::{self, I2cSlaveAddress},
@@ -62,6 +64,7 @@ async fn main() {
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
         service: Service::example_service,
+        delay_publish: Duration::from_millis(100),
         fn_auth: |msg, _| Some(msg),
     };
 
