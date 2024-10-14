@@ -36,13 +36,13 @@ pub struct QHmiPermission {
 #[derive(Clone, Copy, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub enum QMode {
     /// Автоматический режим
+    #[default]
     Auto,
 
     /// Местный
     Local,
 
     /// Ручной
-    #[default]
     Manual,
 
     /// Out of service - выведен из эксплуатации
