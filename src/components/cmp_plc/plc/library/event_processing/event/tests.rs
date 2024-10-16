@@ -3,6 +3,8 @@
 //! cargo test components::cmp_plc::plc::library::event_processing::event::tests --features="cmp_plc" --target="x86_64-unknown-linux-gnu";
 //! ```
 
+use std::time::Duration;
+
 use super::*;
 use uuid::uuid;
 
@@ -10,7 +12,7 @@ use uuid::uuid;
 fn act_ack_noact() {
     let id = uuid!("16f7eed7-fb01-4208-9ebb-84cd1993d464");
 
-    let mut ev = FB::new();
+    let mut ev = FB::new(Duration::from_millis(100));
     assert_eq!(ev.output.state, State::NoAct_Ack);
 
     // Событие не наступило
@@ -63,7 +65,7 @@ fn act_ack_noact() {
 fn act_noact_ack() {
     let id = uuid!("16f7eed7-fb01-4208-9ebb-84cd1993d464");
 
-    let mut ev = FB::new();
+    let mut ev = FB::new(Duration::from_millis(100));
     assert_eq!(ev.output.state, State::NoAct_Ack);
 
     // Событие не наступило

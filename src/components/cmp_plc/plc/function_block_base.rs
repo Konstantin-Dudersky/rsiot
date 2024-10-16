@@ -1,5 +1,7 @@
 //! Функциональный блок
 
+use std::time::Duration;
+
 use serde::{Deserialize, Serialize};
 
 /// Функциональный блок
@@ -17,7 +19,6 @@ where
     pub output: Q,
     /// Статичные данные - сохраняются между вызовами
     pub stat: S,
-
     /// Системные данные функционального блока
     fb_system_data: FbSystemData,
 }
@@ -29,18 +30,25 @@ where
     S: Clone + Default + Serialize,
     Self: IFunctionBlock<I, Q, S>,
 {
-    /// Создание экземпляря функционального блока со значениями по-умолчанию
-    pub fn new() -> Self {
+    /// Создание экземпляра функционального блока со значениями по-умолчанию
+    pub fn new(period: Duration) -> Self {
         Self {
-            fb_system_data: FbSystemData { first_call: true },
+            fb_system_data: FbSystemData {
+                first_call: true,
+                period,
+            },
             ..Default::default()
         }
     }
 
-    pub(crate) fn new_with_restore_stat(self, stat: S) -> Self {
+    /// Создание экземпляра функционального блока с восстановленными значениями области stat
+    pub(crate) fn new_with_restore_stat(self, stat: S, period: Duration) -> Self {
         Self {
             stat,
-            fb_system_data: FbSystemData { first_call: true },
+            fb_system_data: FbSystemData {
+                first_call: true,
+                period,
+            },
             ..Default::default()
         }
     }
@@ -51,6 +59,11 @@ where
         self.input = input.clone();
         self.fb_system_data.first_call = false;
         self.output.clone()
+    }
+
+    /// Период вызова блока
+    pub fn get_period(&self) -> Duration {
+        self.fb_system_data.period
     }
 }
 
@@ -71,4 +84,7 @@ pub trait IFunctionBlock<I, Q, S> {
 pub struct FbSystemData {
     /// true - первый вызов функционального блока
     pub first_call: bool,
+
+    /// Период вызова блока
+    pub period: Duration,
 }

@@ -27,7 +27,7 @@
           // ---- x86_64-unknown-linux-gnu ---------------------------------------------------------
           "target": "x86_64-unknown-linux-gnu",
           "features": [
-            // "rustdoc",
+            "rustdoc",
             // "executor"
             // "single-thread",
             // "env_vars"

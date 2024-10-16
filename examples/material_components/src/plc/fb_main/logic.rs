@@ -3,7 +3,7 @@ use super::{I, Q, S};
 use rsiot::components::cmp_plc::plc::library::drives;
 
 pub fn logic(input: &I, stat: &mut S) -> Q {
-    stat.motor.call(drives::motor::I {
+    stat.motor.call(&mut drives::motor::I {
         mode_source: false,
         mode_auto: false,
         mode_man: false,
@@ -15,7 +15,7 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
         intlock: true,
     });
 
-    stat.valve_analog.call(drives::valve_analog::I {
+    stat.valve_analog.call(&mut drives::valve_analog::I {
         mode_source: false,
         mode_auto: false,
         mode_man: false,
@@ -29,7 +29,7 @@ pub fn logic(input: &I, stat: &mut S) -> Q {
         hmi_command: input.valve_analog_hmi_command,
     });
 
-    stat.valve.call(drives::valve::I {
+    stat.valve.call(&mut drives::valve::I {
         mode_source: false,
         mode_auto: false,
         mode_man: false,

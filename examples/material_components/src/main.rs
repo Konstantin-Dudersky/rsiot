@@ -59,10 +59,10 @@ fn main() -> anyhow::Result<()> {
 
     // cmp_webstorage ------------------------------------------------------------------------------
     let config_webstorage = cmp_webstorage::Config {
-        kind: cmp_webstorage::ConfigKind::SessionStorage,
         fn_input: Some,
         fn_output: |_| None,
         default_messages: vec![],
+        storage_kind: cmp_webstorage::ConfigStorageKind::SessionStorage,
     };
 
     // executor ------------------------------------------------------------------------------------

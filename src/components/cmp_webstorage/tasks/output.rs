@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use gloo::storage::{LocalStorage, SessionStorage, Storage};
+use tracing::warn;
 
 use crate::message::{Message, MsgDataBound};
 
@@ -22,9 +23,17 @@ where
 {
     pub async fn spawn(self) -> super::Result<()> {
         // Загружаем из хранилища все значения
-        let mut msgs: HashMap<String, Message<TMsg>> = match self.storage_kind {
-            ConfigStorageKind::LocalStorage => LocalStorage::get_all()?,
-            ConfigStorageKind::SessionStorage => SessionStorage::get_all()?,
+        let msgs: Result<HashMap<String, Message<TMsg>>, _> = match self.storage_kind {
+            ConfigStorageKind::LocalStorage => LocalStorage::get_all(),
+            ConfigStorageKind::SessionStorage => SessionStorage::get_all(),
+        };
+
+        let mut msgs = match msgs {
+            Ok(val) => val,
+            Err(err) => {
+                warn!("Error loading messages: {}", err);
+                return Ok(());
+            }
         };
 
         // Добавляем значения по-умолчанию

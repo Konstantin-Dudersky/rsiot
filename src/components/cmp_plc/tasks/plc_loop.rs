@@ -90,7 +90,9 @@ where
     FunctionBlockBase<I, Q, S>: IFunctionBlock<I, Q, S>,
 {
     // Инициализация структуры входов в начале цикла
+    // TODO - удалить после внедрения Resettable
     (config.fn_cycle_init)(fb_main_input);
+
     // Обновляем входную структуру по данным из входящих сообщений
     {
         let mut lock = input_msg_cache.write().await;

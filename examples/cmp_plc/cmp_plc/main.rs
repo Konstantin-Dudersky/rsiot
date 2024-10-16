@@ -54,7 +54,7 @@ async fn main() -> anyhow::Result<()> {
             }
         },
         fn_output: |_data: &fb2_example::Q| vec![],
-        fb_main: fb2_example::FB::new(),
+        fb_main: fb2_example::FB::new(Duration::from_secs(2)),
         period: Duration::from_secs(2),
         retention: None,
     };
