@@ -24,7 +24,8 @@ pub fn Go2rtc<'a>(
     #[prop(default = "600px")]
     height: &'static str,
 ) -> impl IntoView {
-    let url = format!("http://{hostname}:{port}/webrtc.html?src={camera}");
+    // let url = format!("http://{hostname}:{port}/webrtc.html?src={camera}");
+    let url = format!("http://{hostname}:{port}/stream.html?src={camera}");
 
     view! { <iframe src=url width=width height=height allow="fullscreen;" scrolling="no"></iframe> }
 }
