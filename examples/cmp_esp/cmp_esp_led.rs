@@ -59,7 +59,7 @@ async fn main() {
 
     // cmp_inject_periodic -------------------------------------------------------------------------
     let config_inject_periodic = cmp_inject_periodic::Config {
-        period: Duration::from_millis(1000),
+        period: Duration::from_millis(100),
         fn_periodic: move || {
             let mut random = [0u8; 3];
             getrandom(&mut random).unwrap();
@@ -68,15 +68,20 @@ async fn main() {
                 g: random[1],
                 b: random[2],
             }));
+            let msg = Message::new_custom(Custom::LedColor(cmp_esp_led::ConfigRgb {
+                r: 255,
+                g: 0,
+                b: 0,
+            }));
             vec![msg]
         },
     };
 
     // cmp_esp_led ---------------------------------------------------------------------------------
     let config_esp_led = cmp_esp_led::Config {
-        pin: peripherals.pins.gpio0.into(),
+        pin: peripherals.pins.gpio1.into(),
         rmt_channel: peripherals.rmt.channel0,
-        led_count: 100,
+        led_count: 200,
         fn_input: |msg| {
             let msg = msg.get_custom_data()?;
             match msg {
