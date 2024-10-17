@@ -14,7 +14,6 @@ fn test1() {
         #[default]
         State1,
         State2,
-        State3,
     }
 
     let mut sm = super::FB::new(Duration::from_millis(100));

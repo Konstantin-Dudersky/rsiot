@@ -7,21 +7,21 @@ use crate::components::cmp_plc::plc::FbSystemData;
 use super::super::super::function_block_base::{FunctionBlockBase, IFunctionBlock};
 
 /// Входные данные
-#[derive(Clone, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct I {
     /// Сигнал, фронт которого нужно определить
     pub i: bool,
 }
 
 /// Выходные данные
-#[derive(Clone, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct Q {
     /// Устанавливается в true на один цикл при обнаруженном фронте сигнала 0 -> 1
     pub q: bool,
 }
 
 /// Статичные данные
-#[derive(Clone, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct S {
     prev_i: bool,
 }

@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 pub use super::super::select_mode::QMode;
 
 /// Область памяти output
-#[derive(Clone, Default, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct Q {
     /// Статус для вывода на hmi
     pub hmi_status: QHmiStatus,

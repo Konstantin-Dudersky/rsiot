@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::components::cmp_plc::plc::library::drives::{select_mode, select_sp};
 
 /// Входная структура
-#[derive(Clone, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct I {
     /// Источник выбора режима:
     /// - false => из hmi,

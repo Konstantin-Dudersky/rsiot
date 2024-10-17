@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use super::super::select_mode;
 
 /// Входная структура
-#[derive(Clone, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct I {
     /// Источник выбора режима:
     /// - false => из hmi,

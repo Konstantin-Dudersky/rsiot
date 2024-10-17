@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 pub use super::super::select_mode::QMode;
 
 /// Область памяти output
-#[derive(Clone, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct Q {
     /// Команда на управление
     pub control: bool,

@@ -5,7 +5,7 @@ use super::super::EventSeverity;
 use super::State;
 
 /// Область памяти output
-#[derive(Clone, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct Q {
     /// Состояние события
     pub state: State,

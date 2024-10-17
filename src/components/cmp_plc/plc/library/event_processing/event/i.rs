@@ -4,7 +4,7 @@ use uuid::Uuid;
 use super::super::EventSeverity;
 
 /// Входная структура
-#[derive(Clone, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct I {
     /// Идентификатор события
     pub id: Uuid,

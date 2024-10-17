@@ -5,7 +5,7 @@ use std::time::Duration;
 use serde::{Deserialize, Serialize};
 
 /// Функциональный блок
-#[derive(Clone, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct FunctionBlockBase<I, Q, S>
 where
     I: Clone + Default + Serialize,
@@ -80,7 +80,7 @@ pub trait IFunctionBlock<I, Q, S> {
 }
 
 /// Системные данные функционального блока
-#[derive(Clone, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct FbSystemData {
     /// true - первый вызов функционального блока
     pub first_call: bool,

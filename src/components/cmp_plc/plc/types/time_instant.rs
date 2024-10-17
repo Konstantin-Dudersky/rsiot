@@ -9,7 +9,7 @@ use serde::{de::Visitor, Deserialize, Serialize};
 
 use super::TimeDuration;
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct TimeInstant {
     inst: Instant,
 }

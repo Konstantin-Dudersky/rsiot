@@ -5,7 +5,7 @@ use super::super::{select_mode, select_sp};
 use super::QState;
 
 /// Область памяти stat
-#[derive(Clone, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct S {
     /// Режим работы
     pub mode: select_mode::FB,
