@@ -57,6 +57,9 @@ fn main() -> anyhow::Result<()> {
             let text = msg.serialize()?;
             Ok(Some(text))
         },
+        cmp_plc_input: None,
+        cmp_plc_output: None,
+        cmp_plc_static: None,
     };
 
     let inject_periodic_config = cmp_inject_periodic::Config {
@@ -73,6 +76,7 @@ fn main() -> anyhow::Result<()> {
         buffer_size: 100,
         service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
+        delay_publish: Duration::from_millis(100),
     };
 
     #[cfg(not(feature = "single-thread"))]

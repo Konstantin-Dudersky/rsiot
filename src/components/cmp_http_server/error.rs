@@ -2,6 +2,7 @@ use std::io::Error as StdIoError;
 
 use axum::{http::StatusCode, response::IntoResponse};
 
+#[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     /// Ошибка Axum
@@ -15,6 +16,9 @@ pub enum Error {
     #[error("{0}")]
     UnknownMessageKey(String),
 
+    #[error("{0}")]
+    NotConfigured(String),
+
     #[error(transparent)]
     Message(#[from] crate::message::Error),
 
@@ -26,6 +30,18 @@ pub enum Error {
 
     #[error(transparent)]
     CmpOutput(#[from] crate::executor::ComponentError),
+
+    #[error("TaskEndAxumServe")]
+    TaskEndAxumServe,
+
+    #[error("TaskEndCmpPlcInput")]
+    TaskEndCmpPlcInput,
+
+    #[error("TaskEndCmpPlcOutput")]
+    TaskEndCmpPlcOutput,
+
+    #[error("TaskEndCmpPlcStatic")]
+    TaskEndCmpPlcStatic,
 }
 
 /// Преобразование ошибки в понятный пользователю ответ
@@ -41,6 +57,11 @@ impl IntoResponse for Error {
             Error::FnInput(err) => format!("{}", err),
             Error::FnOutput(err) => format!("{}", err),
             Error::CmpOutput(err) => format!("{}", err),
+            Error::NotConfigured(err) => format!("Not configured: {}", err),
+            Error::TaskEndAxumServe => format!("{self}"),
+            Error::TaskEndCmpPlcInput => format!("{self}"),
+            Error::TaskEndCmpPlcOutput => format!("{self}"),
+            Error::TaskEndCmpPlcStatic => format!("{self}"),
         };
         (StatusCode::INTERNAL_SERVER_ERROR, body).into_response()
     }

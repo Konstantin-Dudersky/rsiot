@@ -35,7 +35,7 @@
             // "cmp_auth",
             // "cmp_filesystem"
             // "cmp_http_client"
-            // "cmp_http_server"
+            "cmp_http_server",
             // "cmp_filesystem",
             // "cmp_influxdb",
             // "cmp_modbus_client"

@@ -1,55 +1,55 @@
-use std::{
-    net::{IpAddr, Ipv4Addr, SocketAddr},
-    sync::Arc,
-};
+use std::sync::Arc;
 
 use axum::routing;
-use tokio::time::{sleep, Duration};
+use tokio::{
+    spawn,
+    sync::Mutex,
+    task::{spawn_blocking, JoinSet},
+};
 use tower_http::{
     cors::CorsLayer,
     trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
     LatencyUnit,
 };
-use tracing::{error, info, Level};
+use tracing::{info, Level};
 
 use crate::{
-    executor::{CmpInOut, ComponentError},
+    executor::{join_set_spawn, CmpInOut, ComponentError},
     message::MsgDataBound,
 };
 
-use super::{config::Config, error::Error, routes, shared_state::SharedState};
+use super::{config::Config, routes, shared_state::SharedState, tasks};
 
 /// Компонент для получения и ввода сообщений через HTTP Server
 pub async fn fn_process<TMsg>(
-    output: CmpInOut<TMsg>,
+    msg_bus: CmpInOut<TMsg>,
     config: Config<TMsg>,
 ) -> Result<(), ComponentError>
 where
     TMsg: MsgDataBound + 'static,
 {
     info!("Component started, configuration: {:?}", config);
-    // общее состояние
-    let shared_state = Arc::new(SharedState {
-        cmp_interface: output,
+
+    // Общее состояние
+    let shared_state = Arc::new(Mutex::new(SharedState {
+        msg_bus: msg_bus.clone(),
         config: config.clone(),
-    });
-    loop {
-        let result = task_main(shared_state.clone(), config.port).await;
-        if let Err(err) = result {
-            error!("{:?}", err);
-        }
-        info!("Restarting...");
-        sleep(Duration::from_secs(2)).await
+        cmp_plc_input: "Data not received".to_string(),
+    }));
+
+    let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
+
+    // Задача cmp_plc_input
+    if let Some(cmp_plc_input) = config.cmp_plc_input {
+        let task = tasks::CmpPlcInput {
+            input: msg_bus.clone(),
+            shared_state: shared_state.clone(),
+            fn_input: cmp_plc_input.fn_input,
+        };
+        join_set_spawn(&mut task_set, task.spawn());
     }
-}
 
-async fn task_main<TMsg>(shared_state: Arc<SharedState<TMsg>>, port: u16) -> Result<(), Error>
-where
-    TMsg: MsgDataBound + 'static,
-{
-    let ipaddr = IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0));
-    let socket_addr = SocketAddr::new(ipaddr, port);
-
+    // Задача работы сервера Axum
     let layer_cors = CorsLayer::permissive();
 
     let layer_trace = TraceLayer::new_for_http()
@@ -61,20 +61,32 @@ where
                 .latency_unit(LatencyUnit::Micros),
         );
 
-    let app = routing::Router::new()
+    let router = routing::Router::new()
         .route("/", routing::get(routes::root))
         .route("/messages", routing::get(routes::list::<TMsg>))
         .route("/messages/:id", routing::get(routes::get::<TMsg>))
         .route("/messages", routing::put(routes::replace::<TMsg>))
+        .route("/plc/input", routing::get(routes::plc_input::<TMsg>))
+        // .route("/plc/output", routing::get(routes::plc_output::<TMsg>))
+        // .route("/plc/static", routing::get(routes::plc_static::<TMsg>))
         .with_state(shared_state)
         .layer(layer_cors)
         .layer(layer_trace);
 
-    let listener = tokio::net::TcpListener::bind(socket_addr)
-        .await
-        .map_err(Error::BindPort)?;
+    let task = tasks::AxumServe {
+        port: config.port,
+        router,
+    };
+    // task_set.spawn_blocking(move || async { task.spawn().await });
 
-    axum::serve(listener, app).await.map_err(Error::AxumServe)?;
+    spawn(task.spawn());
+    // task_set.spawn_blocking(task.spawn());
 
+    // join_set_spawn(&mut task_set, task.spawn());
+
+    // Ждем выполнения всех задач
+    while let Some(res) = task_set.join_next().await {
+        res.unwrap().unwrap()
+    }
     Ok(())
 }

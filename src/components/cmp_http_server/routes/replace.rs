@@ -1,28 +1,30 @@
-use std::sync::Arc;
-
 use axum::extract;
 
 use crate::message::MsgDataBound;
 
-use super::super::{error::Error, shared_state::SharedState};
+use super::super::{error::Error, shared_state::TSharedState};
 
 /// Маршрут для ввода сообщений
 pub async fn replace<TMsg>(
-    extract::State(shared_state): extract::State<Arc<SharedState<TMsg>>>,
+    extract::State(shared_state): extract::State<TSharedState<TMsg>>,
     body: String,
 ) -> Result<(), Error>
 where
     TMsg: MsgDataBound,
 {
+    let shared_state = shared_state.lock().await;
+
     let msg = (shared_state.config.fn_output)(&body).map_err(Error::FnInput)?;
     let msg = match msg {
         Some(val) => val,
         None => return Ok(()),
     };
+
     shared_state
-        .cmp_interface
+        .msg_bus
         .send_output(msg)
         .await
         .map_err(Error::CmpOutput)?;
+
     Ok(())
 }

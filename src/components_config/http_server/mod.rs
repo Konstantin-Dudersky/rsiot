@@ -51,6 +51,15 @@ where
     /// ```
     pub fn_input: fn(&Message<TMsg>) -> anyhow::Result<Option<String>>,
 
+    /// Данные области `Input` компонента `cmp_plc`
+    pub cmp_plc_input: Option<ConfigPlcData<TMsg>>,
+
+    /// Данные области `Output` компонента `cmp_plc`
+    pub cmp_plc_output: Option<ConfigPlcData<TMsg>>,
+
+    /// Данные области `Static` компонента `cmp_plc`
+    pub cmp_plc_static: Option<ConfigPlcData<TMsg>>,
+
     /// Функция преобразования текста в сообщения
     ///
     /// # Примеры
@@ -86,6 +95,14 @@ where
     pub fn_output: fn(&str) -> anyhow::Result<Option<Message<TMsg>>>,
 }
 
+#[derive(Clone, Debug)]
+pub struct ConfigPlcData<TMsg> {
+    /// Ключ сообщения
+    pub key: &'static str,
+    /// Функция извлечения данных из сообщения
+    pub fn_input: fn(&Message<TMsg>) -> Option<String>,
+}
+
 #[cfg(test)]
 mod tests {
     use super::Config;
@@ -98,6 +115,9 @@ mod tests {
             port: 8000,
             fn_input: |_| Ok(None),
             fn_output: |_| Ok(None),
+            cmp_plc_input: None,
+            cmp_plc_output: None,
+            cmp_plc_static: None,
         };
     }
 
@@ -111,6 +131,9 @@ mod tests {
                 Ok(Some(text))
             },
             fn_output: |_| Ok(None),
+            cmp_plc_input: None,
+            cmp_plc_output: None,
+            cmp_plc_static: None,
         };
     }
 
@@ -124,6 +147,9 @@ mod tests {
                 let msg = Message::deserialize(text)?;
                 Ok(Some(msg))
             },
+            cmp_plc_input: None,
+            cmp_plc_output: None,
+            cmp_plc_static: None,
         };
     }
 }
