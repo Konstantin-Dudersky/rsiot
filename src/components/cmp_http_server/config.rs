@@ -1,4 +1,4 @@
-pub use crate::components_config::http_server::{Config, ConfigPlcData};
+pub use crate::components_config::http_server::{Config, ConfigCmpPlcData};
 
 pub struct ConfigAlias<TMsg>(pub Config<TMsg>)
 where

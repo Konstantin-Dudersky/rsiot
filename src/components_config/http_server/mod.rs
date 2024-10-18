@@ -51,14 +51,8 @@ where
     /// ```
     pub fn_input: fn(&Message<TMsg>) -> anyhow::Result<Option<String>>,
 
-    /// Данные области `Input` компонента `cmp_plc`
-    pub cmp_plc_input: Option<ConfigPlcData<TMsg>>,
-
-    /// Данные области `Output` компонента `cmp_plc`
-    pub cmp_plc_output: Option<ConfigPlcData<TMsg>>,
-
-    /// Данные области `Static` компонента `cmp_plc`
-    pub cmp_plc_static: Option<ConfigPlcData<TMsg>>,
+    /// Данные из компонента `cmp_plc`
+    pub cmp_plc: fn(&Message<TMsg>) -> ConfigCmpPlcData,
 
     /// Функция преобразования текста в сообщения
     ///
@@ -95,17 +89,21 @@ where
     pub fn_output: fn(&str) -> anyhow::Result<Option<Message<TMsg>>>,
 }
 
-#[derive(Clone, Debug)]
-pub struct ConfigPlcData<TMsg> {
-    /// Ключ сообщения
-    pub key: &'static str,
-    /// Функция извлечения данных из сообщения
-    pub fn_input: fn(&Message<TMsg>) -> Option<String>,
+/// Данные, получаемые из компонента `cmp_plc`
+pub enum ConfigCmpPlcData {
+    /// Данные не относятся к компоненту cmp_plc
+    NoData,
+    /// Состояние области `input`
+    Input(String),
+    /// Состояние области `output`
+    Output(String),
+    /// Состояние области `static`
+    Static(String),
 }
 
 #[cfg(test)]
 mod tests {
-    use super::Config;
+    use super::{Config, ConfigCmpPlcData};
     use crate::message::{example_message::*, *};
 
     #[allow(clippy::no_effect)]
@@ -115,9 +113,7 @@ mod tests {
             port: 8000,
             fn_input: |_| Ok(None),
             fn_output: |_| Ok(None),
-            cmp_plc_input: None,
-            cmp_plc_output: None,
-            cmp_plc_static: None,
+            cmp_plc: |_| ConfigCmpPlcData::NoData,
         };
     }
 
@@ -131,9 +127,7 @@ mod tests {
                 Ok(Some(text))
             },
             fn_output: |_| Ok(None),
-            cmp_plc_input: None,
-            cmp_plc_output: None,
-            cmp_plc_static: None,
+            cmp_plc: |_| ConfigCmpPlcData::NoData,
         };
     }
 
@@ -147,9 +141,7 @@ mod tests {
                 let msg = Message::deserialize(text)?;
                 Ok(Some(msg))
             },
-            cmp_plc_input: None,
-            cmp_plc_output: None,
-            cmp_plc_static: None,
+            cmp_plc: |_| ConfigCmpPlcData::NoData,
         };
     }
 }

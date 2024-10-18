@@ -1,8 +1,8 @@
 //! Запуск:
 //!
 //! ```bash
-//! cargo run -p rsiot-http-server --example http-server-example
-//! cargo run -p rsiot-http-server --example http-server-example --features single-thread
+//! cargo run --example cmp_http_server --target x86_64-unknown-linux-gnu --features cmp_http_server
+//! cargo run --example cmp_http_server --target x86_64-unknown-linux-gnu --features cmp_http_server, single-thread
 //!
 //! Можно задать сообщение:
 //!
@@ -20,7 +20,10 @@ fn main() -> anyhow::Result<()> {
     use tracing_subscriber::filter::LevelFilter;
 
     use rsiot::{
-        components::{cmp_http_server, cmp_inject_periodic, cmp_logger},
+        components::{
+            cmp_http_server::{self, ConfigCmpPlcData},
+            cmp_inject_periodic, cmp_logger,
+        },
         executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{example_service::Service, Message, MsgDataBound},
     };
@@ -42,7 +45,7 @@ fn main() -> anyhow::Result<()> {
 
     let mut counter = 0.0;
 
-    let logger_config = cmp_logger::Config {
+    let logger_config = cmp_logger::Config::<Data> {
         level: Level::INFO,
         fn_input: |msg| Ok(Some(msg.serialize()?)),
     };
@@ -57,9 +60,16 @@ fn main() -> anyhow::Result<()> {
             let text = msg.serialize()?;
             Ok(Some(text))
         },
-        cmp_plc_input: None,
-        cmp_plc_output: None,
-        cmp_plc_static: None,
+        cmp_plc: |msg| {
+            let Some(msg) = msg.get_custom_data() else {
+                return ConfigCmpPlcData::NoData;
+            };
+            match msg {
+                Data::Msg0(data) => ConfigCmpPlcData::Input(data.to_string()),
+                Data::Msg1(data) => ConfigCmpPlcData::Output(data.to_string()),
+                Data::MsgSet(_) => ConfigCmpPlcData::NoData,
+            }
+        },
     };
 
     let inject_periodic_config = cmp_inject_periodic::Config {
@@ -120,4 +130,6 @@ fn main() -> anyhow::Result<()> {
 }
 
 #[cfg(not(feature = "cmp_http_server"))]
-fn main() {}
+fn main() {
+    unimplemented!("Features not active")
+}

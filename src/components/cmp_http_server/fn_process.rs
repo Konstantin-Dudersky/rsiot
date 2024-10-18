@@ -1,11 +1,7 @@
 use std::sync::Arc;
 
 use axum::routing;
-use tokio::{
-    spawn,
-    sync::Mutex,
-    task::{spawn_blocking, JoinSet},
-};
+use tokio::{sync::Mutex, task::JoinSet};
 use tower_http::{
     cors::CorsLayer,
     trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
@@ -35,21 +31,21 @@ where
         msg_bus: msg_bus.clone(),
         config: config.clone(),
         cmp_plc_input: "Data not received".to_string(),
+        cmp_plc_output: "Data not received".to_string(),
+        cmp_plc_static: "Data not received".to_string(),
     }));
 
     let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
 
-    // Задача cmp_plc_input
-    if let Some(cmp_plc_input) = config.cmp_plc_input {
-        let task = tasks::CmpPlcInput {
-            input: msg_bus.clone(),
-            shared_state: shared_state.clone(),
-            fn_input: cmp_plc_input.fn_input,
-        };
-        join_set_spawn(&mut task_set, task.spawn());
-    }
+    // Задача обработки данных из `cmp_plc` --------------------------------------------------------
+    let task = tasks::CmpPlcData {
+        input: msg_bus.clone(),
+        shared_state: shared_state.clone(),
+        fn_input: config.cmp_plc,
+    };
+    join_set_spawn(&mut task_set, task.spawn());
 
-    // Задача работы сервера Axum
+    // Задача работы сервера Axum ------------------------------------------------------------------
     let layer_cors = CorsLayer::permissive();
 
     let layer_trace = TraceLayer::new_for_http()
@@ -67,8 +63,8 @@ where
         .route("/messages/:id", routing::get(routes::get::<TMsg>))
         .route("/messages", routing::put(routes::replace::<TMsg>))
         .route("/plc/input", routing::get(routes::plc_input::<TMsg>))
-        // .route("/plc/output", routing::get(routes::plc_output::<TMsg>))
-        // .route("/plc/static", routing::get(routes::plc_static::<TMsg>))
+        .route("/plc/output", routing::get(routes::plc_output::<TMsg>))
+        .route("/plc/static", routing::get(routes::plc_static::<TMsg>))
         .with_state(shared_state)
         .layer(layer_cors)
         .layer(layer_trace);
@@ -77,14 +73,9 @@ where
         port: config.port,
         router,
     };
-    // task_set.spawn_blocking(move || async { task.spawn().await });
+    join_set_spawn(&mut task_set, task.spawn());
 
-    spawn(task.spawn());
-    // task_set.spawn_blocking(task.spawn());
-
-    // join_set_spawn(&mut task_set, task.spawn());
-
-    // Ждем выполнения всех задач
+    // Ждем выполнения всех задач ------------------------------------------------------------------
     while let Some(res) = task_set.join_next().await {
         res.unwrap().unwrap()
     }

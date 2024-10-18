@@ -2,7 +2,7 @@ use async_trait::async_trait;
 
 use crate::{
     executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::MsgDataBound,
+    message::{AuthPermissions, MsgDataBound},
 };
 
 use super::{config::ConfigAlias, fn_process::fn_process};
@@ -19,6 +19,7 @@ where
         in_out: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
         let config = config.0;
+        let in_out = in_out.clone_with_new_id("cmp_http_server", AuthPermissions::FullAccess);
         fn_process(in_out, config).await
     }
 }

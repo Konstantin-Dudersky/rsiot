@@ -34,7 +34,7 @@ mod shared_state;
 mod tasks;
 
 pub use component::Cmp;
-pub use config::{Config, ConfigPlcData};
+pub use config::{Config, ConfigCmpPlcData};
 pub use error::Error;
 
 type Result<T> = std::result::Result<T, Error>;

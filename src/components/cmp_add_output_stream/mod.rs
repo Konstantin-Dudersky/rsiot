@@ -8,22 +8,22 @@ use crate::{
     message::*,
 };
 
-/// Настройки
+/// Настройки компонента cmp_add_output_stream
 #[derive(Debug)]
-pub struct Cfg<TMessage> {
+pub struct Config<TMessage> {
     /// Внешний канал mpsc, в который пересылаются исходящие сообщения
     pub channel: mpsc::Sender<Message<TMessage>>,
 }
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
-impl<TMsg> IComponentProcess<Cfg<TMsg>, TMsg> for Component<Cfg<TMsg>, TMsg>
+impl<TMsg> IComponentProcess<Config<TMsg>, TMsg> for Component<Config<TMsg>, TMsg>
 where
     TMsg: MsgDataBound + 'static,
 {
     async fn process(
         &self,
-        config: Cfg<TMsg>,
+        config: Config<TMsg>,
         in_out: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
         let mut in_out =
@@ -36,4 +36,4 @@ where
 }
 
 /// Компонент cmp_add_output_stream
-pub type Cmp<TMsg> = Component<Cfg<TMsg>, TMsg>;
+pub type Cmp<TMsg> = Component<Config<TMsg>, TMsg>;
