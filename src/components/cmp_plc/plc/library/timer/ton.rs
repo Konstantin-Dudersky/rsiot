@@ -8,7 +8,7 @@ use super::super::super::function_block_base::{FunctionBlockBase, IFunctionBlock
 use super::super::super::{library::edge_detect::rising_edge, types};
 
 /// Входные данные
-#[derive(Clone, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct I {
     /// Входной сигнал для контроля
     pub input: bool,
@@ -17,7 +17,7 @@ pub struct I {
 }
 
 /// Выходные данные
-#[derive(Clone, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct Q {
     /// Устанавливается в true, когда таймер насчитал время
     pub output: bool,
@@ -26,7 +26,7 @@ pub struct Q {
 }
 
 /// Статичные данные
-#[derive(Clone, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct S {
     input_rising_edge: rising_edge::FB,
     delay: types::TimeInstant,
