@@ -14,8 +14,8 @@ pub enum AuthPermissions {
 
     /// Администрирование
     Admin,
-    #[default]
 
     /// Полный доступ
+    #[default]
     FullAccess,
 }

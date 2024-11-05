@@ -49,7 +49,7 @@ impl Serialize for TimeInstant {
 
 struct TimeInstantVisitor;
 
-impl<'de> Visitor<'de> for TimeInstantVisitor {
+impl Visitor<'_> for TimeInstantVisitor {
     type Value = TimeInstant;
 
     fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {

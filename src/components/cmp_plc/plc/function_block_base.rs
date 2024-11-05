@@ -54,7 +54,8 @@ where
     }
 
     /// Вызов функционального блока
-    pub fn call(&mut self, input: &mut I) -> Q {
+    pub fn call(&mut self, input: &mut I, period: Duration) -> Q {
+        self.fb_system_data.period = period;
         self.output = FunctionBlockBase::logic(input, &mut self.stat, &self.fb_system_data);
         self.input = input.clone();
         self.fb_system_data.first_call = false;

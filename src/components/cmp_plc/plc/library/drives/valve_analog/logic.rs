@@ -1,27 +1,35 @@
+use crate::components::cmp_plc::plc::FbSystemData;
+
 use super::super::{select_mode, select_sp};
 
 use super::{QHmiPermission, QHmiStatus, QMode, QState, I, Q, S};
 
-pub fn logic(input: &I, stat: &mut S) -> Q {
+pub fn logic(input: &I, stat: &mut S, system_data: &FbSystemData) -> Q {
     // Выбор режима
-    stat.mode.call(&mut select_mode::I {
-        mode_source: input.mode_source,
-        mode_auto: input.mode_auto,
-        mode_man: input.mode_man,
-        mode_local: false,
-        mode_oos: false,
-        hmi_command: input.hmi_command.into(),
-    });
+    stat.mode.call(
+        &mut select_mode::I {
+            mode_source: input.mode_source,
+            mode_auto: input.mode_auto,
+            mode_man: input.mode_man,
+            mode_local: false,
+            mode_oos: false,
+            hmi_command: input.hmi_command.into(),
+        },
+        system_data.period,
+    );
     let mode = stat.mode.output.mode;
 
     // Выбор задания
-    stat.mv.call(&mut select_sp::I {
-        sp_en_source: input.mv_en_source,
-        sp_hmi_en: input.mv_hmi_en,
-        sp_plc_en: input.mv_plc_en,
-        sp_plc: input.mv_plc,
-        hmi_command: input.hmi_command.into(),
-    });
+    stat.mv.call(
+        &mut select_sp::I {
+            sp_en_source: input.mv_en_source,
+            sp_hmi_en: input.mv_hmi_en,
+            sp_plc_en: input.mv_plc_en,
+            sp_plc: input.mv_plc,
+            hmi_command: input.hmi_command.into(),
+        },
+        system_data.period,
+    );
 
     Q {
         hmi_status: QHmiStatus {

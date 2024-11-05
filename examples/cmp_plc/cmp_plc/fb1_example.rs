@@ -22,11 +22,14 @@ pub struct S {
 }
 
 impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
-    fn logic(input: &mut I, stat: &mut S, _system_data: &FbSystemData) -> Q {
-        let _ton_res = stat.timer.call(&mut ton::I {
-            input: true,
-            preset_time: types::TimeDuration::from_secs(10),
-        });
+    fn logic(input: &mut I, stat: &mut S, system_data: &FbSystemData) -> Q {
+        let _ton_res = stat.timer.call(
+            &mut ton::I {
+                input: true,
+                preset_time: types::TimeDuration::from_secs(10),
+            },
+            system_data.period,
+        );
 
         Q {
             out_counter: input.counter,

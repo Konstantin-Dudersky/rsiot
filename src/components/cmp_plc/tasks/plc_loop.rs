@@ -106,7 +106,7 @@ where
     let msgs;
     {
         let mut fb_main = fb_main.lock().await;
-        fb_main.call(fb_main_input);
+        fb_main.call(fb_main_input, config.period);
         msgs = (config.fn_output)(&fb_main.output);
     }
     Ok(msgs)

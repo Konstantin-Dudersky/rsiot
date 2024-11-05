@@ -26,8 +26,9 @@ pub struct S {
 }
 
 impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
-    fn logic(input: &mut I, stat: &mut S, _system_data: &FbSystemData) -> Q {
-        stat.fb1_inst.call(&mut fb1_example::I { counter: 1 });
+    fn logic(input: &mut I, stat: &mut S, system_data: &FbSystemData) -> Q {
+        stat.fb1_inst
+            .call(&mut fb1_example::I { counter: 1 }, system_data.period);
 
         if input.resettable.get() {
             println!("Input resettable 1 TRUE");

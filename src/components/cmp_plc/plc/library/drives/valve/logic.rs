@@ -1,17 +1,22 @@
+use crate::components::cmp_plc::plc::FbSystemData;
+
 use super::super::select_mode;
 
 use super::{IHmiCommand, QHmiPermission, QHmiStatus, QMode, QState, I, Q, S};
 
-pub fn logic(input: &I, stat: &mut S) -> Q {
+pub fn logic(input: &I, stat: &mut S, system_data: &FbSystemData) -> Q {
     // Выбор режима
-    stat.mode.call(&mut select_mode::I {
-        mode_source: input.mode_source,
-        mode_auto: input.mode_auto,
-        mode_man: input.mode_man,
-        mode_local: false,
-        mode_oos: false,
-        hmi_command: input.hmi_command.into(),
-    });
+    stat.mode.call(
+        &mut select_mode::I {
+            mode_source: input.mode_source,
+            mode_auto: input.mode_auto,
+            mode_man: input.mode_man,
+            mode_local: false,
+            mode_oos: false,
+            hmi_command: input.hmi_command.into(),
+        },
+        system_data.period,
+    );
     let mode = stat.mode.output.mode;
 
     // Команда открыть / закрыть
