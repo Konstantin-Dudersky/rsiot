@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 use crate::components::cmp_plc::plc::library::drives::{
     select_mode,
@@ -27,11 +27,11 @@ pub fn Valve(
     visible: Signal<bool>,
 
     /// Нажатие кнопки "Закрыть"
-    on_close: impl Fn() + 'static + Copy,
+    on_close: impl Fn() + 'static + Copy + Send + Sync,
 ) -> impl IntoView {
     view! {
         <Dialog
-            visible=move || visible.get()
+            visible=visible
             headline=move || view! { {title} }
             content=move || {
                 view! { <Content hmi_status=hmi_status hmi_command=hmi_command/> }
@@ -64,11 +64,11 @@ fn Content(
 
             // Режим работы ------------------------------------------------------------------------
             <SelectMode
-                mode = move || hmi_status.get().mode
-                hmi_permission_mode_man = move || hmi_status.get().hmi_permission.mode_man
-                hmi_permission_mode_auto = move || hmi_status.get().hmi_permission.mode_auto
-                hmi_permission_mode_local = move || hmi_status.get().hmi_permission.mode_local
-                hmi_permission_mode_oos = move || hmi_status.get().hmi_permission.mode_oos
+                mode = Signal::derive(move || hmi_status.get().mode)
+                hmi_permission_mode_man = Signal::derive(move || hmi_status.get().hmi_permission.mode_man)
+                hmi_permission_mode_auto = Signal::derive(move || hmi_status.get().hmi_permission.mode_auto)
+                hmi_permission_mode_local = Signal::derive(move || hmi_status.get().hmi_permission.mode_local)
+                hmi_permission_mode_oos = Signal::derive(move || hmi_status.get().hmi_permission.mode_oos)
                 on_hmi_command = move |hc| {
                     let hc = match hc {
                         select_mode::IHmiCommand::no_command => IHmiCommand::no_command,
@@ -91,7 +91,7 @@ fn State(
     /// Управление
     hmi_command: WriteSignal<IHmiCommand>,
 ) -> impl IntoView {
-    let (visible_state, visible_state_set) = create_signal(false);
+    let (visible_state, visible_state_set) = signal(false);
 
     view! {
         <div class="flex flex-row items-center gap-4">
@@ -117,11 +117,11 @@ fn State(
                     icon=|| view! {
                         <span class="iconify material-symbols--more-horiz h-6 w-6"></span>
                     }
-                    disabled=MaybeSignal::derive(move || {
+                    disabled=Signal::derive(move || {
                         !hmi_status.get().hmi_permission.man_start
                             && !hmi_status.get().hmi_permission.man_stop
                     })
-                    toggled=MaybeSignal::derive(move || visible_state.get())
+                    toggled=Signal::derive(move || visible_state.get())
                     on_click= move || visible_state_set.update(|v| *v = !*v)
                 />
             </div>
@@ -136,7 +136,7 @@ fn State(
                             hmi_command.set(IHmiCommand::man_open)
                         }
 
-                        disabled=MaybeSignal::derive(move || {
+                        disabled=Signal::derive(move || {
                             !hmi_status.get().hmi_permission.man_start
                         })
 
@@ -154,7 +154,7 @@ fn State(
                             hmi_command.set(IHmiCommand::man_close)
                         }
 
-                        disabled=MaybeSignal::derive(move || {
+                        disabled=Signal::derive(move || {
                             !hmi_status.get().hmi_permission.man_stop
                         })
 

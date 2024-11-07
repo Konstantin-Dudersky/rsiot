@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 /// Добавить в `input.js`:
 ///

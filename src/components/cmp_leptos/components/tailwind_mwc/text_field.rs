@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use leptos::*;
+use leptos::prelude::*;
 use web_sys::KeyboardEvent;
 
 /// Тип визуального отображения
@@ -69,7 +69,7 @@ pub fn TextField(
     #[prop(default = "Default")]
     placeholder: &'static str,
 ) -> impl IntoView {
-    let (input_text, input_text_set) = create_signal(String::from(""));
+    let (input_text, input_text_set) = signal(String::from(""));
 
     view! {
         <div class="relative">

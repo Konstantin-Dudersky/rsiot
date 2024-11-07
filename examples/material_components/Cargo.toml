@@ -6,8 +6,8 @@ edition = "2021"
 [dependencies]
 anyhow = { version = "*" }
 console_error_panic_hook = "0.1.7"
-leptos = { version = "0.6", features = ["csr"] }
-leptos_router = { version = "0.6", features = ["csr"] }
+leptos = { version = "0.7.0-rc1", features = ["csr"] }
+leptos_router = { version = "0.7.0-rc1" }
 rsiot = { path = "../../.", features = [
     "single-thread",
     "logging",
@@ -18,7 +18,7 @@ rsiot = { path = "../../.", features = [
 serde = { version = "*", features = ["derive"] }
 tokio = { version = "*" }
 tracing = "*"
-
+any_spawner = "*"
 
 [workspace]
 # members = ["src-tauri"]

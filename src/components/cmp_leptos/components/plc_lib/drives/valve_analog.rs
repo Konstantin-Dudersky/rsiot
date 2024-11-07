@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 use crate::components::cmp_plc::plc::library::drives::{
     select_mode,
@@ -27,11 +27,11 @@ pub fn ValveAnalog(
     visible: Signal<bool>,
 
     /// Нажатие кнопки "Закрыть"
-    on_close: impl Fn() + 'static + Copy,
+    on_close: impl Fn() + 'static + Copy + Send + Sync,
 ) -> impl IntoView {
     view! {
         <Dialog
-            visible=move || visible.get()
+            visible=visible
             headline=move || view! { {title} }
             content=move || {
                 view! { <Content hmi_status=hmi_status hmi_command=hmi_command/> }
@@ -57,11 +57,11 @@ fn Content(
 
             // Режим работы ------------------------------------------------------------------------
             <SelectMode
-                mode = move || hmi_status.get().mode
-                hmi_permission_mode_man = move || hmi_status.get().hmi_permission.mode_man
-                hmi_permission_mode_auto = move || hmi_status.get().hmi_permission.mode_auto
-                hmi_permission_mode_local = move || hmi_status.get().hmi_permission.mode_local
-                hmi_permission_mode_oos = move || hmi_status.get().hmi_permission.mode_oos
+                mode = Signal::derive(move || hmi_status.get().mode)
+                hmi_permission_mode_man = Signal::derive(move || hmi_status.get().hmi_permission.mode_man)
+                hmi_permission_mode_auto = Signal::derive(move || hmi_status.get().hmi_permission.mode_auto)
+                hmi_permission_mode_local = Signal::derive(move || hmi_status.get().hmi_permission.mode_local)
+                hmi_permission_mode_oos = Signal::derive(move || hmi_status.get().hmi_permission.mode_oos)
                 on_hmi_command = move |hc| {
                     let hc = match hc {
                         select_mode::IHmiCommand::no_command => IHmiCommand::no_command,
@@ -82,7 +82,7 @@ fn Content(
 
                 <div class="w-32">
                     <TextField
-                        value = move || hmi_status.get().mv.to_string()
+                        value = Signal::derive(move || hmi_status.get().mv.to_string())
                         on_keyup_enter = move |mv| {
                             let mv = mv.parse::<f64>().unwrap();
                             hmi_command.set(IHmiCommand::mv_hmi(mv));
@@ -101,7 +101,7 @@ fn Content(
 
                 <div class="w-32">
                     <TextField
-                        value = move || hmi_status.get().rbk.to_string()
+                        value = Signal::derive(move || hmi_status.get().rbk.to_string())
                         on_keyup_enter = move |_| ()
                         input_html_type = InputHtmlType::Number
                     />

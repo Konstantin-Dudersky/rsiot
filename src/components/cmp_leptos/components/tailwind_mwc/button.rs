@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 #[allow(missing_docs)]
 pub enum ButtonKind {
@@ -32,8 +32,8 @@ pub fn Button<FIcon, IVIcon>(
     on_click: impl Fn() + 'static,
 
     /// true = кнопка заблокирована
-    #[prop(default = MaybeSignal::from(false))]
-    disabled: MaybeSignal<bool>,
+    #[prop(default = Signal::derive(|| false))]
+    disabled: Signal<bool>,
 ) -> impl IntoView
 where
     FIcon: Fn() -> IVIcon,

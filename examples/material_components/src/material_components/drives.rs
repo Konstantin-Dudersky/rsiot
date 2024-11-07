@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 use rsiot::{
     components::cmp_leptos::{
         components::{
@@ -23,7 +23,7 @@ pub fn Drives() -> impl IntoView {
     let (valve_status, _) = create_signal_from_msg!("Custom-valve_hmi_status");
     let (_, valve_command) = create_signal_from_msg!("Custom-valve_hmi_command");
 
-    let (fpt, fpt_set) = create_signal(String::from(""));
+    let (fpt, fpt_set) = signal(String::from(""));
 
     let svg_file = include_str!("../../schemas/drives.svg");
     let svg_input = vec![
@@ -57,7 +57,7 @@ pub fn Drives() -> impl IntoView {
             title = "Двигатель"
             hmi_status = motor_status
             hmi_command = motor_command
-            visible = move || fpt.get() == "motor"
+            visible = Signal::derive(move || fpt.get() == "motor")
             on_close = close_fpt
         />
 
@@ -65,7 +65,7 @@ pub fn Drives() -> impl IntoView {
             title = "Клапан аналоговый"
             hmi_status = valve_analog_status
             hmi_command = valve_analog_command
-            visible = move || fpt.get() == "valve_analog"
+            visible = Signal::derive(move || fpt.get() == "valve_analog")
             on_close = close_fpt
         />
 
@@ -73,7 +73,7 @@ pub fn Drives() -> impl IntoView {
             title = "Клапан"
             hmi_status = valve_status
             hmi_command = valve_command
-            visible = move || fpt.get() == "valve"
+            visible = Signal::derive(move || fpt.get() == "valve")
             on_close = close_fpt
         />
 

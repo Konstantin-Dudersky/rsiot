@@ -1,9 +1,9 @@
 use std::{rc::Rc, sync::Mutex};
 
-use ev::Event;
 use gloo::dialogs::alert;
-use leptos::*;
-use tracing::{info, warn};
+use leptos::prelude::*;
+use leptos::tachys::html::event::Event;
+use tracing::warn;
 use uuid::Uuid;
 use wasm_bindgen::{closure::Closure, JsCast};
 
@@ -21,54 +21,77 @@ pub fn SvgDynamic<FOutput>(
     svg_output: SvgOutput<FOutput>,
 ) -> impl IntoView
 where
-    FOutput: Fn(&str) + 'static,
+    FOutput: Fn(&str) + 'static + Clone,
 {
     let id = format!("svg_{}", Uuid::new_v4());
-    let div_ref = create_node_ref();
+    let div_ref = NodeRef::new();
+
+    let id_clone = id.clone();
+
+    // track_counter отслеживает кол-во обновлений элемента div_ref. Значение 2 означает, что
+    // svg загружен и можно запускать обновление элементов. Почему 2? ХЗ
+    let mut track_counter = 0;
+    Effect::new(move || {
+        div_ref.track();
+        track_counter += 1;
+        if track_counter == 2 {
+            let id_clone = id_clone.clone();
+            let svg_input = svg_input.clone();
+            let svg_output = svg_output.clone();
+            setup_svg_input_and_output(id_clone, svg_input, svg_output);
+        }
+    });
+
+    view! {
+        <div id=id node_ref=div_ref inner_html=file></div>
+    }
+}
+
+fn setup_svg_input_and_output<FOutput>(
+    id_clone: String,
+    svg_input: Vec<SvgInput>,
+    svg_output: SvgOutput<FOutput>,
+) where
+    FOutput: Fn(&str) + 'static,
+{
+    // Задаем стили элементов svg файла
+    let id_clone = id_clone.clone();
+    Effect::new(move |_| set_global_style(&id_clone));
+
+    // Создаем эффекты для анимации svg
+    for input in svg_input {
+        let input_clone = input.clone();
+        Effect::new(move |_| create_effect_for_svg_input(&input_clone).unwrap());
+    }
 
     let output_callback = Rc::new(Mutex::new(Closure::wrap(Box::new(move |e: Event| {
         let id = extract_id_from_event(e).unwrap();
         (svg_output.callback)(&id)
     }) as Box<dyn FnMut(_)>)));
 
-    let id_clone = id.clone();
+    // Создаем обработчики событий из svg
+    for id in &svg_output.ids {
+        let id_clone = id.clone();
 
-    div_ref.on_load(move |_| {
-        // Задаем стили элементов svg файла
-        create_effect(move |_| {
-            let id_clone = id_clone.clone();
-            set_global_style(id_clone)
+        let cb_clone = output_callback.clone();
+        // Не знаю, зачем нужно оборачивать в create_effect, но без него `get_element_by_id` не
+        // находится
+        Effect::new(move |_| {
+            let Some(svg_element) = get_svg_element_by_id(&id_clone) else {
+                return;
+            };
+
+            let lock = cb_clone.lock().unwrap();
+
+            svg_element
+                .add_event_listener_with_callback("click", lock.as_ref().unchecked_ref())
+                .unwrap();
+            svg_element
+                .style()
+                .set_property("cursor", "pointer")
+                .unwrap();
         });
-
-        for input in svg_input {
-            create_effect(move |_| create_effect_for_svg_input(&input).unwrap());
-        }
-
-        for id in svg_output.ids {
-            let cb_clone = output_callback.clone();
-            // Не знаю, зачем нужно оборачивать в create_effect, но без него `get_element_by_id` не
-            // находится
-            create_effect(move |_| {
-                let Some(svg_element) = get_svg_element_by_id(&id) else {
-                    return;
-                };
-
-                info!("Регистрация коллбеков для вызова");
-
-                let lock = cb_clone.lock().unwrap();
-
-                svg_element
-                    .add_event_listener_with_callback("click", lock.as_ref().unchecked_ref())
-                    .unwrap();
-                svg_element
-                    .style()
-                    .set_property("cursor", "pointer")
-                    .unwrap();
-            });
-        }
-    });
-
-    view! { <div id=id node_ref=div_ref inner_html=file></div> }
+    }
 }
 
 /// Извлечение id элемента из события
@@ -146,3 +169,39 @@ fn create_effect_for_svg_input(input: &SvgInput) -> Option<()> {
     }
     Some(())
 }
+
+// div_ref.on_load(move |_| {
+// Задаем стили элементов svg файла
+// create_effect(move |_| {
+//     let id_clone = id_clone.clone();
+//     set_global_style(id_clone)
+// });
+
+// for input in svg_input {
+//     create_effect(move |_| create_effect_for_svg_input(&input).unwrap());
+// }
+
+// for id in svg_output.ids {
+//     let cb_clone = output_callback.clone();
+//     // Не знаю, зачем нужно оборачивать в create_effect, но без него `get_element_by_id` не
+//     // находится
+//     create_effect(move |_| {
+//         let Some(svg_element) = get_svg_element_by_id(&id) else {
+//             return;
+//         };
+
+//         info!("Регистрация коллбеков для вызова");
+
+//         let lock = cb_clone.lock().unwrap();
+
+//         svg_element
+//             .add_event_listener_with_callback("click", lock.as_ref().unchecked_ref())
+//             .unwrap();
+//         svg_element
+//             .style()
+//             .set_property("cursor", "pointer")
+//             .unwrap();
+//     });
+// }
+// });
+//

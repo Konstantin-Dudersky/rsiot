@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 /// Диалог
 ///
@@ -37,14 +37,14 @@ pub fn Dialog<FHeadline, IvHeadline, FContent, IvContent, FActions, IvActions>(
     actions: FActions,
 ) -> impl IntoView
 where
-    FHeadline: Fn() -> IvHeadline + 'static,
-    IvHeadline: IntoView,
+    FHeadline: Fn() -> IvHeadline + 'static + Send + Sync,
+    IvHeadline: IntoView + 'static,
 
-    FContent: Fn() -> IvContent + 'static,
-    IvContent: IntoView,
+    FContent: Fn() -> IvContent + 'static + Send + Sync,
+    IvContent: IntoView + 'static,
 
-    FActions: Fn() -> IvActions + 'static,
-    IvActions: IntoView,
+    FActions: Fn() -> IvActions + 'static + Send + Sync,
+    IvActions: IntoView + 'static,
 {
     view! {
         <Show when=move || visible.get()>

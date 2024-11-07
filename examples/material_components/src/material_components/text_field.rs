@@ -1,11 +1,11 @@
-use leptos::*;
+use leptos::prelude::*;
 
 use rsiot::components::cmp_leptos::components::tailwind_mwc::{InputHtmlType, TextField};
 use tracing::info;
 
 #[component]
 pub fn TextFieldView() -> impl IntoView {
-    let (test_str, test_str_set) = create_signal(String::from(""));
+    let (test_str, test_str_set) = signal(String::from(""));
 
     view! {
         <div class="h-14">

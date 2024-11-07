@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use leptos::*;
+use leptos::{prelude::*, task::spawn_local};
 use tokio::task::LocalSet;
 
 use crate::{
@@ -15,9 +15,7 @@ use crate::{
 fn test_wasm() {
     fn main() -> anyhow::Result<()> {
         #[component]
-        fn App() -> impl IntoView {
-            view! {}
-        }
+        fn App() -> impl IntoView {}
         configure_logging("info").unwrap();
 
         // cmp_leptos ------------------------------------------------------------------------------

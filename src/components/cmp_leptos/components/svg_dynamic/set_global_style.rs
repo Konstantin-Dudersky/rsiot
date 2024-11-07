@@ -1,12 +1,12 @@
 //! Изменить стили всех элементов файла svg. Полезно для переключения темы
 
-use leptos::{document, wasm_bindgen::JsCast};
+use leptos::{leptos_dom::helpers::document, wasm_bindgen::JsCast};
 
 use super::{super::material_theme::MaterialTheme, change_svg_prop, INK_LABEL};
 
-pub fn set_global_style(svg_id: String) {
+pub fn set_global_style(svg_id: &str) {
     let root_node = document()
-        .get_element_by_id(&svg_id)
+        .get_element_by_id(svg_id)
         .unwrap()
         .parent_node()
         .unwrap();

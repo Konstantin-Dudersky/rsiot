@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 /// Вид кнопки
 #[allow(missing_docs)]
@@ -30,12 +30,12 @@ pub fn IconButton<FIcon, IVIcon>(
     icon: FIcon,
 
     /// true = кнопка заблокирована
-    #[prop(default = MaybeSignal::Static(false))]
-    disabled: MaybeSignal<bool>,
+    #[prop(default = Signal::derive(|| false))]
+    disabled: Signal<bool>,
 
     /// true = кнопка выбрана. Для типов xxxToggle
-    #[prop(default = MaybeSignal::Static(false))]
-    toggled: MaybeSignal<bool>,
+    #[prop(default = Signal::derive(|| false))]
+    toggled: Signal<bool>,
 
     /// Событие нажатия
     on_click: impl Fn() + 'static,
@@ -44,6 +44,92 @@ where
     FIcon: Fn() -> IVIcon,
     IVIcon: IntoView,
 {
+    let container_bg_transparent = move || match kind {
+        IconButtonKind::Standard => true,
+        IconButtonKind::StandardToggle => true,
+        IconButtonKind::Outlined => true,
+        IconButtonKind::OutlinedToggle => !toggled.get(),
+        _ => false,
+    };
+
+    let container_bg_primary = move || match kind {
+        IconButtonKind::Filled => true,
+        IconButtonKind::FilledToggle => toggled.get(),
+        _ => false,
+    };
+
+    let container_bg_surface_variant = move || match kind {
+        IconButtonKind::FilledToggle => !toggled.get(),
+        IconButtonKind::FilledTonalToggle => !toggled.get(),
+        _ => false,
+    };
+
+    let container_bg_secondary_container = move || match kind {
+        IconButtonKind::FilledTonal => true,
+        IconButtonKind::FilledTonalToggle => toggled.get(),
+        _ => false,
+    };
+
+    let container_border = move || match kind {
+        IconButtonKind::Outlined => true,
+        IconButtonKind::OutlinedToggle => !toggled.get(),
+        _ => false,
+    };
+
+    let container_disabled_bg_transparent = move || {
+        matches!(
+            kind,
+            IconButtonKind::Standard
+                | IconButtonKind::StandardToggle
+                | IconButtonKind::Outlined
+                | IconButtonKind::OutlinedToggle
+        )
+    };
+
+    let container_disabled_bg_on_surface = move || {
+        matches!(
+            kind,
+            IconButtonKind::Filled
+                | IconButtonKind::FilledToggle
+                | IconButtonKind::FilledTonal
+                | IconButtonKind::FilledTonalToggle
+        )
+    };
+
+    let container_disabled_border = move || {
+        matches!(
+            kind,
+            IconButtonKind::Outlined | IconButtonKind::OutlinedToggle
+        )
+    };
+
+    let icon_text_on_surface_variant = move || match kind {
+        IconButtonKind::Standard => true,
+        IconButtonKind::StandardToggle => !toggled.get(),
+        IconButtonKind::FilledTonalToggle => !toggled.get(),
+        IconButtonKind::Outlined => true,
+        IconButtonKind::OutlinedToggle => !toggled.get(),
+        _ => false,
+    };
+
+    let icon_text_primary = move || match kind {
+        IconButtonKind::StandardToggle => toggled.get(),
+        IconButtonKind::FilledToggle => !toggled.get(),
+        _ => false,
+    };
+
+    let icon_text_on_primary = move || match kind {
+        IconButtonKind::Filled => true,
+        IconButtonKind::FilledToggle => toggled.get(),
+        _ => false,
+    };
+
+    let icon_text_on_secondary_container = move || match kind {
+        IconButtonKind::FilledTonal => true,
+        IconButtonKind::FilledTonalToggle => toggled.get(),
+        _ => false,
+    };
+
     view! {
         <button
             class="h-10 w-10 rounded-full relative"
@@ -54,23 +140,12 @@ where
                 id="container"
                 class="absolute left-0 top-0 z-0 h-full w-full rounded-full border-outline"
 
-                class=("bg-transparent", move || matches!(kind, IconButtonKind::Standard))
-                class=("bg-transparent", move || matches!(kind, IconButtonKind::StandardToggle))
-
-                class=("bg-primary", move || matches!(kind, IconButtonKind::Filled))
-                class=("bg-surface-variant", move || matches!(kind, IconButtonKind::FilledToggle) && !toggled.get())
-                class=("bg-primary", move || matches!(kind, IconButtonKind::FilledToggle) && toggled.get())
-
-                class=("bg-secondary-container", move || matches!(kind, IconButtonKind::FilledTonal))
-                class=("bg-surface-variant", move || matches!(kind, IconButtonKind::FilledTonalToggle) && !toggled.get())
-                class=("bg-secondary-container", move || matches!(kind, IconButtonKind::FilledTonalToggle) && toggled.get())
-
-                class=("bg-transparent", move || matches!(kind, IconButtonKind::Outlined))
-                class=("bg-transparent", move || matches!(kind, IconButtonKind::OutlinedToggle) && !toggled.get())
+                class=("bg-transparent", container_bg_transparent)
+                class=("bg-primary", container_bg_primary)
+                class=("bg-surface-variant", container_bg_surface_variant)
+                class=("bg-secondary-container", container_bg_secondary_container)
                 class=("bg-inverse-surface", move || matches!(kind, IconButtonKind::OutlinedToggle) && toggled.get())
-
-                class=("border", move || matches!(kind, IconButtonKind::Outlined))
-                class=("border", move || matches!(kind, IconButtonKind::OutlinedToggle) && !toggled.get())
+                class=("border", container_border)
                 class=("border-0", move || matches!(kind, IconButtonKind::OutlinedToggle) && toggled.get())
 
                 class=("invisible", move || disabled.get())
@@ -81,20 +156,9 @@ where
                 id="container-disabled"
                 class="absolute left-0 top-0 z-0 h-full w-full rounded-full border-outline opacity-[.12]"
 
-                class=("bg-transparent", move || matches!(kind, IconButtonKind::Standard))
-                class=("bg-transparent", move || matches!(kind, IconButtonKind::StandardToggle))
-
-                class=("bg-on-surface", move || matches!(kind, IconButtonKind::Filled))
-                class=("bg-on-surface", move || matches!(kind, IconButtonKind::FilledToggle))
-
-                class=("bg-on-surface", move || matches!(kind, IconButtonKind::FilledTonal))
-                class=("bg-on-surface", move || matches!(kind, IconButtonKind::FilledTonalToggle))
-
-                class=("bg-transparent", move || matches!(kind, IconButtonKind::Outlined))
-                class=("bg-transparent", move || matches!(kind, IconButtonKind::OutlinedToggle))
-
-                class=("border", move || matches!(kind, IconButtonKind::Outlined))
-                class=("border", move || matches!(kind, IconButtonKind::OutlinedToggle))
+                class=("bg-transparent", container_disabled_bg_transparent)
+                class=("bg-on-surface", container_disabled_bg_on_surface)
+                class=("border", container_disabled_border)
 
                 class=("invisible", move || !disabled.get())
             >
@@ -105,20 +169,10 @@ where
                 id="icon"
                 class="absolute left-2 top-2 w-6 h-6 z-10"
 
-                class=("text-on-surface-variant", move || matches!(kind, IconButtonKind::Standard))
-                class=("text-on-surface-variant", move || matches!(kind, IconButtonKind::StandardToggle) && !toggled.get())
-                class=("text-primary", move || matches!(kind, IconButtonKind::StandardToggle) && toggled.get())
-
-                class=("text-on-primary", move || matches!(kind, IconButtonKind::Filled))
-                class=("text-primary", move || matches!(kind, IconButtonKind::FilledToggle) && !toggled.get())
-                class=("text-on-primary", move || matches!(kind, IconButtonKind::FilledToggle) && toggled.get())
-
-                class=("text-on-secondary-container", move || matches!(kind, IconButtonKind::FilledTonal))
-                class=("text-on-surface-variant", move || matches!(kind, IconButtonKind::FilledTonalToggle) && !toggled.get())
-                class=("text-on-secondary-container", move || matches!(kind, IconButtonKind::FilledTonalToggle) && toggled.get())
-
-                class=("text-on-surface-variant", move || matches!(kind, IconButtonKind::Outlined))
-                class=("text-on-surface-variant", move || matches!(kind, IconButtonKind::OutlinedToggle) && !toggled.get())
+                class=("text-on-surface-variant", icon_text_on_surface_variant)
+                class=("text-primary", icon_text_primary)
+                class=("text-on-primary", icon_text_on_primary)
+                class=("text-on-secondary-container", icon_text_on_secondary_container)
                 class=("text-inverse-on-surface", move || matches!(kind, IconButtonKind::OutlinedToggle) && toggled.get())
 
                 class=("invisible", move || disabled.get())

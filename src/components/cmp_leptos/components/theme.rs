@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 const CLASS_NAMES: &str = "h-full bg-background text-on-background";
 const STYLE: &str = "color-scheme: $color_scheme";
@@ -17,13 +17,13 @@ pub fn Theme(
     /// - light-high-contrast
     /// - light-medium-contrast
     /// - light
-    #[prop(default = MaybeSignal::Static("light".into()))]
-    theme: MaybeSignal<String>,
+    #[prop(default = Signal::derive(|| "light".into()))]
+    theme: Signal<String>,
 
     /// Свойство CSS color-scheme
-    html_color_scheme: MaybeSignal<String>,
+    html_color_scheme: Signal<String>,
 ) -> impl IntoView {
-    create_effect(move |_| {
+    Effect::new(move |_| {
         let body_element = document().get_element_by_id("body").unwrap();
 
         let theme = theme.get();
@@ -33,6 +33,4 @@ pub fn Theme(
         let style = STYLE.replace("$color_scheme", &html_color_scheme.get());
         body_element.set_attribute("style", &style).unwrap();
     });
-
-    view! {}
 }

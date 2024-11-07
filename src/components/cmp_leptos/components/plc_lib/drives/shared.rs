@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 use crate::components::cmp_plc::plc::library::drives::select_mode::{IHmiCommand, QMode};
 
@@ -6,18 +6,19 @@ use super::super::super::tailwind_mwc::{Button, IconButton, IconButtonKind};
 
 #[component]
 pub fn SelectMode(
-    #[prop(into)] mode: Signal<QMode>,
+    mode: Signal<QMode>,
     #[prop(into)] hmi_permission_mode_man: Signal<bool>,
     #[prop(into)] hmi_permission_mode_auto: Signal<bool>,
     #[prop(into)] hmi_permission_mode_local: Signal<bool>,
     #[prop(into)] hmi_permission_mode_oos: Signal<bool>,
 
-    on_hmi_command: impl Fn(IHmiCommand) + 'static + Copy,
+    on_hmi_command: impl Fn(IHmiCommand) + 'static + Copy + Send + Sync,
 ) -> impl IntoView {
-    let (visible_mode, visible_mode_set) = create_signal(false);
+    let (visible_mode, visible_mode_set) = signal(false);
 
     view! {
         <div class="flex flex-row items-center gap-4">
+
             <div class="grow">Режим работы</div>
 
             <div>
@@ -50,13 +51,13 @@ pub fn SelectMode(
                 <IconButton
                     kind=IconButtonKind::OutlinedToggle
                     icon=|| view! { <span class="iconify material-symbols--more-horiz h-6 w-6"></span> }
-                    disabled=MaybeSignal::derive(move || {
+                    disabled=Signal::derive(move || {
                         !hmi_permission_mode_man.get()
                             && !hmi_permission_mode_auto.get()
                             && !hmi_permission_mode_local.get()
                             && !hmi_permission_mode_oos.get()
                     })
-                    toggled=MaybeSignal::derive(move || visible_mode.get())
+                    toggled=Signal::derive(move || visible_mode.get())
                     on_click= move || visible_mode_set.update(|v| *v = !*v)
                 />
             </div>

@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 /// Тип отображения поля ввода
 pub enum TextFieldKind {
@@ -24,20 +24,19 @@ pub fn TextField(
 ) -> impl IntoView {
     match kind {
         TextFieldKind::Filled => {
-            view! { <md-filled-text-field readOnly=readonly></md-filled-text-field> }
+            view! { <md-filled-text-field readOnly=readonly></md-filled-text-field> }.into_any()
         }
-        TextFieldKind::Outlined => {
-            view! {
-                <md-outlined-text-field
-                    readOnly=readonly
-                    value=move || value.get()
-                    on:click=move |ev| {
-                        let value = event_target_value(&ev);
-                        on_input(&value)
-                    }
-                >
-                </md-outlined-text-field>
-            }
+        TextFieldKind::Outlined => view! {
+            <md-outlined-text-field
+                readOnly=readonly
+                value=move || value.get()
+                on:click=move |ev| {
+                    let value = event_target_value(&ev);
+                    on_input(&value)
+                }
+            >
+            </md-outlined-text-field>
         }
+        .into_any(),
     }
 }

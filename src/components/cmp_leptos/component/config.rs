@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 /// Конфигурация компонента cmp_leptos
 pub struct Config<TView, TIntoView>

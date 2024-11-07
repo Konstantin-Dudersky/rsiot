@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 use rsiot::components::cmp_leptos::components::tailwind_mwc::{Button, ButtonKind};
 use tracing::info;
 
@@ -25,7 +25,7 @@ pub fn ButtonView() -> impl IntoView {
             <div>
                 <Button
                     button_kind = ButtonKind::Filled
-                    icon = || view! {  }
+                    icon = || ()
                     text = "Кнопка"
                     on_click = || info!("Clicked")
                     disabled = false.into()
@@ -43,7 +43,7 @@ pub fn ButtonView() -> impl IntoView {
             <div>
                 <Button
                     button_kind = ButtonKind::Filled
-                    icon = || view! {  }
+                    icon = || ()
                     text = "Кнопка"
                     on_click = || info!("Clicked")
                     disabled = true.into()

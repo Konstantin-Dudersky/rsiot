@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 use crate::components::cmp_plc::plc::library::drives::valve_analog::{
     IHmiCommand, QHmiStatus, QMode,

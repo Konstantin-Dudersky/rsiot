@@ -1,10 +1,10 @@
-use leptos::*;
+use leptos::prelude::*;
 
 use rsiot::components::cmp_leptos::components::{tailwind_mwc::Button, Theme};
 
 #[component]
 pub fn ThemeSwither() -> impl IntoView {
-    let (theme, theme_set) = create_signal("dark".to_string());
+    let (theme, theme_set) = signal("dark".to_string());
 
     view! {
         <Theme theme=theme.into() html_color_scheme="dark".into()/>

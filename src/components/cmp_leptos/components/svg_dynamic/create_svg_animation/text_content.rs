@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 use web_sys::SvgElement;
 
 use super::super::change_svg_prop;

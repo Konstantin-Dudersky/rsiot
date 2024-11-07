@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 /// https://tailwindui.com/components/application-ui/forms/toggles
 #[component]

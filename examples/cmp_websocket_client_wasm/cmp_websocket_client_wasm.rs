@@ -11,11 +11,13 @@ async fn main() {
         executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{example_message::*, example_service::Service},
     };
+    use std::time::Duration;
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
         service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
+        delay_publish: Duration::from_millis(100),
     };
 
     ComponentExecutor::<Custom>::new(executor_config)

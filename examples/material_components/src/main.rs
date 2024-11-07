@@ -6,7 +6,8 @@ mod plc;
 
 use std::time::Duration;
 
-use leptos::*;
+use any_spawner::Executor;
+use leptos::{prelude::*, task::spawn_local};
 use rsiot::{
     components::{cmp_leptos, cmp_plc, cmp_webstorage},
     executor::{ComponentExecutor, ComponentExecutorConfig},
@@ -52,7 +53,7 @@ fn main() -> anyhow::Result<()> {
                 Message::new_custom(Custom::valve_hmi_status(output.valve_hmi_status)),
             ]
         },
-        fb_main: plc::fb_main::FB::new(),
+        fb_main: plc::fb_main::FB::new(Duration::from_millis(500)),
         period: Duration::from_millis(500),
         retention: None,
     };
@@ -72,6 +73,8 @@ fn main() -> anyhow::Result<()> {
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
     };
+
+    Executor::init_wasm_bindgen().expect("executor should only be initialized once");
 
     let context = LocalSet::new();
 

@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 use crate::components::cmp_leptos::components::MaterialTheme;
 #[cfg(feature = "cmp_plc")]

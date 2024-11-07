@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::{html, prelude::*};
 
 /// [Документация](https://material-web.dev/components/dialog/#interactive-demo)
 ///

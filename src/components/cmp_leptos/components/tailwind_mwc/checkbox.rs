@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 #[component]
 pub fn Checkbox(
@@ -10,6 +10,5 @@ pub fn Checkbox(
         on:change = move |_| on_change()
         checked = move || checked.get()
         />
-
     }
 }

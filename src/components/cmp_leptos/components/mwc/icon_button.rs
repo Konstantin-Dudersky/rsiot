@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 /// Вид кнопки
 #[allow(missing_docs)]
@@ -32,56 +32,52 @@ pub fn IconButton(
     children: Children,
 ) -> impl IntoView {
     match kind {
-        IconButtonKind::Icon => {
-            view! {
-                <md-icon-button
-                    on:click=move |_| (clicked)()
-                    disabled=move || disabled.get()
-                    selected=move || selected.get()
-                    toggle=toggle
-                >
-                    {children()}
-                </md-icon-button>
-            }
+        IconButtonKind::Icon => view! {
+            <md-icon-button
+                on:click=move |_| (clicked)()
+                disabled=move || disabled.get()
+                selected=move || selected.get()
+                toggle=toggle
+            >
+                {children()}
+            </md-icon-button>
         }
+        .into_any(),
 
-        IconButtonKind::FilledIcon => {
-            view! {
-                <md-filled-icon-button
-                    on:click=move |_| (clicked)()
-                    disabled=move || disabled.get()
-                    selected=move || selected.get()
-                    toggle=toggle
-                >
-                    {children()}
-                </md-filled-icon-button>
-            }
+        IconButtonKind::FilledIcon => view! {
+            <md-filled-icon-button
+                on:click=move |_| (clicked)()
+                disabled=move || disabled.get()
+                selected=move || selected.get()
+                toggle=toggle
+            >
+                {children()}
+            </md-filled-icon-button>
         }
+        .into_any(),
 
-        IconButtonKind::FilledTonalIcon => {
-            view! {
-                <md-filled-tonal-icon-button
-                    on:click=move |_| (clicked)()
-                    disabled=move || disabled.get()
-                    selected=move || selected.get()
-                    toggle=toggle
-                >
-                    {children()}
-                </md-filled-tonal-icon-button>
-            }
+        IconButtonKind::FilledTonalIcon => view! {
+            <md-filled-tonal-icon-button
+                on:click=move |_| (clicked)()
+                disabled=move || disabled.get()
+                selected=move || selected.get()
+                toggle=toggle
+            >
+                {children()}
+            </md-filled-tonal-icon-button>
         }
+        .into_any(),
 
-        IconButtonKind::OutlinedIcon => {
-            view! {
-                <md-outlined-icon-button
-                    on:click=move |_| (clicked)()
-                    disabled=move || disabled.get()
-                    selected=move || selected.get()
-                    toggle=toggle
-                >
-                    {children()}
-                </md-outlined-icon-button>
-            }
+        IconButtonKind::OutlinedIcon => view! {
+            <md-outlined-icon-button
+                on:click=move |_| (clicked)()
+                disabled=move || disabled.get()
+                selected=move || selected.get()
+                toggle=toggle
+            >
+                {children()}
+            </md-outlined-icon-button>
         }
+        .into_any(),
     }
 }

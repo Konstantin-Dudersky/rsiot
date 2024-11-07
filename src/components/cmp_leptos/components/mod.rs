@@ -2,7 +2,7 @@
 
 mod go2rtc;
 mod material_theme;
-pub mod mwc;
+// pub mod mwc;
 pub mod svg_dynamic;
 pub mod tailwind;
 pub mod tailwind_mwc;

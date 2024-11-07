@@ -1,5 +1,5 @@
 use gloo::storage::{LocalStorage, Storage};
-use leptos::*;
+use leptos::prelude::*;
 use tokio::task::JoinSet;
 use tracing::debug;
 
@@ -22,21 +22,26 @@ where
     TView: Fn() -> TIntoView + 'static,
     TIntoView: IntoView,
 {
-    provide_context(GlobalState::<TMsg> {
+    let gs = GlobalState::<TMsg> {
         hostname: config.hostname,
-        input: create_rw_signal(None),
-        output: create_rw_signal(None),
+        input: RwSignal::new(None),
+        output: RwSignal::new(None),
         cache: in_out.cache.clone(),
-        auth_perm: create_rw_signal(AuthPermissions::NoAccess),
-    });
-    let gs = use_context::<GlobalState<TMsg>>().expect("No global state");
+        auth_perm: RwSignal::new(AuthPermissions::NoAccess),
+    };
 
-    mount_to_body(config.body_component);
+    // Монтируем корневой компонент
+    let gs_clone = gs.clone();
+    mount_to_body(move || {
+        view! {
+            <RootComponent body_component = config.body_component global_state=gs_clone />
+        }
+    });
     debug!("Leptos app mounted");
 
     let mut task_set: JoinSet<Result> = JoinSet::new();
     task_set.spawn_local(task_input(in_out.clone(), gs.clone()));
-    task_set.spawn_local(task_output(in_out, gs));
+    task_set.spawn_local(task_output(in_out, gs.clone()));
     while let Some(task_result) = task_set.join_next().await {
         task_result??
     }
@@ -45,7 +50,7 @@ where
 
 async fn task_input<TMsg>(mut input: CmpInOut<TMsg>, global_state: GlobalState<TMsg>) -> Result
 where
-    TMsg: MsgDataBound,
+    TMsg: MsgDataBound + 'static,
 {
     while let Ok(msg) = input.recv_input().await {
         // Разрешения
@@ -66,9 +71,9 @@ where
     Ok(())
 }
 
-async fn task_output<TMsg>(output: CmpInOut<TMsg>, gs: GlobalState<TMsg>) -> Result
+async fn task_output<TMsg>(output: CmpInOut<TMsg>, global_state: GlobalState<TMsg>) -> Result
 where
-    TMsg: MsgDataBound,
+    TMsg: MsgDataBound + 'static,
 {
     if let Some(msg) = try_to_find_token() {
         output.send_output(msg).await.map_err(Error::CmpOutput)?;
@@ -76,8 +81,8 @@ where
 
     let (tx, mut rx) = tokio::sync::mpsc::channel(100);
 
-    create_effect(move |_| {
-        let msg = gs.output.get();
+    Effect::new(move |_| {
+        let msg = global_state.output.get();
         if let Some(msg) = msg {
             tx.blocking_send(msg)
                 .map_err(|e| Error::TokioMpscSend(e.to_string()))?;
@@ -107,5 +112,23 @@ where
             Some(msg)
         }
         _ => None,
+    }
+}
+
+/// Корневой компонент
+#[component]
+fn RootComponent<TMsg, TView, TIntoView>(
+    body_component: TView,
+    global_state: GlobalState<TMsg>,
+) -> impl IntoView
+where
+    TMsg: MsgDataBound + 'static,
+    TView: Fn() -> TIntoView,
+    TIntoView: IntoView,
+{
+    provide_context(global_state);
+
+    view! {
+        { body_component() }
     }
 }

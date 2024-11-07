@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 use web_sys::SvgElement;
 
 use crate::components::cmp_plc::plc::library::drives::valve::{QHmiStatus, QState};

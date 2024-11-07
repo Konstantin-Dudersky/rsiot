@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 
 /// Вид отображения карточки
 #[allow(missing_docs)]
