@@ -8,8 +8,9 @@ use tokio::{
 use tracing::warn;
 
 use crate::{
-    drivers_i2c::{postcard_serde, I2cSlaveAddress, RsiotI2cDriverBase},
+    drivers_i2c::{I2cSlaveAddress, RsiotI2cDriverBase},
     message::{Message, MsgDataBound},
+    serde_utils::postcard_serde,
 };
 
 use super::super::config::FnOutput;

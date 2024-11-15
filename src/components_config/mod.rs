@@ -36,3 +36,6 @@ pub mod timescaledb;
 
 #[cfg(feature = "cmp_websocket_server")]
 pub mod websocket_server;
+
+#[cfg(any(feature = "cmp_esp", feature = "cmp_linux_serial_master",))]
+pub mod uart_general;

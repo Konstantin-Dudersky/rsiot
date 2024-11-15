@@ -1,4 +1,4 @@
-use crate::{components::shared_tasks, drivers_i2c::postcard_serde};
+use crate::{components::shared_tasks, serde_utils::postcard_serde};
 
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]

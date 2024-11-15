@@ -3,7 +3,10 @@ use std::{sync::Arc, time::Duration};
 use tokio::sync::{Mutex, MutexGuard};
 use tracing::warn;
 
-use crate::drivers_i2c::{postcard_serde, I2cSlaveAddress, RsiotI2cDriverBase};
+use crate::{
+    drivers_i2c::{I2cSlaveAddress, RsiotI2cDriverBase},
+    serde_utils::postcard_serde,
+};
 
 use super::{I2cRequest, I2cResponse, TaskInput, TaskOutput};
 

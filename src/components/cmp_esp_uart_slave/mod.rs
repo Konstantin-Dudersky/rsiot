@@ -1,12 +1,13 @@
-//! HTTP-сервер в микроконтроллере ESP32
+//! Шаблон компонента
 
 mod component;
 mod config;
 mod error;
 mod fn_process;
+mod tasks;
 
 pub use component::Cmp;
-pub use config::{Config, ConfigCmpPlcData};
+pub use config::*;
 pub use error::Error;
 
 type Result<T> = std::result::Result<T, Error>;

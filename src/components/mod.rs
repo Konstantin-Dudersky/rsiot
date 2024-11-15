@@ -48,6 +48,10 @@ pub mod cmp_esp_spi_master;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
+pub mod cmp_esp_uart_slave;
+
+#[cfg(feature = "cmp_esp")]
+#[cfg(riscv32imc_esp_espidf)]
 pub mod cmp_esp_wifi;
 
 pub mod cmp_external_fn_process;
@@ -89,6 +93,10 @@ pub mod cmp_inject_periodic;
 #[cfg(feature = "cmp_leptos")]
 #[cfg(wasm32_unknown_unknown)]
 pub mod cmp_leptos;
+
+#[cfg(feature = "cmp_linux_serial_master")]
+#[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
+pub mod cmp_linux_serial_master;
 
 pub mod cmp_logger;
 

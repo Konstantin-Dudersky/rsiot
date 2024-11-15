@@ -3,7 +3,7 @@
 use std::fmt::Debug;
 
 use crc::{Crc, Digest, Table, CRC_32_ISCSI};
-use postcard::{from_bytes, from_bytes_crc32, to_stdvec, to_stdvec_crc32};
+use postcard::{from_bytes, from_bytes_crc32, to_slice_crc32, to_stdvec, to_stdvec_crc32};
 use serde::{de::DeserializeOwned, Serialize};
 
 /// Длина сообщения
@@ -11,15 +11,15 @@ pub const MESSAGE_LEN: usize = 32;
 
 const CRC_DIGEST: Digest<u32, Table<1>> = Crc::<u32>::new(&CRC_32_ISCSI).digest();
 
-/// Сериализация данных в формат Postcars
-pub fn serialize<T>(data: &T) -> Result<Vec<u8>, Error>
+/// Сериализация данных в формат Postcard
+pub fn serialize<T>(data: &T) -> Result<[u8; MESSAGE_LEN], Error>
 where
     T: Debug + Serialize,
 {
-    serialize_crc(data)
+    serialize_crc_new(data)
 }
 
-/// Сериализация данных в формат Postcars
+/// Сериализация данных в формат Postcard
 pub fn serialize_nocrc<T>(data: &T) -> Result<Vec<u8>, Error>
 where
     T: Debug + Serialize,
@@ -36,7 +36,8 @@ where
     Ok(buffer)
 }
 
-/// Сериализация данных в формат Postcars
+/// Сериализация данных в формат Postcard
+#[deprecated]
 pub fn serialize_crc<T>(data: &T) -> Result<Vec<u8>, Error>
 where
     T: Debug + Serialize,
@@ -49,6 +50,23 @@ where
         });
     }
     buffer.resize(MESSAGE_LEN, 0xFF);
+
+    Ok(buffer)
+}
+
+/// Сериализация данных в формат Postcard
+pub fn serialize_crc_new<T>(data: &T) -> Result<[u8; MESSAGE_LEN], Error>
+where
+    T: Debug + Serialize,
+{
+    let mut buffer = [0xFF; MESSAGE_LEN];
+    let _ = to_slice_crc32(data, &mut buffer, CRC_DIGEST).map_err(Error::SerializationError)?;
+
+    if buffer.len() > MESSAGE_LEN {
+        return Err(Error::BufferTooLarge {
+            buffer_len: buffer.len(),
+        });
+    }
 
     Ok(buffer)
 }

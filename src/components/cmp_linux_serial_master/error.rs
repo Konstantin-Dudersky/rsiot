@@ -1,4 +1,3 @@
-use crate::serde_utils::postcard_serde;
 use crate::{components::shared_tasks, executor::ComponentError};
 
 #[allow(missing_docs)]
@@ -16,26 +15,17 @@ pub enum Error {
     #[error("TokioTaskJoin: {0}")]
     TokioTaskJoin(#[from] tokio::task::JoinError),
 
-    #[error(transparent)]
-    Postcard(#[from] postcard_serde::Error),
-
-    #[error("Error in fn_i2c_comm function: {0}")]
-    FnI2cComm(anyhow::Error),
-
-    #[error("Error writing to I2C buffer: {0}")]
-    WritingToI2cBuffer(esp_idf_hal::sys::EspError),
-
-    #[error("Error reading from I2C buffer: {0}")]
-    ReadingFromI2cBuffer(esp_idf_hal::sys::EspError),
+    #[error("TaskEndUartComm")]
+    TaskEndUartComm,
 
     #[error(transparent)]
     TaskFilterIdenticalData(shared_tasks::filter_identical_data::Error),
 
-    #[error("{0}")]
-    TaskOutput(String),
+    #[error(transparent)]
+    TaskMpscToMsgBus(shared_tasks::mpsc_to_msg_bus::Error),
 
     #[error(transparent)]
-    TaskToMsgBus(shared_tasks::mpsc_to_msg_bus::Error),
+    UartRead(serialport::Error),
 }
 
 impl From<Error> for ComponentError {

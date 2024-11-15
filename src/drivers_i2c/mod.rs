@@ -9,7 +9,6 @@ pub mod pcf8523;
 mod pcf8575;
 pub mod pm_di16;
 pub mod pm_rq8;
-pub mod postcard_serde;
 pub mod ssd1306;
 
 mod i2c_devices;

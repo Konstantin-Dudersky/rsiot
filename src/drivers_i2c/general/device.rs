@@ -5,9 +5,8 @@ use tokio::sync::Mutex;
 use tracing::warn;
 
 use crate::{
-    drivers_i2c::{postcard_serde, RsiotI2cDriverBase},
-    executor::CmpInOut,
-    message::MsgDataBound,
+    drivers_i2c::RsiotI2cDriverBase, executor::CmpInOut, message::MsgDataBound,
+    serde_utils::postcard_serde,
 };
 
 use super::Config;

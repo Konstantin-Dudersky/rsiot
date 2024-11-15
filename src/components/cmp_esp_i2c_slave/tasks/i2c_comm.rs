@@ -9,7 +9,7 @@ use serde::{de::DeserializeOwned, Serialize};
 use tokio::sync::Mutex;
 use tracing::{trace, warn};
 
-use crate::{components::cmp_esp_i2c_slave::FnI2cComm, drivers_i2c::postcard_serde};
+use crate::{components::cmp_esp_i2c_slave::FnI2cComm, serde_utils::postcard_serde};
 
 pub struct I2cComm<TI2cRequest, TI2cResponse, TBufferData> {
     pub i2c_slave: I2cSlaveDriver<'static>,

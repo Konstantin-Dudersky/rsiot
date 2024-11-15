@@ -166,3 +166,5 @@ pub mod logging;
 
 #[cfg(feature = "rustdoc")]
 pub mod doc;
+
+pub mod serde_utils;

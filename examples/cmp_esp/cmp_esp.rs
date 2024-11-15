@@ -68,6 +68,7 @@ async fn main() {
             let msg = Message::deserialize(text)?;
             Ok(Some(msg))
         },
+        cmp_plc: |_| cmp_http_server_esp::ConfigCmpPlcData::NoData,
     };
 
     // cmp_logger ----------------------------------------------------------------------------------
