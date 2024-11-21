@@ -2,8 +2,6 @@
 
 pub mod change_mpsc_msg;
 pub mod filter_identical_data;
-pub mod mpsc_to_msg_bus;
-pub mod msg_bus_to_mpsc;
-
-pub use filter_identical_data::FilterIdenticalData;
-pub use mpsc_to_msg_bus::MpscToMsgBus;
+pub mod mpsc_to_msgbus;
+pub mod msgbus_to_broadcast;
+pub mod msgbus_to_mpsc;

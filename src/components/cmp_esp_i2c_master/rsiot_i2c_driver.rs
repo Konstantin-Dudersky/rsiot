@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use async_trait::async_trait;
-use esp_idf_hal::delay::TickType;
+use esp_idf_svc::hal::delay::TickType;
 use esp_idf_svc::hal::i2c::I2cDriver;
 
 use crate::drivers_i2c::RsiotI2cDriverBase;

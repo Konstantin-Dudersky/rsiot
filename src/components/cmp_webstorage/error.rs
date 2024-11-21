@@ -24,11 +24,11 @@ pub enum Error {
 
     // Ошибки в задачах ----------------------------------------------------------------------------
     #[error(transparent)]
-    TaskMsgBusToMpsc(shared_tasks::msg_bus_to_mpsc::Error),
+    TaskMsgBusToMpsc(shared_tasks::msgbus_to_mpsc::Error),
 
     #[error("TaskInput")]
     TaskEndInput,
 
     #[error(transparent)]
-    TaskMpscToMsgBus(shared_tasks::mpsc_to_msg_bus::Error),
+    TaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus::Error),
 }

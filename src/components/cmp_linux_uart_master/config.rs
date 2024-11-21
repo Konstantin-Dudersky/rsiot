@@ -1,12 +1,10 @@
 use std::time::Duration;
 
-use crate::components_config::uart_general::*;
-use crate::message::{Message, MsgDataBound};
+use crate::components_config::{uart_general::*, uart_master::DeviceTrait};
+use crate::message::MsgDataBound;
 
-use super::devices::TestDevice;
-
-/// Конфигурация cmp_linux_uart
-#[derive(Clone, Debug)]
+/// Конфигурация cmp_linux_uart_master
+#[derive(Debug)]
 pub struct Config<TMsg>
 where
     TMsg: MsgDataBound,
@@ -26,29 +24,35 @@ where
     /// Кол-во стоповых бит
     pub stop_bits: StopBits,
 
-    /// Задержка перед чтением буфера после записи
+    /// Задержка после записи в порт.
     ///
-    /// Чем выше скорость, тем меньшую задержку можно ставить
+    /// По-умолчанию можно задать 50ms.
     ///
-    /// Чем больше размер посылки, тем большую задержку нужно ставить
-    pub delay_between_write_and_read: Duration,
+    /// Если задержку не делать, то подчиненные устройства могут не успеть ответить.
+    pub wait_after_write: Duration,
+
+    /// Название чипа gpio в системе.
+    ///
+    /// Примеры:
+    ///
+    /// ```rust
+    /// gpio_chip: "/dev/gpiochip0"
+    /// ```
+    pub gpio_chip: &'static str,
+
+    /// Номер пина для сигнала RTS (ready to send).
+    ///
+    /// Примеры:
+    ///
+    /// ```rust
+    /// // На raspberry pi 17 пин - 11 физ. вывод на гребенке
+    /// pin_rts: 17
+    /// ```
+    pub pin_rts: u32,
 
     /// TODO - переделать на вектор универсальных устройств
-    pub devices: Vec<TestDevice<TMsg>>,
-
-    /// # Пример
-    ///
-    /// ```rust
-    /// fn_input: |_| None
-    /// ```
-    pub fn_input: fn(Message<TMsg>) -> Option<String>,
-
-    /// # Пример
-    ///
-    /// ```rust
-    /// fn_output: |_| vec![]
-    /// ```
-    pub fn_output: fn(String) -> Vec<Message<TMsg>>,
+    // pub devices: Vec<TestDevice<TMsg>>,
+    pub devices: Vec<Box<dyn DeviceTrait<TMsg>>>,
 }
 
 impl<TMsg> Default for Config<TMsg>
@@ -62,10 +66,10 @@ where
             data_bits: DataBits::default(),
             parity: Parity::default(),
             stop_bits: StopBits::default(),
-            delay_between_write_and_read: Duration::from_millis(100),
-            fn_input: |_| None,
-            fn_output: |_| vec![],
             devices: vec![],
+            wait_after_write: Duration::from_millis(50),
+            gpio_chip: "/dev/gpiochip0",
+            pin_rts: 17,
         }
     }
 }

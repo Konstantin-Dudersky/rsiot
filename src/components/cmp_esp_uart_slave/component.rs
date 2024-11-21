@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use esp_idf_hal::{peripheral::Peripheral, uart::Uart};
+use esp_idf_svc::hal::{peripheral::Peripheral, uart::Uart};
 
 use crate::{
     executor::{CmpInOut, CmpResult, Component, IComponentProcess},

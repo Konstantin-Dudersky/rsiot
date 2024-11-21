@@ -1,6 +1,6 @@
 use std::{fmt::Debug, sync::Arc};
 
-use esp_idf_hal::{
+use esp_idf_svc::hal::{
     i2c::{I2c, I2cSlaveConfig, I2cSlaveDriver},
     peripheral::Peripheral,
 };
@@ -86,7 +86,7 @@ where
     join_set_spawn(&mut task_set, task.spawn());
 
     // Фильтрация исходящих сообщений
-    let task = shared_tasks::FilterIdenticalData {
+    let task = shared_tasks::filter_identical_data::FilterIdenticalData {
         input: channel_buffer_to_filter_recv,
         output: channel_filter_to_output_send,
     };
@@ -96,7 +96,7 @@ where
     );
 
     // Пересылка сообщений на выход компонента
-    let task = shared_tasks::MpscToMsgBus {
+    let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
         input: channel_filter_to_output_recv,
         cmp_in_out: msg_bus.clone(),
     };

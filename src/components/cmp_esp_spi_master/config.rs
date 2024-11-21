@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use esp_idf_hal::gpio::AnyIOPin;
+use esp_idf_svc::hal::gpio::AnyIOPin;
 use esp_idf_svc::hal::{
     peripheral::Peripheral,
     spi::{Spi, SpiDeviceDriver, SpiDriver},

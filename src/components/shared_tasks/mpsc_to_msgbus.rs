@@ -3,7 +3,7 @@
 use tokio::sync::mpsc;
 
 use crate::{
-    executor::CmpInOut,
+    executor::{CmpInOut, ComponentError},
     message::{Message, MsgDataBound},
 };
 
@@ -26,7 +26,7 @@ where
     /// Запуск на выполнение
     pub async fn spawn(mut self) -> Result<(), Error> {
         while let Some(msg) = self.input.recv().await {
-            self.cmp_in_out.send_output(msg).await.unwrap();
+            self.cmp_in_out.send_output(msg).await?;
         }
         Ok(())
     }
@@ -34,4 +34,7 @@ where
 
 #[allow(missing_docs)]
 #[derive(thiserror::Error, Debug)]
-pub enum Error {}
+pub enum Error {
+    #[error(transparent)]
+    Component(#[from] ComponentError),
+}

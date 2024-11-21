@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use esp_idf_hal::{gpio::AnyIOPin, i2c::I2c, peripheral::Peripheral};
+use esp_idf_svc::hal::{gpio::AnyIOPin, i2c::I2c, peripheral::Peripheral};
 
 use crate::{drivers_i2c::I2cDevices, message::MsgDataBound};
 

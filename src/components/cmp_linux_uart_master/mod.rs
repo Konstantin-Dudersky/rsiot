@@ -27,18 +27,14 @@
 
 mod component;
 mod config;
-pub mod devices;
 mod error;
 mod fn_process;
 mod tasks;
 
 pub use crate::components_config::uart_general::*;
+pub use crate::components_config::uart_master::devices;
 pub use component::Cmp;
 pub use config::*;
 pub use error::Error;
 
-use crate::serde_utils::postcard_serde;
-
 type Result<T> = std::result::Result<T, Error>;
-
-type UartMessageRaw = [u8; postcard_serde::MESSAGE_LEN];

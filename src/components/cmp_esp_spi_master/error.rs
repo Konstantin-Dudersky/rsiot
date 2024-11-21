@@ -16,7 +16,7 @@ pub enum Error {
     TokioTaskJoin(#[from] tokio::task::JoinError),
 
     #[error(transparent)]
-    TaskMpscToMsgBus(shared_tasks::mpsc_to_msg_bus::Error),
+    TaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus::Error),
 
     #[error(transparent)]
     TaskFilter(shared_tasks::filter_identical_data::Error),

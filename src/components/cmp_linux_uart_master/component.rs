@@ -15,11 +15,11 @@ where
 {
     async fn process(&self, config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> CmpResult {
         let in_out =
-            msg_bus.clone_with_new_id("cmp_linux_serial_master", AuthPermissions::FullAccess);
+            msg_bus.clone_with_new_id("cmp_linux_uart_master", AuthPermissions::FullAccess);
         fn_process(config, in_out).await?;
         Ok(())
     }
 }
 
-/// Компонент cmp_linux_serial_master
+/// Компонент cmp_linux_uart_master
 pub type Cmp<TMsg> = Component<Config<TMsg>, TMsg>;

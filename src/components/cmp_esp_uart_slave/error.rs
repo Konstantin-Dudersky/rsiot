@@ -1,4 +1,4 @@
-use crate::executor::ComponentError;
+use crate::{components::shared_tasks, executor::ComponentError};
 
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
@@ -17,6 +17,15 @@ pub enum Error {
 
     #[error("FnUartComm: {0}")]
     FnUartComm(anyhow::Error),
+
+    #[error("TaskOutput: {0}")]
+    TaskOutput(String),
+
+    #[error("TaskFilterIdenticalData: {0}")]
+    TaskFilterIdenticalData(shared_tasks::filter_identical_data::Error),
+
+    #[error("TaskMpscToMsgbus: {0}")]
+    TaskMpscToMsgbus(shared_tasks::mpsc_to_msgbus::Error),
 }
 
 impl From<Error> for ComponentError {

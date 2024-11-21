@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 
 use async_trait::async_trait;
-use esp_idf_hal::{i2c::I2c, peripheral::Peripheral};
+use esp_idf_svc::hal::{i2c::I2c, peripheral::Peripheral};
 use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{

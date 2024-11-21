@@ -10,7 +10,7 @@ pub enum Error {
     TaskI2cComm,
 
     #[error(transparent)]
-    TaskMsgBusToMpsc(#[from] shared_tasks::msg_bus_to_mpsc::Error),
+    TaskMsgBusToMpsc(#[from] shared_tasks::msgbus_to_mpsc::Error),
 
     #[error("TaskOutput")]
     TaskOutput,

@@ -69,7 +69,7 @@ where
         join_set_spawn(&mut task_set, task.spawn());
 
         // Фильтрация одинаковых сообщений
-        let task = shared_tasks::FilterIdenticalData {
+        let task = shared_tasks::filter_identical_data::FilterIdenticalData {
             input: ch_output_to_filter_recv,
             output: ch_filter_to_msgbus_send,
         };
@@ -79,7 +79,7 @@ where
         );
 
         // Отправка исходящих сообщений
-        let task = shared_tasks::MpscToMsgBus {
+        let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
             input: ch_filter_to_msgbus_recv,
             cmp_in_out: self.msg_bus,
         };

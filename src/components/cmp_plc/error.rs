@@ -18,7 +18,7 @@ pub enum Error {
     TokioTaskJoin(#[from] tokio::task::JoinError),
 
     #[error(transparent)]
-    ToCmpOutput(#[from] shared_tasks::mpsc_to_msg_bus::Error),
+    ToCmpOutput(#[from] shared_tasks::mpsc_to_msgbus::Error),
 }
 
 impl From<Error> for ComponentError {

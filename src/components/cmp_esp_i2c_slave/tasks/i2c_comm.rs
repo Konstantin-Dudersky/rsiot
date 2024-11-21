@@ -1,6 +1,6 @@
 use std::{fmt::Debug, sync::Arc, thread::sleep, time::Duration};
 
-use esp_idf_hal::{
+use esp_idf_svc::hal::{
     delay::{TickType, BLOCK},
     i2c::I2cSlaveDriver,
     sys::{i2c_reset_rx_fifo, i2c_reset_tx_fifo, TickType_t},

@@ -3,30 +3,34 @@ use std::time::Duration;
 
 use serde::{de::DeserializeOwned, Serialize};
 use tokio::{sync::mpsc, time::sleep};
-use tracing::info;
+use tracing::trace;
 
-use crate::components_config::uart_general::UartMessage;
+use super::{Buffer, UartMessage, UartMessageRaw};
 
-use super::super::super::super::UartMessageRaw;
-
-pub struct PeriodicRequest<TRequest> {
+pub struct PeriodicRequest<TRequest, TBuffer> {
     pub address: u8,
+    pub buffer: Buffer<TBuffer>,
     pub period: Duration,
-    pub request: TRequest,
+    pub request: fn(&TBuffer) -> TRequest,
     pub ch_tx_device_to_uart: mpsc::Sender<UartMessageRaw>,
 }
 
-impl<TRequest> PeriodicRequest<TRequest>
+impl<TRequest, TBuffer> PeriodicRequest<TRequest, TBuffer>
 where
     TRequest: Clone + Debug + DeserializeOwned + Send + Sync + Serialize,
 {
-    pub async fn spawn(self) {
+    pub async fn spawn(self) -> super::Result<()> {
         loop {
+            let request = {
+                let mut buffer = self.buffer.lock().await;
+                (self.request)(&mut buffer)
+            };
+
             let request = UartMessage {
                 address: self.address,
-                payload: self.request.clone(),
+                payload: request,
             };
-            info!("Request: {:?}", request);
+            trace!("Request: {:?}", request);
 
             let uart_message_raw = request.serialize().unwrap();
 

@@ -22,10 +22,13 @@ pub enum Error {
     TaskFilterIdenticalData(shared_tasks::filter_identical_data::Error),
 
     #[error(transparent)]
-    TaskMpscToMsgBus(shared_tasks::mpsc_to_msg_bus::Error),
+    TaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus::Error),
+
+    #[error("UartRead: {0}")]
+    UartRead(String),
 
     #[error(transparent)]
-    UartRead(serialport::Error),
+    TaskMsgbusToBroadcast(shared_tasks::msgbus_to_broadcast::Error),
 }
 
 impl From<Error> for ComponentError {

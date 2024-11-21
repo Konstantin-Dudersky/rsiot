@@ -1,9 +1,17 @@
-use esp_idf_hal::{uart, units::Hertz};
+use std::time::Duration;
+
 use esp_idf_svc::hal::{gpio::AnyIOPin, peripheral::Peripheral, uart::Uart};
+use esp_idf_svc::hal::{uart, units::Hertz};
 
 use crate::message::{Message, MsgDataBound};
 
 pub use crate::components_config::uart_general::*;
+
+/// Функция преобразования входных сообщений в данные для передачи I2C
+pub type TFnInput<TMsg, TBufferData> = fn(&Message<TMsg>, &mut TBufferData);
+
+/// Функция для преобразования полученных данных I2C в исходящие сообщения
+pub type TFnOutput<TMsg, TBufferData> = fn(&TBufferData) -> Vec<Message<TMsg>>;
 
 /// Функция для работы коммуникации I2C
 pub type TFnUartComm<TRequest, TResponse, TBufferData> =
@@ -26,6 +34,7 @@ where
     /// Пример:
     ///
     /// ```rust
+    /// // Лучше использовать UART1, поскольку в UART0 могут выводиться логи
     /// uart: peripherals.uart1
     /// ```
     pub uart: TUart,
@@ -48,6 +57,9 @@ where
     /// ```
     pub pin_tx: AnyIOPin,
 
+    /// Пин RTS запроса на передачу
+    pub pin_rts: AnyIOPin,
+
     /// Скорость сетевого обмена
     pub baudrate: Baudrate,
 
@@ -63,22 +75,25 @@ where
     /// Структура для хранения буферных данных
     pub buffer_data_default: TBufferData,
 
-    /// Функция коммуникации по UART
-    pub fn_uart_comm: TFnUartComm<TRequest, TResponse, TBufferData>,
-
-    /// # Пример
+    /// Функция преобразования входных сообщений в данные для передачи по UART
     ///
     /// ```rust
     /// fn_input: |_| None
     /// ```
-    pub fn_input: fn(Message<TMsg>) -> Option<String>,
+    pub fn_input: TFnInput<TMsg, TBufferData>,
 
-    /// # Пример
+    /// Функция коммуникации по UART
+    pub fn_uart_comm: TFnUartComm<TRequest, TResponse, TBufferData>,
+
+    /// Функция для преобразования полученных данных UART в исходящие сообщения.
     ///
     /// ```rust
     /// fn_output: |_| vec![]
     /// ```
-    pub fn_output: fn(String) -> Vec<Message<TMsg>>,
+    pub fn_output: TFnOutput<TMsg, TBufferData>,
+
+    /// Периодичность генерирования исходящих сообщений
+    pub fn_output_period: Duration,
 }
 
 impl From<Baudrate> for Hertz {

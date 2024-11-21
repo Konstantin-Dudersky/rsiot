@@ -6,8 +6,8 @@ use leptos::prelude::*;
 #[component]
 pub fn Go2rtc<'a>(
     /// Адрес хоста, на котором развернут сервис go2rtc; по-умолчанию `localhost`
-    #[prop(default = "localhost")]
-    hostname: &'a str,
+    #[prop(default = String::from("localhost"))]
+    hostname: String,
 
     /// Порт сервиса, по-умолчанию 1984
     #[prop(default = 1984)]

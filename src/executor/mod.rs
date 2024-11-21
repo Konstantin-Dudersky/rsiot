@@ -7,6 +7,7 @@
 //! ```
 
 mod cache;
+mod check_capacity;
 mod cmp_in_out;
 mod component;
 mod component_executor;
@@ -19,6 +20,7 @@ mod types;
 mod test;
 
 pub use cache::Cache;
+pub use check_capacity::CheckCapacity;
 pub use cmp_in_out::CmpInOut;
 pub use component::{Component, IComponentProcess};
 pub use component_executor::{ComponentExecutor, ComponentExecutorConfig};

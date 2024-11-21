@@ -1,10 +1,10 @@
 use std::sync::Arc;
 
-use esp_idf_hal::{
+use esp_idf_svc::hal::{i2c, units::FromValueType};
+use esp_idf_svc::hal::{
     i2c::{I2c, I2cDriver},
     peripheral::Peripheral,
 };
-use esp_idf_svc::hal::{i2c, units::FromValueType};
 use tokio::{sync::Mutex, task::JoinSet};
 
 use crate::{

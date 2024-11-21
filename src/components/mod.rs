@@ -94,9 +94,9 @@ pub mod cmp_inject_periodic;
 #[cfg(wasm32_unknown_unknown)]
 pub mod cmp_leptos;
 
-#[cfg(feature = "cmp_linux_serial_master")]
+#[cfg(feature = "cmp_linux_uart_master")]
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
-pub mod cmp_linux_serial_master;
+pub mod cmp_linux_uart_master;
 
 pub mod cmp_logger;
 

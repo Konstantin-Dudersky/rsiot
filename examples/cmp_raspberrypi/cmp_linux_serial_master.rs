@@ -12,18 +12,18 @@
 //! ./cmp_linux_serial_master
 //! ```
 
-#[cfg(feature = "cmp_linux_serial_master")]
+#[cfg(feature = "cmp_linux_uart_master")]
 #[tokio::main]
 async fn main() {
     use std::time::Duration;
 
     use rsiot::{
         components::{
-            cmp_linux_serial_master::{self, devices::TestDevice},
+            cmp_linux_uart_master::{self, devices::test_device},
             cmp_logger,
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_service::Service, Message, MsgDataBound},
+        message::{example_service::Service, MsgDataBound},
     };
     use serde::{Deserialize, Serialize};
     use tracing::Level;
@@ -49,19 +49,20 @@ async fn main() {
     };
 
     // cmp_linux_uart ------------------------------------------------------------------------------
-    let var_name = cmp_linux_serial_master::Config {
+    let var_name = cmp_linux_uart_master::Config {
         port: "/dev/ttyAMA0",
-        baudrate: cmp_linux_serial_master::Baudrate::_115_200,
-        data_bits: cmp_linux_serial_master::DataBits::_8,
-        stop_bits: cmp_linux_serial_master::StopBits::_1,
-        parity: cmp_linux_serial_master::Parity::None,
-        delay_between_write_and_read: Duration::from_millis(10),
-        fn_input: |_| None,
-        fn_output: |_| vec![],
-        devices: vec![TestDevice {
+        baudrate: cmp_linux_uart_master::Baudrate::_115_200,
+        data_bits: cmp_linux_uart_master::DataBits::_8,
+        stop_bits: cmp_linux_uart_master::StopBits::_1,
+        parity: cmp_linux_uart_master::Parity::None,
+        wait_after_write: Duration::from_millis(50),
+        gpio_chip: "/dev/gpiochip0",
+        pin_rts: 17,
+        devices: vec![Box::new(test_device::TestDevice {
             address: 1,
-            fn_esp_counter: |data| Message::new_custom(Custom::Pin00Input(false)),
-        }],
+            fn_input: |_, _| (),
+            fn_output: |_data| vec![],
+        })],
     };
     let config_linux_uart = var_name;
 
@@ -75,11 +76,11 @@ async fn main() {
 
     ComponentExecutor::<Custom>::new(executor_config)
         .add_cmp(cmp_logger::Cmp::new(logger_config))
-        .add_cmp(cmp_linux_serial_master::Cmp::new(config_linux_uart))
+        .add_cmp(cmp_linux_uart_master::Cmp::new(config_linux_uart))
         .wait_result()
         .await
         .unwrap();
 }
 
-#[cfg(not(feature = "cmp_linux_serial_master"))]
+#[cfg(not(feature = "cmp_linux_uart_master"))]
 fn main() {}

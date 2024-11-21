@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use embedded_svc::wifi::Wifi;
-use esp_idf_hal::sys::EspError;
+use esp_idf_svc::hal::sys::EspError;
 use esp_idf_svc::{
     netif::NetifStatus,
     wifi::{AsyncWifi, ClientConfiguration, Configuration, EspWifi, NonBlocking},

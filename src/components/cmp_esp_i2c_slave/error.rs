@@ -23,10 +23,10 @@ pub enum Error {
     FnI2cComm(anyhow::Error),
 
     #[error("Error writing to I2C buffer: {0}")]
-    WritingToI2cBuffer(esp_idf_hal::sys::EspError),
+    WritingToI2cBuffer(esp_idf_svc::hal::sys::EspError),
 
     #[error("Error reading from I2C buffer: {0}")]
-    ReadingFromI2cBuffer(esp_idf_hal::sys::EspError),
+    ReadingFromI2cBuffer(esp_idf_svc::hal::sys::EspError),
 
     #[error(transparent)]
     TaskFilterIdenticalData(shared_tasks::filter_identical_data::Error),
@@ -35,7 +35,7 @@ pub enum Error {
     TaskOutput(String),
 
     #[error(transparent)]
-    TaskToMsgBus(shared_tasks::mpsc_to_msg_bus::Error),
+    TaskToMsgBus(shared_tasks::mpsc_to_msgbus::Error),
 }
 
 impl From<Error> for ComponentError {

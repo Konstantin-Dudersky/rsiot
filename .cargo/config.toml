@@ -30,7 +30,3 @@ CC_aarch64-linux-android = "/home/konstantin/Android/Sdk/ndk/26.2.11394342/toolc
 CCX_aarch64-linux-android = "/home/konstantin/Android/Sdk/ndk/26.2.11394342/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang"
 AR_aarch64-linux-android = "/home/konstantin/Android/Sdk/ndk/26.2.11394342/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
 RANLIB_aarch64-linux-android = "/home/konstantin/Android/Sdk/ndk/26.2.11394342/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ranlib"
-
-# Workaround for https://github.com/esp-rs/esp-idf-template/issues/174
-# TODO
-CRATE_CC_NO_DEFAULTS = "1"

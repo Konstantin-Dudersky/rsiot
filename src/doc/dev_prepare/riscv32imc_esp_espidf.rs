@@ -95,7 +95,7 @@
 //! # install all libraries globally, in folder ~/.espressif
 //! ESP_IDF_TOOLS_INSTALL_DIR = "global"
 //! # check current version on https://github.com/espressif/esp-idf/releases
-//! ESP_IDF_VERSION = "v5.2.2"
+//! ESP_IDF_VERSION = "v5.3.1"
 //! ```
 //!
 //! **`build.rs`**
@@ -109,29 +109,13 @@
 //! **`rust-toolchain.toml`**
 //!
 //! ```toml
-//! [toolchain]
-//! channel = "nightly"
-//! components = ["rust-src"]
+#![doc = include_str!("../../../rust-toolchain.toml")]
 //! ```
 //!
 //! **`sdkconfig.defaults`**
 //!
-//! ```
-//! # Rust often needs a bit of an extra main task stack size compared to C (the default is 3K)
-//! CONFIG_ESP_MAIN_TASK_STACK_SIZE=8000
-//!
-//! # Use this to set FreeRTOS kernel tick frequency to 1000 Hz (100 Hz by default).
-//! # This allows to use 1 ms granuality for thread sleeps (10 ms by default).
-//! #CONFIG_FREERTOS_HZ=1000
-//!
-//! # Workaround for https://github.com/espressif/esp-idf/issues/7631
-//! #CONFIG_MBEDTLS_CERTIFICATE_BUNDLE=n
-//! #CONFIG_MBEDTLS_CERTIFICATE_BUNDLE_DEFAULT_FULL=n
-//!
-//! CONFIG_HTTPD_WS_SUPPORT=y
-//!
-//! # Настройка логгирования
-//! CONFIG_LOG_DEFAULT_LEVEL_VERBOSE=y
+//! ```toml
+#![doc = include_str!("../../../sdkconfig.defaults")]
 //! ```
 //!
 //! **`Cargo.toml`**

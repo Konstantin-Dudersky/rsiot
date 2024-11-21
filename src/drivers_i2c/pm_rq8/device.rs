@@ -50,7 +50,7 @@ where
         let (ch_2_send, ch_2_recv) = channel(100);
 
         // Входящие сообщения в канал mpsc
-        let task = shared_tasks::msg_bus_to_mpsc::MsgBusToMpsc {
+        let task = shared_tasks::msgbus_to_mpsc::MsgBusToMpsc {
             msg_bus: self.msg_bus.clone(),
             output: ch_0_send,
         };

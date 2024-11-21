@@ -21,7 +21,7 @@ where
     let (taskout_output, taskin_mpsc_to_msgbus) = channel(channel_capacity);
 
     // Со входа компонента на задачу Input
-    let task_0 = shared_tasks::msg_bus_to_mpsc::MsgBusToMpsc {
+    let task_0 = shared_tasks::msgbus_to_mpsc::MsgBusToMpsc {
         msg_bus: msg_bus.clone(),
         output: taskout_msgbus_to_mpsc,
     };
@@ -48,7 +48,7 @@ where
     join_set_spawn(&mut task_set, task_2.spawn());
 
     // Отправка исходящих сообщений
-    let task_3 = shared_tasks::mpsc_to_msg_bus::MpscToMsgBus {
+    let task_3 = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
         input: taskin_mpsc_to_msgbus,
         cmp_in_out: msg_bus.clone(),
     };
