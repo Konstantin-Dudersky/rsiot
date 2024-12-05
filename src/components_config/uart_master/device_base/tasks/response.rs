@@ -8,16 +8,17 @@ use crate::{
 
 use super::{Buffer, UartMessage, UartMessageRaw};
 
-pub struct Response<TMsg, TResponse, TBuffer> {
+pub struct Response<TMsg, TResponse, TBuffer, const MESSAGE_LEN: usize> {
     pub address: u8,
     pub buffer: Buffer<TBuffer>,
-    pub ch_rx_uart_to_device: broadcast::Receiver<UartMessageRaw>,
+    pub ch_rx_uart_to_device: broadcast::Receiver<UartMessageRaw<MESSAGE_LEN>>,
     pub ch_rx_output_to_filter: mpsc::Sender<Message<TMsg>>,
     pub fn_response_to_buffer: fn(TResponse, &mut TBuffer),
     pub fn_buffer_to_msgs: fn(&TBuffer) -> Vec<Message<TMsg>>,
 }
 
-impl<TMsg, TResponse, TBuffer> Response<TMsg, TResponse, TBuffer>
+impl<TMsg, TResponse, TBuffer, const MESSAGE_LEN: usize>
+    Response<TMsg, TResponse, TBuffer, MESSAGE_LEN>
 where
     TResponse: RequestResponseBound,
     TMsg: MsgDataBound,

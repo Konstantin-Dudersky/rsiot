@@ -19,8 +19,7 @@ where
     while let Ok(msg) = msg_bus.recv_input().await {
         let color = (config.fn_input)(&msg);
         let Some(color) = color else { continue };
-        let pixels = vec![color; config.led_count];
-        ws2812.write_nocopy(pixels)?;
+        ws2812.write_nocopy(color)?;
     }
 
     Err(super::Error::FnProcessEnd)

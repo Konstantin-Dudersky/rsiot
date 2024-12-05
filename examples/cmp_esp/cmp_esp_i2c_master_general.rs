@@ -37,10 +37,10 @@ async fn main() {
     }
 
     let request_1 = I2cRequest::GetCounterFromSlave;
-    let _request_1 = postcard_serde::serialize(&request_1).unwrap();
+    let _request_1 = postcard_serde::serialize_crc(&request_1).unwrap();
 
     let request_2 = I2cRequest::SetCounterFromMaster(777);
-    let _request_2 = postcard_serde::serialize(&request_2).unwrap();
+    let _request_2 = postcard_serde::serialize_crc(&request_2).unwrap();
 
     // service -------------------------------------------------------------------------------------
     #[allow(non_camel_case_types)]

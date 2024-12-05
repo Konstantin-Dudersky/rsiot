@@ -15,7 +15,7 @@ pub struct Output<TMsg, TBufferData> {
 }
 
 impl<TMsg, TBufferData> Output<TMsg, TBufferData> {
-    pub async fn spawn(mut self) -> super::Result<()> {
+    pub async fn spawn(self) -> super::Result<()> {
         loop {
             let msgs = {
                 let buffer_data = self.buffer_data.lock().await;

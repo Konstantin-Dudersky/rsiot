@@ -5,6 +5,7 @@ mod error;
 
 use super::uart_general::{UartMessage, UartMessageRaw};
 
+pub use device_base::{ConfigPeriodicRequest, DeviceBase};
 pub use device_trait::DeviceTrait;
 pub use error::Error;
 

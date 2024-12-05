@@ -7,15 +7,15 @@ use tracing::trace;
 
 use super::{Buffer, UartMessage, UartMessageRaw};
 
-pub struct PeriodicRequest<TRequest, TBuffer> {
+pub struct PeriodicRequest<TRequest, TBuffer, const MESSAGE_LEN: usize> {
     pub address: u8,
     pub buffer: Buffer<TBuffer>,
     pub period: Duration,
     pub request: fn(&TBuffer) -> TRequest,
-    pub ch_tx_device_to_uart: mpsc::Sender<UartMessageRaw>,
+    pub ch_tx_device_to_uart: mpsc::Sender<UartMessageRaw<MESSAGE_LEN>>,
 }
 
-impl<TRequest, TBuffer> PeriodicRequest<TRequest, TBuffer>
+impl<TRequest, TBuffer, const MESSAGE_LEN: usize> PeriodicRequest<TRequest, TBuffer, MESSAGE_LEN>
 where
     TRequest: Clone + Debug + DeserializeOwned + Send + Sync + Serialize,
 {

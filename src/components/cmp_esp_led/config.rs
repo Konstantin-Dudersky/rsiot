@@ -17,21 +17,21 @@ where
     /// Канал для управления сигналом RMT
     pub rmt_channel: TRmt,
 
-    /// Кол-во светодиодов
-    pub led_count: usize,
-
     /// Функция преобразования входящих сообщений в значение цвета
-    pub fn_input: fn(&Message<TMsg>) -> Option<ConfigRgb>,
+    pub fn_input: fn(&Message<TMsg>) -> Option<Vec<ConfigRgb>>,
 }
 
 /// Задание цвета
-#[derive(Deserialize, Clone, Debug, PartialEq, Serialize)]
-pub struct ConfigRgb {
+#[derive(Deserialize, Clone, Copy, Debug, Default, PartialEq, Serialize)]
+pub struct ConfigRgb
+where
+    Self: Sized,
+{
     /// R
     pub r: u8,
     /// G
     pub g: u8,
-    /// И
+    /// B
     pub b: u8,
 }
 

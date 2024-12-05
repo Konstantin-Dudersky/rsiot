@@ -34,10 +34,10 @@ where
     TMsg: MsgDataBound + 'static,
     TBuffer: 'static + BufferBound,
 {
-    pub async fn spawn(
+    pub async fn spawn<const MESSAGE_LEN: usize>(
         self,
-        ch_tx_device_to_uart: mpsc::Sender<UartMessageRaw>,
-        ch_rx_uart_to_device: broadcast::Receiver<UartMessageRaw>,
+        ch_tx_device_to_uart: mpsc::Sender<UartMessageRaw<MESSAGE_LEN>>,
+        ch_rx_uart_to_device: broadcast::Receiver<UartMessageRaw<MESSAGE_LEN>>,
         ch_rx_msgbus_to_device: broadcast::Receiver<Message<TMsg>>,
         ch_tx_device_to_msgbus: mpsc::Sender<Message<TMsg>>,
     ) -> super::Result<()> {

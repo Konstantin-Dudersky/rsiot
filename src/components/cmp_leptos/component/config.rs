@@ -14,7 +14,4 @@ where
     /// body_component: || view! { <App/> }
     /// ```
     pub body_component: TView,
-
-    /// Имя хоста, на котором развернуто веб-приложение
-    pub hostname: String,
 }

@@ -18,6 +18,9 @@ pub enum Error {
     #[error("TaskEndUartComm")]
     TaskEndUartComm,
 
+    #[error("TokioSyncBroadcastSend: {0}")]
+    TokioSyncBroadcastSend(String),
+
     #[error(transparent)]
     TaskFilterIdenticalData(shared_tasks::filter_identical_data::Error),
 
@@ -27,8 +30,20 @@ pub enum Error {
     #[error("UartRead: {0}")]
     UartRead(String),
 
+    #[error("UartWrite: {0}")]
+    UartWrite(String),
+
     #[error(transparent)]
     TaskMsgbusToBroadcast(shared_tasks::msgbus_to_broadcast::Error),
+
+    #[error("GpioSetup: {0}")]
+    GpioSetup(String),
+
+    #[error("GpioPinSet: {0}")]
+    GpioPinSet(String),
+
+    #[error("OpenSerialPort: {0}")]
+    OpenSerialPort(String),
 }
 
 impl From<Error> for ComponentError {

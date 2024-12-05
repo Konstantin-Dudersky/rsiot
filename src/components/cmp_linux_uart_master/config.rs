@@ -5,7 +5,7 @@ use crate::message::MsgDataBound;
 
 /// Конфигурация cmp_linux_uart_master
 #[derive(Debug)]
-pub struct Config<TMsg>
+pub struct Config<TMsg, const MESSAGE_LEN: usize>
 where
     TMsg: MsgDataBound,
 {
@@ -46,16 +46,19 @@ where
     ///
     /// ```rust
     /// // На raspberry pi 17 пин - 11 физ. вывод на гребенке
-    /// pin_rts: 17
+    /// pin_rts: Some(17),
+    ///
+    /// // Если пин RTS не нужен
+    /// pin_rts: None
     /// ```
-    pub pin_rts: u32,
+    pub pin_rts: Option<u32>,
 
     /// TODO - переделать на вектор универсальных устройств
     // pub devices: Vec<TestDevice<TMsg>>,
-    pub devices: Vec<Box<dyn DeviceTrait<TMsg>>>,
+    pub devices: Vec<Box<dyn DeviceTrait<TMsg, MESSAGE_LEN>>>,
 }
 
-impl<TMsg> Default for Config<TMsg>
+impl<TMsg, const MESSAGE_LEN: usize> Default for Config<TMsg, MESSAGE_LEN>
 where
     TMsg: MsgDataBound,
 {
@@ -69,7 +72,7 @@ where
             devices: vec![],
             wait_after_write: Duration::from_millis(50),
             gpio_chip: "/dev/gpiochip0",
-            pin_rts: 17,
+            pin_rts: Some(17),
         }
     }
 }

@@ -24,8 +24,16 @@ use crate::{
 
 use super::{tasks, Config, RequestResponseBound};
 
-pub async fn fn_process<TMsg, TUart, TPeripheral, TRequest, TResponse, TBufferData>(
-    config: Config<TMsg, TUart, TPeripheral, TRequest, TResponse, TBufferData>,
+pub async fn fn_process<
+    TMsg,
+    TUart,
+    TPeripheral,
+    TRequest,
+    TResponse,
+    TBufferData,
+    const MESSAGE_LEN: usize,
+>(
+    config: Config<TMsg, TUart, TPeripheral, TRequest, TResponse, TBufferData, MESSAGE_LEN>,
     msg_bus: CmpInOut<TMsg>,
 ) -> super::Result<()>
 where
@@ -86,7 +94,7 @@ where
         fn_uart_comm: config.fn_uart_comm,
         buffer_data: buffer_data.clone(),
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, task.spawn::<MESSAGE_LEN>());
 
     // Задача генерирования исходящих сообщений
     let task = tasks::Output {

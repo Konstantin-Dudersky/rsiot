@@ -32,7 +32,7 @@ where
     TResponse: RequestResponseBound,
     TPinRts: Pin,
 {
-    pub async fn spawn(mut self) -> super::Result<()> {
+    pub async fn spawn<const MESSAGE_LEN: usize>(mut self) -> super::Result<()> {
         loop {
             let mut buf = [0_u8; BUFFER_LEN];
 
@@ -75,7 +75,7 @@ where
             };
             trace!("Response: {:?}", response);
 
-            let response = response.serialize().unwrap();
+            let response: [u8; MESSAGE_LEN] = response.serialize().unwrap();
 
             self.pin_rts.set_high().unwrap();
             self.uart.write_all(&response).await.unwrap();

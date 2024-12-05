@@ -1,3 +1,5 @@
+//! Общие структуры данных для устройств, обменивающихся данными по UART
+
 mod baudrate;
 mod buffer_bound;
 mod data_bits;

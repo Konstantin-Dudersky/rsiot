@@ -49,7 +49,7 @@ async fn main() {
     };
 
     // cmp_linux_uart ------------------------------------------------------------------------------
-    let var_name = cmp_linux_uart_master::Config {
+    let config_linux_uart = cmp_linux_uart_master::Config::<_, 32> {
         port: "/dev/ttyAMA0",
         baudrate: cmp_linux_uart_master::Baudrate::_115_200,
         data_bits: cmp_linux_uart_master::DataBits::_8,
@@ -57,14 +57,13 @@ async fn main() {
         parity: cmp_linux_uart_master::Parity::None,
         wait_after_write: Duration::from_millis(50),
         gpio_chip: "/dev/gpiochip0",
-        pin_rts: 17,
+        pin_rts: Some(17),
         devices: vec![Box::new(test_device::TestDevice {
             address: 1,
             fn_input: |_, _| (),
             fn_output: |_data| vec![],
         })],
     };
-    let config_linux_uart = var_name;
 
     // executor ------------------------------------------------------------------------------------
     let executor_config = ComponentExecutorConfig {

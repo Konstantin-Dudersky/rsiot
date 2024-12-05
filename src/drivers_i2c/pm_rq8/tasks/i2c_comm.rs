@@ -51,7 +51,7 @@ async fn process_request<'a, TDriver>(
 where
     TDriver: RsiotI2cDriverBase,
 {
-    let request = postcard_serde::serialize(&request)?;
+    let request = postcard_serde::serialize_crc(&request)?;
     let mut response = {
         i2c_driver
             .write_read(

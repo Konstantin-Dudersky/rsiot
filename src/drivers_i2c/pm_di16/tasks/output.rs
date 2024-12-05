@@ -60,7 +60,7 @@ where
 
     async fn request(&self) -> super::Result<()> {
         let req = I2cRequest::GetInput;
-        let req = postcard_serde::serialize(&req)?;
+        let req = postcard_serde::serialize_crc(&req)?;
 
         let mut response = {
             let mut driver = self.driver.lock().await;

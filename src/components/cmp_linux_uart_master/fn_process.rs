@@ -15,7 +15,10 @@ use crate::{
 
 use super::{tasks, Config};
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg, const MESSAGE_LEN: usize>(
+    config: Config<TMsg, MESSAGE_LEN>,
+    msg_bus: CmpInOut<TMsg>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
@@ -26,15 +29,26 @@ where
         .parity(config.parity.into())
         .stop_bits(config.stop_bits.into())
         .timeout(Duration::from_millis(100));
-    let port = serial_port_builder.open().expect("Failed to open port");
+    let port = serial_port_builder
+        .open()
+        .map_err(|e| super::Error::OpenSerialPort(e.to_string()))?;
     let port = Arc::new(Mutex::new(port));
 
     // Настраиваем пин для сигнала RTS
-    let mut chip = Chip::new(config.gpio_chip).unwrap();
-    let pin_rts = chip.get_line(config.pin_rts).unwrap();
-    let pin_rts = pin_rts
-        .request(LineRequestFlags::OUTPUT, 0, "uart-rts")
-        .unwrap();
+    let pin_rts = match config.pin_rts {
+        Some(pin_rts) => {
+            let mut chip =
+                Chip::new(config.gpio_chip).map_err(|e| super::Error::GpioSetup(e.to_string()))?;
+            let pin_rts = chip
+                .get_line(pin_rts)
+                .map_err(|e| super::Error::GpioSetup(e.to_string()))?;
+            let pin_rts = pin_rts
+                .request(LineRequestFlags::OUTPUT, 0, "uart-rts")
+                .map_err(|e| super::Error::GpioSetup(e.to_string()))?;
+            Some(pin_rts)
+        }
+        None => None,
+    };
 
     let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
 
@@ -63,7 +77,7 @@ where
     };
     task_set.spawn_blocking(|| task.spawn());
 
-    // Задача перенасправления входящих сообщений на все устройства
+    // Задача перенаправления входящих сообщений на все устройства ---------------------------------
     let task = shared_tasks::msgbus_to_broadcast::MsgBusToBroadcast {
         msgbus: msg_bus.clone(),
         output: ch_tx_msgbus_to_device,
@@ -100,7 +114,7 @@ where
 
     // Ожидание выполнения -------------------------------------------------------------------------
     while let Some(res) = task_set.join_next().await {
-        res.unwrap().unwrap();
+        res??;
     }
 
     Ok(())

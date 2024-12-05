@@ -4,21 +4,19 @@ use serialport::SerialPort;
 use tokio::sync::{broadcast, Mutex};
 use tracing::trace;
 
-use crate::serde_utils::postcard_serde;
+use super::UartMessageRaw;
 
-use super::super::UartMessageRaw;
-
-pub struct UartRead {
-    pub output: broadcast::Sender<UartMessageRaw>,
+pub struct UartRead<const MESSAGE_LEN: usize> {
+    pub output: broadcast::Sender<UartMessageRaw<MESSAGE_LEN>>,
     pub port: Arc<Mutex<Box<dyn SerialPort>>>,
 }
 
-impl UartRead {
+impl<const MESSAGE_LEN: usize> UartRead<MESSAGE_LEN> {
     pub fn spawn(self) -> super::Result<()> {
         loop {
             let mut port = self.port.blocking_lock();
 
-            let mut read_buf = [0; postcard_serde::MESSAGE_LEN];
+            let mut read_buf = [0; MESSAGE_LEN];
 
             let port_read_result = port.read_exact(&mut read_buf);
             if port_read_result.is_err() {
@@ -28,7 +26,9 @@ impl UartRead {
 
             trace!("Read: {:?}", read_buf);
 
-            self.output.send(read_buf).unwrap();
+            self.output
+                .send(read_buf)
+                .map_err(|e| super::Error::TokioSyncBroadcastSend(e.to_string()))?;
         }
     }
 }

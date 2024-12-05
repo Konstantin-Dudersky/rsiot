@@ -1,6 +1,9 @@
 use std::time::Duration;
 
-use leptos::{prelude::*, task::spawn_local};
+use leptos::{
+    prelude::*,
+    task::{spawn_local, Executor},
+};
 use tokio::task::LocalSet;
 
 use crate::{
@@ -16,12 +19,12 @@ fn test_wasm() {
     fn main() -> anyhow::Result<()> {
         #[component]
         fn App() -> impl IntoView {}
+
         configure_logging("info").unwrap();
 
         // cmp_leptos ------------------------------------------------------------------------------
         let config_leptos = cmp_leptos::Config {
             body_component: || view! { <App/> },
-            hostname: "localhost".into(),
         };
 
         // config_executor -------------------------------------------------------------------------
@@ -33,6 +36,9 @@ fn test_wasm() {
         };
 
         // executor --------------------------------------------------------------------------------
+
+        Executor::init_wasm_bindgen().expect("executor should only be initialized once");
+
         let context = LocalSet::new();
         context.spawn_local(async move {
             ComponentExecutor::<Custom>::new(config_executor)

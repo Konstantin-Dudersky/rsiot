@@ -9,7 +9,7 @@ use crate::{
 };
 
 use super::{
-    super::{Error, GlobalState, Result},
+    super::{utils, Error, GlobalState, Result},
     Config,
 };
 
@@ -22,8 +22,10 @@ where
     TView: Fn() -> TIntoView + 'static,
     TIntoView: IntoView,
 {
+    let hostname = utils::define_hostname().unwrap();
+
     let gs = GlobalState::<TMsg> {
-        hostname: config.hostname,
+        hostname,
         input: RwSignal::new(None),
         output: RwSignal::new(None),
         cache: in_out.cache.clone(),

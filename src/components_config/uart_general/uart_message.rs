@@ -18,13 +18,15 @@ where
     T: Debug + DeserializeOwned + Serialize,
 {
     /// Сериализация сообщения
-    pub fn serialize(&self) -> Result<[u8; postcard_serde::MESSAGE_LEN], postcard_serde::Error> {
-        postcard_serde::serialize_crc_new(self)
+    pub fn serialize<const MESSAGE_LEN: usize>(
+        &self,
+    ) -> Result<[u8; MESSAGE_LEN], postcard_serde::Error> {
+        postcard_serde::serialize(self)
     }
 
     /// Десериализация сообщения
     pub fn deserialize(data: &mut [u8]) -> Result<Self, postcard_serde::Error> {
-        postcard_serde::deserialize_crc(data)
+        postcard_serde::deserialize(data)
     }
 }
 
@@ -46,7 +48,7 @@ mod tests {
             payload: 123,
         };
 
-        let mut ser = msg.serialize().unwrap();
+        let mut ser = msg.serialize::<32>().unwrap();
 
         let _deser: UartMessage<i32> = UartMessage::deserialize(&mut ser).unwrap();
     }

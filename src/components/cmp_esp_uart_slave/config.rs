@@ -18,8 +18,15 @@ pub type TFnUartComm<TRequest, TResponse, TBufferData> =
     fn(TRequest, &mut TBufferData) -> anyhow::Result<TResponse>;
 
 /// Конфигурация cmp_esp_uart_slave
-pub struct Config<TMsg, TUart, TPeripheral, TRequest, TResponse, TBufferData>
-where
+pub struct Config<
+    TMsg,
+    TUart,
+    TPeripheral,
+    TRequest,
+    TResponse,
+    TBufferData,
+    const MESSAGE_LEN: usize,
+> where
     TMsg: MsgDataBound,
     TUart: Peripheral<P = TPeripheral> + 'static,
     TPeripheral: Uart,

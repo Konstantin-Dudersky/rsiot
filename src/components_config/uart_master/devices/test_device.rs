@@ -13,7 +13,7 @@ use super::{ConfigPeriodicRequest, DeviceBase, DeviceTrait, UartMessageRaw};
 
 /// Тестовое устройство
 #[derive(Clone, Debug)]
-pub struct TestDevice<TMsg> {
+pub struct TestDevice<TMsg, const MESSAGE_LEN: usize> {
     /// Адрес
     pub address: u8,
 
@@ -26,18 +26,19 @@ pub struct TestDevice<TMsg> {
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
-impl<TMsg> DeviceTrait<TMsg> for TestDevice<TMsg>
+impl<TMsg, const MESSAGE_LEN: usize> DeviceTrait<TMsg, MESSAGE_LEN>
+    for TestDevice<TMsg, MESSAGE_LEN>
 where
     TMsg: MsgDataBound + 'static,
 {
     async fn spawn(
         self: Box<Self>,
-        ch_tx_device_to_uart: mpsc::Sender<UartMessageRaw>,
-        ch_rx_uart_to_device: broadcast::Receiver<UartMessageRaw>,
+        ch_tx_device_to_uart: mpsc::Sender<UartMessageRaw<MESSAGE_LEN>>,
+        ch_rx_uart_to_device: broadcast::Receiver<UartMessageRaw<MESSAGE_LEN>>,
         ch_tx_msgbus_to_device: broadcast::Receiver<Message<TMsg>>,
         ch_rx_device_to_msgbus: mpsc::Sender<Message<TMsg>>,
     ) -> super::Result<()> {
-        let device: DeviceBase<TMsg, _, _, _> = DeviceBase {
+        let device = DeviceBase {
             address: self.address,
             periodic_requests: vec![ConfigPeriodicRequest {
                 period: Duration::from_millis(500),

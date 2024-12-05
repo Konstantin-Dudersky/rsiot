@@ -146,7 +146,7 @@
 #![warn(rustdoc::bare_urls)]
 #![warn(missing_docs)]
 
-mod components_config;
+pub mod components_config;
 pub mod message;
 
 #[cfg(feature = "executor")]
