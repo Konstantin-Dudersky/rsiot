@@ -123,19 +123,19 @@ where
     }
 
     /// Разрешен ли марштур данного сообщения
-    pub fn is_route_enabled(&self, src: TCustom::TService, dst: TCustom::TService) -> bool {
+    pub fn is_route_enabled(&self, src: &TCustom::TService, dst: &TCustom::TService) -> bool {
         let enabled_routes = match &self.data {
             MsgData::System(data) => return data.define_enabled_routes(),
             MsgData::Custom(data) => data.define_enabled_routes(),
         };
         for (src_enabled, dst_enabled) in enabled_routes {
             if let Some(src_enabled) = src_enabled {
-                if src != src_enabled {
+                if *src != src_enabled {
                     continue;
                 }
             }
             if let Some(dst_enabled) = dst_enabled {
-                if dst != dst_enabled {
+                if *dst != dst_enabled {
                     continue;
                 }
             }

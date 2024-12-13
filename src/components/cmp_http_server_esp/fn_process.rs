@@ -58,11 +58,14 @@ where
     let cache_clone = in_out.cache.clone();
     server
         .fn_handler("/messages", Method::Get, move |request| {
-            trace!("Get request");
+            trace!("Get request, all messages");
             let mut msgs_json: Vec<String> = vec![];
             {
                 let lock = cache_clone.blocking_read();
                 for msg in lock.values() {
+                    if !msg.is_route_enabled(&config.this_service, &config.client_service) {
+                        continue;
+                    }
                     let msg_json = msg.serialize().unwrap();
                     msgs_json.push(msg_json);
                 }

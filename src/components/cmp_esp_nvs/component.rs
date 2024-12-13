@@ -34,7 +34,7 @@ impl<TMsg, TStorageData> IComponentProcess<Config<TMsg, TStorageData>, TMsg>
     for Component<Config<TMsg, TStorageData>, TMsg>
 where
     TMsg: MsgDataBound + 'static,
-    TStorageData: std::fmt::Debug + Default + DeserializeOwned + PartialEq + Serialize,
+    TStorageData: std::fmt::Debug + Default + DeserializeOwned + PartialEq + Serialize + 'static,
 {
     async fn process(
         &self,

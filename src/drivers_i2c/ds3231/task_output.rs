@@ -1,6 +1,7 @@
 use std::{sync::Arc, time::Duration};
 
 use tokio::{sync::Mutex, time::sleep};
+use tracing::debug;
 
 use crate::{
     drivers_i2c::{I2cSlaveAddress, RsiotI2cDriverBase},
@@ -45,8 +46,6 @@ where
 {
     pub async fn spawn(self) -> Result<(), String> {
         loop {
-            sleep(self.period).await;
-
             let mut driver = self.driver.lock().await;
             let res = driver
                 .write_read(self.address, &[0x00], 19, Duration::from_secs(2))
@@ -62,8 +61,8 @@ where
             let res = driver
                 .write_read(self.address, &[0x0E], 2, Duration::from_secs(2))
                 .await?;
-            println!("Control: {:?}", res[0]);
-            println!("Status: {:?}", res[1]);
+            debug!("Control: {:?}", res[0]);
+            debug!("Status: {:?}", res[1]);
 
             let output = OutputData {
                 year: year.get_dec(),
@@ -82,6 +81,7 @@ where
                     .await
                     .map_err(|e| e.to_string())?;
             }
+            sleep(self.period).await;
         }
     }
 }

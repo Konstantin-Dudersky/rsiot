@@ -1,3 +1,5 @@
+use crate::message::MsgDataBound;
+
 use super::{
     connection_config::ConnectionConfig, request_input::RequestInput,
     request_periodic::RequestPeriodic,
@@ -5,7 +7,10 @@ use super::{
 
 /// Параметры компонента http-client
 #[derive(Clone, Debug)]
-pub struct Config<TMessage> {
+pub struct Config<TMessage>
+where
+    TMessage: MsgDataBound,
+{
     /// Параметры подключения
     pub connection_config: ConnectionConfig,
     /// Запросы, которые формируются на основе входящих сообщений

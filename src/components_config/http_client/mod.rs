@@ -1,3 +1,5 @@
+//! Конфигурация http-клиента
+
 mod config;
 mod connection_config;
 mod http_param;

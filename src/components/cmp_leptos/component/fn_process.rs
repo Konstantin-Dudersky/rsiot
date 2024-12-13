@@ -1,7 +1,12 @@
-use gloo::storage::{LocalStorage, Storage};
+use std::time::Duration;
+
+use gloo::{
+    storage::{LocalStorage, Storage},
+    timers::future::sleep,
+};
 use leptos::prelude::*;
 use tokio::task::JoinSet;
-use tracing::debug;
+use tracing::{debug, info, trace};
 
 use crate::{
     executor::CmpInOut,
@@ -55,6 +60,8 @@ where
     TMsg: MsgDataBound + 'static,
 {
     while let Ok(msg) = input.recv_input().await {
+        trace!("New message in Leptos input: {}", msg.key);
+
         // Разрешения
         match &msg.data {
             MsgData::System(System::AuthResponseOk(value)) => {
@@ -69,6 +76,9 @@ where
         }
         // Пересылаем сообщение в сигнал
         global_state.input.set(Some(msg));
+
+        // Добавлена задержка. Возможно без задержки сообщения теряются?
+        sleep(Duration::from_millis(1)).await;
     }
     Ok(())
 }

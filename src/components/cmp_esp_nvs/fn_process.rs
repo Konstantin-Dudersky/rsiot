@@ -3,10 +3,11 @@ use std::fmt::Debug;
 use esp_idf_svc::nvs::{EspDefaultNvsPartition, EspNvs, EspNvsPartition, NvsDefault};
 use postcard::{from_bytes, to_stdvec};
 use serde::{de::DeserializeOwned, Serialize};
+use tokio::task::JoinSet;
 use tracing::{debug, info, warn};
 
 use crate::{
-    executor::{CmpInOut, ComponentError},
+    executor::{join_set_spawn, CmpInOut, ComponentError},
     message::MsgDataBound,
 };
 
@@ -19,8 +20,8 @@ pub async fn fn_process<TMessage, TStorageData>(
     config: Config<TMessage, TStorageData>,
 ) -> std::result::Result<(), ComponentError>
 where
-    TMessage: MsgDataBound,
-    TStorageData: Debug + Default + DeserializeOwned + PartialEq + Serialize,
+    TMessage: MsgDataBound + 'static,
+    TStorageData: Debug + Default + DeserializeOwned + PartialEq + Serialize + 'static,
 {
     info!("Starting cmp_storage_esp component");
     task_main(input, config).await.map_err(|err| {
@@ -30,12 +31,12 @@ where
 }
 
 async fn task_main<TMessage, TStorageData>(
-    input: CmpInOut<TMessage>,
+    msg_bus: CmpInOut<TMessage>,
     config: Config<TMessage, TStorageData>,
 ) -> Result<()>
 where
-    TMessage: MsgDataBound,
-    TStorageData: Debug + Default + DeserializeOwned + PartialEq + Serialize,
+    TMessage: MsgDataBound + 'static,
+    TStorageData: Debug + Default + DeserializeOwned + PartialEq + Serialize + 'static,
 {
     let nvs_default_partition: EspNvsPartition<NvsDefault> =
         EspDefaultNvsPartition::take().map_err(Error::TakePartition)?;
@@ -52,18 +53,18 @@ where
     let data = load_data(&mut nvs)?;
     let msgs = (config.fn_output)(&data);
     for msg in msgs {
-        input
+        msg_bus
             .send_output(msg)
             .await
             .map_err(|e| Error::SendChannel(e.to_string()))?;
     }
 
-    task_input(input, config, nvs, data).await?;
+    task_input(msg_bus, config, nvs, data).await?;
     Ok(())
 }
 
 async fn task_input<TMessage, TStorageData>(
-    mut input: CmpInOut<TMessage>,
+    mut msg_bus: CmpInOut<TMessage>,
     config: Config<TMessage, TStorageData>,
     mut nvs: EspNvs<NvsDefault>,
     data: TStorageData,
@@ -73,7 +74,7 @@ where
     TStorageData: Debug + Default + DeserializeOwned + PartialEq + Serialize,
 {
     let mut data = data;
-    while let Ok(msg) = input.recv_input().await {
+    while let Ok(msg) = msg_bus.recv_input().await {
         let new_data = (config.fn_input)(&data, &msg);
         let Some(new_data) = new_data else { continue };
         if new_data == data {
@@ -81,6 +82,15 @@ where
         }
         data = new_data;
         save_data(&mut nvs, &data)?;
+
+        let data = load_data(&mut nvs)?;
+        let msgs = (config.fn_output)(&data);
+        for msg in msgs {
+            msg_bus
+                .send_output(msg)
+                .await
+                .map_err(|e| Error::SendChannel(e.to_string()))?;
+        }
     }
     Ok(())
 }

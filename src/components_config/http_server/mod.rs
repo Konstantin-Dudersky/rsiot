@@ -12,8 +12,11 @@ use crate::message::*;
 #[derive(Clone, Debug)]
 pub struct Config<TMsg>
 where
-    TMsg: Clone,
+    TMsg: MsgDataBound,
 {
+    pub this_service: TMsg::TService,
+    pub client_service: TMsg::TService,
+
     /// Порт, через который доступен сервер
     pub port: u16,
 
@@ -104,12 +107,14 @@ pub enum ConfigCmpPlcData {
 #[cfg(test)]
 mod tests {
     use super::{Config, ConfigCmpPlcData};
-    use crate::message::{example_message::*, *};
+    use crate::message::{example_message::*, example_service::Service, *};
 
     #[allow(clippy::no_effect)]
     #[test]
     fn stub() {
         Config::<Custom> {
+            this_service: Service::example_service,
+            client_service: Service::example_service,
             port: 8000,
             fn_input: |_| Ok(None),
             fn_output: |_| Ok(None),
@@ -121,6 +126,8 @@ mod tests {
     #[test]
     fn fn_input_json() {
         Config::<Custom> {
+            this_service: Service::example_service,
+            client_service: Service::example_service,
             port: 8000,
             fn_input: |msg: &Message<Custom>| {
                 let text = msg.serialize()?;
@@ -135,6 +142,8 @@ mod tests {
     #[test]
     fn fn_output_json() {
         Config::<Custom> {
+            this_service: Service::example_service,
+            client_service: Service::example_service,
             port: 8000,
             fn_input: |_| Ok(None),
             fn_output: |text: &str| {

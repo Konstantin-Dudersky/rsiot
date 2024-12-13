@@ -1,4 +1,5 @@
 use leptos::prelude::*;
+use tracing::{info, trace, warn};
 
 use crate::message::MsgDataBound;
 
@@ -35,6 +36,7 @@ where
             Some(msg) => msg,
             None => return,
         };
+        trace!("create_signal_from_msg: {}", msg.key);
         let msg = (config.fn_input)(&msg);
         if let Some(msg) = msg {
             input_set.set(msg)

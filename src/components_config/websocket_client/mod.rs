@@ -1,5 +1,8 @@
+//! Конфигурация websocket-клиента
+
 use crate::message::Message;
 
+/// Преобразование полученного от сервера текста в исходящие сообщения
 pub type FnOutput<TMsg> = fn(&str) -> anyhow::Result<Option<Vec<Message<TMsg>>>>;
 
 /// Настройки Websocket-клиента

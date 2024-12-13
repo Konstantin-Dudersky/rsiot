@@ -14,6 +14,9 @@ pub enum InputHtmlType {
     /// type="checkbox"
     Checkbox,
 
+    /// type="color"
+    Color,
+
     /// type="date"
     Date,
 
@@ -34,6 +37,7 @@ impl Display for InputHtmlType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let txt = match self {
             InputHtmlType::Checkbox => "checkbox",
+            InputHtmlType::Color => "color",
             InputHtmlType::Date => "date",
             InputHtmlType::Datetime => "datetime-local",
             InputHtmlType::Number => "number",

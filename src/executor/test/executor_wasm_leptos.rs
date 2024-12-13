@@ -36,7 +36,6 @@ fn test_wasm() {
         };
 
         // executor --------------------------------------------------------------------------------
-
         Executor::init_wasm_bindgen().expect("executor should only be initialized once");
 
         let context = LocalSet::new();

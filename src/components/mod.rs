@@ -12,6 +12,8 @@ pub mod cmp_add_output_stream;
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
 pub mod cmp_auth;
 
+pub mod cmp_create_if_not_exist;
+
 pub mod cmp_derive;
 
 // #[cfg(feature = "cmp_esp")]
