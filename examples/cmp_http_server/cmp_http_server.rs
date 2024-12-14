@@ -51,6 +51,8 @@ fn main() -> anyhow::Result<()> {
     };
 
     let http_server_config = cmp_http_server::Config {
+        this_service: Service::example_service,
+        client_service: Service::example_service,
         port: 8011,
         fn_output: |text: &str| {
             let msg = Message::<Data>::deserialize(text)?;

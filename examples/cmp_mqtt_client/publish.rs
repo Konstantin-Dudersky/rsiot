@@ -13,6 +13,7 @@ pub async fn publish() {
         buffer_size: 100,
         service: message::Services::publish,
         fn_auth: |msg, _| Some(msg),
+        delay_publish: Duration::from_millis(100),
     };
 
     let mut counter = 0;

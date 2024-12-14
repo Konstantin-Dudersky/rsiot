@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use rsiot::{
     components::{cmp_logger, cmp_mqtt_client},
     executor::{ComponentExecutor, ComponentExecutorConfig},
@@ -12,6 +14,7 @@ pub async fn subscribe() {
         buffer_size: 100,
         service: message::Services::subscribe,
         fn_auth: |msg, _| Some(msg),
+        delay_publish: Duration::from_millis(100),
     };
 
     let config_logger = cmp_logger::Config {

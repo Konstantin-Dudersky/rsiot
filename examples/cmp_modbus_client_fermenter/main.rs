@@ -7,6 +7,8 @@ mod message;
 #[cfg(feature = "cmp_modbus_client")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    use std::time::Duration;
+
     use tracing::{level_filters::LevelFilter, Level};
     use tracing_subscriber::fmt;
 
@@ -29,6 +31,7 @@ async fn main() -> anyhow::Result<()> {
         buffer_size: 100,
         service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
+        delay_publish: Duration::from_millis(100),
     };
 
     ComponentExecutor::<Data>::new(executor_config)

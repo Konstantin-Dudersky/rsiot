@@ -30,7 +30,7 @@ pub use example_message_channel::ExampleMessageChannel;
 pub use message::Message;
 pub use message_channel::IMessageChannel;
 pub use msg_data::MsgData;
-pub use msg_data_bound::MsgDataBound;
+pub use msg_data_bound::{MsgDataBound, MsgRoute};
 pub use msg_trace::MsgTrace;
 pub use phy_quantity::PhyQuantity;
 pub use rsiot_macros::message_new;

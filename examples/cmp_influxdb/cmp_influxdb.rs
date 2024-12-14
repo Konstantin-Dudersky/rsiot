@@ -50,6 +50,7 @@ async fn main() {
         buffer_size: 100,
         service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
+        delay_publish: Duration::from_millis(100),
     };
 
     ComponentExecutor::new(executor_config)

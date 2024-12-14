@@ -48,8 +48,8 @@ async fn main() {
     impl MsgDataBound for Custom {
         type TService = Service;
 
-        fn define_enabled_routes(&self) -> Vec<(Option<Self::TService>, Option<Self::TService>)> {
-            vec![]
+        fn define_enabled_routes(&self) -> MsgRoute<Self::TService> {
+            MsgRoute::default()
         }
 
         fn define_time_to_live(&self) -> rsiot::message::TimeToLiveValue {
@@ -59,6 +59,8 @@ async fn main() {
 
     // cmp_http_server_esp -------------------------------------------------------------------------
     let http_server_esp_config = cmp_http_server_esp::Config {
+        this_service: Service::cmp_esp_example,
+        client_service: Service::cmp_esp_example,
         port: 8010,
         fn_input: |msg: &Message<Custom>| {
             let text = msg.serialize()?;

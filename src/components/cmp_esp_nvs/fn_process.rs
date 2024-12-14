@@ -3,11 +3,10 @@ use std::fmt::Debug;
 use esp_idf_svc::nvs::{EspDefaultNvsPartition, EspNvs, EspNvsPartition, NvsDefault};
 use postcard::{from_bytes, to_stdvec};
 use serde::{de::DeserializeOwned, Serialize};
-use tokio::task::JoinSet;
 use tracing::{debug, info, warn};
 
 use crate::{
-    executor::{join_set_spawn, CmpInOut, ComponentError},
+    executor::{CmpInOut, ComponentError},
     message::MsgDataBound,
 };
 

@@ -146,6 +146,9 @@
 #![warn(rustdoc::bare_urls)]
 #![warn(missing_docs)]
 
+//! TODO - какая-то проблема в tokio
+// #![allow(clippy::needless_return)]
+
 pub mod components_config;
 pub mod message;
 

@@ -87,12 +87,14 @@ async fn main() -> anyhow::Result<()> {
         url: "ws://localhost:9001".into(),
         fn_input,
         fn_output,
+        fn_connection_state: |_| None,
     };
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
         service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
+        delay_publish: Duration::from_millis(100),
     };
 
     ComponentExecutor::<Data>::new(executor_config)

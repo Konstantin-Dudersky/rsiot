@@ -2,14 +2,14 @@ use std::sync::Arc;
 
 use tokio::sync::Mutex;
 
-use crate::executor::CmpInOut;
+use crate::{executor::CmpInOut, message::MsgDataBound};
 
 use super::Config;
 
 #[derive(Clone)]
 pub struct SharedState<TMsg>
 where
-    TMsg: Clone,
+    TMsg: MsgDataBound,
 {
     pub msg_bus: CmpInOut<TMsg>,
     pub config: Config<TMsg>,

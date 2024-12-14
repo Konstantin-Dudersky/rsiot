@@ -23,6 +23,8 @@
 #[cfg(feature = "cmp_redis_client")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    use std::time::Duration;
+
     use tracing::Level;
     use tracing_subscriber::fmt;
     use url::Url;
@@ -63,6 +65,7 @@ async fn main() -> anyhow::Result<()> {
         buffer_size: 100,
         service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
+        delay_publish: Duration::from_millis(100),
     };
 
     ComponentExecutor::<Custom>::new(executor_config)

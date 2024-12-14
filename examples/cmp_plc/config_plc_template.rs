@@ -3,6 +3,7 @@
 fn main() {
     // service -------------------------------------------------------------------------------------
 
+    use rsiot::message::MsgRoute;
     use rsiot::message::ServiceBound;
 
     #[allow(non_camel_case_types)]
@@ -30,8 +31,8 @@ fn main() {
     impl MsgDataBound for Custom {
         type TService = Service;
 
-        fn define_enabled_routes(&self) -> Vec<(Option<Self::TService>, Option<Self::TService>)> {
-            vec![]
+        fn define_enabled_routes(&self) -> MsgRoute<Self::TService> {
+            MsgRoute::default()
         }
 
         fn define_time_to_live(&self) -> rsiot::message::TimeToLiveValue {

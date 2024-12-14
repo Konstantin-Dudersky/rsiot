@@ -31,6 +31,7 @@ async fn main() -> anyhow::Result<()> {
         buffer_size: 100,
         service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
+        delay_publish: Duration::from_millis(100),
     };
 
     let config_telegram = cmp_telegram::Config {

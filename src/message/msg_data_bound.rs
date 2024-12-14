@@ -19,10 +19,14 @@ pub trait MsgDataBound:
     /// Перечисление, содержащее названия всех сервисов
     type TService: ServiceBound;
 
+    // #[allow(clippy::type_complexity)]
+    // fn define_enabled_routes(&self) -> Vec<(Option<Self::TService>, Option<Self::TService>)> {
+    //     vec![(None, None)]
+    // }
+
     /// Разрешенные маршруты сообщения
-    #[allow(clippy::type_complexity)]
-    fn define_enabled_routes(&self) -> Vec<(Option<Self::TService>, Option<Self::TService>)> {
-        vec![(None, None)]
+    fn define_enabled_routes(&self) -> MsgRoute<Self::TService> {
+        MsgRoute::default()
     }
 
     /// Задать ограничение времени жизни сообщения
@@ -41,4 +45,26 @@ pub trait MsgDataBound:
     fn define_time_to_live(&self) -> TimeToLiveValue {
         TimeToLiveValue::Infinite
     }
+}
+
+#[derive(Default)]
+/// Разрешенный маршрут передачи сообщений
+pub enum MsgRoute<TService> {
+    /// Можно передавать из заданного сервиса всем остальным
+    SrcToAny {
+        /// Сервис, из которого можно передавать сообщения
+        src: TService,
+    },
+    /// Можно передавать только между заданными сервисами
+    SrcDst {
+        /// Сервис, из которого можно передавать сообщения
+        src: TService,
+        /// Сервис, в который можно передавать сообщения
+        dst: TService,
+    },
+    /// Можно передавать между всеми сервисами
+    #[default]
+    FromAnyToAny,
+    /// Сообщение нельзя передавать
+    None,
 }

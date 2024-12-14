@@ -5,7 +5,7 @@ use std::{fmt::Debug, time::Duration};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use super::{MsgData, MsgDataBound, MsgTrace, TimeToLiveValue, Timestamp};
+use super::{MsgData, MsgDataBound, MsgRoute, MsgTrace, TimeToLiveValue, Timestamp};
 
 /// Сообщение
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -123,25 +123,40 @@ where
     }
 
     /// Разрешен ли марштур данного сообщения
+    // pub fn is_route_enabled(&self, src: &TCustom::TService, dst: &TCustom::TService) -> bool {
+    //     let enabled_routes = match &self.data {
+    //         MsgData::System(data) => return data.define_enabled_routes(),
+    //         MsgData::Custom(data) => data.define_enabled_routes(),
+    //     };
+    //     for (src_enabled, dst_enabled) in enabled_routes {
+    //         if let Some(src_enabled) = src_enabled {
+    //             if *src != src_enabled {
+    //                 continue;
+    //             }
+    //         }
+    //         if let Some(dst_enabled) = dst_enabled {
+    //             if *dst != dst_enabled {
+    //                 continue;
+    //             }
+    //         }
+    //         return true;
+    //     }
+    //     false
+    // }
     pub fn is_route_enabled(&self, src: &TCustom::TService, dst: &TCustom::TService) -> bool {
-        let enabled_routes = match &self.data {
+        let route = match &self.data {
             MsgData::System(data) => return data.define_enabled_routes(),
             MsgData::Custom(data) => data.define_enabled_routes(),
         };
-        for (src_enabled, dst_enabled) in enabled_routes {
-            if let Some(src_enabled) = src_enabled {
-                if *src != src_enabled {
-                    continue;
-                }
-            }
-            if let Some(dst_enabled) = dst_enabled {
-                if *dst != dst_enabled {
-                    continue;
-                }
-            }
-            return true;
+        match route {
+            MsgRoute::SrcToAny { src: route_src } => *src == route_src,
+            MsgRoute::SrcDst {
+                src: route_src,
+                dst: route_dst,
+            } => *src == route_src && *dst == route_dst,
+            MsgRoute::FromAnyToAny => true,
+            MsgRoute::None => false,
         }
-        false
     }
 }
 
