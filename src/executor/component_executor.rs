@@ -16,7 +16,10 @@ use super::{
 const UPDATE_TTL_PERIOD: Duration = Duration::from_millis(200);
 
 /// Запуск коллекции компонентов в работу
-pub struct ComponentExecutor<TMsg> {
+pub struct ComponentExecutor<TMsg>
+where
+    TMsg: MsgDataBound,
+{
     task_set: JoinSet<Result<(), ComponentError>>,
     cmp_in_out: CmpInOut<TMsg>,
 }

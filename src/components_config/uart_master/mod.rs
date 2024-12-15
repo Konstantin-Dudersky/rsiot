@@ -1,3 +1,5 @@
+//! Конфигурация UART-мастера
+
 mod device_base;
 mod device_trait;
 pub mod devices;

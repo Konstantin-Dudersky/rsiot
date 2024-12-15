@@ -24,7 +24,10 @@ async fn main() {
         message::{example_message::*, example_service::*, *},
     };
 
-    async fn fn_process<TMsg>(_input: CmpInOut<TMsg>) -> CmpResult {
+    async fn fn_process<TMsg>(_input: CmpInOut<TMsg>) -> CmpResult
+    where
+        TMsg: MsgDataBound,
+    {
         loop {
             info!("External fn process");
             sleep(Duration::from_secs(2)).await;

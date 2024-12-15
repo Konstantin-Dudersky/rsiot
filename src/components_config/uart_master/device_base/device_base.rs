@@ -17,7 +17,9 @@ use crate::{executor::join_set_spawn, message::MsgDataBound};
 
 use super::{config::*, tasks, UartMessageRaw};
 
+/// Базовое устройство для опроса по UART
 pub struct DeviceBase<TMsg, TRequest, TResponse, TBuffer> {
+    /// Адрес
     pub address: u8,
     pub periodic_requests: Vec<ConfigPeriodicRequest<TRequest, TBuffer>>,
     pub fn_msgs_to_buffer: fn(&Message<TMsg>, &mut TBuffer),
@@ -34,6 +36,7 @@ where
     TMsg: MsgDataBound + 'static,
     TBuffer: 'static + BufferBound,
 {
+    /// Запустить работу
     pub async fn spawn<const MESSAGE_LEN: usize>(
         self,
         ch_tx_device_to_uart: mpsc::Sender<UartMessageRaw<MESSAGE_LEN>>,

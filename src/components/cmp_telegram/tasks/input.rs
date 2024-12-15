@@ -5,7 +5,10 @@ use crate::{
 
 use super::TelegramBot;
 
-pub struct Input<TMsg> {
+pub struct Input<TMsg>
+where
+    TMsg: MsgDataBound,
+{
     pub input: CmpInOut<TMsg>,
     pub bot: TelegramBot,
     pub fn_input: fn(Message<TMsg>) -> Option<String>,

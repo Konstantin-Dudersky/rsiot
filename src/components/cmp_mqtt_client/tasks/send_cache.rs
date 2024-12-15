@@ -9,7 +9,10 @@ use crate::{
 
 use super::shared::publish_on_broker;
 
-pub struct SendCache<TMsg> {
+pub struct SendCache<TMsg>
+where
+    TMsg: MsgDataBound,
+{
     pub in_out: CmpInOut<TMsg>,
     pub config_fn_input: ConfigFnInput<TMsg>,
     pub client: AsyncClient,

@@ -4,7 +4,10 @@ use crate::{
 
 use super::{super::DbClient, shared::execute_db_query};
 
-pub struct RequestInput<TMsg> {
+pub struct RequestInput<TMsg>
+where
+    TMsg: MsgDataBound,
+{
     pub in_out: CmpInOut<TMsg>,
     pub input_config: RequestInputConfig<TMsg>,
     pub db_client: DbClient,

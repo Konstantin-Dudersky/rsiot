@@ -12,7 +12,10 @@ use super::{
 
 /// Подключение компонента к внутренней шине сообщений исполнителя
 #[derive(Debug)]
-pub struct CmpInOut<TMsg> {
+pub struct CmpInOut<TMsg>
+where
+    TMsg: MsgDataBound,
+{
     input: CmpInput<TMsg>,
     output: CmpOutput<TMsg>,
     /// Ссылка на кэш
@@ -161,7 +164,7 @@ where
 
 impl<TMsg> Clone for CmpInOut<TMsg>
 where
-    TMsg: Clone,
+    TMsg: MsgDataBound,
 {
     fn clone(&self) -> Self {
         Self {

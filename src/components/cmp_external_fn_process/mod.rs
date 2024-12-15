@@ -28,7 +28,10 @@ type FnProcess<TMsg> = Box<dyn Fn(CmpInOut<TMsg>) -> LocalBoxFuture<'static, Cmp
 type FnProcess<TMsg> = Box<dyn Fn(CmpInOut<TMsg>) -> BoxFuture<'static, CmpResult> + Send + Sync>;
 
 /// Настройки cmp_external_fn_process
-pub struct Config<TMsg> {
+pub struct Config<TMsg>
+where
+    TMsg: MsgDataBound,
+{
     /// Внешняя функция для выполнения
     ///
     /// Выполняемую асинхронную функцию `fn_external` необходимо обернуть в функцию.
@@ -166,7 +169,10 @@ mod tests {
         {
             Box::pin(async { fn_process(in_out).await })
         }
-        async fn fn_process<TMsg>(_in_out: CmpInOut<TMsg>) -> CmpResult {
+        async fn fn_process<TMsg>(_in_out: CmpInOut<TMsg>) -> CmpResult
+        where
+            TMsg: MsgDataBound,
+        {
             loop {
                 info!("External fn process");
                 sleep(Duration::from_secs(2)).await;

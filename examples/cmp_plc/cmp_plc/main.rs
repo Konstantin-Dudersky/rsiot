@@ -11,7 +11,7 @@ mod fb2_example;
 #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 mod message;
 
-#[cfg(all(feature = "cmp_plc", not(feature = "single-thread")))]
+#[cfg(feature = "cmp_plc")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     use std::time::Duration;
@@ -81,5 +81,5 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[cfg(any(not(feature = "cmp_plc"), feature = "single-thread"))]
+#[cfg(not(feature = "cmp_plc"))]
 fn main() {}
