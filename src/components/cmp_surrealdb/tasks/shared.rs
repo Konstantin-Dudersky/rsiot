@@ -3,13 +3,13 @@ use tracing::{trace, warn};
 use crate::{
     components::cmp_surrealdb::config::{FnOnFailure, FnOnSuccess},
     executor::CmpInOut,
-    message::MsgDataBound,
+    message::{MsgDataBound, ServiceBound},
 };
 
 use super::super::DbClient;
 
-pub async fn execute_db_query<TMsg>(
-    in_out: CmpInOut<TMsg>,
+pub async fn execute_db_query<TMsg, TService>(
+    in_out: CmpInOut<TMsg, TService>,
     query: &str,
     db_client: DbClient,
     fn_on_success: FnOnSuccess<TMsg>,
@@ -17,6 +17,7 @@ pub async fn execute_db_query<TMsg>(
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     trace!("Execute db query: {}", query);
 

@@ -40,7 +40,7 @@ fn test_wasm() {
 
         let context = LocalSet::new();
         context.spawn_local(async move {
-            ComponentExecutor::<Custom>::new(config_executor)
+            ComponentExecutor::<Custom, Service>::new(config_executor)
                 .add_cmp(cmp_leptos::Cmp::new(config_leptos))
                 .wait_result()
                 .await?;

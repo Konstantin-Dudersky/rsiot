@@ -1,16 +1,20 @@
 use slint::ComponentHandle;
 use tokio::{sync::mpsc, task::JoinSet};
 
-use crate::{executor::CmpInOut, message::MsgDataBound};
+use crate::{
+    executor::CmpInOut,
+    message::{MsgDataBound, ServiceBound},
+};
 
 use super::{Config, Result};
 
-pub async fn fn_process<TMainWindow, TMsg>(
+pub async fn fn_process<TMainWindow, TMsg, TService>(
     config: Config<TMainWindow, TMsg>,
-    input: CmpInOut<TMsg>,
+    input: CmpInOut<TMsg, TService>,
 ) -> Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
     TMainWindow: ComponentHandle + 'static,
 {
     let mut task_set = JoinSet::new();
@@ -24,9 +28,12 @@ where
     Ok(())
 }
 
-async fn fn_input<TMainWindow, TMsg>(config: Config<TMainWindow, TMsg>, mut input: CmpInOut<TMsg>)
-where
+async fn fn_input<TMainWindow, TMsg, TService>(
+    config: Config<TMainWindow, TMsg>,
+    mut input: CmpInOut<TMsg, TService>,
+) where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
     TMainWindow: ComponentHandle,
 {
     while let Ok(msg) = input.recv_input().await {
@@ -35,9 +42,12 @@ where
     }
 }
 
-async fn fn_output<TMainWindow, TMsg>(config: Config<TMainWindow, TMsg>, input: CmpInOut<TMsg>)
-where
+async fn fn_output<TMainWindow, TMsg, TService>(
+    config: Config<TMainWindow, TMsg>,
+    input: CmpInOut<TMsg, TService>,
+) where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
     TMainWindow: ComponentHandle,
 {
     let (tx, mut rx) = mpsc::channel(100);

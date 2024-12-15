@@ -67,7 +67,7 @@ async fn main() {
     let local_set = LocalSet::new();
 
     local_set.spawn_local(async {
-        ComponentExecutor::<Custom>::new(executor_config)
+        ComponentExecutor::<Custom, Service>::new(executor_config)
             .add_cmp(cmp_inject_periodic::Cmp::new(inject_periodic_config))
             .add_cmp(cmp_logger::Cmp::new(logger_config))
             .add_cmp(cmp_esp_nvs::Cmp::new(storage_config))

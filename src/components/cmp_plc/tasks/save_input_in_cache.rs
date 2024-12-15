@@ -1,19 +1,21 @@
 use crate::{
     executor::{Cache, CmpInOut},
-    message::MsgDataBound,
+    message::{MsgDataBound, ServiceBound},
 };
 
-pub struct SaveInputInCache<TMsg>
+pub struct SaveInputInCache<TMsg, TService>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
-    pub in_out: CmpInOut<TMsg>,
+    pub in_out: CmpInOut<TMsg, TService>,
     pub input_msg_cache: Cache<TMsg>,
 }
 
-impl<TMsg> SaveInputInCache<TMsg>
+impl<TMsg, TService> SaveInputInCache<TMsg, TService>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
         while let Ok(msg) = self.in_out.recv_input().await {

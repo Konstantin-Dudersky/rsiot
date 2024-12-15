@@ -10,7 +10,7 @@ use tracing::{debug, error, info, trace, warn};
 
 use crate::{
     executor::{CmpInOut, ComponentError},
-    message::MsgDataBound,
+    message::{MsgDataBound, ServiceBound},
 };
 
 use super::{
@@ -18,12 +18,13 @@ use super::{
     error::Error,
 };
 
-pub async fn fn_process<TMessage>(
-    in_out: CmpInOut<TMessage>,
+pub async fn fn_process<TMessage, TService>(
+    in_out: CmpInOut<TMessage, TService>,
     config: Config<TMessage>,
 ) -> Result<(), ComponentError>
 where
     TMessage: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     if !config.enabled {
         loop {
@@ -34,7 +35,7 @@ where
 
     loop {
         info!("Starting modbus client, configuration: {:?}", config);
-        let res = task_main::<TMessage>(in_out.clone(), config.clone()).await;
+        let res = task_main(in_out.clone(), config.clone()).await;
         match res {
             Ok(_) => (),
             Err(err) => {
@@ -46,12 +47,13 @@ where
     }
 }
 
-async fn task_main<TMessage>(
-    in_out: CmpInOut<TMessage>,
+async fn task_main<TMessage, TService>(
+    in_out: CmpInOut<TMessage, TService>,
     config: Config<TMessage>,
 ) -> super::Result<()>
 where
     TMessage: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     let ctx = match config.connection_config {
         config::ClientType::Tcp(tcp_config) => {
@@ -72,11 +74,7 @@ where
 
     // Запускаем задачи периодических запросов
     for item in config.periodic_config {
-        set.spawn(task_periodic_request::<TMessage>(
-            in_out.clone(),
-            ctx.clone(),
-            item,
-        ));
+        set.spawn(task_periodic_request(in_out.clone(), ctx.clone(), item));
     }
     // Запускаем задачи запросов на основе входного потока сообщений
     for item in config.input_config {
@@ -89,13 +87,14 @@ where
 }
 
 /// Задача обработки периодического запроса
-async fn task_periodic_request<TMessage>(
-    in_out: CmpInOut<TMessage>,
+async fn task_periodic_request<TMessage, TService>(
+    in_out: CmpInOut<TMessage, TService>,
     ctx: Arc<Mutex<Context>>,
     periodic_config: config::PeriodicConfig<TMessage>,
 ) -> super::Result<()>
 where
     TMessage: MsgDataBound,
+    TService: ServiceBound,
 {
     loop {
         let begin = Instant::now();
@@ -119,13 +118,14 @@ where
 }
 
 /// Задача обработки запроса на основе входного потока сообщений
-async fn task_input_request<TMessage>(
-    mut in_out: CmpInOut<TMessage>,
+async fn task_input_request<TMessage, TService>(
+    mut in_out: CmpInOut<TMessage, TService>,
     ctx: Arc<Mutex<Context>>,
     input_config: config::InputConfig<TMessage>,
 ) -> super::Result<()>
 where
     TMessage: MsgDataBound,
+    TService: ServiceBound,
 {
     while let Ok(msg) = in_out.recv_input().await {
         let request = (input_config.fn_input)(&msg);
@@ -166,8 +166,8 @@ async fn modbus_request(
 }
 
 /// Обратываем ответ modbus
-async fn modbus_response<TMessage>(
-    output: CmpInOut<TMessage>,
+async fn modbus_response<TMessage, TService>(
+    output: CmpInOut<TMessage, TService>,
     request: &config::Request,
     response: &super::Result<config::Response>,
     fn_on_success: config::FnOnSuccess<TMessage>,
@@ -175,6 +175,7 @@ async fn modbus_response<TMessage>(
 ) -> super::Result<()>
 where
     TMessage: MsgDataBound,
+    TService: ServiceBound,
 {
     trace!("Modbus response: {:?}", response);
     let msgs = match response {

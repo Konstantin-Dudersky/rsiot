@@ -4,15 +4,15 @@
 //! cargo run --example cmp_plc --target x86_64-unknown-linux-gnu --features="cmp_plc"
 //! ```
 
-#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+// #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 mod fb1_example;
-#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+// #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 mod fb2_example;
-#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+// #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
 mod message;
 
 #[cfg(feature = "cmp_plc")]
-#[tokio::main]
+#[tokio::main(flavor = "current_thread")]
 async fn main() -> anyhow::Result<()> {
     use std::time::Duration;
 
@@ -71,7 +71,7 @@ async fn main() -> anyhow::Result<()> {
         delay_publish: Duration::from_millis(100),
     };
 
-    ComponentExecutor::<message::Data>::new(executor_config)
+    ComponentExecutor::<message::Data, Service>::new(executor_config)
         .add_cmp(cmp_plc::Cmp::new(plc_config))
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .add_cmp(cmp_inject_periodic::Cmp::new(config_inject_periodic))

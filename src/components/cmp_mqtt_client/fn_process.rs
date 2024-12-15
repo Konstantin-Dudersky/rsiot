@@ -5,13 +5,18 @@ use rumqttc::{AsyncClient, MqttOptions};
 use tokio::{task::JoinSet, time::sleep};
 use tracing::{error, info};
 
+use crate::message::ServiceBound;
 use crate::{executor::CmpInOut, message::MsgDataBound};
 
 use super::{tasks, Config};
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg, TService>(
+    config: Config<TMsg>,
+    in_out: CmpInOut<TMsg, TService>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     loop {
         info!("Starting");
@@ -27,9 +32,13 @@ where
     }
 }
 
-async fn main<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> super::Result<()>
+async fn main<TMsg, TService>(
+    config: Config<TMsg>,
+    in_out: CmpInOut<TMsg, TService>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     let mut mqttoptions = MqttOptions::new(config.client_id, config.host, config.port);
     mqttoptions.set_keep_alive(Duration::from_secs(50000)); // TODO - прерывает обмен

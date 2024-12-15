@@ -14,9 +14,13 @@ use crate::{
 
 use super::{token_payload::TokenPayload, Config, ConfigStore, ConfigStoreLocalItem, Error};
 
-pub async fn fn_process<TMsg>(config: Config, in_out: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg, TService>(
+    config: Config,
+    in_out: CmpInOut<TMsg, TService>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound,
 {
     loop {
         let result = task_main(config.clone(), in_out.clone()).await;
@@ -26,9 +30,13 @@ where
     }
 }
 
-async fn task_main<TMsg>(config: Config, mut in_out: CmpInOut<TMsg>) -> super::Result<()>
+async fn task_main<TMsg, TService>(
+    config: Config,
+    mut in_out: CmpInOut<TMsg, TService>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound,
 {
     while let Ok(msg) = in_out.recv_input().await {
         let msg_response = match msg.data {

@@ -34,7 +34,7 @@ pub async fn publish() {
         fn_output: |_| Ok(None),
     };
 
-    ComponentExecutor::<message::Custom>::new(config_executor)
+    ComponentExecutor::new(config_executor)
         .add_cmp(cmp_mqtt_client::Cmp::new(config_mqtt_client))
         .add_cmp(cmp_inject_periodic::Cmp::new(config_inject_periodic))
         .wait_result()

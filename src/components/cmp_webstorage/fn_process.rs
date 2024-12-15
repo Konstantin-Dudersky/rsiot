@@ -9,9 +9,13 @@ use crate::{
 
 use super::{tasks, Config};
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg, TService>(
+    config: Config<TMsg>,
+    msg_bus: CmpInOut<TMsg, TService>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
 

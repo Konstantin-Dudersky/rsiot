@@ -10,23 +10,24 @@ use tokio::task::JoinSet;
 use tracing::{error, info};
 use url::Url;
 
-use crate::message::{Message, MsgDataBound};
+use crate::message::{Message, MsgDataBound, ServiceBound};
 
 use crate::executor::CmpInOut;
 
 use super::{config::config, error::Error};
 
-pub async fn fn_process<TMessage>(
-    input: CmpInOut<TMessage>,
+pub async fn fn_process<TMessage, TService>(
+    input: CmpInOut<TMessage, TService>,
     config: config::Config<TMessage>,
 ) -> super::Result<()>
 where
     TMessage: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     info!("Starting http-client-wasm, configuration: {:?}", config);
 
     loop {
-        let res = task_main::<TMessage>(input.clone(), config.clone()).await;
+        let res = task_main(input.clone(), config.clone()).await;
         match res {
             Ok(_) => (),
             Err(err) => {
@@ -38,12 +39,13 @@ where
     }
 }
 
-async fn task_main<TMessage>(
-    in_out: CmpInOut<TMessage>,
+async fn task_main<TMessage, TService>(
+    in_out: CmpInOut<TMessage, TService>,
     config: config::Config<TMessage>,
 ) -> super::Result<()>
 where
     TMessage: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     // Парсим url
     let url = Url::parse(&config.connection_config.base_url);
@@ -59,7 +61,7 @@ where
     let mut task_set = JoinSet::<super::Result<()>>::new();
     // запускаем периодические запросы
     for req in config.requests_periodic {
-        let future = task_periodic_request::<TMessage>(in_out.clone(), req, url.clone());
+        let future = task_periodic_request(in_out.clone(), req, url.clone());
         task_set.spawn_local(future);
     }
     for item in config.requests_input {
@@ -75,13 +77,14 @@ where
 }
 
 /// Задача обработки запросов на основе входящего потока сообщений
-async fn task_input_request<TMessage>(
-    mut in_out: CmpInOut<TMessage>,
+async fn task_input_request<TMessage, TService>(
+    mut in_out: CmpInOut<TMessage, TService>,
     url: Url,
     config: config::RequestInput<TMessage>,
 ) -> super::Result<()>
 where
     TMessage: MsgDataBound,
+    TService: ServiceBound,
 {
     while let Ok(msg) = in_out.recv_input().await {
         let http_param = (config.fn_input)(&msg);
@@ -100,13 +103,14 @@ where
 }
 
 /// Задача обработки периодического запроса
-async fn task_periodic_request<TMessage>(
-    output: CmpInOut<TMessage>,
+async fn task_periodic_request<TMessage, TService>(
+    output: CmpInOut<TMessage, TService>,
     config: config::RequestPeriodic<TMessage>,
     url: Url,
 ) -> super::Result<()>
 where
     TMessage: MsgDataBound,
+    TService: ServiceBound,
 {
     loop {
         let begin = Instant::now();

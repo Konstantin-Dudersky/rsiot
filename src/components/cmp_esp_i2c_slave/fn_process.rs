@@ -15,7 +15,7 @@ use tracing::debug;
 use crate::{
     components::{cmp_esp_i2c_slave::tasks, shared_tasks},
     executor::{join_set_spawn, CmpInOut},
-    message::MsgDataBound,
+    message::{MsgDataBound, ServiceBound},
 };
 
 use super::{BufferData, Config, Error};
@@ -23,9 +23,9 @@ use super::{BufferData, Config, Error};
 /// Размер буферов приема и отправки
 const BUFFER_LEN: usize = 128;
 
-pub async fn fn_process<TMsg, TI2c, TPeripheral, TI2cRequest, TI2cResponse, TBufferData>(
+pub async fn fn_process<TMsg, TI2c, TPeripheral, TI2cRequest, TI2cResponse, TBufferData, TService>(
     config: Config<TMsg, TI2c, TPeripheral, TI2cRequest, TI2cResponse, TBufferData>,
-    msg_bus: CmpInOut<TMsg>,
+    msg_bus: CmpInOut<TMsg, TService>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
@@ -34,6 +34,7 @@ where
     TI2cRequest: Debug + DeserializeOwned + 'static,
     TI2cResponse: Debug + Serialize + 'static,
     TBufferData: BufferData + 'static,
+    TService: ServiceBound + 'static,
 {
     let i2c_idf_config = I2cSlaveConfig::new()
         .sda_enable_pullup(false)

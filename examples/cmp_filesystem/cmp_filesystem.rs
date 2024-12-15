@@ -67,7 +67,7 @@ async fn main() {
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
     };
-    ComponentExecutor::<Custom>::new(config_executor)
+    ComponentExecutor::new(config_executor)
         .add_cmp(cmp_inject_periodic::Cmp::new(config_inject_periodic))
         .add_cmp(cmp_filesystem::Cmp::new(config_filesystem))
         .add_cmp(cmp_logger::Cmp::new(config_logger))

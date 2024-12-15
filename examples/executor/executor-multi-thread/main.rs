@@ -32,7 +32,7 @@ async fn main() {
         delay_publish: Duration::from_millis(100),
     };
 
-    ComponentExecutor::<Data>::new(executor_config)
+    ComponentExecutor::<Data, Service>::new(executor_config)
         .add_cmp(example_component1::Cmp::new(example_component1::Config {}))
         .add_cmp(example_component2::Cmp::new(example_component2::Config {}))
         .wait_result()

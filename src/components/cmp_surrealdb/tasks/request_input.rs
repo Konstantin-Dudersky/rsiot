@@ -1,21 +1,25 @@
 use crate::{
-    components::cmp_surrealdb::RequestInputConfig, executor::CmpInOut, message::MsgDataBound,
+    components::cmp_surrealdb::RequestInputConfig,
+    executor::CmpInOut,
+    message::{MsgDataBound, ServiceBound},
 };
 
 use super::{super::DbClient, shared::execute_db_query};
 
-pub struct RequestInput<TMsg>
+pub struct RequestInput<TMsg, TService>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
-    pub in_out: CmpInOut<TMsg>,
+    pub in_out: CmpInOut<TMsg, TService>,
     pub input_config: RequestInputConfig<TMsg>,
     pub db_client: DbClient,
 }
 
-impl<TMsg> RequestInput<TMsg>
+impl<TMsg, TService> RequestInput<TMsg, TService>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
         while let Ok(msg) = self.in_out.recv_input().await {

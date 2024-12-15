@@ -6,7 +6,7 @@ use gloo::{
 };
 use leptos::prelude::*;
 use tokio::task::JoinSet;
-use tracing::{debug, info, trace};
+use tracing::{debug, trace};
 
 use crate::{
     executor::CmpInOut,
@@ -18,14 +18,15 @@ use super::{
     Config,
 };
 
-pub async fn fn_process<TMsg, TView, TIntoView>(
+pub async fn fn_process<TMsg, TView, TIntoView, TService>(
     config: Config<TView, TIntoView>,
-    in_out: CmpInOut<TMsg>,
+    in_out: CmpInOut<TMsg, TService>,
 ) -> Result
 where
     TMsg: MsgDataBound + 'static,
     TView: Fn() -> TIntoView + 'static,
     TIntoView: IntoView,
+    TService: ServiceBound + 'static,
 {
     let hostname = utils::define_hostname().unwrap();
 
@@ -55,9 +56,13 @@ where
     Ok(())
 }
 
-async fn task_input<TMsg>(mut input: CmpInOut<TMsg>, global_state: GlobalState<TMsg>) -> Result
+async fn task_input<TMsg, TService>(
+    mut input: CmpInOut<TMsg, TService>,
+    global_state: GlobalState<TMsg>,
+) -> Result
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     while let Ok(msg) = input.recv_input().await {
         trace!("New message in Leptos input: {}", msg.key);
@@ -83,9 +88,13 @@ where
     Ok(())
 }
 
-async fn task_output<TMsg>(output: CmpInOut<TMsg>, global_state: GlobalState<TMsg>) -> Result
+async fn task_output<TMsg, TService>(
+    output: CmpInOut<TMsg, TService>,
+    global_state: GlobalState<TMsg>,
+) -> Result
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     if let Some(msg) = try_to_find_token() {
         output.send_output(msg).await.map_err(Error::CmpOutput)?;

@@ -5,12 +5,13 @@ use crate::message::*;
 use super::super::{error::Error, shared_state::TSharedState};
 
 /// Маршрут для получения сообщений
-pub async fn get<TMsg>(
+pub async fn get<TMsg, TService>(
     extract::Path(key): extract::Path<String>,
-    extract::State(shared_state): extract::State<TSharedState<TMsg>>,
+    extract::State(shared_state): extract::State<TSharedState<TMsg, TService>>,
 ) -> Result<String, Error>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     let shared_state = shared_state.lock().await;
 

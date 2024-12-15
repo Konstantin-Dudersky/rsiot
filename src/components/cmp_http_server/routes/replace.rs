@@ -1,16 +1,17 @@
 use axum::extract;
 
-use crate::message::MsgDataBound;
+use crate::message::{MsgDataBound, ServiceBound};
 
 use super::super::{error::Error, shared_state::TSharedState};
 
 /// Маршрут для ввода сообщений
-pub async fn replace<TMsg>(
-    extract::State(shared_state): extract::State<TSharedState<TMsg>>,
+pub async fn replace<TMsg, TService>(
+    extract::State(shared_state): extract::State<TSharedState<TMsg, TService>>,
     body: String,
 ) -> Result<(), Error>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     let shared_state = shared_state.lock().await;
 

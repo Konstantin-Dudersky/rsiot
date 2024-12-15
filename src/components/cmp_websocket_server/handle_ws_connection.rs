@@ -23,12 +23,13 @@ use super::{
 };
 
 /// Создание и управление подключением между сервером и клиентом
-pub async fn handle_ws_connection<TMsg>(
-    input: CmpInOut<TMsg>,
+pub async fn handle_ws_connection<TMsg, TService>(
+    input: CmpInOut<TMsg, TService>,
     config: Config<TMsg>,
     stream_and_addr: (TcpStream, SocketAddr),
 ) where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     let addr = stream_and_addr.1;
     let result = _handle_ws_connection(input, stream_and_addr, config).await;
@@ -41,13 +42,14 @@ pub async fn handle_ws_connection<TMsg>(
     info!("Connection closed");
 }
 
-async fn _handle_ws_connection<TMsg>(
-    in_out: CmpInOut<TMsg>,
+async fn _handle_ws_connection<TMsg, TService>(
+    in_out: CmpInOut<TMsg, TService>,
     stream_and_addr: (TcpStream, SocketAddr),
     config: Config<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     info!("Incoming TCP connection from: {}", stream_and_addr.1);
     let ws_stream = accept_async(stream_and_addr.0).await?;
@@ -97,12 +99,13 @@ where
 }
 
 /// При подключении нового клиента отправляем все данные из кеша
-async fn send_prepare_cache<TMsg>(
-    mut in_out: CmpInOut<TMsg>,
+async fn send_prepare_cache<TMsg, TService>(
+    mut in_out: CmpInOut<TMsg, TService>,
     output: mpsc::Sender<Message<TMsg>>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     loop {
         debug!("Sending cache to client started");
@@ -122,12 +125,13 @@ where
 }
 
 /// При получении новых сообщений, отправляем клиенту
-async fn send_prepare_new_msgs<TMsg>(
-    mut input: CmpInOut<TMsg>,
+async fn send_prepare_new_msgs<TMsg, TService>(
+    mut input: CmpInOut<TMsg, TService>,
     output: mpsc::Sender<Message<TMsg>>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     debug!("Sending messages to client started");
     while let Ok(msg) = input.recv_input().await {
@@ -159,14 +163,15 @@ async fn send_to_client<TMsg>(
 }
 
 /// Получение данных от клиента
-async fn recv_from_client<TMsg>(
+async fn recv_from_client<TMsg, TService>(
     mut ws_stream_read: SplitStream<WebSocketStream<TcpStream>>,
-    in_out: CmpInOut<TMsg>,
+    in_out: CmpInOut<TMsg, TService>,
     fn_output: FnOutput<TMsg>,
     send_to_client_tx: mpsc::Sender<Message<TMsg>>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     while let Some(data) = ws_stream_read.next().await {
         let data = data?.into_text()?;

@@ -3,24 +3,25 @@ use leptos::*;
 
 use crate::{
     executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    message::{AuthPermissions, MsgDataBound, ServiceBound},
 };
 
 use super::{fn_process::fn_process, Config};
 
 #[cfg(feature = "single-thread")]
 #[async_trait(?Send)]
-impl<TMsg, TView, TIntoView> IComponentProcess<Config<TView, TIntoView>, TMsg>
-    for Component<Config<TView, TIntoView>, TMsg>
+impl<TMsg, TView, TIntoView, TService> IComponentProcess<Config<TView, TIntoView>, TMsg, TService>
+    for Component<Config<TView, TIntoView>, TMsg, TService>
 where
     TMsg: MsgDataBound + 'static,
     TView: Fn() -> TIntoView + 'static,
     TIntoView: IntoView,
+    TService: ServiceBound + 'static,
 {
     async fn process(
         &self,
         config: Config<TView, TIntoView>,
-        input: CmpInOut<TMsg>,
+        input: CmpInOut<TMsg, TService>,
     ) -> Result<(), ComponentError> {
         fn_process(
             config,
@@ -32,4 +33,5 @@ where
 }
 
 /// Компонент cmp_leptos
-pub type Cmp<TMsg, TView, TIntoView> = Component<Config<TView, TIntoView>, TMsg>;
+pub type Cmp<TMsg, TView, TIntoView, TService> =
+    Component<Config<TView, TIntoView>, TMsg, TService>;

@@ -1,22 +1,24 @@
 use crate::{
     executor::CmpInOut,
-    message::{Message, MsgDataBound},
+    message::{Message, MsgDataBound, ServiceBound},
 };
 
 use super::super::{shared_state::TSharedState, ConfigCmpPlcData};
 
-pub struct CmpPlcData<TMsg>
+pub struct CmpPlcData<TMsg, TService>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
-    pub input: CmpInOut<TMsg>,
-    pub shared_state: TSharedState<TMsg>,
+    pub input: CmpInOut<TMsg, TService>,
+    pub shared_state: TSharedState<TMsg, TService>,
     pub fn_input: fn(&Message<TMsg>) -> ConfigCmpPlcData,
 }
 
-impl<TMsg> CmpPlcData<TMsg>
+impl<TMsg, TService> CmpPlcData<TMsg, TService>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
         while let Ok(msg) = self.input.recv_input().await {

@@ -1,21 +1,25 @@
 use crate::{
-    components::cmp_surrealdb::RequestStartConfig, executor::CmpInOut, message::MsgDataBound,
+    components::cmp_surrealdb::RequestStartConfig,
+    executor::CmpInOut,
+    message::{MsgDataBound, ServiceBound},
 };
 
 use super::{super::DbClient, shared::execute_db_query};
 
-pub struct RequestStart<TMsg>
+pub struct RequestStart<TMsg, TService>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
-    pub in_out: CmpInOut<TMsg>,
+    pub in_out: CmpInOut<TMsg, TService>,
     pub start_config: RequestStartConfig<TMsg>,
     pub db_client: DbClient,
 }
 
-impl<TMsg> RequestStart<TMsg>
+impl<TMsg, TService> RequestStart<TMsg, TService>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     pub async fn spawn(self) -> super::Result<()> {
         let query = self.start_config.query;

@@ -5,16 +5,20 @@ use tokio::{task::JoinSet, time::sleep};
 
 use crate::{
     executor::CmpInOut,
-    message::{Message, MsgDataBound},
+    message::{Message, MsgDataBound, ServiceBound},
 };
 
 use super::{Config, Error, PullMode};
 
 const INPUT_READ_DELAY: Duration = Duration::from_millis(100);
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg, TService>(
+    config: Config<TMsg>,
+    in_out: CmpInOut<TMsg, TService>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     let gpio = Gpio::new()?;
 
@@ -50,13 +54,14 @@ where
 ///
 /// В данной реализации просто периодически считывает состояние. Если в библиотеке `rppal` появится
 /// возможность ожидать переключения в точке await - нужно переделать
-async fn input_pin<TMsg>(
+async fn input_pin<TMsg, TService>(
     pin: InputPin,
     fn_output: fn(bool) -> Message<TMsg>,
-    in_out: CmpInOut<TMsg>,
+    in_out: CmpInOut<TMsg, TService>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     let mut prev_level: Option<bool> = None;
     loop {
@@ -89,14 +94,15 @@ where
 }
 
 /// Функция записи одного выхода
-async fn output_pin<TMsg>(
+async fn output_pin<TMsg, TService>(
     mut pin: OutputPin,
     fn_input: fn(Message<TMsg>) -> Option<bool>,
-    mut in_out: CmpInOut<TMsg>,
+    mut in_out: CmpInOut<TMsg, TService>,
     is_low_triggered: bool,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     // Значение по-умолчанию
     if is_low_triggered {

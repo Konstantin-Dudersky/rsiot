@@ -11,17 +11,18 @@ use url::Url;
 
 use crate::{
     executor::CmpInOut,
-    message::{Message, MsgDataBound},
+    message::{Message, MsgDataBound, ServiceBound},
 };
 
 use super::{config, Error};
 
-pub async fn fn_process<TMsg>(
+pub async fn fn_process<TMsg, TService>(
     config: config::Config<TMsg>,
-    in_out: CmpInOut<TMsg>,
+    in_out: CmpInOut<TMsg, TService>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     // Необходимо подождать, пока поднимется Wi-Fi
     sleep(Duration::from_secs(2)).await;
@@ -29,7 +30,7 @@ where
     info!("Starting http-client, configuration: {:?}", config);
 
     loop {
-        let res = task_main::<TMsg>(in_out.clone(), config.clone()).await;
+        let res = task_main(in_out.clone(), config.clone()).await;
         match res {
             Ok(_) => (),
             Err(err) => {
@@ -42,9 +43,13 @@ where
 }
 
 /// Основная задача
-async fn task_main<TMsg>(in_out: CmpInOut<TMsg>, config: config::Config<TMsg>) -> super::Result<()>
+async fn task_main<TMsg, TService>(
+    in_out: CmpInOut<TMsg, TService>,
+    config: config::Config<TMsg>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     let mut set = JoinSet::<super::Result<()>>::new();
 
@@ -61,7 +66,7 @@ where
 
     // запускаем периодические запросы
     for req in config.requests_periodic {
-        let future = task_periodic_request::<TMsg>(in_out.clone(), req, url.clone());
+        let future = task_periodic_request(in_out.clone(), req, url.clone());
         set.spawn_local(future);
     }
     // Запускаем задачи запросов на основе входного потока сообщений
@@ -80,13 +85,14 @@ where
 }
 
 /// Задача обработки периодического запроса
-async fn task_periodic_request<TMsg>(
-    in_out: CmpInOut<TMsg>,
+async fn task_periodic_request<TMsg, TService>(
+    in_out: CmpInOut<TMsg, TService>,
     config: config::RequestPeriodic<TMsg>,
     url: Url,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     loop {
         let begin = Instant::now();

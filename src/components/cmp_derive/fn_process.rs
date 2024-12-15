@@ -5,9 +5,13 @@ use crate::message::*;
 
 use super::{Config, DeriveItemProcess, Error};
 
-pub async fn fn_process<TMsg>(in_out: CmpInOut<TMsg>, config: Config<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg, TService>(
+    in_out: CmpInOut<TMsg, TService>,
+    config: Config<TMsg>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     let mut task_set = JoinSet::new();
 
@@ -24,12 +28,13 @@ where
     Ok(())
 }
 
-async fn task_process_derive_item<TMsg>(
-    mut in_out: CmpInOut<TMsg>,
+async fn task_process_derive_item<TMsg, TService>(
+    mut in_out: CmpInOut<TMsg, TService>,
     mut derive_item: Box<dyn DeriveItemProcess<TMsg>>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     while let Ok(msg) = in_out.recv_input().await {
         let msgs = derive_item.process(&msg);

@@ -5,22 +5,23 @@ use url::Url;
 
 use crate::{
     executor::{CmpInOut, ComponentError},
-    message::MsgDataBound,
+    message::{MsgDataBound, ServiceBound},
 };
 
 use super::{config::Config, error::Error, model::Row};
 
-pub async fn fn_process<TMessage>(
-    mut input: CmpInOut<TMessage>,
+pub async fn fn_process<TMessage, TService>(
+    mut input: CmpInOut<TMessage, TService>,
     config: Config,
 ) -> Result<(), ComponentError>
 where
     TMessage: MsgDataBound,
+    TService: ServiceBound,
 {
     info!("Start timescaledb-storing");
 
     loop {
-        let result = task_main::<TMessage>(&mut input, &config.connection_string).await;
+        let result = task_main(&mut input, &config.connection_string).await;
         match result {
             Ok(_) => (),
             Err(err) => error!("{:?}", err),
@@ -30,12 +31,13 @@ where
     }
 }
 
-async fn task_main<TMessage>(
-    input: &mut CmpInOut<TMessage>,
+async fn task_main<TMessage, TService>(
+    input: &mut CmpInOut<TMessage, TService>,
     connection_string: &Url,
 ) -> Result<(), Error>
 where
     TMessage: MsgDataBound,
+    TService: ServiceBound,
 {
     let pool = PgPoolOptions::new()
         .max_connections(5)
@@ -56,7 +58,7 @@ async fn save_row_in_db(row: &Row, pool: &Pool<Postgres>) -> Result<(), Error> {
     trace!("Save row in database: {:?}", row);
     query(
         r#"
-INSERT INTO raw 
+INSERT INTO raw
 VALUES ($1, $2, $3, $4, $5::agg_type, $6, $7)
 ON CONFLICT (ts, entity, attr, agg) DO UPDATE
     SET value = excluded.value,

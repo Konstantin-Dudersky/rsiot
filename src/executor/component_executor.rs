@@ -16,12 +16,13 @@ use super::{
 const UPDATE_TTL_PERIOD: Duration = Duration::from_millis(200);
 
 /// Запуск коллекции компонентов в работу
-pub struct ComponentExecutor<TMsg>
+pub struct ComponentExecutor<TMsg, TService>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     task_set: JoinSet<Result<(), ComponentError>>,
-    cmp_in_out: CmpInOut<TMsg>,
+    cmp_in_out: CmpInOut<TMsg, TService>,
 }
 
 /// Настройка исполнителя
@@ -60,12 +61,13 @@ where
     pub delay_publish: Duration,
 }
 
-impl<TMsg> ComponentExecutor<TMsg>
+impl<TMsg, TService> ComponentExecutor<TMsg, TService>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound,
 {
     /// Создание коллекции компонентов
-    pub fn new<TService>(config: ComponentExecutorConfig<TMsg, TService>) -> Self
+    pub fn new(config: ComponentExecutorConfig<TMsg, TService>) -> Self
     where
         TService: ServiceBound + 'static,
     {
@@ -101,6 +103,7 @@ where
             id,
             AuthPermissions::default(),
             config.fn_auth,
+            config.service,
         );
 
         Self {
@@ -111,7 +114,10 @@ where
 
     /// Добавить компонент
     #[cfg(not(feature = "single-thread"))]
-    pub fn add_cmp(mut self, mut component: impl IComponent<TMsg> + Send + 'static) -> Self {
+    pub fn add_cmp(
+        mut self,
+        mut component: impl IComponent<TMsg, TService> + Send + 'static,
+    ) -> Self {
         component.set_interface(self.cmp_in_out.clone());
 
         self.task_set.spawn(async move { component.spawn().await });
@@ -120,7 +126,7 @@ where
     }
     /// Добавить компонент (?Send)
     #[cfg(feature = "single-thread")]
-    pub fn add_cmp(mut self, mut component: impl IComponent<TMsg> + 'static) -> Self {
+    pub fn add_cmp(mut self, mut component: impl IComponent<TMsg, TService> + 'static) -> Self {
         component.set_interface(self.cmp_in_out.clone());
 
         self.task_set

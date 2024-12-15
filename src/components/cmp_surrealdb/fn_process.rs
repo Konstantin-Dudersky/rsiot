@@ -6,17 +6,18 @@ use tracing::{debug, error, info};
 
 use crate::{
     executor::{CmpInOut, ComponentError},
-    message::MsgDataBound,
+    message::{MsgDataBound, ServiceBound},
 };
 
 use super::{tasks, Config, DbClient};
 
-pub async fn fn_process<TMsg>(
-    input: CmpInOut<TMsg>,
+pub async fn fn_process<TMsg, TService>(
+    input: CmpInOut<TMsg, TService>,
     config: Config<TMsg>,
 ) -> Result<(), ComponentError>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     info!("Starting Surrealdb");
     loop {
@@ -30,9 +31,13 @@ where
     }
 }
 
-async fn task_main<TMsg>(input: CmpInOut<TMsg>, config: &Config<TMsg>) -> super::Result<()>
+async fn task_main<TMsg, TService>(
+    input: CmpInOut<TMsg, TService>,
+    config: &Config<TMsg>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     let db = connect(config).await?;
     init_script(config, db.clone()).await?;

@@ -97,7 +97,7 @@ async fn main() -> anyhow::Result<()> {
         delay_publish: Duration::from_millis(100),
     };
 
-    ComponentExecutor::<Data>::new(executor_config)
+    ComponentExecutor::<Data, Service>::new(executor_config)
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
         .add_cmp(cmp_websocket_client::Cmp::new(ws_client))

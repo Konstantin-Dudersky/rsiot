@@ -47,7 +47,7 @@ async fn main() -> anyhow::Result<()> {
         delay_publish: Duration::from_millis(100),
     };
 
-    ComponentExecutor::<Custom>::new(executor_config)
+    ComponentExecutor::<Custom, Service>::new(executor_config)
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .add_cmp(cmp_auth::Cmp::new(auth_config))
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_periodic_config))

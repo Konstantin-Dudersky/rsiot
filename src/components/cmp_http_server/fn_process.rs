@@ -11,18 +11,19 @@ use tracing::{info, Level};
 
 use crate::{
     executor::{join_set_spawn, CmpInOut, ComponentError},
-    message::MsgDataBound,
+    message::{MsgDataBound, ServiceBound},
 };
 
 use super::{config::Config, routes, shared_state::SharedState, tasks};
 
 /// Компонент для получения и ввода сообщений через HTTP Server
-pub async fn fn_process<TMsg>(
-    msg_bus: CmpInOut<TMsg>,
+pub async fn fn_process<TMsg, TService>(
+    msg_bus: CmpInOut<TMsg, TService>,
     config: Config<TMsg>,
 ) -> Result<(), ComponentError>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     info!("Component started, configuration: {:?}", config);
 
@@ -59,12 +60,12 @@ where
 
     let router = routing::Router::new()
         .route("/", routing::get(routes::root))
-        .route("/messages", routing::get(routes::list::<TMsg>))
-        .route("/messages/:id", routing::get(routes::get::<TMsg>))
-        .route("/messages", routing::put(routes::replace::<TMsg>))
-        .route("/plc/input", routing::get(routes::plc_input::<TMsg>))
-        .route("/plc/output", routing::get(routes::plc_output::<TMsg>))
-        .route("/plc/static", routing::get(routes::plc_static::<TMsg>))
+        .route("/messages", routing::get(routes::list))
+        .route("/messages/:id", routing::get(routes::get))
+        .route("/messages", routing::put(routes::replace))
+        .route("/plc/input", routing::get(routes::plc_input))
+        .route("/plc/output", routing::get(routes::plc_output))
+        .route("/plc/static", routing::get(routes::plc_static))
         .with_state(shared_state)
         .layer(layer_cors)
         .layer(layer_trace);

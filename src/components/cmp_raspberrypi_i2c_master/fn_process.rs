@@ -5,14 +5,18 @@ use tokio::{sync::Mutex, task::JoinSet};
 use crate::{
     drivers_i2c,
     executor::{join_set_spawn, CmpInOut},
-    message::MsgDataBound,
+    message::{MsgDataBound, ServiceBound},
 };
 
 use super::{rsiot_i2c_driver::RsiotI2cDriver, Config};
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg, TService>(
+    config: Config<TMsg>,
+    in_out: CmpInOut<TMsg, TService>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     let driver = Arc::new(Mutex::new(RsiotI2cDriver::new().unwrap()));
 

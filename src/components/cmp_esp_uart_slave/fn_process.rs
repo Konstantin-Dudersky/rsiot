@@ -19,13 +19,14 @@ use crate::{
         shared_tasks::{filter_identical_data, mpsc_to_msgbus},
     },
     executor::{join_set_spawn, CmpInOut},
-    message::MsgDataBound,
+    message::{MsgDataBound, ServiceBound},
 };
 
 use super::{tasks, Config, RequestResponseBound};
 
 pub async fn fn_process<
     TMsg,
+    TService,
     TUart,
     TPeripheral,
     TRequest,
@@ -34,10 +35,11 @@ pub async fn fn_process<
     const MESSAGE_LEN: usize,
 >(
     config: Config<TMsg, TUart, TPeripheral, TRequest, TResponse, TBufferData, MESSAGE_LEN>,
-    msg_bus: CmpInOut<TMsg>,
+    msg_bus: CmpInOut<TMsg, TService>,
 ) -> super::Result<()>
 where
     TMsg: 'static + MsgDataBound,
+    TService: ServiceBound + 'static,
     TUart: Peripheral<P = TPeripheral> + 'static,
     TPeripheral: Uart,
     TRequest: 'static + RequestResponseBound,

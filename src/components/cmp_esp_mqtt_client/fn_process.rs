@@ -6,14 +6,18 @@ use tracing::{info, warn};
 
 use crate::{
     executor::CmpInOut,
-    message::{system_messages, MsgData, MsgDataBound},
+    message::{system_messages, MsgData, MsgDataBound, ServiceBound},
 };
 
 use super::{tasks, Config};
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, mut in_out: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg, TService>(
+    config: Config<TMsg>,
+    mut in_out: CmpInOut<TMsg, TService>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     // Необходимо подождать, пока поднимется Wi-Fi
     while let Ok(msg) = in_out.recv_input().await {
@@ -26,9 +30,13 @@ where
     Ok(())
 }
 
-async fn main_loop<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> super::Result<()>
+async fn main_loop<TMsg, TService>(
+    config: Config<TMsg>,
+    in_out: CmpInOut<TMsg, TService>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     loop {
         info!("Starting MQTT");

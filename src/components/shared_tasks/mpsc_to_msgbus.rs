@@ -4,24 +4,26 @@ use tokio::sync::mpsc;
 
 use crate::{
     executor::{CmpInOut, ComponentError},
-    message::{Message, MsgDataBound},
+    message::{Message, MsgDataBound, ServiceBound},
 };
 
 /// Задача перенаправления сообщений из канала `mpsc` в `CmpInOut`
-pub struct MpscToMsgBus<TMsg>
+pub struct MpscToMsgBus<TMsg, TService>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     /// Входящие сообщения
     pub input: mpsc::Receiver<Message<TMsg>>,
 
     /// Исходящие сообщения, шина сообщений между компонентами
-    pub cmp_in_out: CmpInOut<TMsg>,
+    pub cmp_in_out: CmpInOut<TMsg, TService>,
 }
 
-impl<TMsg> MpscToMsgBus<TMsg>
+impl<TMsg, TService> MpscToMsgBus<TMsg, TService>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     /// Запуск на выполнение
     pub async fn spawn(mut self) -> Result<(), Error> {

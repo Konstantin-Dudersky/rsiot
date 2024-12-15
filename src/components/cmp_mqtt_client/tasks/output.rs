@@ -2,21 +2,25 @@ use rumqttc::{Event, EventLoop, Packet};
 use tracing::warn;
 
 use crate::{
-    components_config::mqtt_client::ConfigFnOutput, executor::CmpInOut, message::MsgDataBound,
+    components_config::mqtt_client::ConfigFnOutput,
+    executor::CmpInOut,
+    message::{MsgDataBound, ServiceBound},
 };
 
-pub struct Output<TMsg>
+pub struct Output<TMsg, TService>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
-    pub in_out: CmpInOut<TMsg>,
+    pub in_out: CmpInOut<TMsg, TService>,
     pub config_fn_output: ConfigFnOutput<TMsg>,
     pub eventloop: EventLoop,
 }
 
-impl<TMsg> Output<TMsg>
+impl<TMsg, TService> Output<TMsg, TService>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
         while let Ok(notification) = self.eventloop.poll().await {

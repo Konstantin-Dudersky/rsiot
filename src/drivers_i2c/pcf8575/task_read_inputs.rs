@@ -6,23 +6,28 @@ use tokio::{sync::Mutex, time::sleep};
 use crate::{
     drivers_i2c::{I2cSlaveAddress, RsiotI2cDriverBase},
     executor::CmpInOut,
-    message::MsgDataBound,
+    message::{MsgDataBound, ServiceBound},
 };
 
 use super::{state::State, TPinFnOutput};
 
 /// Чтение и обработка входов
-pub struct TaskReadInputs<TMsg, Driver> {
-    pub in_out: CmpInOut<TMsg>,
+pub struct TaskReadInputs<TMsg, TService, Driver>
+where
+    TMsg: MsgDataBound,
+    TService: ServiceBound,
+{
+    pub in_out: CmpInOut<TMsg, TService>,
     pub driver: Arc<Mutex<Driver>>,
     pub address: I2cSlaveAddress,
     pub pin_and_fn_output: TPinFnOutput<TMsg>,
     pub state: State,
 }
 
-impl<TMsg, Driver> TaskReadInputs<TMsg, Driver>
+impl<TMsg, TService, Driver> TaskReadInputs<TMsg, TService, Driver>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
     Driver: RsiotI2cDriverBase,
 {
     pub async fn spawn(&self) -> Result<(), String> {

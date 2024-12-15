@@ -161,6 +161,7 @@ executor = ["dep:async-trait", "dep:futures", "dep:tokio"]
 
 ## Настройка логгирования сообщений
 logging = [
+    "dep:console_error_panic_hook",
     "dep:log",
     "dep:openssl",
     "dep:tokio",
@@ -216,7 +217,6 @@ cmp_filesystem = ["executor", "tokio?/fs"]
 ## Компонент для создания интерфейсов на базе Leptos
 cmp_leptos = [
     "executor",
-    "dep:console_error_panic_hook",
     "dep:leptos",
     "dep:palette",
     "dep:url",

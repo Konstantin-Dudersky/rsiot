@@ -6,7 +6,7 @@ use tracing::{error, info, trace, warn};
 
 use crate::{
     executor::{CmpInOut, ComponentError},
-    message::MsgDataBound,
+    message::{MsgDataBound, ServiceBound},
 };
 
 use super::{
@@ -14,17 +14,18 @@ use super::{
     error::Error,
 };
 
-pub async fn fn_process<TMsg>(
-    in_out: CmpInOut<TMsg>,
+pub async fn fn_process<TMsg, TService>(
+    in_out: CmpInOut<TMsg, TService>,
     config: Config<TMsg>,
 ) -> Result<(), ComponentError>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     info!("Starting influxdb client, configuration: {:?}", config);
 
     loop {
-        let res = task_main::<TMsg>(in_out.clone(), config.clone()).await;
+        let res = task_main(in_out.clone(), config.clone()).await;
         match res {
             Ok(_) => (),
             Err(err) => {
@@ -36,9 +37,13 @@ where
     }
 }
 
-async fn task_main<TMsg>(mut input: CmpInOut<TMsg>, config: Config<TMsg>) -> super::Result<()>
+async fn task_main<TMsg, TService>(
+    mut input: CmpInOut<TMsg, TService>,
+    config: Config<TMsg>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     while let Ok(msg) = input.recv_input().await {
         let datapoints = (config.fn_input)(&msg);

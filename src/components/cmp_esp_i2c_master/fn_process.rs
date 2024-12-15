@@ -10,19 +10,20 @@ use tokio::{sync::Mutex, task::JoinSet};
 use crate::{
     drivers_i2c,
     executor::{join_set_spawn, CmpInOut},
-    message::MsgDataBound,
+    message::{MsgDataBound, ServiceBound},
 };
 
 use super::{rsiot_i2c_driver::RsiotI2cDriver, Config, ConfigBaudrate};
 
-pub async fn fn_process<TMsg, TI2c, TPeripheral>(
+pub async fn fn_process<TMsg, TI2c, TPeripheral, TService>(
     config: Config<TMsg, TI2c, TPeripheral>,
-    in_out: CmpInOut<TMsg>,
+    in_out: CmpInOut<TMsg, TService>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
     TI2c: Peripheral<P = TPeripheral> + 'static,
     TPeripheral: I2c,
+    TService: ServiceBound + 'static,
 {
     // Настраиваем I2C
     let baudrate = match config.baudrate {

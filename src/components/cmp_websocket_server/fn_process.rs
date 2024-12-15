@@ -13,7 +13,7 @@ use tracing::{error, info};
 
 use crate::{
     executor::{CmpInOut, ComponentError},
-    message::{AuthPermissions, MsgDataBound},
+    message::{AuthPermissions, MsgDataBound, ServiceBound},
 };
 
 use super::{
@@ -21,12 +21,13 @@ use super::{
     handle_ws_connection::handle_ws_connection,
 };
 
-pub async fn fn_process<TMessage>(
-    input: CmpInOut<TMessage>,
+pub async fn fn_process<TMessage, TService>(
+    input: CmpInOut<TMessage, TService>,
     config: Config<TMessage>,
 ) -> Result<(), ComponentError>
 where
     TMessage: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     info!(
         "Component cmp_websocket_server started. Config: {:?}",
@@ -46,13 +47,14 @@ where
     }
 }
 
-async fn task_main<TMessage>(
-    in_out: CmpInOut<TMessage>,
+async fn task_main<TMessage, TService>(
+    in_out: CmpInOut<TMessage, TService>,
     config: Config<TMessage>,
     cancel: CancellationToken,
 ) -> super::Result<()>
 where
     TMessage: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     let addr = format!("0.0.0.0:{}", config.port);
 

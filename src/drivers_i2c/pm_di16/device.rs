@@ -10,19 +10,20 @@ use crate::{
     components::shared_tasks,
     drivers_i2c::RsiotI2cDriverBase,
     executor::{join_set_spawn, CmpInOut},
-    message::MsgDataBound,
+    message::{MsgDataBound, ServiceBound},
 };
 
 use super::{tasks, Config};
 
 /// Модуль PM-RQ8
-pub struct Device<TMsg, TDriver>
+pub struct Device<TMsg, TService, TDriver>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
     TDriver: RsiotI2cDriverBase,
 {
     /// Внутренняя шина сообщений
-    pub msg_bus: CmpInOut<TMsg>,
+    pub msg_bus: CmpInOut<TMsg, TService>,
 
     /// Конфигурация
     pub config: Config<TMsg>,
@@ -31,9 +32,10 @@ where
     pub driver: Arc<Mutex<TDriver>>,
 }
 
-impl<TMsg, TDriver> Device<TMsg, TDriver>
+impl<TMsg, TService, TDriver> Device<TMsg, TService, TDriver>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
     TDriver: RsiotI2cDriverBase + 'static,
 {
     /// Запустить на выполнение

@@ -15,7 +15,7 @@ use url::Url;
 
 use crate::{
     executor::{CmpInOut, ComponentError},
-    message::{Message, MsgDataBound},
+    message::{Message, MsgDataBound, ServiceBound},
 };
 
 use super::{
@@ -23,12 +23,13 @@ use super::{
     error::Error,
 };
 
-pub async fn fn_process<TMessage>(
-    input: CmpInOut<TMessage>,
+pub async fn fn_process<TMessage, TService>(
+    input: CmpInOut<TMessage, TService>,
     config: Config<TMessage>,
 ) -> Result<(), ComponentError>
 where
     TMessage: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     info!("cmp_websocket_client starting");
 
@@ -44,12 +45,13 @@ where
 }
 
 /// Подключаемся к серверу и запускаем потоки получения и отправки
-async fn task_connect<TMessage>(
-    in_out: CmpInOut<TMessage>,
+async fn task_connect<TMessage, TService>(
+    in_out: CmpInOut<TMessage, TService>,
     config: Config<TMessage>,
 ) -> Result<(), Error<TMessage>>
 where
     TMessage: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     let url = Url::parse(&config.url).map_err(Error::BadUrl)?;
 
@@ -67,13 +69,14 @@ where
 }
 
 /// Задача отправки данных на сервер Websocket
-async fn task_send<TMessage>(
-    mut input: CmpInOut<TMessage>,
+async fn task_send<TMessage, TService>(
+    mut input: CmpInOut<TMessage, TService>,
     mut write: SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, TungsteniteMessage>,
     fn_send: fn(&Message<TMessage>) -> anyhow::Result<Option<String>>,
 ) -> Result<(), Error<TMessage>>
 where
     TMessage: MsgDataBound,
+    TService: ServiceBound,
 {
     while let Ok(msg) = input.recv_input().await {
         let text = (fn_send)(&msg).map_err(Error::FnInput)?;
@@ -86,13 +89,14 @@ where
 }
 
 /// Задача приема данных с сервера Websocket
-async fn task_recv<TMessage>(
-    output: CmpInOut<TMessage>,
+async fn task_recv<TMessage, TService>(
+    output: CmpInOut<TMessage, TService>,
     mut read: SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>,
     fn_recv: FnOutput<TMessage>,
 ) -> Result<(), Error<TMessage>>
 where
     TMessage: MsgDataBound,
+    TService: ServiceBound,
 {
     while let Some(msg) = read.next().await {
         let data = msg?.into_text()?;

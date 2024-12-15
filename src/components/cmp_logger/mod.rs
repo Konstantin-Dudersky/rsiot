@@ -6,7 +6,7 @@ use tracing::{debug, error, info, trace, warn};
 
 use crate::{
     executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, Message, MsgDataBound},
+    message::{AuthPermissions, Message, MsgDataBound, ServiceBound},
 };
 
 /// Настройки компонента логгирования
@@ -41,14 +41,16 @@ pub struct Config<TMsg> {
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
-impl<TMsg> IComponentProcess<Config<TMsg>, TMsg> for Component<Config<TMsg>, TMsg>
+impl<TMsg, TService> IComponentProcess<Config<TMsg>, TMsg, TService>
+    for Component<Config<TMsg>, TMsg, TService>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     async fn process(
         &self,
         config: Config<TMsg>,
-        in_out: CmpInOut<TMsg>,
+        in_out: CmpInOut<TMsg, TService>,
     ) -> Result<(), ComponentError> {
         process(
             config,
@@ -58,12 +60,13 @@ where
     }
 }
 
-async fn process<TMsg>(
+async fn process<TMsg, TService>(
     config: Config<TMsg>,
-    mut in_out: CmpInOut<TMsg>,
+    mut in_out: CmpInOut<TMsg, TService>,
 ) -> Result<(), ComponentError>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     while let Ok(msg) = in_out.recv_input().await {
         let text = (config.fn_input)(msg);
@@ -86,4 +89,4 @@ where
 }
 
 /// Компонент cmp_logger
-pub type Cmp<TMsg> = Component<Config<TMsg>, TMsg>;
+pub type Cmp<TMsg, TService> = Component<Config<TMsg>, TMsg, TService>;

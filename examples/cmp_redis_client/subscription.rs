@@ -68,7 +68,7 @@ async fn main() -> anyhow::Result<()> {
         delay_publish: Duration::from_millis(100),
     };
 
-    ComponentExecutor::<Custom>::new(executor_config)
+    ComponentExecutor::<Custom, Service>::new(executor_config)
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .add_cmp(cmp_redis_client::Cmp::new(redis_config))
         .wait_result()

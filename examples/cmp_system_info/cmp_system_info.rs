@@ -33,7 +33,7 @@ async fn main() {
         },
     };
 
-    ComponentExecutor::<Custom>::new(executor_config)
+    ComponentExecutor::<Custom, Service>::new(executor_config)
         .add_cmp(cmp_system_info::Cmp::new(system_info_config))
         .wait_result()
         .await

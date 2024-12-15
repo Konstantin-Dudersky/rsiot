@@ -10,17 +10,18 @@ use tokio::{
 use crate::{
     components::shared_tasks,
     executor::{join_set_spawn, CmpInOut},
-    message::MsgDataBound,
+    message::{MsgDataBound, ServiceBound},
 };
 
 use super::{tasks, Config};
 
-pub async fn fn_process<TMsg, const MESSAGE_LEN: usize>(
+pub async fn fn_process<TMsg, TService, const MESSAGE_LEN: usize>(
     config: Config<TMsg, MESSAGE_LEN>,
-    msg_bus: CmpInOut<TMsg>,
+    msg_bus: CmpInOut<TMsg, TService>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     let serial_port_builder = serialport::new("", 0)
         .path(config.port)

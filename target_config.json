@@ -85,7 +85,7 @@
     },
     {
       "name": "riscv32imc-esp-espidf",
-      "toolchain": "+nightly",
+      "toolchain": "+nightly-2024-10-01",
       "features": ["cmp_esp", "cmp_plc", "executor"],
       "add_feat": ["single-thread"]
     }

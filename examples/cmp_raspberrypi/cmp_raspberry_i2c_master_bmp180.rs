@@ -68,7 +68,7 @@ async fn main() {
         fn_auth: |msg, _| Some(msg),
     };
 
-    ComponentExecutor::<Custom>::new(executor_config)
+    ComponentExecutor::<Custom, Service>::new(executor_config)
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .add_cmp(cmp_raspberrypi_i2c_master::Cmp::new(
             config_raspberrypi_i2c_master,

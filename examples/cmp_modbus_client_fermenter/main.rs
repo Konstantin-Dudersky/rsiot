@@ -18,8 +18,6 @@ async fn main() -> anyhow::Result<()> {
         message::example_service::Service,
     };
 
-    use message::Data;
-
     fmt().with_max_level(LevelFilter::INFO).init();
 
     let logger_config = cmp_logger::Config {
@@ -34,7 +32,7 @@ async fn main() -> anyhow::Result<()> {
         delay_publish: Duration::from_millis(100),
     };
 
-    ComponentExecutor::<Data>::new(executor_config)
+    ComponentExecutor::new(executor_config)
         .add_cmp(cmp_modbus_client::Cmp::new(config::config()))
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .wait_result()

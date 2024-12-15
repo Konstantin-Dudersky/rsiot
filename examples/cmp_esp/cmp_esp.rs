@@ -167,7 +167,7 @@ async fn main() {
     let local_set = LocalSet::new();
 
     local_set.spawn_local(async {
-        ComponentExecutor::<Custom>::new(executor_config)
+        ComponentExecutor::<Custom, Service>::new(executor_config)
             .add_cmp(cmp_logger::Cmp::new(logger_config))
             .add_cmp(cmp_http_server_esp::Cmp::new(http_server_esp_config))
             .add_cmp(cmp_esp_wifi::Cmp::new(wifi_config))

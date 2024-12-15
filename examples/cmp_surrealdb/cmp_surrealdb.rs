@@ -76,7 +76,7 @@ async fn main() -> anyhow::Result<()> {
         delay_publish: Duration::from_millis(100),
     };
 
-    ComponentExecutor::<Custom>::new(executor_config)
+    ComponentExecutor::<Custom, Service>::new(executor_config)
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
         .add_cmp(cmp_surrealdb::Cmp::new(surrealdb_config))
         .wait_result()

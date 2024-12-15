@@ -6,7 +6,7 @@ use std::fmt::Debug;
 /// ```rust
 /// #[derive(Debug, Clone, PartialEq)]
 /// ```
-pub trait ServiceBound: Debug + Clone + PartialEq + Send {
+pub trait ServiceBound: Debug + Clone + PartialEq + Send + Sync {
     /// Возвращает строку для добавления в трассировку
     fn trace_name(&self) -> String {
         let full_str = format!("{:?}", self);

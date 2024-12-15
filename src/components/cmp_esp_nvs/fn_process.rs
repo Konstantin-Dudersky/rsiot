@@ -7,19 +7,20 @@ use tracing::{debug, info, warn};
 
 use crate::{
     executor::{CmpInOut, ComponentError},
-    message::MsgDataBound,
+    message::{MsgDataBound, ServiceBound},
 };
 
 use super::{config::Config, error::Error};
 
 type Result<T> = std::result::Result<T, Error>;
 
-pub async fn fn_process<TMessage, TStorageData>(
-    input: CmpInOut<TMessage>,
+pub async fn fn_process<TMessage, TService, TStorageData>(
+    input: CmpInOut<TMessage, TService>,
     config: Config<TMessage, TStorageData>,
 ) -> std::result::Result<(), ComponentError>
 where
     TMessage: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
     TStorageData: Debug + Default + DeserializeOwned + PartialEq + Serialize + 'static,
 {
     info!("Starting cmp_storage_esp component");
@@ -29,12 +30,13 @@ where
     })
 }
 
-async fn task_main<TMessage, TStorageData>(
-    msg_bus: CmpInOut<TMessage>,
+async fn task_main<TMessage, TService, TStorageData>(
+    msg_bus: CmpInOut<TMessage, TService>,
     config: Config<TMessage, TStorageData>,
 ) -> Result<()>
 where
     TMessage: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
     TStorageData: Debug + Default + DeserializeOwned + PartialEq + Serialize + 'static,
 {
     let nvs_default_partition: EspNvsPartition<NvsDefault> =
@@ -62,14 +64,15 @@ where
     Ok(())
 }
 
-async fn task_input<TMessage, TStorageData>(
-    mut msg_bus: CmpInOut<TMessage>,
+async fn task_input<TMessage, TService, TStorageData>(
+    mut msg_bus: CmpInOut<TMessage, TService>,
     config: Config<TMessage, TStorageData>,
     mut nvs: EspNvs<NvsDefault>,
     data: TStorageData,
 ) -> Result<()>
 where
     TMessage: MsgDataBound,
+    TService: ServiceBound,
     TStorageData: Debug + Default + DeserializeOwned + PartialEq + Serialize,
 {
     let mut data = data;

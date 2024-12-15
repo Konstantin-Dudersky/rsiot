@@ -4,23 +4,25 @@ use crate::{
     components::shared_mqtt_client::{create_payload_for_message, create_topic_for_message},
     components_config::mqtt_client::ConfigFnInput,
     executor::CmpInOut,
-    message::MsgDataBound,
+    message::{MsgDataBound, ServiceBound},
 };
 
 use super::shared::publish_on_broker;
 
-pub struct SendCache<TMsg>
+pub struct SendCache<TMsg, TService>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
-    pub in_out: CmpInOut<TMsg>,
+    pub in_out: CmpInOut<TMsg, TService>,
     pub config_fn_input: ConfigFnInput<TMsg>,
     pub client: AsyncClient,
 }
 
-impl<TMsg> SendCache<TMsg>
+impl<TMsg, TService> SendCache<TMsg, TService>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     pub async fn spawn(self) -> super::Result<()> {
         let cache = self.in_out.cache.read().await;

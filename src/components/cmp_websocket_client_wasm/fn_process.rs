@@ -14,17 +14,18 @@ use url::Url;
 
 use crate::{
     executor::{join_set_spawn, CmpInOut},
-    message::MsgDataBound,
+    message::{MsgDataBound, ServiceBound},
 };
 
 use super::{Config, Error};
 
-pub async fn fn_process<TMessage>(
+pub async fn fn_process<TMessage, TService>(
     config: Config<TMessage>,
-    input: CmpInOut<TMessage>,
+    input: CmpInOut<TMessage, TService>,
 ) -> super::Result
 where
     TMessage: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     info!("Starting cmp_websocket_client_wasm. Config: {config:?}");
     loop {
@@ -35,9 +36,13 @@ where
     }
 }
 
-async fn task_main<TMessage>(config: Config<TMessage>, msg_bus: CmpInOut<TMessage>) -> super::Result
+async fn task_main<TMessage, TService>(
+    config: Config<TMessage>,
+    msg_bus: CmpInOut<TMessage, TService>,
+) -> super::Result
 where
     TMessage: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     let url = Url::parse(&config.url).map_err(Error::BadUrl)?;
     let url = url.to_string();
@@ -62,13 +67,14 @@ where
 }
 
 /// Задача отправки входящего потока сообщений на Websocker сервер
-async fn task_input<TMsg>(
+async fn task_input<TMsg, TService>(
     config: Config<TMsg>,
-    mut input: CmpInOut<TMsg>,
+    mut input: CmpInOut<TMsg, TService>,
     mut write_stream: SplitSink<WebSocket, Message>,
 ) -> super::Result
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     while let Ok(msg) = input.recv_input().await {
         let ws_msg = (config.fn_input)(&msg).map_err(Error::FnInput)?;
@@ -84,13 +90,14 @@ where
 }
 
 /// Задача получения текста из Websoket сервера и преобразование в исходящий поток сообщений
-async fn task_output<TMessage>(
+async fn task_output<TMessage, TService>(
     config: Config<TMessage>,
-    output: CmpInOut<TMessage>,
+    output: CmpInOut<TMessage, TService>,
     mut read_stream: SplitStream<WebSocket>,
 ) -> super::Result
 where
     TMessage: MsgDataBound,
+    TService: ServiceBound,
 {
     while let Some(text) = read_stream.next().await {
         trace!("New message from Websocket server: {:?}", text);

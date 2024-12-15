@@ -3,7 +3,7 @@ use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{
     executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    message::{AuthPermissions, MsgDataBound, ServiceBound},
 };
 
 use super::config::Config;
@@ -30,16 +30,17 @@ where
 
 #[cfg(feature = "single-thread")]
 #[async_trait(?Send)]
-impl<TMsg, TStorageData> IComponentProcess<Config<TMsg, TStorageData>, TMsg>
-    for Component<Config<TMsg, TStorageData>, TMsg>
+impl<TMsg, TService, TStorageData> IComponentProcess<Config<TMsg, TStorageData>, TMsg, TService>
+    for Component<Config<TMsg, TStorageData>, TMsg, TService>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
     TStorageData: std::fmt::Debug + Default + DeserializeOwned + PartialEq + Serialize + 'static,
 {
     async fn process(
         &self,
         config: Config<TMsg, TStorageData>,
-        in_out: CmpInOut<TMsg>,
+        in_out: CmpInOut<TMsg, TService>,
     ) -> Result<(), ComponentError> {
         let in_out = in_out.clone_with_new_id("cmp_storage_esp", AuthPermissions::FullAccess);
         fn_process(in_out, config)
@@ -49,4 +50,4 @@ where
 }
 
 /// Компонент cmp_storage_esp
-pub type Cmp<TMsg, TStorageData> = Component<Config<TMsg, TStorageData>, TMsg>;
+pub type Cmp<TMsg, TService, TStorageData> = Component<Config<TMsg, TStorageData>, TMsg, TService>;

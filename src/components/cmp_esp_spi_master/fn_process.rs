@@ -8,17 +8,18 @@ use tokio::{sync::mpsc::channel, task::JoinSet};
 use crate::{
     components::shared_tasks,
     executor::{join_set_spawn, CmpInOut},
-    message::{Message, MsgDataBound},
+    message::{Message, MsgDataBound, ServiceBound},
 };
 
 use super::{tasks, Config, InnerMessage};
 
-pub async fn fn_process<TMsg, TSpi, TPeripheral>(
+pub async fn fn_process<TMsg, TService, TSpi, TPeripheral>(
     config: Config<TMsg, TSpi, TPeripheral>,
-    msg_bus: CmpInOut<TMsg>,
+    msg_bus: CmpInOut<TMsg, TService>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
     TSpi: Peripheral<P = TPeripheral> + 'static,
     TPeripheral: Spi + SpiAnyPins + 'static,
 {

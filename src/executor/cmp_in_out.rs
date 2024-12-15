@@ -12,9 +12,10 @@ use super::{
 
 /// Подключение компонента к внутренней шине сообщений исполнителя
 #[derive(Debug)]
-pub struct CmpInOut<TMsg>
+pub struct CmpInOut<TMsg, TService>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     input: CmpInput<TMsg>,
     output: CmpOutput<TMsg>,
@@ -25,11 +26,15 @@ where
     id: Uuid,
     auth_perm: AuthPermissions,
     fn_auth: FnAuth<TMsg>,
+
+    /// Название текущего сервиса
+    service: TService,
 }
 
-impl<TMsg> CmpInOut<TMsg>
+impl<TMsg, TService> CmpInOut<TMsg, TService>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     /// Создание подключения к внутренней шине сообщений исполнителя
     pub fn new(
@@ -40,6 +45,7 @@ where
         id: Uuid,
         auth_perm: AuthPermissions,
         fn_auth: FnAuth<TMsg>,
+        service: TService,
     ) -> Self {
         info!("Start: {}, id: {}, auth_perm: {:?}", name, id, auth_perm);
         Self {
@@ -50,6 +56,7 @@ where
             name: name.into(),
             auth_perm,
             fn_auth,
+            service,
         }
     }
 
@@ -69,6 +76,7 @@ where
             id,
             auth_perm,
             fn_auth: self.fn_auth,
+            service: self.service.clone(),
         }
     }
 
@@ -162,9 +170,10 @@ where
     }
 }
 
-impl<TMsg> Clone for CmpInOut<TMsg>
+impl<TMsg, TService> Clone for CmpInOut<TMsg, TService>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     fn clone(&self) -> Self {
         Self {
@@ -175,6 +184,7 @@ where
             name: self.name.clone(),
             auth_perm: self.auth_perm,
             fn_auth: self.fn_auth,
+            service: self.service.clone(),
         }
     }
 }

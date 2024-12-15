@@ -6,7 +6,7 @@ use tracing::debug;
 use crate::{
     drivers_i2c::{I2cSlaveAddress, RsiotI2cDriverBase},
     executor::CmpInOut,
-    message::{Message, MsgDataBound},
+    message::{Message, MsgDataBound, ServiceBound},
 };
 
 use super::data_models;
@@ -27,22 +27,24 @@ pub struct OutputData {
     pub second: u8,
 }
 /// Задача чтения данных с модуля
-pub struct TaskOutput<TMsg, Driver>
+pub struct TaskOutput<TMsg, TService, Driver>
 where
     Driver: RsiotI2cDriverBase,
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     pub address: I2cSlaveAddress,
     pub period: Duration,
     pub driver: Arc<Mutex<Driver>>,
     pub fn_output: fn(OutputData) -> Option<Vec<Message<TMsg>>>,
-    pub in_out: CmpInOut<TMsg>,
+    pub in_out: CmpInOut<TMsg, TService>,
 }
 
-impl<TMsg, Driver> TaskOutput<TMsg, Driver>
+impl<TMsg, TService, Driver> TaskOutput<TMsg, TService, Driver>
 where
     Driver: RsiotI2cDriverBase,
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     pub async fn spawn(self) -> Result<(), String> {
         loop {

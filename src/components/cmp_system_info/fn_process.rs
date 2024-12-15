@@ -1,7 +1,10 @@
 use sysinfo::{Components, Disks, Networks, System};
 use tokio::time::sleep;
 
-use crate::{executor::CmpInOut, message::MsgDataBound};
+use crate::{
+    executor::CmpInOut,
+    message::{MsgDataBound, ServiceBound},
+};
 
 use super::{Config, Error, SystemInfo, SystemInfoDisk, SystemInfoNetwork};
 
@@ -9,9 +12,13 @@ const B_IN_MB: f32 = 1048576.0;
 
 const B_IN_GB: f32 = 1073741824.0;
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg, TService>(
+    config: Config<TMsg>,
+    in_out: CmpInOut<TMsg, TService>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound,
+    TService: ServiceBound,
 {
     let mut sys = System::new_all();
     let mut system_info = SystemInfo::default();

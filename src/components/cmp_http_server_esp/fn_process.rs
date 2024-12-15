@@ -10,7 +10,7 @@ use tracing::{info, trace, warn};
 
 use crate::{
     executor::CmpInOut,
-    message::{system_messages, Message, MsgData, MsgDataBound},
+    message::{system_messages, Message, MsgData, MsgDataBound, ServiceBound},
 };
 
 use super::Config;
@@ -23,9 +23,13 @@ const HEADERS: [(&str, &str); 4] = [
     ("Access-Control-Allow-Headers", "*"),
 ];
 
-pub async fn fn_process<TMsg>(mut in_out: CmpInOut<TMsg>, config: Config<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg, TService>(
+    mut in_out: CmpInOut<TMsg, TService>,
+    config: Config<TMsg>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TService: ServiceBound + 'static,
 {
     // Необходимо подождать, пока поднимется Wi-Fi
     while let Ok(msg) = in_out.recv_input().await {
