@@ -19,6 +19,8 @@ pub struct MsgTrace(Vec<MsgTraceItem>);
 
 impl MsgTrace {
     /// Создать новый уникальный идентификатор
+    ///
+    /// TODO - возможно заменить на что-то более компактное - например snowflake
     pub fn generate_uuid() -> Uuid {
         Uuid::new_v4()
     }
