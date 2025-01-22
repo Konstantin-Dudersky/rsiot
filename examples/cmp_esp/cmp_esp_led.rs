@@ -68,11 +68,11 @@ async fn main() {
                 g: random[1],
                 b: random[2],
             }]));
-            let msg = Message::new_custom(Custom::LedColor(vec![cmp_esp_led::ConfigRgb {
-                r: 0,
-                g: 255,
-                b: 0,
-            }]));
+            // let msg = Message::new_custom(Custom::LedColor(vec![cmp_esp_led::ConfigRgb {
+            //     r: 0,
+            //     g: 255,
+            //     b: 0,
+            // }]));
             vec![msg]
         },
     };

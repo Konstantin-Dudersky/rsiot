@@ -4,6 +4,7 @@ use leptos::{
     prelude::*,
     task::{spawn_local, Executor},
 };
+use reactive_stores::Store;
 use tokio::task::LocalSet;
 
 use crate::{
@@ -22,9 +23,18 @@ fn test_wasm() {
 
         configure_logging("info").unwrap();
 
+        #[derive(Default, Clone, Store)]
+        struct GlobalStore {}
+
+        impl cmp_leptos::StoreBound for GlobalStore {}
+
         // cmp_leptos ------------------------------------------------------------------------------
         let config_leptos = cmp_leptos::Config {
             body_component: || view! { <App/> },
+            input_store: GlobalStore::default(),
+            output_store: GlobalStore::default(),
+            fn_input: |_, _| (),
+            fn_output: |_, _| (),
         };
 
         // config_executor -------------------------------------------------------------------------

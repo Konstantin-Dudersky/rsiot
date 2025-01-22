@@ -5,6 +5,7 @@ use esp_idf_svc::hal::{
     io::asynch::Write,
     uart::{AsyncUartDriver, UartDriver},
 };
+use log::info;
 use tokio::time::sleep;
 use tracing::{trace, warn};
 

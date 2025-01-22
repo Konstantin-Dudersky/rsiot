@@ -11,4 +11,4 @@ pub use device_base::{ConfigPeriodicRequest, DeviceBase};
 pub use device_trait::DeviceTrait;
 pub use error::Error;
 
-type Result<T> = std::result::Result<T, Error>;
+pub type Result<T> = std::result::Result<T, Error>;

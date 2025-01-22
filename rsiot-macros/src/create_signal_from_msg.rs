@@ -1,3 +1,4 @@
+#[deprecated]
 pub fn create_signal_from_msg(input: &str) -> String {
     let enum_variants = parse_enum_variants(input);
     let enum_with_names = add_enum_names(&enum_variants);

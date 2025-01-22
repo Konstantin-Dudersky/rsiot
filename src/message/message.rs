@@ -149,13 +149,18 @@ where
             MsgData::Custom(data) => data.define_enabled_routes(),
         };
         match route {
-            MsgRoute::SrcToAny { src: route_src } => *src == route_src,
-            MsgRoute::SrcDst {
-                src: route_src,
-                dst: route_dst,
-            } => *src == route_src && *dst == route_dst,
-            MsgRoute::FromAnyToAny => true,
+            MsgRoute::SrcToAny(route_src) => *src == route_src,
+            MsgRoute::SrcToDst(route_src, route_dst) => *src == route_src && *dst == route_dst,
+            MsgRoute::AnyToAny => true,
             MsgRoute::None => false,
+            MsgRoute::SrcToDstSeveral(routes) => {
+                for (route_src, route_dst) in routes {
+                    if *src == route_src && *dst == route_dst {
+                        return true;
+                    }
+                }
+                false
+            }
         }
     }
 }

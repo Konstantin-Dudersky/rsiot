@@ -237,7 +237,7 @@ mod error;
 mod global_state;
 pub mod utils;
 
-pub use component::{Cmp, Config};
+pub use component::{Cmp, Config, StoreBound};
 pub use error::Error;
 pub use global_state::GlobalState;
 pub use rsiot_macros::create_signal_from_msg;
