@@ -13,19 +13,28 @@ use tracing_subscriber::{
 /// Логи выводятся в:
 /// - stdout
 /// - Grafana Loki
-pub async fn configure_logging(rust_log: &str, loki_url: &str) -> super::Result<()> {
-    let loki_url = url::Url::parse(loki_url)?;
-
+pub async fn configure_logging(rust_log: &str, loki_url: Option<&str>) -> super::Result<()> {
     let service = env::args().collect::<Vec<String>>()[0].clone();
     let service = service_cleanup(&service);
 
-    // архивируем в Loki
-    let (layer_loki, task_loki) = tracing_loki::builder()
-        .label("service", service.clone())?
-        .build_url(loki_url.clone())?;
-
     // архивируем в консоль
     let layer_stdout = Layer::new().pretty();
+
+    // архивируем в Loki
+    let layer_loki = match loki_url {
+        Some(loki_url) => {
+            let loki_url = url::Url::parse(loki_url)?;
+
+            let (layer_loki, task_loki) = tracing_loki::builder()
+                .label("service", service.clone())?
+                .build_url(loki_url.clone())?;
+
+            spawn(task_loki);
+
+            Some(layer_loki)
+        }
+        None => None,
+    };
 
     // фильтруем на основе значения переменной RUST_LOG
     let filter = EnvFilter::new(rust_log);
@@ -35,8 +44,6 @@ pub async fn configure_logging(rust_log: &str, loki_url: &str) -> super::Result<
         .with(layer_stdout)
         .with(filter)
         .init();
-
-    spawn(task_loki);
 
     info!("service {} started", service);
     Ok(())
