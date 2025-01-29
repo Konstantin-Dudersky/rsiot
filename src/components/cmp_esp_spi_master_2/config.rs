@@ -28,17 +28,8 @@ where
     /// Пин SCK
     pub pin_sck: AnyIOPin,
 
-    /// Пин CS0
-    pub pin_cs0: Option<AnyIOPin>,
-
-    /// Пин CS1
-    pub pin_cs1: Option<AnyIOPin>,
-
-    /// Пин CS2
-    pub pin_cs2: Option<AnyIOPin>,
-
-    /// Пин CS3
-    pub pin_cs3: Option<AnyIOPin>,
+    /// Массив пинов CS
+    pub pin_cs: Vec<AnyIOPin>,
 
     /// Драйвера устройств
     pub devices: Vec<Box<dyn DeviceTrait<TMsg, spi_master::Request, spi_master::Response>>>,

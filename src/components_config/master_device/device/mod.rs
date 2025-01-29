@@ -2,6 +2,9 @@ mod config;
 mod device;
 mod tasks;
 
+#[cfg(test)]
+mod tests;
+
 use super::{BufferBound, Error, RequestResponseBound, Result};
 
 pub use config::ConfigPeriodicRequest;

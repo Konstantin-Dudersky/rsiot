@@ -9,7 +9,6 @@ use std::fmt::Debug;
 /// ```
 pub trait RequestResponseBound
 where
-    // Self: Clone + Debug + DeserializeOwned + Send + Serialize + Sync,
     Self: Clone + Debug + Send + Sync,
 {
     /// Адрес устройства

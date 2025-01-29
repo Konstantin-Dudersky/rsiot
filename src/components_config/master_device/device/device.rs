@@ -14,7 +14,10 @@ use crate::{executor::join_set_spawn, message::MsgDataBound};
 use super::{config::*, tasks, BufferBound, RequestResponseBound};
 
 /// Базовое устройство для опроса по шине
-pub struct DeviceBase<TMsg, TFieldbusRequest, TFieldbusResponse, TBuffer> {
+pub struct DeviceBase<TMsg, TFieldbusRequest, TFieldbusResponse, TBuffer>
+where
+    TFieldbusRequest: RequestResponseBound,
+{
     /// Адрес
     pub address: u8,
 
@@ -24,7 +27,19 @@ pub struct DeviceBase<TMsg, TFieldbusRequest, TFieldbusResponse, TBuffer> {
     /// Периодические запросы
     pub periodic_requests: Vec<ConfigPeriodicRequest<TFieldbusRequest, TBuffer>>,
 
+    /// Обновление буфера на основе входящих сообщений
+    ///
+    /// Обычно соответствует параметру fn_input конфигурации устройства
+    ///
+    /// # Пример
+    ///
+    /// ```rust
+    /// let msgs = [Custom::AllInputs(buffer.all_inputs)];
+    /// let msgs = msgs.iter().map(|m| Message::new_custom(*m)).collect();
+    /// msgs
+    /// ```
     pub fn_msgs_to_buffer: fn(&Message<TMsg>, &mut TBuffer),
+
     pub fn_buffer_to_request: fn(&TBuffer) -> Vec<TFieldbusRequest>,
     pub fn_response_to_buffer: fn(TFieldbusResponse, &mut TBuffer),
 
@@ -123,5 +138,25 @@ where
             res??;
         }
         Ok(())
+    }
+}
+
+impl<TMsg, TFieldbusRequest, TFieldbusResponse, TBuffer> Default
+    for DeviceBase<TMsg, TFieldbusRequest, TFieldbusResponse, TBuffer>
+where
+    TFieldbusRequest: RequestResponseBound,
+    TBuffer: Default,
+{
+    fn default() -> Self {
+        DeviceBase {
+            address: 0,
+            fn_init_requests: Vec::new,
+            periodic_requests: vec![],
+            fn_msgs_to_buffer: |_, _| (),
+            fn_buffer_to_request: |_| vec![],
+            fn_response_to_buffer: |_, _| (),
+            fn_buffer_to_msgs: |_| vec![],
+            buffer_default: Default::default(),
+        }
     }
 }
