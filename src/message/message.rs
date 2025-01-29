@@ -20,6 +20,7 @@ pub struct Message<TCustom> {
     pub trace: MsgTrace,
     /// Время жизни сообщения
     ttl: TimeToLiveValue,
+
     /// Сервис, в котором было созданно данное сообщение.
     ///
     /// Устанавливается в исполнителе.
@@ -68,8 +69,8 @@ where
     }
 
     /// Добавить запись пути
-    pub fn add_trace_item(&mut self, id: &Uuid, name: &str) {
-        self.trace.add_trace_item(*id, name.to_string())
+    pub fn add_trace_item(&mut self, id: &Uuid) {
+        self.trace.add_trace_item(*id)
     }
 
     /// Проверяем, что в трейсе сообщения присутсвует компонент с заданным id.

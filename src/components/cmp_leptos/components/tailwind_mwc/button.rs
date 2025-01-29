@@ -1,4 +1,4 @@
-use leptos::prelude::*;
+use leptos::{either::EitherOf5, prelude::*};
 
 #[allow(missing_docs)]
 pub enum ButtonKind {
@@ -40,8 +40,8 @@ where
     IVIcon: IntoView,
 {
     match button_kind {
-        ButtonKind::Elavated => todo!(),
-        ButtonKind::Filled => view! {
+        ButtonKind::Elavated => EitherOf5::A(()),
+        ButtonKind::Filled => EitherOf5::B(view! {
             <button
                 on:click = move |_| (on_click)()
                 disabled=move || disabled.get()
@@ -54,10 +54,36 @@ where
                     </div>
                 </div>
             </button>
-        },
-        ButtonKind::FilledTonal => todo!(),
-        ButtonKind::Outlined => todo!(),
-        ButtonKind::Text => todo!(),
+        }),
+        ButtonKind::FilledTonal => EitherOf5::C(()),
+        ButtonKind::Outlined => EitherOf5::D(view! {
+            <button
+                on:click = move |_| (on_click)()
+                disabled=move || disabled.get()
+                class="text-primary disabled:text-on-surface h-10 rounded-full disabled:opacity-10 border border-outline"
+            >
+                <div class="flex h-full flex-row items-center pl-4 pr-6">
+                    {icon()}
+                    <div class="pl-2">
+                        { text }
+                    </div>
+                </div>
+            </button>
+        }),
+        ButtonKind::Text => EitherOf5::E(view! {
+            <button
+                on:click = move |_| (on_click)()
+                disabled=move || disabled.get()
+                class="text-primary disabled:text-on-surface h-10 rounded-full disabled:opacity-10"
+            >
+                <div class="flex h-full flex-row items-center pl-4 pr-6">
+                    {icon()}
+                    <div class="pl-2">
+                        { text }
+                    </div>
+                </div>
+            </button>
+        }),
     }
 }
 

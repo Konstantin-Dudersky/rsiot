@@ -28,9 +28,9 @@ pub mod cmp_esp_gpio;
 #[cfg(riscv32imc_esp_espidf)]
 pub mod cmp_esp_i2c_slave;
 
-#[cfg(feature = "cmp_esp")]
-#[cfg(riscv32imc_esp_espidf)]
-pub mod cmp_esp_led;
+// #[cfg(feature = "cmp_esp")]
+// #[cfg(riscv32imc_esp_espidf)]
+// pub mod cmp_esp_led;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
@@ -47,6 +47,10 @@ pub mod cmp_esp_nvs;
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
 pub mod cmp_esp_spi_master;
+
+#[cfg(feature = "cmp_esp")]
+#[cfg(riscv32imc_esp_espidf)]
+pub mod cmp_esp_spi_master_2;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
@@ -95,6 +99,10 @@ pub mod cmp_inject_periodic;
 #[cfg(feature = "cmp_leptos")]
 #[cfg(wasm32_unknown_unknown)]
 pub mod cmp_leptos;
+
+#[cfg(feature = "cmp_linux_spi_master")]
+#[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
+pub mod cmp_linux_spi_master;
 
 #[cfg(feature = "cmp_linux_uart_master")]
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]

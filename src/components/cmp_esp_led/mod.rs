@@ -1,5 +1,7 @@
 //! Компонент для управления светодиодными лентами
 
+//! TODO - рассмотреть возможность использования esp-hal-smartled
+
 mod component;
 mod config;
 mod error;

@@ -10,7 +10,7 @@ use super::Timestamp;
 struct MsgTraceItem {
     id: Uuid,
     ts: Timestamp,
-    name: String,
+    // name: String,
 }
 
 /// Структура для представления пути, по которому передавалось сообщение
@@ -26,9 +26,9 @@ impl MsgTrace {
     }
 
     /// Добавить запись пути
-    pub fn add_trace_item(&mut self, id: Uuid, name: String) {
+    pub fn add_trace_item(&mut self, id: Uuid) {
         let ts = Timestamp::default();
-        let value = MsgTraceItem { ts, name, id };
+        let value = MsgTraceItem { ts, id };
         self.0.push(value);
     }
 

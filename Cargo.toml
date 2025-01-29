@@ -92,14 +92,15 @@ tower-http = { version = "0.5.1", features = [
 url = { version = "2.5.0", optional = true }
 wasm-bindgen = { version = "*", optional = true }
 web-sys = { version = "0.3.68", features = [
+    "History",
     "Location",
     "Node",
     "NodeList",
     "Window",
 ], optional = true }
-ws2812-esp32-rmt-driver = { version = "*", features = [
-    "smart-leds-trait",
-], optional = true }
+# ws2812-esp32-rmt-driver = { version = "*", features = [
+#     "smart-leds-trait",
+# ], optional = true }
 
 rsiot-macros = { version = "0.0.72" }
 
@@ -130,7 +131,7 @@ openssl = { version = "0.10", features = ["vendored"], optional = true }
 
 
 [target.'cfg(all(target_arch = "riscv32", target_vendor = "espressif", target_os = "espidf"))'.dependencies]
-esp-idf-svc = { version = "0.49.1", features = ["std"] }
+esp-idf-svc = { version = "0.51.0", features = ["std"] }
 # Обновить когда ws2812-esp32-rmt-driver заработает с новой версией
 # esp-idf-svc = { version = "0.50.1", features = ["std"] }
 
@@ -150,7 +151,7 @@ embuild = { version = "0.31.3", features = ["espidf"] }
 cfg_aliases = "0.2.0"
 
 # TODO - delete
-cc = "=1.1.30" # Necessary until a new version of `esp-idf-sys` is released
+# cc = "=1.1.30" # Necessary until a new version of `esp-idf-sys` is released
 
 [features]
 
@@ -191,7 +192,7 @@ cmp_esp = [
     "dep:heapless",
     "dep:ssd1306",
     "dep:pm_firmware_lib",
-    "dep:ws2812-esp32-rmt-driver",
+    # "dep:ws2812-esp32-rmt-driver",
     "dep:url",
     "tokio?/time",
 ]
@@ -217,6 +218,7 @@ cmp_influxdb = ["executor", "dep:openssl", "dep:reqwest"]
 ## Комонент сохранения данных в файловой системе
 cmp_filesystem = ["executor", "tokio?/fs"]
 
+## Компонент для создания интерфейсов на базе Leptos
 cmp_leptos = [
     "executor",
     "dep:leptos",
@@ -225,7 +227,10 @@ cmp_leptos = [
     "dep:url",
     "dep:wasm-bindgen",
     "dep:web-sys",
-] ## Компонент для создания интерфейсов на базе Leptos
+]
+
+## Комонент для коммуникации через порт SPI
+cmp_linux_spi_master = ["executor", "dep:linux-embedded-hal"]
 
 ## Комонент для коммуникации через порт UART
 cmp_linux_uart_master = ["executor", "dep:serialport", "dep:linux-embedded-hal"]
@@ -354,9 +359,9 @@ path = "./examples/cmp_esp/cmp_esp_i2c_slave.rs"
 name = "cmp_esp_nvs"
 path = "examples/cmp_esp_nvs/cmp_esp_nvs.rs"
 
-[[example]]
-name = "cmp_esp_led"
-path = "examples/cmp_esp/cmp_esp_led.rs"
+# [[example]]
+# name = "cmp_esp_led"
+# path = "examples/cmp_esp/cmp_esp_led.rs"
 
 [[example]]
 name = "cmp_filesystem"

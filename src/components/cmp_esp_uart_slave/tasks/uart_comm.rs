@@ -5,9 +5,8 @@ use esp_idf_svc::hal::{
     io::asynch::Write,
     uart::{AsyncUartDriver, UartDriver},
 };
-use log::info;
 use tokio::time::sleep;
-use tracing::{trace, warn};
+use tracing::{info, trace, warn};
 
 use crate::components::cmp_esp_uart_slave::{RequestResponseBound, UartMessage};
 

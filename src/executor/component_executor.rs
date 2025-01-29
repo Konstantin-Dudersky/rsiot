@@ -178,8 +178,10 @@ where
     sleep(delay_publish).await;
 
     while let Some(mut msg) = input.recv().await {
+        // TODO
         trace!("ComponentExecutor: new message: {:?}", msg);
-        msg.add_trace_item(&executor_id, &format!("{}::internal_bus", service_name));
+        // msg.add_trace_item(&executor_id, &format!("{}::internal_bus", service_name));
+        msg.add_trace_item(&executor_id);
         msg.set_service_origin(&service_name);
         let msg = save_msg_in_cache(msg, &cache).await;
         let Some(msg) = msg else { continue };

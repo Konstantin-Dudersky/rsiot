@@ -1,0 +1,45 @@
+use esp_idf_svc::hal::gpio::AnyIOPin;
+use esp_idf_svc::hal::units::Hertz;
+use esp_idf_svc::hal::{peripheral::Peripheral, spi::Spi};
+
+use crate::components_config::master_device::DeviceTrait;
+use crate::components_config::spi_master;
+use crate::message::MsgDataBound;
+
+/// Конфигурация компонента cmp_esp_spi_master
+pub struct Config<TMsg, TSpi, TPeripheral>
+where
+    TMsg: MsgDataBound,
+    TSpi: Peripheral<P = TPeripheral> + 'static,
+    TPeripheral: Spi,
+{
+    /// Ссылка на аппартный интерфейс SPI
+    pub spi: TSpi,
+
+    /// Частота тактов
+    pub baudrate: Hertz,
+
+    /// Пин MISO
+    pub pin_miso: AnyIOPin,
+
+    /// Пин MOSI
+    pub pin_mosi: AnyIOPin,
+
+    /// Пин SCK
+    pub pin_sck: AnyIOPin,
+
+    /// Пин CS0
+    pub pin_cs0: Option<AnyIOPin>,
+
+    /// Пин CS1
+    pub pin_cs1: Option<AnyIOPin>,
+
+    /// Пин CS2
+    pub pin_cs2: Option<AnyIOPin>,
+
+    /// Пин CS3
+    pub pin_cs3: Option<AnyIOPin>,
+
+    /// Драйвера устройств
+    pub devices: Vec<Box<dyn DeviceTrait<TMsg, spi_master::Request, spi_master::Response>>>,
+}

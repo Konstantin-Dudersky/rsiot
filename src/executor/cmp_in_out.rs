@@ -113,7 +113,7 @@ where
                 continue;
             };
 
-            msg.add_trace_item(&self.id, &self.name);
+            msg.add_trace_item(&self.id);
             return Ok(msg);
         }
     }
@@ -142,7 +142,7 @@ where
             return Ok(());
         };
 
-        msg.add_trace_item(&self.id, &self.name);
+        msg.add_trace_item(&self.id);
         self.output
             .send(msg)
             .await
@@ -158,7 +158,7 @@ where
             return Ok(());
         };
 
-        msg.add_trace_item(&self.id, &self.name);
+        msg.add_trace_item(&self.id);
         self.output
             .blocking_send(msg)
             .map_err(|e| ComponentError::CmpOutput(e.to_string()))

@@ -24,18 +24,19 @@
           // ---- x86_64-unknown-linux-gnu ---------------------------------------------------------
           // "target": "x86_64-unknown-linux-gnu",
           // "features": [
-          //   "rustdoc",
-          //   "executor",
+          // "rustdoc",
+          // "executor"
           // "single-thread"
           //   "env_vars",
-          //   "logging",
+          // "logging",
           //   "cmp_auth",
           //   "cmp_filesystem",
           //   "cmp_http_client",
           //   "cmp_http_server",
           //   "cmp_filesystem",
           //   "cmp_influxdb",
-          //   "cmp_linux_uart_master",
+          // "cmp_linux_spi_master",
+          // "cmp_linux_uart_master"
           //   "cmp_modbus_client",
           //   "cmp_mqtt_client",
           //   "cmp_plc",

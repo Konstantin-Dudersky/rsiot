@@ -32,6 +32,5 @@ where
 
     pub fn_input: fn(&Message<TMsg>, &Store<TInputStore>),
 
-    // pub fn_output: fn(Store<TOutputStore>, mpsc::Sender<Message<TMsg>>),
     pub fn_output: fn(Store<TOutputStore>, mpsc::Sender<TMsg>),
 }
