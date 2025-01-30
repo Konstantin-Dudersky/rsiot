@@ -6,14 +6,16 @@ use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use tokio::sync::{broadcast, mpsc};
 
-use crate::components_config::uart_general::{BufferBound, RequestResponseBound};
-use crate::message::{Message, MsgDataBound};
+use rsiot::components_config::uart_general::{FieldbusRequest, FieldbusResponse};
+use rsiot::message::{Message, MsgDataBound};
 
-use super::{ConfigPeriodicRequest, DeviceBase, DeviceTrait, UartMessageRaw};
+use rsiot::components_config::master_device::{
+    self, BufferBound, ConfigPeriodicRequest, DeviceBase, DeviceTrait,
+};
 
 /// Тестовое устройство
 #[derive(Clone, Debug)]
-pub struct TestDevice<TMsg, const MESSAGE_LEN: usize> {
+pub struct TestDevice<TMsg> {
     /// Адрес
     pub address: u8,
 
@@ -26,41 +28,46 @@ pub struct TestDevice<TMsg, const MESSAGE_LEN: usize> {
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
-impl<TMsg, const MESSAGE_LEN: usize> DeviceTrait<TMsg, MESSAGE_LEN>
-    for TestDevice<TMsg, MESSAGE_LEN>
+impl<TMsg> DeviceTrait<TMsg, FieldbusRequest, FieldbusResponse> for TestDevice<TMsg>
 where
     TMsg: MsgDataBound + 'static,
 {
     async fn spawn(
         self: Box<Self>,
-        ch_tx_device_to_uart: mpsc::Sender<UartMessageRaw<MESSAGE_LEN>>,
-        ch_rx_uart_to_device: broadcast::Receiver<UartMessageRaw<MESSAGE_LEN>>,
-        ch_tx_msgbus_to_device: broadcast::Receiver<Message<TMsg>>,
-        ch_rx_device_to_msgbus: mpsc::Sender<Message<TMsg>>,
-    ) -> super::Result<()> {
+        ch_rx_msgbus_to_device: broadcast::Receiver<Message<TMsg>>,
+        ch_tx_device_to_fieldbus: mpsc::Sender<FieldbusRequest>,
+        ch_rx_fieldbus_to_device: broadcast::Receiver<FieldbusResponse>,
+        ch_tx_device_to_msgbus: mpsc::Sender<Message<TMsg>>,
+    ) -> master_device::Result<()> {
         let device = DeviceBase {
             address: self.address,
+            fn_init_requests: || vec![],
             periodic_requests: vec![ConfigPeriodicRequest {
                 period: Duration::from_millis(500),
-                fn_request: |_buffer| Request::GetCounterFromEsp,
+                fn_requests: |_buffer| vec![FieldbusRequest::new(Request::GetCounterFromEsp)],
             }],
             fn_msgs_to_buffer: self.fn_input,
             fn_buffer_to_request: |buffer: &Buffer| {
-                vec![Request::SetCounterRpi(buffer.counter_rpi)]
+                vec![FieldbusRequest::new(Request::SetCounterRpi(
+                    buffer.counter_rpi,
+                ))]
             },
-            fn_response_to_buffer: |response: Response, buffer: &mut Buffer| match response {
-                Response::CounterFromEsp(val) => buffer.counter_esp = val,
-                Response::Ok => (),
+            fn_response_to_buffer: |mut response: FieldbusResponse, buffer: &mut Buffer| {
+                let response = response.response_deserialize();
+                match response {
+                    Response::CounterFromEsp(val) => buffer.counter_esp = val,
+                    Response::Ok => (),
+                }
             },
             fn_buffer_to_msgs: self.fn_output,
             buffer_default: Buffer::default(),
         };
         device
             .spawn(
-                ch_tx_device_to_uart,
-                ch_rx_uart_to_device,
-                ch_tx_msgbus_to_device,
-                ch_rx_device_to_msgbus,
+                ch_rx_msgbus_to_device,
+                ch_tx_device_to_fieldbus,
+                ch_rx_fieldbus_to_device,
+                ch_tx_device_to_msgbus,
             )
             .await?;
         Ok(())
@@ -76,8 +83,6 @@ pub enum Request {
     SetCounterRpi(u32),
 }
 
-impl RequestResponseBound for Request {}
-
 /// Ответы
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum Response {
@@ -86,8 +91,6 @@ pub enum Response {
     /// Ok
     Ok,
 }
-
-impl RequestResponseBound for Response {}
 
 /// Буфер данных
 #[derive(Clone, Debug, Default, PartialEq)]

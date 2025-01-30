@@ -373,7 +373,7 @@ path = "examples/cmp_http_client/cmp_http_client.rs"
 
 [[example]]
 name = "cmp_linux_serial_master"
-path = "examples/cmp_raspberrypi/cmp_linux_serial_master.rs"
+path = "examples/cmp_raspberrypi/cmp_linux_serial_master/main.rs"
 
 [[example]]
 name = "cmp_raspberry_i2c_master_ads1115"

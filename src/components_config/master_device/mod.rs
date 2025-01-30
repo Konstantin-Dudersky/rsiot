@@ -12,4 +12,5 @@ pub use device_trait::DeviceTrait;
 pub use error::Error;
 pub use request_response_bound::RequestResponseBound;
 
+/// Тип Result
 pub type Result<T> = std::result::Result<T, Error>;

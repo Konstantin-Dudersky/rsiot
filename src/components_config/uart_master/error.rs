@@ -1,4 +1,4 @@
-use crate::{components::shared_tasks, executor::ComponentError};
+use crate::{components::shared_tasks, components_config::master_device, executor::ComponentError};
 
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
@@ -44,6 +44,9 @@ pub enum Error {
 
     #[error("OpenSerialPort: {0}")]
     OpenSerialPort(String),
+
+    #[error(transparent)]
+    Device(master_device::Error),
 }
 
 impl From<Error> for ComponentError {

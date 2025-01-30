@@ -1,30 +1,24 @@
 use tokio::sync::mpsc;
-use tracing::trace;
 
-use super::RequestResponseBound;
+use super::{
+    set_address_and_send_to_fieldbus::set_address_and_send_to_fieldbus, RequestResponseBound,
+};
 
-pub struct InitRequest<TRequest> {
+pub struct InitRequest<TFieldbusRequest> {
     pub address: u8,
-    pub fn_init_requests: fn() -> Vec<TRequest>,
-    pub ch_tx_device_to_fieldbus: mpsc::Sender<TRequest>,
+    pub fn_init_requests: fn() -> Vec<TFieldbusRequest>,
+    pub ch_tx_device_to_fieldbus: mpsc::Sender<TFieldbusRequest>,
 }
 
-impl<TRequest> InitRequest<TRequest>
+impl<TFieldbusRequest> InitRequest<TFieldbusRequest>
 where
-    TRequest: RequestResponseBound,
+    TFieldbusRequest: RequestResponseBound,
 {
     pub async fn spawn(self) -> super::Result<()> {
-        let mut requests = (self.fn_init_requests)();
+        let requests = (self.fn_init_requests)();
 
-        // Задаем адрес
-        for request in requests.iter_mut() {
-            request.set_address(self.address);
-        }
-
-        for request in requests {
-            trace!("Request: {:?}", request);
-            self.ch_tx_device_to_fieldbus.send(request).await.unwrap();
-        }
+        set_address_and_send_to_fieldbus(requests, self.address, &self.ch_tx_device_to_fieldbus)
+            .await;
 
         Ok(())
     }

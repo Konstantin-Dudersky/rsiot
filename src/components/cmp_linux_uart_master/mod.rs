@@ -29,10 +29,10 @@ mod component;
 mod config;
 mod error;
 mod fn_process;
-mod tasks;
+// mod tasks;
+mod uart_comm;
 
 pub use crate::components_config::uart_general::*;
-pub use crate::components_config::uart_master::devices;
 pub use component::Cmp;
 pub use config::*;
 pub use error::Error;

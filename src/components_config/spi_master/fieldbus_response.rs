@@ -4,7 +4,7 @@ use crate::components_config::master_device::RequestResponseBound;
 
 /// Структура отдельного ответа при коммуникации по шине SPI
 #[derive(Clone, Debug)]
-pub struct Response {
+pub struct FieldbusResponse {
     /// Номер пина Chip Select
     pub pin_cs: u8,
 
@@ -22,7 +22,7 @@ pub struct Response {
     pub payload: Vec<Vec<u8>>,
 }
 
-impl RequestResponseBound for Response {
+impl RequestResponseBound for FieldbusResponse {
     fn address(&self) -> u8 {
         self.pin_cs
     }

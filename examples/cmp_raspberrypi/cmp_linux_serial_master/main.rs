@@ -1,5 +1,11 @@
 //! Пример работы с GPIO компьютера Raspberry Pi
 //!
+//! Запустить на машине для разработки:
+//!
+//! ```bash
+//! cargo run --example cmp_linux_serial_master --target="x86_64-unknown-linux-gnu" --features="cmp_linux_uart_master"
+//! ```
+//!
 //! Скомпилировать и загрузить на целевую систему:
 //!
 //! ```bash
@@ -13,13 +19,16 @@
 //! ```
 
 #[cfg(feature = "cmp_linux_uart_master")]
+mod test_device;
+
+#[cfg(feature = "cmp_linux_uart_master")]
 #[tokio::main]
 async fn main() {
     use std::time::Duration;
 
     use rsiot::{
         components::{
-            cmp_linux_uart_master::{self, devices::test_device},
+            cmp_linux_uart_master::{self},
             cmp_logger,
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
@@ -50,14 +59,16 @@ async fn main() {
 
     // cmp_linux_uart ------------------------------------------------------------------------------
     let config_linux_uart = cmp_linux_uart_master::Config::<_, 32> {
-        port: "/dev/ttyAMA0",
-        baudrate: cmp_linux_uart_master::Baudrate::_115_200,
+        // port: "/dev/ttyAMA0",
+        port: "/dev/ttyUSB0",
+        baudrate: cmp_linux_uart_master::Baudrate::_9_600,
         data_bits: cmp_linux_uart_master::DataBits::_8,
         stop_bits: cmp_linux_uart_master::StopBits::_1,
         parity: cmp_linux_uart_master::Parity::None,
         wait_after_write: Duration::from_millis(50),
         gpio_chip: "/dev/gpiochip0",
-        pin_rts: Some(17),
+        // pin_rts: Some(17),
+        pin_rts: None,
         devices: vec![Box::new(test_device::TestDevice {
             address: 1,
             fn_input: |_, _| (),

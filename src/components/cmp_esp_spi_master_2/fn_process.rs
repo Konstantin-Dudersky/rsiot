@@ -71,8 +71,8 @@ where
     TSpi: Peripheral<P = TPeripheral> + 'static,
     TPeripheral: Spi + SpiAnyPins,
 {
-    pub input: mpsc::Receiver<spi_master::Request>,
-    pub output: broadcast::Sender<spi_master::Response>,
+    pub input: mpsc::Receiver<spi_master::FieldbusRequest>,
+    pub output: broadcast::Sender<spi_master::FieldbusResponse>,
     pub spi: TSpi,
     pub baudrate: Hertz,
     pub pin_miso: AnyIOPin,
@@ -125,7 +125,7 @@ where
                 }
             }
 
-            let response = spi_master::Response {
+            let response = spi_master::FieldbusResponse {
                 pin_cs: request.pin_cs,
                 request_creation_time: request.request_creation_time,
                 request_kind: request.request_kind,

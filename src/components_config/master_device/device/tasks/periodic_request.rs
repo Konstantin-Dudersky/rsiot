@@ -1,9 +1,11 @@
 use std::time::Duration;
 
 use tokio::{sync::mpsc, time::sleep};
-use tracing::trace;
 
-use super::{Buffer, RequestResponseBound};
+use super::{
+    set_address_and_send_to_fieldbus::set_address_and_send_to_fieldbus, Buffer,
+    RequestResponseBound,
+};
 
 pub struct PeriodicRequest<TRequest, TBuffer> {
     pub address: u8,
@@ -19,20 +21,17 @@ where
 {
     pub async fn spawn(self) -> super::Result<()> {
         loop {
-            let mut requests = {
+            let requests = {
                 let mut buffer = self.buffer.lock().await;
                 (self.fn_request)(&mut buffer)
             };
 
-            // Задаем адрес
-            for request in requests.iter_mut() {
-                request.set_address(self.address);
-            }
-
-            for request in requests {
-                trace!("Request: {:?}", request);
-                self.ch_tx_device_to_fieldbus.send(request).await.unwrap();
-            }
+            set_address_and_send_to_fieldbus(
+                requests,
+                self.address,
+                &self.ch_tx_device_to_fieldbus,
+            )
+            .await;
 
             sleep(self.period).await
         }

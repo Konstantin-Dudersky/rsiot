@@ -1,6 +1,9 @@
 use std::time::Duration;
 
-use crate::components_config::{uart_general::*, uart_master::DeviceTrait};
+use crate::components_config::master_device::DeviceTrait;
+use crate::components_config::uart_general::{
+    Baudrate, DataBits, FieldbusRequest, FieldbusResponse, Parity, StopBits,
+};
 use crate::message::MsgDataBound;
 
 /// Конфигурация cmp_linux_uart_master
@@ -55,7 +58,7 @@ where
 
     /// TODO - переделать на вектор универсальных устройств
     // pub devices: Vec<TestDevice<TMsg>>,
-    pub devices: Vec<Box<dyn DeviceTrait<TMsg, MESSAGE_LEN>>>,
+    pub devices: Vec<Box<dyn DeviceTrait<TMsg, FieldbusRequest, FieldbusResponse>>>,
 }
 
 impl<TMsg, const MESSAGE_LEN: usize> Default for Config<TMsg, MESSAGE_LEN>

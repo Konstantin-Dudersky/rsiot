@@ -4,7 +4,7 @@ use crate::components_config::master_device::RequestResponseBound;
 
 /// Структура отдельного запроса на коммуникацию по шине SPI
 #[derive(Clone, Debug)]
-pub struct Request {
+pub struct FieldbusRequest {
     /// Номер пина Chip Select
     pub pin_cs: u8,
 
@@ -22,7 +22,7 @@ pub struct Request {
     pub operations: Vec<Operation>,
 }
 
-impl Request {
+impl FieldbusRequest {
     /// Создание запроса. Адрес задается позже
     pub fn new(request_kind: impl Into<u8>, operations: Vec<Operation>) -> Self {
         Self {
@@ -47,7 +47,7 @@ pub enum Operation {
     Write(Vec<u8>),
 }
 
-impl RequestResponseBound for Request {
+impl RequestResponseBound for FieldbusRequest {
     fn address(&self) -> u8 {
         self.pin_cs
     }
