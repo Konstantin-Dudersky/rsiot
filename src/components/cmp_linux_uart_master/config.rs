@@ -58,7 +58,7 @@ where
 
     /// TODO - переделать на вектор универсальных устройств
     // pub devices: Vec<TestDevice<TMsg>>,
-    pub devices: Vec<Box<dyn DeviceTrait<TMsg, FieldbusRequest, FieldbusResponse>>>,
+    pub devices: Vec<Box<dyn DeviceTrait<TMsg, FieldbusRequest, FieldbusResponse, u8>>>,
 }
 
 impl<TMsg, const MESSAGE_LEN: usize> Default for Config<TMsg, MESSAGE_LEN>

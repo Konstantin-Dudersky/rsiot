@@ -28,7 +28,7 @@ pub struct TestDevice<TMsg> {
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
-impl<TMsg> DeviceTrait<TMsg, FieldbusRequest, FieldbusResponse> for TestDevice<TMsg>
+impl<TMsg> DeviceTrait<TMsg, FieldbusRequest, FieldbusResponse, u8> for TestDevice<TMsg>
 where
     TMsg: MsgDataBound + 'static,
 {
@@ -53,7 +53,7 @@ where
                 ))]
             },
             fn_response_to_buffer: |mut response: FieldbusResponse, buffer: &mut Buffer| {
-                let response = response.get;
+                let response = response.get_payload().unwrap();
                 match response {
                     Response::CounterFromEsp(val) => buffer.counter_esp = val,
                     Response::Ok => (),

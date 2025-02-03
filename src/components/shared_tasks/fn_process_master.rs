@@ -7,7 +7,7 @@ use tokio::{
 };
 
 use crate::{
-    components_config::master_device::{self, DeviceTrait, RequestResponseBound},
+    components_config::master_device::{self, AddressBound, DeviceTrait, RequestResponseBound},
     executor::{join_set_spawn, CmpInOut},
     message::{Message, MsgDataBound, ServiceBound},
 };
@@ -15,30 +15,54 @@ use crate::{
 use super::{filter_identical_data, mpsc_to_msgbus, msgbus_to_broadcast};
 
 /// Запуск задач, общих для всех компонентов, выполняющих опрос устройств по шине
-pub struct FnProcessMaster<'a, TMsg, TService, TError, TFieldbusRequest, TFieldbusResponse>
-where
+pub struct FnProcessMaster<
+    'a,
+    TMsg,
+    TService,
+    TError,
+    TFieldbusRequest,
+    TFieldbusResponse,
+    TAddress,
+> where
     TMsg: MsgDataBound + 'static,
     TService: ServiceBound + 'static,
     TError: Send + Sync + 'static,
+    TAddress: AddressBound,
 {
+    /// Шина сообщений
     pub msg_bus: CmpInOut<TMsg, TService>,
+
+    /// Ёмкость очередей сообщений между задачами
     pub buffer_size: usize,
+
+    /// Ссылка на коллекцию задач tokio
     pub task_set: &'a mut JoinSet<Result<(), TError>>,
+
+    /// Ошибка msgbus_to_broadcast
     pub error_msgbus_to_broadcast: fn(msgbus_to_broadcast::Error) -> TError,
+
+    /// Ошибка filter_identical_data
     pub error_filter: fn(filter_identical_data::Error) -> TError,
+
+    /// Ошибка mpsc_to_msgbus
     pub error_mpsc_to_msgbus: fn(mpsc_to_msgbus::Error) -> TError,
+
+    /// Ошибка master_device
     pub error_master_device: fn(master_device::Error) -> TError,
-    pub devices: Vec<Box<dyn DeviceTrait<TMsg, TFieldbusRequest, TFieldbusResponse>>>,
+
+    /// Массив устройств
+    pub devices: Vec<Box<dyn DeviceTrait<TMsg, TFieldbusRequest, TFieldbusResponse, TAddress>>>,
 }
 
-impl<TMsg, TService, TError, TFieldbusRequest, TFieldbusResponse>
-    FnProcessMaster<'_, TMsg, TService, TError, TFieldbusRequest, TFieldbusResponse>
+impl<TMsg, TService, TError, TFieldbusRequest, TFieldbusResponse, TAddress>
+    FnProcessMaster<'_, TMsg, TService, TError, TFieldbusRequest, TFieldbusResponse, TAddress>
 where
     TMsg: MsgDataBound + 'static,
     TService: ServiceBound + 'static,
     TError: Send + Sync + 'static,
-    TFieldbusRequest: RequestResponseBound + 'static,
-    TFieldbusResponse: RequestResponseBound + 'static,
+    TFieldbusRequest: RequestResponseBound<TAddress> + 'static,
+    TFieldbusResponse: RequestResponseBound<TAddress> + 'static,
+    TAddress: 'static + AddressBound,
 {
     /// Запуск задач.
     ///

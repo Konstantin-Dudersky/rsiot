@@ -11,15 +11,16 @@ use tokio::{
 use crate::{components::shared_tasks, message::Message};
 use crate::{executor::join_set_spawn, message::MsgDataBound};
 
-use super::{config::*, tasks, BufferBound, RequestResponseBound};
+use super::{config::*, tasks, AddressBound, BufferBound, RequestResponseBound};
 
 /// Базовое устройство для опроса по шине
-pub struct DeviceBase<TMsg, TFieldbusRequest, TFieldbusResponse, TBuffer>
+pub struct DeviceBase<TMsg, TFieldbusRequest, TFieldbusResponse, TBuffer, TAddress>
 where
-    TFieldbusRequest: RequestResponseBound,
+    TFieldbusRequest: RequestResponseBound<TAddress>,
+    TAddress: AddressBound,
 {
     /// Адрес
-    pub address: u8,
+    pub address: TAddress,
 
     /// Запросы при инициализации устройства
     pub fn_init_requests: fn() -> Vec<TFieldbusRequest>,
@@ -40,7 +41,10 @@ where
     /// ```
     pub fn_msgs_to_buffer: fn(&Message<TMsg>, &mut TBuffer),
 
+    /// Преобразование данных из буфера в массив запросов на шине
     pub fn_buffer_to_request: fn(&TBuffer) -> Vec<TFieldbusRequest>,
+
+    /// Обновление буфера на основе данных, полученных с устройства
     pub fn_response_to_buffer: fn(TFieldbusResponse, &mut TBuffer),
 
     /// Функция создания сообщений на основе буфера
@@ -58,12 +62,14 @@ where
     pub buffer_default: TBuffer,
 }
 
-impl<TMsg, TRequest, TResponse, TBuffer> DeviceBase<TMsg, TRequest, TResponse, TBuffer>
+impl<TMsg, TRequest, TResponse, TBuffer, TAddress>
+    DeviceBase<TMsg, TRequest, TResponse, TBuffer, TAddress>
 where
-    TRequest: 'static + RequestResponseBound,
-    TResponse: 'static + RequestResponseBound,
+    TRequest: 'static + RequestResponseBound<TAddress>,
+    TResponse: 'static + RequestResponseBound<TAddress>,
     TMsg: MsgDataBound + 'static,
     TBuffer: 'static + BufferBound,
+    TAddress: 'static + AddressBound,
 {
     /// Запустить работу
     pub async fn spawn(
@@ -141,15 +147,16 @@ where
     }
 }
 
-impl<TMsg, TFieldbusRequest, TFieldbusResponse, TBuffer> Default
-    for DeviceBase<TMsg, TFieldbusRequest, TFieldbusResponse, TBuffer>
+impl<TMsg, TFieldbusRequest, TFieldbusResponse, TBuffer, TAddress> Default
+    for DeviceBase<TMsg, TFieldbusRequest, TFieldbusResponse, TBuffer, TAddress>
 where
-    TFieldbusRequest: RequestResponseBound,
+    TFieldbusRequest: RequestResponseBound<TAddress>,
     TBuffer: Default,
+    TAddress: AddressBound,
 {
     fn default() -> Self {
         DeviceBase {
-            address: 0,
+            address: TAddress::default(),
             fn_init_requests: Vec::new,
             periodic_requests: vec![],
             fn_msgs_to_buffer: |_, _| (),

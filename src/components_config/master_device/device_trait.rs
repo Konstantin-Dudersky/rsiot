@@ -5,16 +5,17 @@ use tokio::sync::{broadcast, mpsc};
 
 use crate::message::{Message, MsgDataBound};
 
-use super::RequestResponseBound;
+use super::{AddressBound, RequestResponseBound};
 
 /// Трейт для реализации на структурах обмена данными с подчиненными устройствами
 #[async_trait]
-pub trait DeviceTrait<TMsg, TRequest, TResponse>
+pub trait DeviceTrait<TMsg, TRequest, TResponse, TAddress>
 where
     Self: Debug + Send + Sync,
     TMsg: MsgDataBound + 'static,
-    TRequest: 'static + RequestResponseBound,
-    TResponse: 'static + RequestResponseBound,
+    TRequest: 'static + RequestResponseBound<TAddress>,
+    TResponse: 'static + RequestResponseBound<TAddress>,
+    TAddress: AddressBound,
 {
     /// Запустить опрос
     async fn spawn(

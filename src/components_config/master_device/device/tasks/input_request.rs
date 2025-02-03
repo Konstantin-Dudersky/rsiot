@@ -3,12 +3,12 @@ use tokio::sync::{broadcast, mpsc};
 use crate::message::{Message, MsgDataBound};
 
 use super::{
-    set_address_and_send_to_fieldbus::set_address_and_send_to_fieldbus, Buffer, BufferBound,
-    RequestResponseBound,
+    set_address_and_send_to_fieldbus::set_address_and_send_to_fieldbus, AddressBound, Buffer,
+    BufferBound, RequestResponseBound,
 };
 
-pub struct InputRequest<TMsg, TRequest, TBuffer> {
-    pub address: u8,
+pub struct InputRequest<TMsg, TRequest, TBuffer, TAddress> {
+    pub address: TAddress,
     pub buffer: Buffer<TBuffer>,
     pub ch_rx_msgbus_to_device: broadcast::Receiver<Message<TMsg>>,
     pub ch_tx_device_to_fieldbus: mpsc::Sender<TRequest>,
@@ -16,11 +16,12 @@ pub struct InputRequest<TMsg, TRequest, TBuffer> {
     pub fn_buffer_to_request: fn(&TBuffer) -> Vec<TRequest>,
 }
 
-impl<TMsg, TRequest, TBuffer> InputRequest<TMsg, TRequest, TBuffer>
+impl<TMsg, TRequest, TBuffer, TAddress> InputRequest<TMsg, TRequest, TBuffer, TAddress>
 where
     TMsg: MsgDataBound,
-    TRequest: RequestResponseBound,
+    TRequest: RequestResponseBound<TAddress>,
     TBuffer: BufferBound,
+    TAddress: AddressBound,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
         while let Ok(msg) = self.ch_rx_msgbus_to_device.recv().await {

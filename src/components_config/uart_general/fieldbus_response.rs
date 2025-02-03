@@ -72,7 +72,7 @@ impl FieldbusResponse {
     }
 }
 
-impl RequestResponseBound for FieldbusResponse {
+impl RequestResponseBound<u8> for FieldbusResponse {
     fn address(&self) -> u8 {
         self.address
     }

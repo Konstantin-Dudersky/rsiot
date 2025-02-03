@@ -9,4 +9,4 @@ pub use input_request::InputRequest;
 pub use periodic_request::PeriodicRequest;
 pub use response::Response;
 
-use super::{Buffer, BufferBound, RequestResponseBound, Result};
+use super::{AddressBound, Buffer, BufferBound, RequestResponseBound, Result};

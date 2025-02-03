@@ -47,7 +47,7 @@ pub enum Operation {
     Write(Vec<u8>),
 }
 
-impl RequestResponseBound for FieldbusRequest {
+impl RequestResponseBound<u8> for FieldbusRequest {
     fn address(&self) -> u8 {
         self.pin_cs
     }

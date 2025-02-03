@@ -22,7 +22,7 @@ pub struct FieldbusResponse {
     pub payload: Vec<Vec<u8>>,
 }
 
-impl RequestResponseBound for FieldbusResponse {
+impl RequestResponseBound<u8> for FieldbusResponse {
     fn address(&self) -> u8 {
         self.pin_cs
     }

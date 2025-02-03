@@ -32,6 +32,7 @@ where
     pub pin_cs: Vec<AnyIOPin>,
 
     /// Драйвера устройств
-    pub devices:
-        Vec<Box<dyn DeviceTrait<TMsg, spi_master::FieldbusRequest, spi_master::FieldbusResponse>>>,
+    pub devices: Vec<
+        Box<dyn DeviceTrait<TMsg, spi_master::FieldbusRequest, spi_master::FieldbusResponse, u8>>,
+    >,
 }

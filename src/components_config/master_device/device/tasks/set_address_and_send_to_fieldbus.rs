@@ -1,14 +1,15 @@
 use tokio::sync::mpsc;
 use tracing::trace;
 
-use crate::components_config::master_device::RequestResponseBound;
+use super::{AddressBound, RequestResponseBound};
 
-pub async fn set_address_and_send_to_fieldbus<TFieldbusRequest>(
+pub async fn set_address_and_send_to_fieldbus<TFieldbusRequest, TAddress>(
     mut requests: Vec<TFieldbusRequest>,
-    address: u8,
+    address: TAddress,
     ch_tx_device_to_fieldbus: &mpsc::Sender<TFieldbusRequest>,
 ) where
-    TFieldbusRequest: RequestResponseBound,
+    TFieldbusRequest: RequestResponseBound<TAddress>,
+    TAddress: AddressBound,
 {
     for request in requests.iter_mut() {
         request.set_address(address);

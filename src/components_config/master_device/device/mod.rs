@@ -5,7 +5,7 @@ mod tasks;
 #[cfg(test)]
 mod tests;
 
-use super::{BufferBound, Error, RequestResponseBound, Result};
+use super::{AddressBound, BufferBound, Error, RequestResponseBound, Result};
 
 pub use config::ConfigPeriodicRequest;
 pub use device::DeviceBase;
