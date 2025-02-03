@@ -1,4 +1,7 @@
-use crate::{components::shared_tasks, components_config::master_device, executor::ComponentError};
+use crate::{
+    components::shared_tasks, components_config::master_device, executor::ComponentError,
+    serde_utils::postcard_serde,
+};
 
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
@@ -47,6 +50,9 @@ pub enum Error {
 
     #[error(transparent)]
     Device(master_device::Error),
+
+    #[error(transparent)]
+    Postcard(#[from] postcard_serde::Error),
 }
 
 impl From<Error> for ComponentError {

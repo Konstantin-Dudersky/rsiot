@@ -13,28 +13,17 @@ use tokio::{
 };
 use tracing::info;
 
+use crate::components_config::uart_general::Parity;
 use crate::{
-    components::{
-        cmp_esp_uart_slave::Parity,
-        shared_tasks::{filter_identical_data, mpsc_to_msgbus},
-    },
+    components::shared_tasks::{filter_identical_data, mpsc_to_msgbus},
     executor::{join_set_spawn, CmpInOut},
     message::{MsgDataBound, ServiceBound},
 };
 
-use super::{tasks, Config, RequestResponseBound};
+use super::{tasks, Config};
 
-pub async fn fn_process<
-    TMsg,
-    TService,
-    TUart,
-    TPeripheral,
-    TRequest,
-    TResponse,
-    TBufferData,
-    const MESSAGE_LEN: usize,
->(
-    config: Config<TMsg, TUart, TPeripheral, TRequest, TResponse, TBufferData, MESSAGE_LEN>,
+pub async fn fn_process<TMsg, TService, TUart, TPeripheral, TBufferData, const MESSAGE_LEN: usize>(
+    config: Config<TMsg, TUart, TPeripheral, TBufferData, MESSAGE_LEN>,
     msg_bus: CmpInOut<TMsg, TService>,
 ) -> super::Result<()>
 where
@@ -42,8 +31,6 @@ where
     TService: ServiceBound + 'static,
     TUart: Peripheral<P = TPeripheral> + 'static,
     TPeripheral: Uart,
-    TRequest: 'static + RequestResponseBound,
-    TResponse: 'static + RequestResponseBound,
     TBufferData: 'static,
 {
     info!("Starting UART loopback test");

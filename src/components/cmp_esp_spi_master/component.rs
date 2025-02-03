@@ -34,5 +34,5 @@ where
 }
 
 /// Компонент cmp_esp_spi_master
-pub type Cmp<TMsg, TService, TSpi, TPeripheral> =
+pub type Cmp<TMsg, TService, TSpi, TPeripheral, const MESSAGE_LEN: usize> =
     Component<Config<TMsg, TSpi, TPeripheral>, TMsg, TService>;

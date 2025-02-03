@@ -5,7 +5,7 @@ use esp_idf_svc::hal::{uart, units::Hertz};
 
 use crate::message::{Message, MsgDataBound};
 
-pub use crate::components_config::uart_general::*;
+use crate::components_config::uart_general::*;
 
 /// Функция преобразования входных сообщений в данные для передачи I2C
 pub type TFnInput<TMsg, TBufferData> = fn(&Message<TMsg>, &mut TBufferData);
@@ -18,20 +18,11 @@ pub type TFnUartComm<TRequest, TResponse, TBufferData> =
     fn(TRequest, &mut TBufferData) -> anyhow::Result<TResponse>;
 
 /// Конфигурация cmp_esp_uart_slave
-pub struct Config<
-    TMsg,
-    TUart,
-    TPeripheral,
-    TRequest,
-    TResponse,
-    TBufferData,
-    const MESSAGE_LEN: usize,
-> where
+pub struct Config<TMsg, TUart, TPeripheral, TBufferData, const MESSAGE_LEN: usize>
+where
     TMsg: MsgDataBound,
     TUart: Peripheral<P = TPeripheral> + 'static,
     TPeripheral: Uart,
-    TRequest: RequestResponseBound,
-    TResponse: RequestResponseBound,
 {
     /// Адрес устройства на шине
     pub address: u8,
@@ -90,7 +81,7 @@ pub struct Config<
     pub fn_input: TFnInput<TMsg, TBufferData>,
 
     /// Функция коммуникации по UART
-    pub fn_uart_comm: TFnUartComm<TRequest, TResponse, TBufferData>,
+    pub fn_uart_comm: TFnUartComm<FieldbusRequest, FieldbusResponse, TBufferData>,
 
     /// Функция для преобразования полученных данных UART в исходящие сообщения.
     ///

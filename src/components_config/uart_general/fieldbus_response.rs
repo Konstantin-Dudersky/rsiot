@@ -1,8 +1,13 @@
 use std::{fmt::Debug, time::Instant};
 
-use serde::de::DeserializeOwned;
+use serde::{de::DeserializeOwned, Serialize};
 
-use crate::{components_config::master_device::RequestResponseBound, serde_utils::postcard_serde};
+use crate::{
+    components_config::master_device::RequestResponseBound,
+    serde_utils::postcard_serde::{self, serialize_nocrc_vec},
+};
+
+use super::uart_message::UartMessage;
 
 /// Структура отдельного ответа при коммуникации по шине SPI
 #[derive(Clone, Debug)]
@@ -16,16 +21,54 @@ pub struct FieldbusResponse {
     pub request_creation_time: Instant,
 
     /// Ответ
-    pub uart_response: Vec<u8>,
+    payload: Vec<u8>,
 }
 
 impl FieldbusResponse {
+    /// Создание ответа. Адрес задается позже
+    pub fn new(uart_request: impl Serialize) -> Self {
+        Self {
+            address: Default::default(),
+            request_creation_time: Instant::now(),
+            payload: serialize_nocrc_vec(&uart_request).unwrap(),
+        }
+    }
+
     /// Десериализация ответа
-    pub fn response_deserialize<T>(&mut self) -> T
+    pub fn get_payload<T>(&mut self) -> Result<T, postcard_serde::Error>
     where
         T: DeserializeOwned,
     {
-        postcard_serde::deserialize_crc(&mut self.uart_response).unwrap()
+        postcard_serde::deserialize_nocrc(&mut self.payload)
+    }
+
+    /// Установить время создания запроса
+    ///
+    /// Время не передается по сети, поэтому необходимо устанавливать вручную
+    pub fn set_request_creation_time(&mut self, request_creation_time: Instant) {
+        self.request_creation_time = request_creation_time;
+    }
+
+    /// Восстановить ответ из буфера передачи по сети
+    pub fn from_read_buffer(read_buf: &mut [u8]) -> Result<Self, postcard_serde::Error> {
+        let uart_message: UartMessage = postcard_serde::deserialize_crc(read_buf)?;
+        let fieldbus_response = Self {
+            address: uart_message.address,
+            request_creation_time: Instant::now(),
+            payload: uart_message.payload,
+        };
+        Ok(fieldbus_response)
+    }
+
+    /// Подготовить ответ для передачи по сети
+    pub fn to_write_buffer<const MESSAGE_LEN: usize>(
+        self,
+    ) -> Result<[u8; MESSAGE_LEN], postcard_serde::Error> {
+        let uart_message = UartMessage {
+            address: self.address,
+            payload: self.payload,
+        };
+        postcard_serde::serialize_crc_arr(&uart_message)
     }
 }
 

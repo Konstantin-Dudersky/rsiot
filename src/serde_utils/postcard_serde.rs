@@ -48,6 +48,17 @@ where
     })
 }
 
+/// Десериализация данных из формата Postcard
+pub fn deserialize_nocrc<T>(buffer: &mut [u8]) -> Result<T, Error>
+where
+    T: DeserializeOwned,
+{
+    from_bytes(buffer).map_err(|e| Error::DeserializationError {
+        error: e,
+        buffer: buffer.to_vec(),
+    })
+}
+
 /// Сериализация данных в формат Postcard
 #[deprecated]
 pub fn serialize_nocrc<T>(data: &T) -> Result<Vec<u8>, Error>
@@ -109,18 +120,6 @@ where
     T: Debug + DeserializeOwned,
 {
     deserialize_crc(buffer)
-}
-
-/// Десериализация данных из формата Postcard
-#[deprecated]
-pub fn deserialize_nocrc<T>(buffer: &mut [u8]) -> Result<T, Error>
-where
-    T: Debug + DeserializeOwned,
-{
-    from_bytes(buffer).map_err(|e| Error::DeserializationError {
-        error: e,
-        buffer: buffer.to_vec(),
-    })
 }
 
 #[allow(missing_docs)]

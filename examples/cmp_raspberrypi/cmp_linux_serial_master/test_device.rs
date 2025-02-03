@@ -53,7 +53,7 @@ where
                 ))]
             },
             fn_response_to_buffer: |mut response: FieldbusResponse, buffer: &mut Buffer| {
-                let response = response.response_deserialize();
+                let response = response.get;
                 match response {
                     Response::CounterFromEsp(val) => buffer.counter_esp = val,
                     Response::Ok => (),

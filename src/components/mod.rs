@@ -50,10 +50,6 @@ pub mod cmp_esp_spi_master;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
-pub mod cmp_esp_spi_master_2;
-
-#[cfg(feature = "cmp_esp")]
-#[cfg(riscv32imc_esp_espidf)]
 pub mod cmp_esp_uart_slave;
 
 #[cfg(feature = "cmp_esp")]

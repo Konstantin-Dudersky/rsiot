@@ -1,12 +1,10 @@
-use std::time::Duration;
-
 use esp_idf_svc::hal::gpio::AnyIOPin;
-use esp_idf_svc::hal::{
-    peripheral::Peripheral,
-    spi::{Spi, SpiDeviceDriver, SpiDriver},
-};
+use esp_idf_svc::hal::units::Hertz;
+use esp_idf_svc::hal::{peripheral::Peripheral, spi::Spi};
 
-use crate::message::{Message, MsgDataBound};
+use crate::components_config::master_device::DeviceTrait;
+use crate::components_config::spi_master;
+use crate::message::MsgDataBound;
 
 /// Конфигурация компонента cmp_esp_spi_master
 pub struct Config<TMsg, TSpi, TPeripheral>
@@ -18,6 +16,9 @@ where
     /// Ссылка на аппартный интерфейс SPI
     pub spi: TSpi,
 
+    /// Частота тактов
+    pub baudrate: Hertz,
+
     /// Пин MISO
     pub pin_miso: AnyIOPin,
 
@@ -27,24 +28,10 @@ where
     /// Пин SCK
     pub pin_sck: AnyIOPin,
 
-    /// Массив конфигураций подчиненных устройств на шине SPI
-    pub devices: Vec<ConfigDevice<TMsg>>,
+    /// Массив пинов CS
+    pub pin_cs: Vec<AnyIOPin>,
 
-    /// Период вызова функций fn_output всех устройств
-    pub fn_output_period: Duration,
-}
-
-/// Конфигурация подчиненных устройств на шине SPI
-pub struct ConfigDevice<TMsg> {
-    /// Пин CS
-    pub pin_cs: AnyIOPin,
-
-    /// Функция инициализации
-    pub fn_init: for<'a> fn(&mut SpiDeviceDriver<'a, &SpiDriver<'a>>),
-
-    /// Функция преобразования входящих сообщений в команды SPI
-    pub fn_input: for<'a> fn(&Message<TMsg>, &mut SpiDeviceDriver<'a, &SpiDriver<'a>>),
-
-    /// Функция преобразования данных из SPI в исходящие сообщения
-    pub fn_output: for<'a> fn(&mut SpiDeviceDriver<'a, &SpiDriver<'a>>) -> Vec<Message<TMsg>>,
+    /// Драйвера устройств
+    pub devices:
+        Vec<Box<dyn DeviceTrait<TMsg, spi_master::FieldbusRequest, spi_master::FieldbusResponse>>>,
 }

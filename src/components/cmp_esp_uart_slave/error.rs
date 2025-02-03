@@ -1,4 +1,4 @@
-use crate::{components::shared_tasks, executor::ComponentError};
+use crate::{components::shared_tasks, executor::ComponentError, serde_utils::postcard_serde};
 
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
@@ -26,6 +26,9 @@ pub enum Error {
 
     #[error("TaskMpscToMsgbus: {0}")]
     TaskMpscToMsgbus(shared_tasks::mpsc_to_msgbus::Error),
+
+    #[error(transparent)]
+    Postcard(#[from] postcard_serde::Error),
 }
 
 impl From<Error> for ComponentError {

@@ -46,7 +46,7 @@ where
         stop_bits: config.stop_bits,
         gpio_chip: config.gpio_chip,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, task.spawn::<MESSAGE_LEN>());
 
     // Ожидание выполнения -------------------------------------------------------------------------
     while let Some(res) = task_set.join_next().await {

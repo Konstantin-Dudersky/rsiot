@@ -1,4 +1,4 @@
-//! Шаблон компонента
+//! Компонент для обмена данными по шине UART в режиме slave
 
 mod component;
 mod config;
@@ -6,6 +6,7 @@ mod error;
 mod fn_process;
 mod tasks;
 
+pub use crate::components_config::uart_general::{Baudrate, DataBits, Parity, StopBits};
 pub use component::Cmp;
 pub use config::*;
 pub use error::Error;

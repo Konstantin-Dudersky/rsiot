@@ -1,17 +1,13 @@
 use std::time::Duration;
 
 use linux_embedded_hal::gpio_cdev::{Chip, LineRequestFlags};
-use serde::{Deserialize, Serialize};
 use tokio::{
     sync::{broadcast, mpsc},
     time::sleep,
 };
-use tracing::trace;
+use tracing::{info, trace, warn};
 
-use crate::{
-    components_config::uart_general::{self, FieldbusResponse},
-    serde_utils::postcard_serde::{self, MESSAGE_LEN},
-};
+use crate::components_config::uart_general::{self, FieldbusResponse};
 
 pub struct UartComm {
     pub ch_rx_devices_to_fieldbus: mpsc::Receiver<uart_general::FieldbusRequest>,
@@ -28,7 +24,7 @@ pub struct UartComm {
 }
 
 impl UartComm {
-    pub async fn spawn(mut self) -> super::Result<()> {
+    pub async fn spawn<const MESSAGE_LEN: usize>(mut self) -> super::Result<()> {
         let serial_port_builder = serialport::new("", 0)
             .path(self.port)
             .baud_rate(self.baudrate.into())
@@ -60,22 +56,18 @@ impl UartComm {
             // TODO
             // self.ch_rx_devices_to_fieldbus
             //     .check_capacity(0.2, "uart_write");
+            let request_creation_time = request.request_creation_time;
 
             trace!("Send: {:?}", request);
 
-            let uart_message = UartMessage {
-                address: request.address,
-                payload: request.uart_request,
-            };
-            let uart_message: [u8; MESSAGE_LEN] =
-                postcard_serde::serialize_crc_arr(&uart_message).unwrap();
+            let write_buffer: [u8; MESSAGE_LEN] = request.to_write_buffer()?;
 
             if let Some(pin_rts) = &pin_rts {
                 pin_rts
                     .set_value(1)
                     .map_err(|e| super::Error::GpioPinSet(e.to_string()))?;
             }
-            port.write_all(&uart_message)
+            port.write_all(&write_buffer)
                 .map_err(|e| super::Error::UartWrite(e.to_string()))?;
 
             // Задержка перед сбросом пина RTS
@@ -88,34 +80,28 @@ impl UartComm {
 
             // Чтение ------------------------------------------------------------------------------
 
+            // Задержка перед следующими запросами. Ожидание ответа от подчиненных устройств
+            sleep(self.wait_after_write).await;
+
             let mut read_buf = [0; MESSAGE_LEN];
 
             let port_read_result = port.read_exact(&mut read_buf);
             if port_read_result.is_err() {
+                warn!("read error");
+                sleep(Duration::from_millis(10)).await;
                 continue;
+            } else {
+                info!("Read: {:?}", read_buf);
             }
 
-            let response: UartMessage = postcard_serde::deserialize_crc(&mut read_buf).unwrap();
-            let response = FieldbusResponse {
-                address: response.address,
-                request_creation_time: request.request_creation_time,
-                uart_response: response.payload,
-            };
+            let mut response = FieldbusResponse::from_read_buffer(&mut read_buf).unwrap();
+            response.set_request_creation_time(request_creation_time);
 
             self.ch_tx_fieldbus_to_devices
                 .send(response)
                 .map_err(|e| super::Error::TokioSyncBroadcastSend(e.to_string()))?;
-
-            // Задержка перед следующими запросами. Ожидание ответа от подчиненных устройств
-            sleep(self.wait_after_write).await;
         }
 
         Ok(())
     }
-}
-
-#[derive(Deserialize, Serialize)]
-struct UartMessage {
-    pub address: u8,
-    pub payload: Vec<u8>,
 }
