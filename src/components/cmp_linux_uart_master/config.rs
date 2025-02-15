@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use crate::components_config::master_device::DeviceTrait;
 use crate::components_config::uart_general::{
-    Baudrate, DataBits, FieldbusRequest, FieldbusResponse, Parity, StopBits,
+    Baudrate, DataBits, Parity, StopBits, UartRequest, UartResponse,
 };
 use crate::message::MsgDataBound;
 
@@ -27,12 +27,8 @@ where
     /// Кол-во стоповых бит
     pub stop_bits: StopBits,
 
-    /// Задержка после записи в порт.
-    ///
-    /// По-умолчанию можно задать 50ms.
-    ///
-    /// Если задержку не делать, то подчиненные устройства могут не успеть ответить.
-    pub wait_after_write: Duration,
+    /// Время ожидания ответа
+    pub timeout: Duration,
 
     /// Название чипа gpio в системе.
     ///
@@ -58,7 +54,7 @@ where
 
     /// TODO - переделать на вектор универсальных устройств
     // pub devices: Vec<TestDevice<TMsg>>,
-    pub devices: Vec<Box<dyn DeviceTrait<TMsg, FieldbusRequest, FieldbusResponse, u8>>>,
+    pub devices: Vec<Box<dyn DeviceTrait<TMsg, UartRequest, UartResponse, u8>>>,
 }
 
 impl<TMsg, const MESSAGE_LEN: usize> Default for Config<TMsg, MESSAGE_LEN>
@@ -73,7 +69,7 @@ where
             parity: Parity::default(),
             stop_bits: StopBits::default(),
             devices: vec![],
-            wait_after_write: Duration::from_millis(50),
+            timeout: Duration::from_millis(100),
             gpio_chip: "/dev/gpiochip0",
             pin_rts: Some(17),
         }

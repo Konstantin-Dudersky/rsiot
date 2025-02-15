@@ -11,7 +11,7 @@ use super::uart_message::UartMessage;
 
 /// Структура отдельного запроса на коммуникацию по шине SPI
 #[derive(Clone, Debug)]
-pub struct FieldbusRequest {
+pub struct UartRequest {
     /// Адрес подчиненного устройства
     pub address: u8,
 
@@ -24,7 +24,7 @@ pub struct FieldbusRequest {
     payload: Vec<u8>,
 }
 
-impl FieldbusRequest {
+impl UartRequest {
     /// Создание запроса. Адрес задается позже
     pub fn new(uart_request: impl Serialize) -> Self {
         Self {
@@ -65,7 +65,7 @@ impl FieldbusRequest {
     }
 }
 
-impl RequestResponseBound<u8> for FieldbusRequest {
+impl RequestResponseBound<u8> for UartRequest {
     fn address(&self) -> u8 {
         self.address
     }

@@ -65,7 +65,7 @@ async fn main() {
         data_bits: cmp_linux_uart_master::DataBits::_8,
         stop_bits: cmp_linux_uart_master::StopBits::_1,
         parity: cmp_linux_uart_master::Parity::None,
-        wait_after_write: Duration::from_millis(50),
+        timeout: Duration::from_millis(50),
         gpio_chip: "/dev/gpiochip0",
         // pin_rts: Some(17),
         pin_rts: None,

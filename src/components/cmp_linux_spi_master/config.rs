@@ -1,21 +1,27 @@
-use crate::message::{Message, MsgDataBound};
+use crate::{
+    components_config::{master_device::DeviceTrait, spi_master},
+    message::MsgDataBound,
+};
 
-#[derive(Clone)]
+/// Конфигурация cmp_linux_spi_master
 pub struct Config<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    /// # Пример
+    /// Пути к устройствам SPI.
+    ///
+    /// Пример:
     ///
     /// ```rust
-    /// fn_input: |_| None
+    /// spi_path: vec!["/dev/spidev0.0", "/dev/spidev0.1"]
     /// ```
-    pub fn_input: fn(Message<TMsg>) -> Option<String>,
+    pub spi_adapter_path: Vec<&'static str>,
 
-    /// # Пример
-    ///
-    /// ```rust
-    /// fn_output: |_| vec![]
-    /// ```
-    pub fn_output: fn(String) -> Vec<Message<TMsg>>,
+    /// Частота тактов в Гц
+    pub baudrate: u32,
+
+    /// Драйвера устройств
+    pub devices: Vec<
+        Box<dyn DeviceTrait<TMsg, spi_master::FieldbusRequest, spi_master::FieldbusResponse, u8>>,
+    >,
 }

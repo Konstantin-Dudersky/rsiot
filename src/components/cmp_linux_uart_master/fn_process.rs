@@ -35,17 +35,18 @@ where
 
     // Коммуникация UART ---------------------------------------------------------------------------
     let task = UartComm {
-        wait_after_write: config.wait_after_write,
         pin_rts: config.pin_rts,
         ch_rx_devices_to_fieldbus,
         ch_tx_fieldbus_to_devices,
         port: config.port,
+        timeout: config.timeout,
         baudrate: config.baudrate,
         data_bits: config.data_bits,
         parity: config.parity,
         stop_bits: config.stop_bits,
         gpio_chip: config.gpio_chip,
     };
+    // task_set.spawn_blocking(move || task.spawn::<MESSAGE_LEN>());
     join_set_spawn(&mut task_set, task.spawn::<MESSAGE_LEN>());
 
     // Ожидание выполнения -------------------------------------------------------------------------

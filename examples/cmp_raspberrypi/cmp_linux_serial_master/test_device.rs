@@ -6,7 +6,7 @@ use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use tokio::sync::{broadcast, mpsc};
 
-use rsiot::components_config::uart_general::{FieldbusRequest, FieldbusResponse};
+use rsiot::components_config::uart_general::{UartRequest, UartResponse};
 use rsiot::message::{Message, MsgDataBound};
 
 use rsiot::components_config::master_device::{
@@ -28,15 +28,15 @@ pub struct TestDevice<TMsg> {
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
-impl<TMsg> DeviceTrait<TMsg, FieldbusRequest, FieldbusResponse, u8> for TestDevice<TMsg>
+impl<TMsg> DeviceTrait<TMsg, UartRequest, UartResponse, u8> for TestDevice<TMsg>
 where
     TMsg: MsgDataBound + 'static,
 {
     async fn spawn(
         self: Box<Self>,
         ch_rx_msgbus_to_device: broadcast::Receiver<Message<TMsg>>,
-        ch_tx_device_to_fieldbus: mpsc::Sender<FieldbusRequest>,
-        ch_rx_fieldbus_to_device: broadcast::Receiver<FieldbusResponse>,
+        ch_tx_device_to_fieldbus: mpsc::Sender<UartRequest>,
+        ch_rx_fieldbus_to_device: broadcast::Receiver<UartResponse>,
         ch_tx_device_to_msgbus: mpsc::Sender<Message<TMsg>>,
     ) -> master_device::Result<()> {
         let device = DeviceBase {
@@ -44,15 +44,13 @@ where
             fn_init_requests: || vec![],
             periodic_requests: vec![ConfigPeriodicRequest {
                 period: Duration::from_millis(500),
-                fn_requests: |_buffer| vec![FieldbusRequest::new(Request::GetCounterFromEsp)],
+                fn_requests: |_buffer| vec![UartRequest::new(Request::GetCounterFromEsp)],
             }],
             fn_msgs_to_buffer: self.fn_input,
             fn_buffer_to_request: |buffer: &Buffer| {
-                vec![FieldbusRequest::new(Request::SetCounterRpi(
-                    buffer.counter_rpi,
-                ))]
+                vec![UartRequest::new(Request::SetCounterRpi(buffer.counter_rpi))]
             },
-            fn_response_to_buffer: |mut response: FieldbusResponse, buffer: &mut Buffer| {
+            fn_response_to_buffer: |mut response: UartResponse, buffer: &mut Buffer| {
                 let response = response.get_payload().unwrap();
                 match response {
                     Response::CounterFromEsp(val) => buffer.counter_esp = val,

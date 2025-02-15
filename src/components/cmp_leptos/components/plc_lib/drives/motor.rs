@@ -33,7 +33,7 @@ pub fn Motor(
             visible=visible
             headline=move || view! { {title} }
             content=move || {
-                view! { <Content hmi_status=hmi_status hmi_command=hmi_command/> }
+                view! { <Content hmi_status=hmi_status hmi_command=hmi_command /> }
             }
             actions=move || {
                 view! { <button on:click=move |_| { on_close() }>Закрыть</button> }

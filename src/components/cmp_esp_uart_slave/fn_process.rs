@@ -82,6 +82,7 @@ where
         pin_rts,
         fn_uart_comm: config.fn_uart_comm,
         buffer_data: buffer_data.clone(),
+        delay_between_read_and_write: config.delay_between_read_and_write,
     };
     join_set_spawn(&mut task_set, task.spawn::<MESSAGE_LEN>());
 

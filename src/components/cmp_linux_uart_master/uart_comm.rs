@@ -1,20 +1,24 @@
 use std::time::Duration;
 
 use linux_embedded_hal::gpio_cdev::{Chip, LineRequestFlags};
-use tokio::{
-    sync::{broadcast, mpsc},
-    time::sleep,
-};
-use tracing::{info, trace, warn};
+use serialport::FlowControl;
+use tokio::sync::{broadcast, mpsc};
+use tracing::{trace, warn};
 
-use crate::components_config::uart_general::{self, FieldbusResponse};
+use crate::{
+    components_config::uart_general::{self, UartResponse},
+    executor::CheckCapacity,
+};
+
+const READ_BUFFER_LEN: usize = 100;
+const READ_BUFFER_CHUNK: usize = 32;
 
 pub struct UartComm {
-    pub ch_rx_devices_to_fieldbus: mpsc::Receiver<uart_general::FieldbusRequest>,
-    pub ch_tx_fieldbus_to_devices: broadcast::Sender<uart_general::FieldbusResponse>,
+    pub ch_rx_devices_to_fieldbus: mpsc::Receiver<uart_general::UartRequest>,
+    pub ch_tx_fieldbus_to_devices: broadcast::Sender<uart_general::UartResponse>,
     pub pin_rts: Option<u32>,
 
-    pub wait_after_write: Duration,
+    pub timeout: Duration,
     pub port: &'static str,
     pub baudrate: uart_general::Baudrate,
     pub data_bits: uart_general::DataBits,
@@ -31,7 +35,7 @@ impl UartComm {
             .data_bits(self.data_bits.into())
             .parity(self.parity.into())
             .stop_bits(self.stop_bits.into())
-            .timeout(Duration::from_millis(100));
+            .timeout(self.timeout);
         let mut port = serial_port_builder
             .open()
             .map_err(|e| super::Error::OpenSerialPort(e.to_string()))?;
@@ -54,47 +58,73 @@ impl UartComm {
 
         while let Some(request) = self.ch_rx_devices_to_fieldbus.recv().await {
             // TODO
-            // self.ch_rx_devices_to_fieldbus
-            //     .check_capacity(0.2, "uart_write");
+            self.ch_rx_devices_to_fieldbus
+                .check_capacity(0.2, "uart_write");
+            let address = request.address;
             let request_creation_time = request.request_creation_time;
 
             trace!("Send: {:?}", request);
 
             let write_buffer: [u8; MESSAGE_LEN] = request.to_write_buffer()?;
 
+            // Устанавливаем пин RTS
             if let Some(pin_rts) = &pin_rts {
                 pin_rts
                     .set_value(1)
                     .map_err(|e| super::Error::GpioPinSet(e.to_string()))?;
             }
-            port.write_all(&write_buffer)
-                .map_err(|e| super::Error::UartWrite(e.to_string()))?;
 
-            // Задержка перед сбросом пина RTS
-            sleep(Duration::from_millis(1)).await;
+            // Записываем буфер и ждем, пока данные отправятся
+            port.write(&write_buffer)
+                .map_err(|e| super::Error::UartWrite(e.to_string()))?;
+            port.flush()
+                .map_err(|e| super::Error::UartWrite(e.to_string()))?;
+            port.clear(serialport::ClearBuffer::All).unwrap();
+
+            // Сбрасываем пин RTS
             if let Some(pin_rts) = &pin_rts {
                 pin_rts
                     .set_value(0)
                     .map_err(|e| super::Error::GpioPinSet(e.to_string()))?;
             }
 
-            // Чтение ------------------------------------------------------------------------------
+            let mut read_buffer = vec![0; READ_BUFFER_LEN];
+            let mut read_buffer_offset: usize = 0;
 
-            // Задержка перед следующими запросами. Ожидание ответа от подчиненных устройств
-            sleep(self.wait_after_write).await;
+            // Читаем данные из порта по частям
+            let read_buffer_1 = loop {
+                let mut read_buffer_chunk = vec![0; READ_BUFFER_CHUNK];
+                let port_read_result = port.read(&mut read_buffer_chunk);
+                match port_read_result {
+                    Ok(bytes_read) => {
+                        // Перемещаем все данные в один буфер
+                        (0..bytes_read).for_each(|i| {
+                            read_buffer[i + read_buffer_offset] = read_buffer_chunk[i];
+                        });
+                        // Увеличиваем смещение на количество прочитанных байт
+                        read_buffer_offset += bytes_read;
+                    }
+                    Err(err) => break Err(err),
+                }
+                // Пробуем востановить ответ. В ответе содержится CRC32. Если контрольная сумма
+                // совпала - прекращаем читать из буфера, возвращаем ответ. Если не совпала,
+                // то опять читаем из буфера
+                let response = UartResponse::from_read_buffer(&mut read_buffer);
+                if let Ok(read_buffer) = response {
+                    break Ok(read_buffer);
+                }
+            };
 
-            let mut read_buf = [0; MESSAGE_LEN];
+            let mut response = match read_buffer_1 {
+                Ok(val) => val,
+                Err(err) => {
+                    let err = err.to_string();
+                    warn!("UART read error: {}; address: {}", err, address);
+                    // TODO - возможно, отправлять на устройство ответ, что есть проблема чтения
+                    continue;
+                }
+            };
 
-            let port_read_result = port.read_exact(&mut read_buf);
-            if port_read_result.is_err() {
-                warn!("read error");
-                sleep(Duration::from_millis(10)).await;
-                continue;
-            } else {
-                info!("Read: {:?}", read_buf);
-            }
-
-            let mut response = FieldbusResponse::from_read_buffer(&mut read_buf).unwrap();
             response.set_request_creation_time(request_creation_time);
 
             self.ch_tx_fieldbus_to_devices

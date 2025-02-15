@@ -131,7 +131,7 @@ pub enum Error {
     #[error("Buffer too large. Buffer len: {buffer_len}, message len: {MESSAGE_LEN}. Increase MESSAGE_LEN constant.")]
     BufferTooLarge { buffer_len: usize },
 
-    #[error("Deserialization error: {error}. Buffer: {buffer:?}")]
+    #[error("Deserialization error: {error}. Buffer: {buffer:x?}")]
     DeserializationError {
         error: postcard::Error,
         buffer: Vec<u8>,

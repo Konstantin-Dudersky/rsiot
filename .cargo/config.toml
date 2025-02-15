@@ -12,6 +12,8 @@ rustflags = [
     "espidf_time64",
     "--cfg",
     "mio_unsupported_force_poll_poll", # https://github.com/tokio-rs/tokio/issues/5866
+    # "-C",
+    # "force-frame-pointers",
 ]
 
 [unstable]

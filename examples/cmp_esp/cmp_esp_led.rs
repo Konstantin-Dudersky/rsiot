@@ -63,14 +63,18 @@ async fn main() {
         fn_periodic: move || {
             let mut random = [0u8; 3];
             getrandom(&mut random).unwrap();
-            let msg = Message::new_custom(Custom::LedColor(vec![cmp_esp_led::ConfigRgb {
+
+            let one_led = cmp_esp_led::ConfigRgb {
                 r: random[0],
                 g: random[1],
                 b: random[2],
-            }]));
+            };
+            let all_leds = vec![one_led; 10];
+
+            let msg = Message::new_custom(Custom::LedColor(all_leds));
             // let msg = Message::new_custom(Custom::LedColor(vec![cmp_esp_led::ConfigRgb {
-            //     r: 0,
-            //     g: 255,
+            //     r: 255,
+            //     g: 0,
             //     b: 0,
             // }]));
             vec![msg]

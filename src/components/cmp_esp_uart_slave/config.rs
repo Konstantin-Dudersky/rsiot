@@ -81,7 +81,7 @@ where
     pub fn_input: TFnInput<TMsg, TBufferData>,
 
     /// Функция коммуникации по UART
-    pub fn_uart_comm: TFnUartComm<FieldbusRequest, FieldbusResponse, TBufferData>,
+    pub fn_uart_comm: TFnUartComm<UartRequest, UartResponse, TBufferData>,
 
     /// Функция для преобразования полученных данных UART в исходящие сообщения.
     ///
@@ -92,6 +92,13 @@ where
 
     /// Периодичность генерирования исходящих сообщений
     pub fn_output_period: Duration,
+
+    /// Задержка перед отправкой данных
+    ///
+    /// Raspberry может не успевать сбраывать сигнал RTS, из-за чего начало данных может потеряться.
+    ///
+    /// Примерно 5 - 10 мс
+    pub delay_between_read_and_write: Duration,
 }
 
 impl From<Baudrate> for Hertz {

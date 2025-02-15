@@ -46,6 +46,7 @@ leptos_router = { version = "0.7.3", optional = true }
 linux-embedded-hal = { version = "0.4.0", optional = true, features = [
     "async-tokio",
     "gpio_cdev",
+    "spi",
 ], default-features = false }
 log = { version = "0.4.21", optional = true }
 pm_firmware_lib = { version = "*", path = "../plc-modules/firmware/pm_firmware_lib", optional = true }
@@ -98,9 +99,9 @@ web-sys = { version = "0.3.68", features = [
     "NodeList",
     "Window",
 ], optional = true }
-# ws2812-esp32-rmt-driver = { version = "*", features = [
-#     "smart-leds-trait",
-# ], optional = true }
+ws2812-esp32-rmt-driver = { version = "*", features = [
+    "smart-leds-trait",
+], optional = true }
 
 rsiot-macros = { version = "0.0.72" }
 
@@ -132,8 +133,6 @@ openssl = { version = "0.10", features = ["vendored"], optional = true }
 
 [target.'cfg(all(target_arch = "riscv32", target_vendor = "espressif", target_os = "espidf"))'.dependencies]
 esp-idf-svc = { version = "0.51.0", features = ["std"] }
-# Обновить когда ws2812-esp32-rmt-driver заработает с новой версией
-# esp-idf-svc = { version = "0.50.1", features = ["std"] }
 
 
 [target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dev-dependencies]
@@ -192,7 +191,7 @@ cmp_esp = [
     "dep:heapless",
     "dep:ssd1306",
     "dep:pm_firmware_lib",
-    # "dep:ws2812-esp32-rmt-driver",
+    "dep:ws2812-esp32-rmt-driver",
     "dep:url",
     "tokio?/time",
 ]
@@ -359,9 +358,9 @@ path = "./examples/cmp_esp/cmp_esp_i2c_slave.rs"
 name = "cmp_esp_nvs"
 path = "examples/cmp_esp_nvs/cmp_esp_nvs.rs"
 
-# [[example]]
-# name = "cmp_esp_led"
-# path = "examples/cmp_esp/cmp_esp_led.rs"
+[[example]]
+name = "cmp_esp_led"
+path = "examples/cmp_esp/cmp_esp_led.rs"
 
 [[example]]
 name = "cmp_filesystem"
