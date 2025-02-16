@@ -1,10 +1,7 @@
-use std::time::Duration;
+use std::{thread::sleep, time::Duration};
 
 use linux_embedded_hal::gpio_cdev::{Chip, LineRequestFlags};
-use tokio::{
-    sync::{broadcast, mpsc},
-    time::sleep,
-};
+use tokio::sync::{broadcast, mpsc};
 use tracing::{trace, warn};
 
 use crate::{
@@ -32,7 +29,7 @@ pub struct UartComm {
 }
 
 impl UartComm {
-    pub async fn spawn(mut self) -> super::Result<()> {
+    pub fn spawn(mut self) -> super::Result<()> {
         let bytes_per_second = bytes_per_second(&self.baudrate, &self.data_bits, &self.stop_bits);
 
         let serial_port_builder = serialport::new("", 0)
@@ -62,7 +59,7 @@ impl UartComm {
             None => None,
         };
 
-        while let Some(request) = self.ch_rx_devices_to_fieldbus.recv().await {
+        while let Some(request) = self.ch_rx_devices_to_fieldbus.blocking_recv() {
             // TODO
             self.ch_rx_devices_to_fieldbus
                 .check_capacity(0.2, "uart_write");
@@ -90,10 +87,8 @@ impl UartComm {
                 Duration::from_millis(0),
             );
 
-            sleep(transmission_time).await;
+            sleep(transmission_time);
 
-            // port.flush()
-            //     .map_err(|e| super::Error::UartWrite(e.to_string()))?;
             port.clear(serialport::ClearBuffer::All).unwrap();
 
             // Сбрасываем пин RTS

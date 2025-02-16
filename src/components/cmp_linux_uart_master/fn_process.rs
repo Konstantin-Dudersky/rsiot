@@ -2,7 +2,7 @@ use tokio::task::JoinSet;
 
 use crate::{
     components::shared_tasks::fn_process_master::FnProcessMaster,
-    executor::{join_set_spawn, CmpInOut},
+    executor::CmpInOut,
     message::{MsgDataBound, ServiceBound},
 };
 
@@ -33,7 +33,9 @@ where
 
     let (ch_rx_devices_to_fieldbus, ch_tx_fieldbus_to_devices) = config_fn_process_master.spawn();
 
-    // Коммуникация UART ---------------------------------------------------------------------------
+    // Коммуникация UART
+    //
+    // Запускаем в отдельном потоке, чтобы не было увеличенного времени ожидания в точках await
     let task = UartComm {
         pin_rts: config.pin_rts,
         ch_rx_devices_to_fieldbus,
@@ -46,8 +48,7 @@ where
         stop_bits: config.stop_bits,
         gpio_chip: config.gpio_chip,
     };
-    // task_set.spawn_blocking(move || task.spawn::<MESSAGE_LEN>());
-    join_set_spawn(&mut task_set, task.spawn());
+    task_set.spawn_blocking(move || task.spawn());
 
     // Ожидание выполнения -------------------------------------------------------------------------
     while let Some(res) = task_set.join_next().await {
