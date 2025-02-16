@@ -31,3 +31,10 @@ impl From<Baudrate> for u32 {
         }
     }
 }
+
+impl From<Baudrate> for f64 {
+    fn from(value: Baudrate) -> Self {
+        let baudrate_u32: u32 = value.into();
+        baudrate_u32 as f64
+    }
+}

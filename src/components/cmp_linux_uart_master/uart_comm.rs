@@ -1,14 +1,18 @@
 use std::time::Duration;
 
 use linux_embedded_hal::gpio_cdev::{Chip, LineRequestFlags};
-use serialport::FlowControl;
-use tokio::sync::{broadcast, mpsc};
+use tokio::{
+    sync::{broadcast, mpsc},
+    time::sleep,
+};
 use tracing::{trace, warn};
 
 use crate::{
-    components_config::uart_general::{self, UartResponse},
+    components_config::uart_general::{self, calculate_transmission_time, UartResponse},
     executor::CheckCapacity,
 };
+
+use super::bytes_per_second;
 
 const READ_BUFFER_LEN: usize = 100;
 const READ_BUFFER_CHUNK: usize = 32;
@@ -28,7 +32,9 @@ pub struct UartComm {
 }
 
 impl UartComm {
-    pub async fn spawn<const MESSAGE_LEN: usize>(mut self) -> super::Result<()> {
+    pub async fn spawn(mut self) -> super::Result<()> {
+        let bytes_per_second = bytes_per_second(&self.baudrate, &self.data_bits, &self.stop_bits);
+
         let serial_port_builder = serialport::new("", 0)
             .path(self.port)
             .baud_rate(self.baudrate.into())
@@ -65,7 +71,7 @@ impl UartComm {
 
             trace!("Send: {:?}", request);
 
-            let write_buffer: [u8; MESSAGE_LEN] = request.to_write_buffer()?;
+            let write_buffer = request.to_write_buffer()?;
 
             // Устанавливаем пин RTS
             if let Some(pin_rts) = &pin_rts {
@@ -73,12 +79,21 @@ impl UartComm {
                     .set_value(1)
                     .map_err(|e| super::Error::GpioPinSet(e.to_string()))?;
             }
+            port.clear(serialport::ClearBuffer::All).unwrap();
 
             // Записываем буфер и ждем, пока данные отправятся
             port.write(&write_buffer)
                 .map_err(|e| super::Error::UartWrite(e.to_string()))?;
-            port.flush()
-                .map_err(|e| super::Error::UartWrite(e.to_string()))?;
+            let transmission_time = calculate_transmission_time(
+                bytes_per_second,
+                write_buffer.len(),
+                Duration::from_millis(0),
+            );
+
+            sleep(transmission_time).await;
+
+            // port.flush()
+            //     .map_err(|e| super::Error::UartWrite(e.to_string()))?;
             port.clear(serialport::ClearBuffer::All).unwrap();
 
             // Сбрасываем пин RTS
@@ -92,7 +107,7 @@ impl UartComm {
             let mut read_buffer_offset: usize = 0;
 
             // Читаем данные из порта по частям
-            let read_buffer_1 = loop {
+            let read_buffer = loop {
                 let mut read_buffer_chunk = vec![0; READ_BUFFER_CHUNK];
                 let port_read_result = port.read(&mut read_buffer_chunk);
                 match port_read_result {
@@ -115,7 +130,7 @@ impl UartComm {
                 }
             };
 
-            let mut response = match read_buffer_1 {
+            let mut response = match read_buffer {
                 Ok(val) => val,
                 Err(err) => {
                     let err = err.to_string();

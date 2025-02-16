@@ -1,6 +1,7 @@
 //! Общие структуры данных для устройств, обменивающихся данными по UART
 
 mod baudrate;
+mod calculate_transmission_time;
 mod data_bits;
 mod parity;
 mod stop_bits;
@@ -9,6 +10,7 @@ mod uart_request;
 mod uart_response;
 
 pub use baudrate::Baudrate;
+pub use calculate_transmission_time::{bytes_per_second, calculate_transmission_time};
 pub use data_bits::DataBits;
 pub use parity::Parity;
 pub use stop_bits::StopBits;

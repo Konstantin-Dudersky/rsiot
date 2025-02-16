@@ -58,7 +58,7 @@ async fn main() {
     };
 
     // cmp_linux_uart ------------------------------------------------------------------------------
-    let config_linux_uart = cmp_linux_uart_master::Config::<_, 32> {
+    let config_linux_uart = cmp_linux_uart_master::Config::<_> {
         // port: "/dev/ttyAMA0",
         port: "/dev/ttyUSB0",
         baudrate: cmp_linux_uart_master::Baudrate::_9_600,

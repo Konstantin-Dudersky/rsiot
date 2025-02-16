@@ -1,10 +1,7 @@
-use std::time::Duration;
-
 use esp_idf_svc::hal::{
     io::asynch::Write,
     uart::{AsyncUartDriver, UartDriver},
 };
-use tokio::time::sleep;
 use tracing::{trace, warn};
 
 use crate::components_config::uart_general::{UartRequest, UartResponse};
@@ -17,11 +14,9 @@ pub struct UartComm<TBufferData> {
     pub uart: AsyncUartDriver<'static, UartDriver<'static>>,
     pub fn_uart_comm: TFnUartComm<UartRequest, UartResponse, TBufferData>,
     pub buffer_data: Buffer<TBufferData>,
-    pub delay_between_read_and_write: Duration,
 }
 
 const READ_BUFFER_LEN: usize = 100;
-const WRITE_BUFFER_LEN: usize = 100;
 
 impl<TBufferData> UartComm<TBufferData> {
     pub async fn spawn(mut self) -> super::Result<()> {
@@ -68,8 +63,7 @@ impl<TBufferData> UartComm<TBufferData> {
 
             trace!("Response: {:?}", response);
 
-            sleep(self.delay_between_read_and_write).await;
-            let write_buffer: [u8; WRITE_BUFFER_LEN] = response.to_write_buffer()?;
+            let write_buffer = response.to_write_buffer()?;
 
             self.uart.write_all(&write_buffer).await.unwrap();
             self.uart.flush().await.unwrap();

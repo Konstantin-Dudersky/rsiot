@@ -1,5 +1,7 @@
 use std::time::Duration;
 
+// use linux_embedded_hal::serialport;
+
 use crate::components_config::master_device::DeviceTrait;
 use crate::components_config::uart_general::{
     Baudrate, DataBits, Parity, StopBits, UartRequest, UartResponse,
@@ -8,7 +10,7 @@ use crate::message::MsgDataBound;
 
 /// Конфигурация cmp_linux_uart_master
 #[derive(Debug)]
-pub struct Config<TMsg, const MESSAGE_LEN: usize>
+pub struct Config<TMsg>
 where
     TMsg: MsgDataBound,
 {
@@ -57,7 +59,7 @@ where
     pub devices: Vec<Box<dyn DeviceTrait<TMsg, UartRequest, UartResponse, u8>>>,
 }
 
-impl<TMsg, const MESSAGE_LEN: usize> Default for Config<TMsg, MESSAGE_LEN>
+impl<TMsg> Default for Config<TMsg>
 where
     TMsg: MsgDataBound,
 {

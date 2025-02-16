@@ -96,7 +96,7 @@ where
     trace!("Response: {:?}", response);
 
     // Сериализация ответа
-    let response_buffer = postcard_serde::serialize_crc(&response)?;
+    let response_buffer = postcard_serde::serialize_crc_deprecated(&response)?;
 
     // Запись в буфер отправки I2C
     let timeout = TickType::new_millis(100).ticks();

@@ -12,7 +12,7 @@ pub const MESSAGE_LEN: usize = 32;
 const CRC_DIGEST: Digest<u32, Table<1>> = Crc::<u32>::new(&CRC_32_ISCSI).digest();
 
 /// Сериализация данных в формат, в вектор байт, без CRC
-pub fn serialize_nocrc_vec<T>(data: &T) -> Result<Vec<u8>, Error>
+pub fn serialize_nocrc<T>(data: &T) -> Result<Vec<u8>, Error>
 where
     T: Serialize,
 {
@@ -20,19 +20,12 @@ where
     Ok(buffer)
 }
 
-/// Сериализация данных в формат, в вектор байт, без CRC
-pub fn serialize_crc_arr<T, const MESSAGE_LEN: usize>(data: &T) -> Result<[u8; MESSAGE_LEN], Error>
+/// Сериализация данных в формат, в вектор байт, с CRC
+pub fn serialize_crc<T>(data: &T) -> Result<Vec<u8>, Error>
 where
     T: Serialize,
 {
-    let mut buffer = [0xFF; MESSAGE_LEN];
-    let _ = to_slice_crc32(data, &mut buffer, CRC_DIGEST).map_err(Error::SerializationError)?;
-
-    if buffer.len() > MESSAGE_LEN {
-        return Err(Error::BufferTooLarge {
-            buffer_len: buffer.len(),
-        });
-    }
+    let buffer = to_stdvec_crc32(data, CRC_DIGEST).map_err(Error::SerializationError)?;
 
     Ok(buffer)
 }
@@ -61,7 +54,7 @@ where
 
 /// Сериализация данных в формат Postcard
 #[deprecated]
-pub fn serialize_nocrc<T>(data: &T) -> Result<Vec<u8>, Error>
+pub fn serialize_nocrc_deprecated<T>(data: &T) -> Result<Vec<u8>, Error>
 where
     T: Debug + Serialize,
 {
@@ -79,7 +72,7 @@ where
 
 /// Сериализация данных в формат Postcard
 #[deprecated]
-pub fn serialize_crc<T>(data: &T) -> Result<Vec<u8>, Error>
+pub fn serialize_crc_deprecated<T>(data: &T) -> Result<Vec<u8>, Error>
 where
     T: Debug + Serialize,
 {

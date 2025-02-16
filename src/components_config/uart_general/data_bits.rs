@@ -10,3 +10,14 @@ pub enum DataBits {
     #[default]
     _8,
 }
+
+impl From<DataBits> for f64 {
+    fn from(value: DataBits) -> Self {
+        match value {
+            DataBits::_5 => 5.0,
+            DataBits::_6 => 6.0,
+            DataBits::_7 => 7.0,
+            DataBits::_8 => 8.0,
+        }
+    }
+}

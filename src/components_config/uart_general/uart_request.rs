@@ -4,7 +4,7 @@ use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{
     components_config::master_device::RequestResponseBound,
-    serde_utils::postcard_serde::{self, serialize_nocrc_vec},
+    serde_utils::postcard_serde::{self, serialize_nocrc},
 };
 
 use super::uart_message::UartMessage;
@@ -30,7 +30,7 @@ impl UartRequest {
         Self {
             address: Default::default(),
             request_creation_time: Instant::now(),
-            payload: serialize_nocrc_vec(&uart_request).unwrap(),
+            payload: serialize_nocrc(&uart_request).unwrap(),
         }
     }
 
@@ -54,14 +54,12 @@ impl UartRequest {
     }
 
     /// Подготовить запрос для передачи по сети
-    pub fn to_write_buffer<const MESSAGE_LEN: usize>(
-        self,
-    ) -> Result<[u8; MESSAGE_LEN], postcard_serde::Error> {
+    pub fn to_write_buffer(self) -> Result<Vec<u8>, postcard_serde::Error> {
         let uart_message = UartMessage {
             address: self.address,
             payload: self.payload,
         };
-        postcard_serde::serialize_crc_arr(&uart_message)
+        postcard_serde::serialize_crc(&uart_message)
     }
 }
 
