@@ -20,12 +20,13 @@ pub struct UartComm<TBufferData> {
     pub delay_between_read_and_write: Duration,
 }
 
-const BUFFER_LEN: usize = 100;
+const READ_BUFFER_LEN: usize = 100;
+const WRITE_BUFFER_LEN: usize = 100;
 
 impl<TBufferData> UartComm<TBufferData> {
-    pub async fn spawn<const MESSAGE_LEN: usize>(mut self) -> super::Result<()> {
+    pub async fn spawn(mut self) -> super::Result<()> {
         loop {
-            let mut read_buffer = [0_u8; BUFFER_LEN];
+            let mut read_buffer = [0_u8; READ_BUFFER_LEN];
 
             let res = self.uart.read(&mut read_buffer).await;
             if let Err(err) = res {
@@ -68,7 +69,7 @@ impl<TBufferData> UartComm<TBufferData> {
             trace!("Response: {:?}", response);
 
             sleep(self.delay_between_read_and_write).await;
-            let write_buffer: [u8; MESSAGE_LEN] = response.to_write_buffer()?;
+            let write_buffer: [u8; WRITE_BUFFER_LEN] = response.to_write_buffer()?;
 
             self.uart.write_all(&write_buffer).await.unwrap();
             self.uart.flush().await.unwrap();
