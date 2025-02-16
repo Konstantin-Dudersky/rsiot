@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-use esp_idf_svc::hal::gpio::{AnyIOPin, PinDriver};
 use esp_idf_svc::hal::{
     gpio,
     peripheral::Peripheral,
@@ -38,7 +37,8 @@ where
     let uart_config = uart::config::Config::new()
         .baudrate(config.baudrate.into())
         .data_bits(config.data_bits.into())
-        .stop_bits(config.stop_bits.into());
+        .stop_bits(config.stop_bits.into())
+        .mode(uart::config::Mode::RS485HalfDuplex);
     let uart_config = match config.parity {
         Parity::None => uart_config.parity_none(),
         Parity::Even => uart_config.parity_even(),
@@ -50,14 +50,10 @@ where
         config.pin_tx,
         config.pin_rx,
         Option::<gpio::Gpio0>::None,
-        // Option::<gpio::Gpio1>::None,
-        Option::<AnyIOPin>::None,
-        // Some(config.pin_rts),
+        Some(config.pin_rts),
         &uart_config,
     )
     .unwrap();
-
-    let pin_rts = PinDriver::output(config.pin_rts).unwrap();
 
     let buffer_data = config.buffer_data_default;
     let buffer_data = Arc::new(Mutex::new(buffer_data));
@@ -79,7 +75,6 @@ where
     let task = tasks::UartComm {
         address: config.address,
         uart,
-        pin_rts,
         fn_uart_comm: config.fn_uart_comm,
         buffer_data: buffer_data.clone(),
         delay_between_read_and_write: config.delay_between_read_and_write,
