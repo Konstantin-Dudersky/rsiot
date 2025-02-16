@@ -1,6 +1,9 @@
 use std::{thread::sleep, time::Duration};
 
-use linux_embedded_hal::gpio_cdev::{Chip, LineRequestFlags};
+use linux_embedded_hal::{
+    gpio_cdev::{Chip, LineRequestFlags},
+    serialport,
+};
 use tokio::sync::{broadcast, mpsc};
 use tracing::{trace, warn};
 
@@ -81,12 +84,14 @@ impl UartComm {
             // Записываем буфер и ждем, пока данные отправятся
             port.write(&write_buffer)
                 .map_err(|e| super::Error::UartWrite(e.to_string()))?;
+
+            // Рассчитываем время передачи данных.
+            // Если использовать port.flush(), то время ожидания будет больше примерно на 10 мс
             let transmission_time = calculate_transmission_time(
                 bytes_per_second,
                 write_buffer.len(),
                 Duration::from_millis(0),
             );
-
             sleep(transmission_time);
 
             port.clear(serialport::ClearBuffer::All).unwrap();

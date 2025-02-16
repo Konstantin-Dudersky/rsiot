@@ -46,6 +46,7 @@ leptos_router = { version = "0.7.3", optional = true }
 linux-embedded-hal = { version = "0.4.0", optional = true, features = [
     "async-tokio",
     "gpio_cdev",
+    # "serial",
     "spi",
 ], default-features = false }
 log = { version = "0.4.21", optional = true }
@@ -57,7 +58,6 @@ rumqttc = { version = "0.24.0", optional = true }
 rppal = { version = "0.17.1", optional = true }
 palette = { version = "0.7.4", features = ["named"], optional = true }
 serde_json = { version = "1.0.113", optional = true }
-serialport = { version = "4.7.0", optional = true }
 sha2 = { version = "0.10.8", optional = true }
 slint = { version = "1.4.1", optional = true }
 sqlx = { version = "0.7.3", features = [
@@ -232,7 +232,7 @@ cmp_leptos = [
 cmp_linux_spi_master = ["executor", "dep:linux-embedded-hal"]
 
 ## Комонент для коммуникации через порт UART
-cmp_linux_uart_master = ["executor", "dep:linux-embedded-hal", "dep:serialport"]
+cmp_linux_uart_master = ["executor", "dep:linux-embedded-hal"]
 
 ## Компонент Modbus клиент
 cmp_modbus_client = ["executor", "dep:tokio-modbus"]

@@ -2,6 +2,8 @@ use std::time::Duration;
 
 // use linux_embedded_hal::serialport;
 
+use linux_embedded_hal::serialport;
+
 use crate::components_config::master_device::DeviceTrait;
 use crate::components_config::uart_general::{
     Baudrate, DataBits, Parity, StopBits, UartRequest, UartResponse,
