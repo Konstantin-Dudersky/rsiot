@@ -1,6 +1,9 @@
-use esp_idf_svc::hal::{
-    io::asynch::Write,
-    uart::{AsyncUartDriver, UartDriver},
+use esp_idf_svc::{
+    hal::{
+        io::asynch::Write,
+        uart::{AsyncUartDriver, UartDriver},
+    },
+    sys::uart_flush_input,
 };
 use tracing::{trace, warn};
 
@@ -20,14 +23,23 @@ const READ_BUFFER_LEN: usize = 100;
 
 impl<TBufferData> UartComm<TBufferData> {
     pub async fn spawn(mut self) -> super::Result<()> {
+        let port = self.uart.driver().port();
+
         loop {
             let mut read_buffer = [0_u8; READ_BUFFER_LEN];
 
+            // Очистка буфера чтения
+            // Используется unsafe функция, поскольку AsyncUartDriver не содержит метода clear_rx()
+            unsafe { uart_flush_input(port) };
+
             let res = self.uart.read(&mut read_buffer).await;
-            if let Err(err) = res {
-                warn!("Error reading from uart: {:?}", err);
-                continue;
-            }
+            let _read_len = match res {
+                Ok(val) => val,
+                Err(err) => {
+                    warn!("Error reading from uart: {:?}", err);
+                    continue;
+                }
+            };
 
             trace!("Read UART buffer: {:?}", read_buffer);
 

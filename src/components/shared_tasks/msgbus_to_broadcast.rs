@@ -14,7 +14,7 @@ where
     TService: ServiceBound,
 {
     /// Входящий поток сообщений из входа компонента
-    pub msgbus: CmpInOut<TMsg, TService>,
+    pub msg_bus: CmpInOut<TMsg, TService>,
 
     /// Исходящий поток сообщений
     pub output: Sender<Message<TMsg>>,
@@ -27,7 +27,7 @@ where
 {
     /// Запуск на выполнение
     pub async fn spawn(mut self) -> Result<(), Error> {
-        while let Ok(msg) = self.msgbus.recv_input().await {
+        while let Ok(msg) = self.msg_bus.recv_input().await {
             self.output
                 .send(msg)
                 .map_err(|e| Error::TokioSyncMpsc(e.to_string()))?;

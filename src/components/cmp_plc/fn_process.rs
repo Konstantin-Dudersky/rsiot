@@ -78,7 +78,7 @@ where
     // Пересылка сообщений на выход компонента
     let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
         input: channel_filter_to_output_recv,
-        cmp_in_out: in_out.clone(),
+        msg_bus: in_out.clone(),
     };
     join_set_spawn(&mut task_set, task.spawn().map_err(Error::ToCmpOutput));
 

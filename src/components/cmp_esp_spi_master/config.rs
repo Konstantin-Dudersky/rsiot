@@ -1,5 +1,4 @@
 use esp_idf_svc::hal::gpio::AnyIOPin;
-use esp_idf_svc::hal::units::Hertz;
 use esp_idf_svc::hal::{peripheral::Peripheral, spi::Spi};
 
 use crate::components_config::master_device::DeviceTrait;
@@ -17,7 +16,7 @@ where
     pub spi: TSpi,
 
     /// Частота тактов
-    pub baudrate: Hertz,
+    pub baudrate: u32,
 
     /// Пин MISO
     pub pin_miso: AnyIOPin,

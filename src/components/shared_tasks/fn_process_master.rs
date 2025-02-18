@@ -97,7 +97,7 @@ where
 
         // Передача входящих сообщений на драйвера устройств -------------------------------------------
         let task = msgbus_to_broadcast::MsgBusToBroadcast {
-            msgbus: self.msg_bus.clone(),
+            msg_bus: self.msg_bus.clone(),
             output: ch_tx_msgbus_to_devices,
         };
         join_set_spawn(
@@ -134,7 +134,7 @@ where
         // Создаем исходящие сообщения -----------------------------------------------------------------
         let task = mpsc_to_msgbus::MpscToMsgBus {
             input: ch_rx_filter_to_msgbus,
-            cmp_in_out: self.msg_bus.clone(),
+            msg_bus: self.msg_bus.clone(),
         };
         join_set_spawn(
             self.task_set,

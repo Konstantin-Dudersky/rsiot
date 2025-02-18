@@ -10,7 +10,6 @@ use tokio::{
     sync::{mpsc, Mutex},
     task::JoinSet,
 };
-use tracing::info;
 
 use crate::components_config::uart_general::Parity;
 use crate::{
@@ -32,8 +31,6 @@ where
     TPeripheral: Uart,
     TBufferData: 'static,
 {
-    info!("Starting UART loopback test");
-
     let uart_config = uart::config::Config::new()
         .baudrate(config.baudrate.into())
         .data_bits(config.data_bits.into())
@@ -102,7 +99,7 @@ where
     // Задача передачи сообщений в шину
     let task = mpsc_to_msgbus::MpscToMsgBus {
         input: ch_rx_filter_to_msgbus,
-        cmp_in_out: msg_bus.clone(),
+        msg_bus: msg_bus.clone(),
     };
     join_set_spawn(
         &mut task_set,

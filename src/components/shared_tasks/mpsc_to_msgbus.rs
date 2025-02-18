@@ -17,7 +17,7 @@ where
     pub input: mpsc::Receiver<Message<TMsg>>,
 
     /// Исходящие сообщения, шина сообщений между компонентами
-    pub cmp_in_out: CmpInOut<TMsg, TService>,
+    pub msg_bus: CmpInOut<TMsg, TService>,
 }
 
 impl<TMsg, TService> MpscToMsgBus<TMsg, TService>
@@ -28,7 +28,7 @@ where
     /// Запуск на выполнение
     pub async fn spawn(mut self) -> Result<(), Error> {
         while let Some(msg) = self.input.recv().await {
-            self.cmp_in_out.send_output(msg).await?;
+            self.msg_bus.send_output(msg).await?;
         }
         Ok(())
     }

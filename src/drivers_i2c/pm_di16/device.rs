@@ -83,7 +83,7 @@ where
         // Отправка исходящих сообщений
         let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
             input: ch_filter_to_msgbus_recv,
-            cmp_in_out: self.msg_bus,
+            msg_bus: self.msg_bus,
         };
         join_set_spawn(
             &mut task_set,

@@ -2,7 +2,7 @@ use esp_idf_svc::hal::{
     gpio::AnyIOPin,
     peripheral::Peripheral,
     spi::{config, Operation, Spi, SpiAnyPins, SpiDeviceDriver, SpiDriver, SpiDriverConfig},
-    units::Hertz,
+    units::{FromValueType, Hertz},
 };
 use tokio::{
     sync::{broadcast, mpsc},
@@ -55,7 +55,7 @@ where
         pin_mosi: config.pin_mosi,
         pin_sck: config.pin_sck,
         pin_cs: config.pin_cs,
-        baudrate: config.baudrate,
+        baudrate: config.baudrate.Hz(),
     };
     join_set_spawn(&mut task_set, task.spawn());
 
