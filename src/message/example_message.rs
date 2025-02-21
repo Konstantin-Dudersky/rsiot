@@ -18,6 +18,12 @@ pub enum Custom {
     DataUnit(()),
     /// Вложенная группа
     DataGroup(DataGroup),
+    /// Вложенный кортеж
+    Tuple((String, (bool, bool))),
+    /// ValueStruct
+    ValueStruct {
+        a: f64,
+    },
     /// ESP - кнопка BOOT
     EspBootButton(bool),
     /// ESP - выход на реле
@@ -43,6 +49,8 @@ pub enum DataGroup {
     DataGroupF64(f64),
     /// Вложенная в группу структура
     DataGroupStruct(StructInDataGroup),
+    DataGroupVectorBool(Vec<bool>),
+    DataGroupVectorTuple(Vec<(bool, String)>),
 }
 
 /// Пример типовой структуры

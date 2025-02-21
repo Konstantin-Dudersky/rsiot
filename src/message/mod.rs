@@ -3,6 +3,7 @@
 //! Сообщения представлены типом перечисления (enum). Данные вложены в варианты перечисления.
 
 mod auth_roles;
+mod define_key;
 mod error;
 pub mod example_message;
 mod example_message_channel;

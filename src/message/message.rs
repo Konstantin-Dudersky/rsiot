@@ -3,6 +3,7 @@
 use std::{fmt::Debug, time::Duration};
 
 use serde::{Deserialize, Serialize};
+use tracing::info;
 use uuid::Uuid;
 
 use super::{MsgData, MsgDataBound, MsgRoute, MsgTrace, TimeToLiveValue, Timestamp};
@@ -34,6 +35,7 @@ where
     /// Создать новое сообщение
     pub fn new(data: MsgData<TCustom>) -> Self {
         let key = define_key(&data);
+        // info!("Key: {key}");
         let ttl = data.define_time_to_live();
         Self {
             data,
@@ -172,8 +174,25 @@ where
     TCustom: MsgDataBound,
 {
     let full_str = format!("{:?}", data);
-    let key = full_str.split('(').collect::<Vec<&str>>();
+    let parts = full_str.split('(').collect::<Vec<&str>>();
+
+    // let mut final_parts = vec![];
+    // for part in parts {
+    //     if part.chars().next().unwrap().is_alphabetic()
+    //         && !part.starts_with("true")
+    //         && !part.starts_with("false")
+    //     {
+    //         final_parts.push(part);
+    //     } else {
+    //         break;
+    //     }
+    // }
+    // final_parts.join("-")
     // Убираем последний элемент. Если тип unit (), нужно убрать два последних элемента
-    let skip = if key[key.len() - 2].is_empty() { 2 } else { 1 };
-    key[0..key.len() - skip].join("-")
+    let skip = if parts[parts.len() - 2].is_empty() {
+        2
+    } else {
+        1
+    };
+    parts[0..parts.len() - skip].join("-")
 }

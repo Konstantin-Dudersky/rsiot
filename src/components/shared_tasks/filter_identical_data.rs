@@ -2,6 +2,7 @@
 
 use std::collections::HashMap;
 use tokio::sync::mpsc;
+// use tracing::info;
 
 use crate::message::{Message, MsgDataBound};
 
@@ -33,6 +34,8 @@ where
         while let Some(msg) = self.input.recv().await {
             let key = &msg.key;
 
+            // info!("Key: {key}");
+
             let msg_cache = cache.get(key);
 
             // Если сообщения нет в кеше, сохраняем в кеш и отдаем на выход
@@ -51,6 +54,7 @@ where
             }
 
             // Сообщение новое, сохраняем в кеш и отдаем на выход
+            // info!("Pass message from filter: {key}");
             cache.insert(key.to_string(), msg.clone()).unwrap();
             self.output.send(msg).await.unwrap();
         }

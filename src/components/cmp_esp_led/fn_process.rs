@@ -1,4 +1,5 @@
 use esp_idf_svc::hal::{peripheral::Peripheral, rmt::RmtChannel};
+use tracing::info;
 use ws2812_esp32_rmt_driver::Ws2812Esp32Rmt;
 
 use crate::{
@@ -21,9 +22,18 @@ where
     let mut ws2812 = Ws2812Esp32Rmt::new(config.rmt_channel, config.pin)?;
 
     while let Ok(msg) = msg_bus.recv_input().await {
-        let color = (config.fn_input)(&msg);
-        let Some(color) = color else { continue };
-        ws2812.write_nocopy(color)?;
+        let config = (config.fn_input)(&msg);
+        let Some(config) = config else { continue };
+
+        let mut leds = vec![];
+        for (amount, color) in config {
+            for _ in 0..amount {
+                leds.push(color);
+            }
+        }
+
+        // ws2812.write_nocopy(leds)?;
+        ws2812.write_nocopy(leds)?;
     }
 
     Err(super::Error::FnProcessEnd)

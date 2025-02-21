@@ -18,7 +18,7 @@ where
     pub rmt_channel: TRmt,
 
     /// Функция преобразования входящих сообщений в значение цвета
-    pub fn_input: fn(&Message<TMsg>) -> Option<Vec<ConfigRgb>>,
+    pub fn_input: fn(&Message<TMsg>) -> Option<Vec<(u8, ConfigRgb)>>,
 }
 
 /// Задание цвета
