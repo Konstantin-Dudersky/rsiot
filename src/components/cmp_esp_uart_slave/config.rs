@@ -1,7 +1,6 @@
 use std::time::Duration;
 
 use esp_idf_svc::hal::{gpio::AnyIOPin, peripheral::Peripheral, uart::Uart};
-use esp_idf_svc::hal::{uart, units::Hertz};
 
 use crate::message::{Message, MsgDataBound};
 
@@ -92,41 +91,4 @@ where
 
     /// Периодичность генерирования исходящих сообщений
     pub fn_output_period: Duration,
-}
-
-impl From<Baudrate> for Hertz {
-    fn from(value: Baudrate) -> Self {
-        Hertz(value.into())
-    }
-}
-
-impl From<DataBits> for uart::config::DataBits {
-    fn from(value: DataBits) -> Self {
-        match value {
-            DataBits::_5 => Self::DataBits5,
-            DataBits::_6 => Self::DataBits6,
-            DataBits::_7 => Self::DataBits7,
-            DataBits::_8 => Self::DataBits8,
-        }
-    }
-}
-
-impl From<Parity> for uart::config::Parity {
-    fn from(value: Parity) -> Self {
-        match value {
-            Parity::None => Self::ParityNone,
-            Parity::Even => Self::ParityEven,
-            Parity::Odd => Self::ParityOdd,
-        }
-    }
-}
-
-impl From<StopBits> for uart::config::StopBits {
-    fn from(value: StopBits) -> Self {
-        match value {
-            StopBits::_1 => Self::STOP1,
-            StopBits::_1p5 => Self::STOP1P5,
-            StopBits::_2 => Self::STOP2,
-        }
-    }
 }

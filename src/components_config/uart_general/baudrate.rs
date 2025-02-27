@@ -38,3 +38,10 @@ impl From<Baudrate> for f64 {
         baudrate_u32 as f64
     }
 }
+
+#[cfg(feature = "cmp_esp")]
+impl From<Baudrate> for esp_idf_svc::hal::units::Hertz {
+    fn from(value: Baudrate) -> Self {
+        esp_idf_svc::hal::units::Hertz(value.into())
+    }
+}

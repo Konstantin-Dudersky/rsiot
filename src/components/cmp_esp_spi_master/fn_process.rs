@@ -2,7 +2,7 @@ use esp_idf_svc::hal::{
     gpio::AnyIOPin,
     peripheral::Peripheral,
     spi::{config, Operation, Spi, SpiAnyPins, SpiDeviceDriver, SpiDriver, SpiDriverConfig},
-    units::{FromValueType, Hertz},
+    units::FromValueType,
 };
 use tokio::{
     sync::{broadcast, mpsc},
@@ -18,7 +18,7 @@ use crate::{
     message::{MsgDataBound, ServiceBound},
 };
 
-use super::Config;
+use super::{config::ConfigDevicesCommSettings, Config};
 
 pub async fn fn_process<TMsg, TService, TSpi, TPeripheral>(
     config: Config<TMsg, TSpi, TPeripheral>,
@@ -54,8 +54,7 @@ where
         pin_miso: config.pin_miso,
         pin_mosi: config.pin_mosi,
         pin_sck: config.pin_sck,
-        pin_cs: config.pin_cs,
-        baudrate: config.baudrate.Hz(),
+        devices_comm_settings: config.devices_comm_settings,
     };
     join_set_spawn(&mut task_set, task.spawn());
 
@@ -74,11 +73,10 @@ where
     pub input: mpsc::Receiver<spi_master::FieldbusRequest>,
     pub output: broadcast::Sender<spi_master::FieldbusResponse>,
     pub spi: TSpi,
-    pub baudrate: Hertz,
     pub pin_miso: AnyIOPin,
     pub pin_mosi: AnyIOPin,
     pub pin_sck: AnyIOPin,
-    pub pin_cs: Vec<AnyIOPin>,
+    pub devices_comm_settings: Vec<ConfigDevicesCommSettings>,
 }
 
 impl<TSpi, TPeripheral> SpiComm<TSpi, TPeripheral>
@@ -96,11 +94,17 @@ where
         )
         .unwrap();
 
-        let config = config::Config::new().baudrate(self.baudrate);
+        // TODO - добавить в конфигурацию
+
         let mut spi_devices: Vec<SpiDeviceDriver<'_, &SpiDriver<'_>>> = self
-            .pin_cs
-            .iter_mut()
-            .map(|pin| SpiDeviceDriver::new(&spi_master_driver, Some(pin), &config).unwrap())
+            .devices_comm_settings
+            .into_iter()
+            .map(|dvc| {
+                let config = config::Config::new()
+                    .baudrate(dvc.baudrate.Hz())
+                    .data_mode(dvc.spi_mode.into());
+                SpiDeviceDriver::new(&spi_master_driver, Some(dvc.pin_cs), &config).unwrap()
+            })
             .collect();
 
         while let Some(request) = self.input.recv().await {
@@ -143,7 +147,7 @@ where
     }
 }
 
-/// Выполнеям обмен данными
+/// Выполняем обмен данными
 ///
 /// Если присутствует операция чтения, то возвращаем данные
 async fn make_spi_operation<'a>(

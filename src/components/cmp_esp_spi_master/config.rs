@@ -1,4 +1,5 @@
 use esp_idf_svc::hal::gpio::AnyIOPin;
+use esp_idf_svc::hal::spi::config::{MODE_0, MODE_1, MODE_2, MODE_3};
 use esp_idf_svc::hal::{peripheral::Peripheral, spi::Spi};
 
 use crate::components_config::master_device::DeviceTrait;
@@ -15,9 +16,6 @@ where
     /// Ссылка на аппартный интерфейс SPI
     pub spi: TSpi,
 
-    /// Частота тактов
-    pub baudrate: u32,
-
     /// Пин MISO
     pub pin_miso: AnyIOPin,
 
@@ -27,11 +25,44 @@ where
     /// Пин SCK
     pub pin_sck: AnyIOPin,
 
-    /// Массив пинов CS
-    pub pin_cs: Vec<AnyIOPin>,
+    /// Массив настроек коммуникации с устройствами
+    ///
+    /// Порядок элементов в этом массиве должен соответствовать порядку устройств в массиве devices
+    pub devices_comm_settings: Vec<ConfigDevicesCommSettings>,
 
     /// Драйвера устройств
     pub devices: Vec<
         Box<dyn DeviceTrait<TMsg, spi_master::FieldbusRequest, spi_master::FieldbusResponse, u8>>,
     >,
+}
+
+/// Настройки коммуникации с устройствами
+pub struct ConfigDevicesCommSettings {
+    /// Пин Chip Select
+    pub pin_cs: AnyIOPin,
+
+    /// Частота тактов
+    pub baudrate: u32,
+
+    /// Режим работы SPI
+    pub spi_mode: ConfigDeviceSpiMode,
+}
+
+/// Режим работы SPI
+#[allow(missing_docs)]
+pub enum ConfigDeviceSpiMode {
+    Mode0,
+    Mode1,
+    Mode2,
+    Mode3,
+}
+impl From<ConfigDeviceSpiMode> for esp_idf_svc::hal::spi::config::Mode {
+    fn from(value: ConfigDeviceSpiMode) -> Self {
+        match value {
+            ConfigDeviceSpiMode::Mode0 => MODE_0,
+            ConfigDeviceSpiMode::Mode1 => MODE_1,
+            ConfigDeviceSpiMode::Mode2 => MODE_2,
+            ConfigDeviceSpiMode::Mode3 => MODE_3,
+        }
+    }
 }

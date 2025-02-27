@@ -19,3 +19,14 @@ impl From<StopBits> for f64 {
         }
     }
 }
+
+#[cfg(feature = "cmp_esp")]
+impl From<StopBits> for esp_idf_svc::hal::uart::config::StopBits {
+    fn from(value: StopBits) -> Self {
+        match value {
+            StopBits::_1 => Self::STOP1,
+            StopBits::_1p5 => Self::STOP1P5,
+            StopBits::_2 => Self::STOP2,
+        }
+    }
+}
