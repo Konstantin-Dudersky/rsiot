@@ -30,7 +30,9 @@ where
     /// Значения по-умолчанию глобального хранилища выходных данных
     pub output_store: TOutputStore,
 
+    /// Функция обрабатывает входящие сообщения и сохраняет в хранилище Store
     pub fn_input: fn(&Message<TMsg>, &Store<TInputStore>),
 
+    /// Функция проверяет изменения в хранилищe Store и отправляет исходящие сообщения
     pub fn_output: fn(Store<TOutputStore>, mpsc::Sender<TMsg>),
 }

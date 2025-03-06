@@ -97,6 +97,8 @@ pub fn TextField(
 
                 placeholder=placeholder
 
+                step="1"
+
                 type=input_html_type.to_string()
 
                 value = move || value.get()
