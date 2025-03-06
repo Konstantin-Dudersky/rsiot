@@ -1,7 +1,9 @@
 use super::{MsgData, MsgDataBound};
 
+// TODO - вариант без данных
+
 /// Определить ключ сообщения по выводу Debug
-fn define_key<TCustom>(data: &MsgData<TCustom>) -> String
+pub fn define_key<TCustom>(data: &MsgData<TCustom>) -> String
 where
     TCustom: MsgDataBound,
 {

@@ -18,3 +18,11 @@
 //! [target.aarch64-unknown-linux-gnu]
 //! linker = "aarch64-linux-gnu-gcc"
 //! ```
+//!
+//! В проекте создаем файл `.cargo/config.toml`:
+//!
+//! ```toml
+//! [target.aarch64-unknown-linux-gnu]
+//! linker = "aarch64-linux-gnu-gcc"
+//! rustflags = ["-C", "target-feature=+crt-static"]
+//! ```

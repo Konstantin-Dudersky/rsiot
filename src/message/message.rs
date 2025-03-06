@@ -3,7 +3,6 @@
 use std::{fmt::Debug, time::Duration};
 
 use serde::{Deserialize, Serialize};
-use tracing::info;
 use uuid::Uuid;
 
 use super::{MsgData, MsgDataBound, MsgRoute, MsgTrace, TimeToLiveValue, Timestamp};
@@ -34,8 +33,8 @@ where
 {
     /// Создать новое сообщение
     pub fn new(data: MsgData<TCustom>) -> Self {
-        let key = define_key(&data);
-        // info!("Key: {key}");
+        // let key = define_key(&data);
+        let key = super::define_key::define_key(&data);
         let ttl = data.define_time_to_live();
         Self {
             data,
@@ -50,7 +49,8 @@ where
     /// Создать новое сообщение типа `MsgData::Custom`
     pub fn new_custom(custom_data: TCustom) -> Self {
         let data = MsgData::Custom(custom_data);
-        let key = define_key(&data);
+        // let key = define_key(&data);
+        let key = super::define_key::define_key(&data);
         let ttl = data.define_time_to_live();
         Self {
             data,
@@ -169,6 +169,7 @@ where
 }
 
 /// Определить ключ сообщения по выводу Debug
+#[deprecated]
 fn define_key<TCustom>(data: &MsgData<TCustom>) -> String
 where
     TCustom: MsgDataBound,

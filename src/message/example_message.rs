@@ -43,6 +43,7 @@ pub struct StructInDataGroup {
 }
 
 /// Вложенная группа
+#[allow(missing_docs)]
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum DataGroup {
     /// Значение типа f64 в структуре

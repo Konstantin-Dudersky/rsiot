@@ -140,7 +140,7 @@ pub mod cmp_plc;
 pub mod cmp_raspberrypi_gpio;
 
 #[cfg(feature = "cmp_raspberrypi")]
-#[cfg(aarch64_unknown_linux_gnu)]
+#[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
 pub mod cmp_raspberrypi_i2c_master;
 
 #[cfg(feature = "cmp_redis_client")]
