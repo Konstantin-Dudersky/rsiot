@@ -99,6 +99,7 @@ where
     TMessage: MsgDataBound,
     TService: ServiceBound,
 {
+    let mut first_execution = true;
     while let Some(text) = read_stream.next().await {
         trace!("New message from Websocket server: {:?}", text);
         let text = match text {
@@ -119,10 +120,22 @@ where
             }
         };
 
+        // Соединение установлено
+        if first_execution {
+            if let Some(msg) = (config.fn_connection_state)(true) {
+                output.send_output(msg).await.map_err(Error::CmpOutput)?;
+            }
+            first_execution = false;
+        }
+
         let Some(msgs) = msgs else { continue };
         for msg in msgs {
             output.send_output(msg).await.map_err(Error::CmpOutput)?;
         }
+    }
+    // Соединение закрыто
+    if let Some(msg) = (config.fn_connection_state)(false) {
+        output.send_output(msg).await.map_err(Error::CmpOutput)?;
     }
     Err(Error::TaskOutput)
 }
