@@ -7,10 +7,11 @@ use crate::message::{Message, MsgDataBound};
 
 use super::{
     super::{config::FnOutput, ConfigStorageKind},
-    TaskOutput,
+    TaskInput, TaskOutput,
 };
 
 pub struct Output<TMsg> {
+    pub input: TaskInput<TMsg>,
     pub output: TaskOutput<TMsg>,
     pub storage_kind: ConfigStorageKind,
     pub default_messages: Vec<Message<TMsg>>,
@@ -21,7 +22,7 @@ impl<TMsg> Output<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    pub async fn spawn(self) -> super::Result<()> {
+    pub async fn spawn(mut self) -> super::Result<()> {
         // Загружаем из хранилища все значения
         let msgs: Result<HashMap<String, Message<TMsg>>, _> = match self.storage_kind {
             ConfigStorageKind::LocalStorage => LocalStorage::get_all(),
@@ -52,6 +53,17 @@ where
                 .await
                 .map_err(|e| super::Error::TokioSyncMpsc(e.to_string()))?;
         }
+
+        while let Some(msg) = self.input.recv().await {
+            let msg = (self.fn_output)(msg);
+            let Some(msg) = msg else { continue };
+
+            self.output
+                .send(msg)
+                .await
+                .map_err(|e| super::Error::TokioSyncMpsc(e.to_string()))?;
+        }
+
         Ok(())
     }
 }
