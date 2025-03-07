@@ -8,7 +8,7 @@ name = "rsiot"
 readme = "README.md"
 repository = "https://github.com/Konstantin-Dudersky/rsiot"
 rust-version = "1.75.0"
-version = "0.0.82"
+version = "0.0.83"
 
 
 [dependencies]
@@ -25,7 +25,12 @@ serde = { version = "1.0.197", features = ["derive"] }
 strum = { version = "0.26.3", features = ["derive"] }
 thiserror = { version = "2.0.3" }
 tracing = { version = "0.1.40", features = ["log"] }
-uuid = { version = "1.7.0", features = ["macro-diagnostics", "serde", "v4"] }
+uuid = { version = "1.7.0", features = [
+    "macro-diagnostics",
+    "serde",
+    "v4",
+    "js",
+] }
 
 async-trait = { version = "0.1.77", optional = true }
 axum = { version = "0.7.4", optional = true }

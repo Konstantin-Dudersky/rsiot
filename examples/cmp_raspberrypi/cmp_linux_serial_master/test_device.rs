@@ -26,8 +26,7 @@ pub struct TestDevice<TMsg> {
     pub fn_output: fn(&Buffer) -> Vec<Message<TMsg>>,
 }
 
-#[cfg_attr(not(feature = "single-thread"), async_trait)]
-#[cfg_attr(feature = "single-thread", async_trait(?Send))]
+#[async_trait]
 impl<TMsg> DeviceTrait<TMsg, UartRequest, UartResponse, u8> for TestDevice<TMsg>
 where
     TMsg: MsgDataBound + 'static,

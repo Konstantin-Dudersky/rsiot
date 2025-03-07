@@ -1,5 +1,4 @@
 use esp_idf_svc::hal::{peripheral::Peripheral, rmt::RmtChannel};
-use tracing::info;
 use ws2812_esp32_rmt_driver::Ws2812Esp32Rmt;
 
 use crate::{

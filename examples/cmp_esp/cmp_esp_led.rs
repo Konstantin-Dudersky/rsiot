@@ -34,7 +34,7 @@ async fn main() {
     // message -------------------------------------------------------------------------------------
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
     pub enum Custom {
-        LedColor(Vec<cmp_esp_led::ConfigRgb>),
+        LedColor(Vec<(u8, cmp_esp_led::ConfigRgb)>),
     }
 
     impl MsgDataBound for Custom {
@@ -69,7 +69,7 @@ async fn main() {
                 g: random[1],
                 b: random[2],
             };
-            let all_leds = vec![one_led; 10];
+            let all_leds = vec![(10, one_led)];
 
             let msg = Message::new_custom(Custom::LedColor(all_leds));
             // let msg = Message::new_custom(Custom::LedColor(vec![cmp_esp_led::ConfigRgb {
