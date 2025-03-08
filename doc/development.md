@@ -53,6 +53,6 @@ cargo doc --open
 
 - Публикуем на `crates.io`:
 
-  ```bash
-  cargo publish --allow-dirty
-  ```
+```bash
+cargo publish --allow-dirty
+```
