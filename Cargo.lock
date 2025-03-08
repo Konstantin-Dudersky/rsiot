@@ -6858,13 +6858,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7edddbd0b52d732b21ad9a5fab5c704c14cd949e5e9a1ec5929a24fded1b904c"
 
 [[package]]
-name = "pm_firmware_lib"
-version = "0.1.0"
-dependencies = [
- "serde",
-]
-
-[[package]]
 name = "png"
 version = "0.17.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7887,7 +7880,6 @@ dependencies = [
  "log",
  "openssl",
  "palette",
- "pm_firmware_lib",
  "postcard",
  "reactive_stores",
  "redis",

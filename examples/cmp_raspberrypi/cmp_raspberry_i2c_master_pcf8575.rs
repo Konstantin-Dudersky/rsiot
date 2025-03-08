@@ -21,7 +21,7 @@ async fn main() {
         components::{cmp_logger, cmp_raspberrypi_i2c_master},
         drivers_i2c::{self, I2cSlaveAddress},
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_service::Service, Message, MsgData, MsgDataBound},
+        message::{example_service::Service, Message, MsgData, MsgDataBound, MsgKey},
     };
     use serde::{Deserialize, Serialize};
     use tracing::Level;
@@ -29,7 +29,7 @@ async fn main() {
     tracing_subscriber::fmt().init();
 
     // message -------------------------------------------------------------------------------------
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
     pub enum Custom {
         Pin00Input(bool),
         Pin01Input(bool),

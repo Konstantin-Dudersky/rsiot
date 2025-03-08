@@ -5,7 +5,7 @@ use crate::{
     message::{example_service::Service, *},
 };
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
 pub enum Custom {
     Input4State(bool),
     SetOutput2(bool),
