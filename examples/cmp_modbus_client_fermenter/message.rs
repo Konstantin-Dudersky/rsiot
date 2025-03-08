@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 
-use rsiot::message::{example_service::Service, MsgDataBound};
+use rsiot::message::{example_service::Service, MsgDataBound, MsgKey};
 
 #[allow(non_camel_case_types)]
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
 pub enum Data {
     wWordState1_Get(u16),
     wWordState2(u16),

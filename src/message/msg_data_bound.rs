@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use serde::{de::DeserializeOwned, Serialize};
 
-use super::{ServiceBound, TimeToLiveValue};
+use super::{MsgKey, ServiceBound, TimeToLiveValue};
 
 /// Ограничения на данные, которые могут содержать сообщения
 ///
@@ -11,10 +11,10 @@ use super::{ServiceBound, TimeToLiveValue};
 /// ```rust
 /// use serde::{Deserialize, Serialize};
 ///
-/// #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+/// #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
 /// ```
 pub trait MsgDataBound:
-    Clone + Debug + DeserializeOwned + PartialEq + Send + Serialize + Sync
+    Clone + Debug + DeserializeOwned + MsgKey + PartialEq + Send + Serialize + Sync
 {
     /// Перечисление, содержащее названия всех сервисов
     type TService: ServiceBound;

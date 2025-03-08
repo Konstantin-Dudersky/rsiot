@@ -17,10 +17,10 @@ async fn main() -> anyhow::Result<()> {
             cmp_surrealdb::{self, RequestInputConfig},
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_service::*, Deserialize, Message, MsgDataBound, Serialize},
+        message::{example_service::*, Deserialize, Message, MsgDataBound, MsgKey, Serialize},
     };
 
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
     enum Custom {
         Request(u16),
     }

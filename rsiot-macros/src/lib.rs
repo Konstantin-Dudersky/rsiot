@@ -1,10 +1,18 @@
 mod create_signal_from_msg;
 mod derive_msg_meta;
+mod message_key;
 
 use proc_macro::TokenStream;
 use proc_macro_error::proc_macro_error;
 use quote::quote;
 use syn::{parse_macro_input, parse_str, DeriveInput};
+
+#[proc_macro_derive(MsgKey)]
+#[proc_macro_error]
+pub fn derive_msg_key(input: TokenStream) -> TokenStream {
+    let input: DeriveInput = parse_macro_input!(input as DeriveInput);
+    message_key::derive_msg_key(&input)
+}
 
 #[proc_macro_derive(MsgMeta)]
 #[proc_macro_error]
@@ -43,4 +51,4 @@ pub fn message_new(msg: TokenStream) -> TokenStream {
     })
 }
 
-// TODO - добавить макрос для для генерации match - веток 
+// TODO - добавить макрос для для генерации match - веток

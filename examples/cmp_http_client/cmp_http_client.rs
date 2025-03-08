@@ -20,13 +20,13 @@ async fn main() -> anyhow::Result<()> {
             cmp_inject_periodic, cmp_logger,
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_service::*, Message, MsgDataBound},
+        message::{example_service::*, Message, MsgDataBound, MsgKey},
     };
 
     //------------------------------------------------------------------------------
 
     #[allow(clippy::enum_variant_names)]
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
     enum Data {
         HttpMethodsGetPeriodicRespone(HttpMethodsGet),
         HttpMethodsGetOnEventResponse(HttpMethodsGet),

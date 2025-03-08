@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{system_messages::*, MsgDataBound, TimeToLiveValue};
+use super::{system_messages::*, MsgDataBound, MsgKey, TimeToLiveValue};
 
 /// Тип сообщения
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -20,6 +20,14 @@ where
         match &self {
             MsgData::System(_) => TimeToLiveValue::Infinite,
             MsgData::Custom(data) => data.define_time_to_live(),
+        }
+    }
+
+    /// Получить ключ сообщения
+    pub fn key(&self) -> String {
+        match &self {
+            MsgData::System(system) => format!("System-{}", system.key()),
+            MsgData::Custom(custom) => format!("Custom-{}", custom.key()),
         }
     }
 }

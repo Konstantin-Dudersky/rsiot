@@ -1,6 +1,8 @@
 Проверка сгенерированного кода - [cargo-expand](https://github.com/dtolnay/cargo-expand)
 
 ```bash
+cargo expand message::example_message | save -f expand.rs
+
 cargo expand -p rsiot-messages-core example_message
 
 cargo expand -p rsiot-leptos --example create_signal_from_msg --target wasm32-unknown-unknown

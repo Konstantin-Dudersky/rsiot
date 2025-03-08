@@ -108,7 +108,7 @@ ws2812-esp32-rmt-driver = { version = "*", features = [
     "smart-leds-trait",
 ], optional = true }
 
-rsiot-macros = { version = "0.0.72" }
+rsiot-macros = { path = "./rsiot-macros" }
 
 
 [target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dependencies]

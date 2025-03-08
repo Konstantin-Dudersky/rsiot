@@ -28,10 +28,10 @@ async fn main() -> anyhow::Result<()> {
             cmp_modbus_client::{self, *},
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_service::Service, Message, MsgDataBound},
+        message::{example_service::Service, Message, MsgDataBound, MsgKey},
     };
 
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
     pub enum Messages {
         ValueWrite(f64),
         ValueRead(f64),

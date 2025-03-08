@@ -25,10 +25,10 @@ fn main() -> anyhow::Result<()> {
             cmp_inject_periodic, cmp_logger,
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_service::Service, Message, MsgDataBound},
+        message::{example_service::Service, Message, MsgDataBound, MsgKey},
     };
 
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
     enum Data {
         Msg0(f64),
         Msg1(f64),

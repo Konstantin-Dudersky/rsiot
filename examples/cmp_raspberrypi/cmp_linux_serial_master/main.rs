@@ -32,7 +32,7 @@ async fn main() {
             cmp_logger,
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_service::Service, MsgDataBound},
+        message::{example_service::Service, MsgDataBound, MsgKey},
     };
     use serde::{Deserialize, Serialize};
     use tracing::Level;
@@ -40,7 +40,7 @@ async fn main() {
     tracing_subscriber::fmt().init();
 
     // message -------------------------------------------------------------------------------------
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
     pub enum Custom {
         Pin00Input(bool),
         Pin01Input(bool),

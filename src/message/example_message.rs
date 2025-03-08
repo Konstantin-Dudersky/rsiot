@@ -1,11 +1,12 @@
 //! Пример реализации сообщения. Можно использовать для тестирования компонентов
 
 use super::{
-    example_service::Service, Deserialize, MsgDataBound, MsgRoute, Serialize, TimeToLiveValue,
+    example_service::Service, Deserialize, MsgDataBound, MsgKey, MsgRoute, Serialize,
+    TimeToLiveValue,
 };
 
 /// Пример реализации сообщения. Можно использовать для тестирования компонентов
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgKey)]
 #[allow(missing_docs)]
 pub enum Custom {
     /// Мгновенное значение типа f64
@@ -28,9 +29,8 @@ pub enum Custom {
     EspBootButton(bool),
     /// ESP - выход на реле
     EspRelay(bool),
-    MotorM1(Motor),
-    MotorM2(Motor),
     SaveToFilesystem(u64),
+    // EmptyEnum(EmptyEnum),
 }
 
 /// Пример структуры
@@ -44,7 +44,7 @@ pub struct StructInDataGroup {
 
 /// Вложенная группа
 #[allow(missing_docs)]
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgKey)]
 pub enum DataGroup {
     /// Значение типа f64 в структуре
     DataGroupF64(f64),
@@ -54,15 +54,11 @@ pub enum DataGroup {
     DataGroupVectorTuple(Vec<(bool, String)>),
 }
 
-/// Пример типовой структуры
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-#[allow(missing_docs)]
-pub enum Motor {
-    Status1(bool),
-    Status2(bool),
-    Status3(bool),
-    Status4(bool),
-}
+/// Пустое перечисление
+///
+/// TODO - появляется почему-то ошибка, хотя cargo-expand показывает корректный код
+// #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
+// pub enum EmptyEnum {}
 
 impl MsgDataBound for Custom {
     type TService = Service;
@@ -109,11 +105,5 @@ mod tests {
             },
         )));
         assert_eq!("Custom-DataGroup-DataGroupStruct", msg.key);
-
-        let msg = Message::new_custom(Custom::MotorM1(Motor::Status1(false)));
-        assert_eq!("Custom-MotorM1-Status1", msg.key);
-
-        let msg = Message::new_custom(Custom::MotorM2(Motor::Status1(false)));
-        assert_eq!("Custom-MotorM2-Status1", msg.key);
     }
 }

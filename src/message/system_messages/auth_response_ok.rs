@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::message::AuthPermissions;
+use crate::message::{AuthPermissions, MsgKey};
 
 /// Подтверждение авторизации
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -19,4 +19,10 @@ pub struct AuthResponseOk {
 
     /// Логин для входа
     pub login: String,
+}
+
+impl MsgKey for AuthResponseOk {
+    fn key(&self) -> String {
+        "".to_string()
+    }
 }

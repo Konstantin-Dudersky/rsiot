@@ -15,18 +15,18 @@ fn main() {
     impl ServiceBound for Service {}
 
     // messages ------------------------------------------------------------------------------------
-    use rsiot::message::MsgDataBound;
-
-    use rsiot::message::TimeToLiveValue;
+    use rsiot::message::{MsgDataBound, MsgKey, TimeToLiveValue};
     use serde::{Deserialize, Serialize};
 
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
     enum Custom {
         ExampleGroup(ExampleGroup),
     }
 
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    enum ExampleGroup {}
+    #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
+    enum ExampleGroup {
+        Variant1,
+    }
 
     impl MsgDataBound for Custom {
         type TService = Service;

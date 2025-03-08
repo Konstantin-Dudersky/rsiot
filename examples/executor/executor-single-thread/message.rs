@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-use rsiot::message::{example_service::*, MsgDataBound, MsgRoute, TimeToLiveValue};
+use rsiot::message::{example_service::*, MsgDataBound, MsgKey, MsgRoute, TimeToLiveValue};
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
 pub enum Message {
     TestMessage(i32),
 }

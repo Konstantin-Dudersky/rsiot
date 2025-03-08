@@ -34,7 +34,8 @@ where
     /// Создать новое сообщение
     pub fn new(data: MsgData<TCustom>) -> Self {
         // let key = define_key(&data);
-        let key = super::define_key::define_key(&data);
+        // let key = super::define_key::define_key(&data);
+        let key = data.key();
         let ttl = data.define_time_to_live();
         Self {
             data,
@@ -50,7 +51,8 @@ where
     pub fn new_custom(custom_data: TCustom) -> Self {
         let data = MsgData::Custom(custom_data);
         // let key = define_key(&data);
-        let key = super::define_key::define_key(&data);
+        // let key = super::define_key::define_key(&data);
+        let key = data.key();
         let ttl = data.define_time_to_live();
         Self {
             data,
@@ -166,34 +168,4 @@ where
             }
         }
     }
-}
-
-/// Определить ключ сообщения по выводу Debug
-#[deprecated]
-fn define_key<TCustom>(data: &MsgData<TCustom>) -> String
-where
-    TCustom: MsgDataBound,
-{
-    let full_str = format!("{:?}", data);
-    let parts = full_str.split('(').collect::<Vec<&str>>();
-
-    // let mut final_parts = vec![];
-    // for part in parts {
-    //     if part.chars().next().unwrap().is_alphabetic()
-    //         && !part.starts_with("true")
-    //         && !part.starts_with("false")
-    //     {
-    //         final_parts.push(part);
-    //     } else {
-    //         break;
-    //     }
-    // }
-    // final_parts.join("-")
-    // Убираем последний элемент. Если тип unit (), нужно убрать два последних элемента
-    let skip = if parts[parts.len() - 2].is_empty() {
-        2
-    } else {
-        1
-    };
-    parts[0..parts.len() - skip].join("-")
 }

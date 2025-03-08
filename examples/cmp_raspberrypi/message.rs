@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use rsiot::message::{example_service::*, *};
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
 pub enum Custom {
     Input4State(bool),
     SetOutput2(bool),

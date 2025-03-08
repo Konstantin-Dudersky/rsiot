@@ -32,7 +32,7 @@ async fn main() {
     impl ServiceBound for Service {}
 
     // message -------------------------------------------------------------------------------------
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
     pub enum Custom {
         InputStateA0(bool),
         InputStateA1(bool),

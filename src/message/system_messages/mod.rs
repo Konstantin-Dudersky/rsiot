@@ -14,8 +14,10 @@ pub use ping_pong::{Ping, Pong};
 
 use serde::{Deserialize, Serialize};
 
+use super::MsgKey;
+
 /// Типы системных сообщений
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
 pub enum System {
     /// Запрос авторизации по логину и паролю
     AuthRequestByLogin(AuthRequestByLogin),

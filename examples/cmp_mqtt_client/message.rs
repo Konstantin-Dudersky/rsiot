@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-use rsiot::message::{MsgDataBound, ServiceBound};
+use rsiot::message::{MsgDataBound, MsgKey, ServiceBound};
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
 pub enum Custom {
     Counter(i32),
 }

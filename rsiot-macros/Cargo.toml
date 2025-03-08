@@ -8,7 +8,7 @@ license = "MIT OR Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/Konstantin-Dudersky/rsiot"
 rust-version = "1.75.0"
-versio = "0.0.72"
+version = "0.0.73"
 
 [lib]
 proc-macro = true
@@ -18,4 +18,4 @@ proc-macro = true
 proc-macro2 = { version = "1.0.78" }
 proc-macro-error = { version = "1.0.4" }
 quote = { version = "1.0.35" }
-syn = { version = "2.0.48" }
+syn = { version = "2.0.48", features = ["extra-traits"] }

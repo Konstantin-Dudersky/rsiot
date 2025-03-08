@@ -10,33 +10,33 @@
           // "target": "aarch64-linux-android",
           // "features": ["cmp_slint", "rustdoc"]
           // ---- aarch64-unknown-linux-gnu --------------------------------------------------------
-          // "target": "aarch64-unknown-linux-gnu",
-          // "features": [
-          // "rustdoc",
-          // "cmp_plc",
-          // "cmp_raspberrypi"
-          // "cmp_slint"
-          // "cmp_telegram"
-          // ]
+          "target": "aarch64-unknown-linux-gnu",
+          "features": [
+            //   "rustdoc",
+            //   "cmp_plc",
+            "cmp_raspberrypi"
+            //   "cmp_slint",
+            //   "cmp_telegram"
+          ]
           // ---- riscv32imc-esp-espidf ------------------------------------------------------------
-          "target": "riscv32imc-esp-espidf",
-          "features": ["executor", "logging", "cmp_esp", "cmp_plc"]
+          // "target": "riscv32imc-esp-espidf",
+          // "features": ["executor", "logging", "cmp_esp", "cmp_plc"]
           // ---- x86_64-unknown-linux-gnu ---------------------------------------------------------
           // "target": "x86_64-unknown-linux-gnu",
           // "features": [
-          // "rustdoc",
-          // "executor"
-          // "single-thread"
+          //   "rustdoc",
+          //   "executor",
+          //   "single-thread",
           //   "env_vars",
-          // "logging",
+          //   "logging",
           //   "cmp_auth",
           //   "cmp_filesystem",
           //   "cmp_http_client",
           //   "cmp_http_server",
           //   "cmp_filesystem",
           //   "cmp_influxdb",
-          // "cmp_linux_spi_master",
-          // "cmp_linux_uart_master"
+          //   "cmp_linux_spi_master",
+          //   "cmp_linux_uart_master",
           //   "cmp_modbus_client",
           //   "cmp_mqtt_client",
           //   "cmp_plc",

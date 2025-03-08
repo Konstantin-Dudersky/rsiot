@@ -1,6 +1,7 @@
-use super::{MsgData, MsgDataBound};
+//! Предыдущие способы определения ключа сообщения. После проверки способа на основе макроса
+//! MsgKey можно будет удалить
 
-// TODO - вариант без данных
+use super::{MsgData, MsgDataBound};
 
 /// Определить ключ сообщения по выводу Debug
 pub fn define_key<TCustom>(data: &MsgData<TCustom>) -> String
@@ -32,13 +33,36 @@ where
         }
     }
     final_parts.join("-").trim().to_string()
+}
+
+/// Определить ключ сообщения по выводу Debug
+#[deprecated]
+fn define_key_old<TCustom>(data: &MsgData<TCustom>) -> String
+where
+    TCustom: MsgDataBound,
+{
+    let full_str = format!("{:?}", data);
+    let parts = full_str.split('(').collect::<Vec<&str>>();
+
+    // let mut final_parts = vec![];
+    // for part in parts {
+    //     if part.chars().next().unwrap().is_alphabetic()
+    //         && !part.starts_with("true")
+    //         && !part.starts_with("false")
+    //     {
+    //         final_parts.push(part);
+    //     } else {
+    //         break;
+    //     }
+    // }
+    // final_parts.join("-")
     // Убираем последний элемент. Если тип unit (), нужно убрать два последних элемента
-    // let skip = if parts[parts.len() - 2].is_empty() {
-    //     2
-    // } else {
-    //     1
-    // };
-    // parts[0..parts.len() - skip].join("-")
+    let skip = if parts[parts.len() - 2].is_empty() {
+        2
+    } else {
+        1
+    };
+    parts[0..parts.len() - skip].join("-")
 }
 
 #[cfg(test)]

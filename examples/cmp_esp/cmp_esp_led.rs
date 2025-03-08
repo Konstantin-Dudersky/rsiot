@@ -32,7 +32,7 @@ async fn main() {
     impl ServiceBound for Service {}
 
     // message -------------------------------------------------------------------------------------
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
     pub enum Custom {
         LedColor(Vec<(u8, cmp_esp_led::ConfigRgb)>),
     }

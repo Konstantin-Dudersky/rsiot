@@ -14,10 +14,10 @@ async fn main() -> anyhow::Result<()> {
     use rsiot::{
         components::{cmp_inject_periodic, cmp_logger, cmp_websocket_client},
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_service::Service, Message, MsgDataBound},
+        message::{example_service::Service, Message, MsgDataBound, MsgKey},
     };
 
-    #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+    #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
     enum Data {
         Send(f64),
         Recv(f64),
