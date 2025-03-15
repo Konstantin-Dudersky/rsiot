@@ -1,11 +1,8 @@
-use esp_idf_svc::{
-    hal::{
-        io::asynch::Write,
-        uart::{AsyncUartDriver, UartDriver},
-    },
-    sys::uart_flush_input,
+use esp_idf_svc::hal::{
+    io::asynch::Write,
+    uart::{AsyncUartDriver, UartDriver},
 };
-use tracing::{trace, warn};
+use tracing::{info, trace, warn};
 
 use crate::components_config::uart_general::{UartRequest, UartResponse};
 
@@ -24,16 +21,17 @@ const READ_BUFFER_LEN: usize = 100;
 impl<TBufferData> UartComm<TBufferData> {
     pub async fn spawn(mut self) -> super::Result<()> {
         let port = self.uart.driver().port();
+        info!("Start uart communication on port: {}", port);
+
+        let mut read_buffer = [0_u8; READ_BUFFER_LEN];
 
         loop {
-            let mut read_buffer = [0_u8; READ_BUFFER_LEN];
+            // Очистка буфера. Очищать быстрее, чем создавать массив
+            read_buffer.iter_mut().for_each(|x| *x = 0);
 
-            // Очистка буфера чтения
-            // Используется unsafe функция, поскольку AsyncUartDriver не содержит метода clear_rx()
-            unsafe { uart_flush_input(port) };
+            let read_len = self.uart.read(&mut read_buffer).await;
 
-            let res = self.uart.read(&mut read_buffer).await;
-            let _read_len = match res {
+            let _read_len = match read_len {
                 Ok(val) => val,
                 Err(err) => {
                     warn!("Error reading from uart: {:?}", err);
