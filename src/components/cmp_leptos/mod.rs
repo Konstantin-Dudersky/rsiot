@@ -11,6 +11,16 @@
 //! - [i686-linux-android](`crate::doc::dev_prepare::i686_linux_android`) (Tauri / Android)
 //! - [x86_64-linux-android](`crate::doc::dev_prepare::x8664_linux_android`) (Tauri / Android)
 //!
+//! ## `.cargo/config.toml`
+//!
+//! ```toml
+//! [target.wasm32-unknown-unknown]
+//! rustflags = [
+//!     "--cfg",
+//!     "erase_components",
+//! ]
+//! ```
+//!
 //! ## Tauri
 //!
 //! Если требуется разработка приложения Tauri (https://beta.tauri.app/guides/prerequisites/).
