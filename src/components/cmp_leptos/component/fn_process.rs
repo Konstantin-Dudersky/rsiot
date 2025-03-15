@@ -115,7 +115,7 @@ where
     match msg.data {
         MsgData::System(System::AuthResponseOk(value)) => {
             let value = AuthRequestByToken { token: value.token };
-            let msg = message_new!("System-AuthRequestByToken::value");
+            let msg = Message::new(MsgData::System(System::AuthRequestByToken(value)));
             Some(msg)
         }
         _ => None,

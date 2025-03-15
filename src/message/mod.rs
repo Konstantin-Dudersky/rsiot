@@ -35,7 +35,6 @@ pub use msg_data_bound::{MsgDataBound, MsgRoute};
 pub use msg_key::MsgKey;
 pub use msg_trace::MsgTrace;
 pub use phy_quantity::PhyQuantity;
-pub use rsiot_macros::message_new;
 pub use service::ServiceBound;
 pub use strum::EnumString;
 pub use time_to_live::TimeToLiveValue;

@@ -39,7 +39,7 @@
 //! ### Tauri CLI
 //!
 //! ```bash
-//! cargo install tauri-cli --version "^2.0.0-beta"
+//! cargo install tauri-cli
 //! ```
 //!
 //! ### Create tauri apps
@@ -113,7 +113,7 @@
 //! ## Tauri
 //!
 //! ```bash
-//! cargo create-tauri-app --rc
+//! cargo create-tauri-app
 //!
 //! # добавить поддержку Android
 //! cargo tauri android init
@@ -250,6 +250,5 @@ pub mod utils;
 pub use component::{Cmp, Config, StoreBound};
 pub use error::Error;
 pub use global_state::GlobalState;
-pub use rsiot_macros::create_signal_from_msg;
 
 type Result = std::result::Result<(), Error>;

@@ -68,7 +68,6 @@ impl UartComm {
         };
 
         while let Some(request) = self.ch_rx_devices_to_fieldbus.blocking_recv() {
-            // TODO
             self.ch_rx_devices_to_fieldbus
                 .check_capacity(0.2, "uart_write");
             let address = request.address;

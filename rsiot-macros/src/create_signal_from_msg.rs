@@ -1,3 +1,43 @@
+//! Макрос
+
+// из lib.rs create_signal_from_msg для создания сообщений в Leptos. Уже не актуален,
+// остался как пример создания макросов
+
+use quote::quote;
+use syn::{parse_macro_input, parse_str, DeriveInput};
+
+/// Макрос для создания сигналов фреймворка leptos из сообщений.
+///
+/// Принимает на вход строку, содержащую вариант сообщения, без вложенного значения.
+///
+/// # Пример
+///
+/// ```rust
+/// let (signal, signal_set) = create_signal_from_msg!("Custom-ValueInstantF64");
+/// ```
+#[proc_macro]
+pub fn create_signal_from_msg(msg: TokenStream) -> TokenStream {
+    let code = create_signal_from_msg::create_signal_from_msg(&msg.to_string());
+    let code = parse_str::<syn::Expr>(&code).unwrap();
+    TokenStream::from(quote! {
+        #code
+    })
+}
+
+/// Макрос для упрощения создания сообщения
+///
+/// Принимает на вход строку вида `Variant1-Variant2-Variant3::value`
+#[proc_macro]
+pub fn message_new(msg: TokenStream) -> TokenStream {
+    let code = create_signal_from_msg::message_new(&msg.to_string());
+    let code = parse_str::<syn::Expr>(&code).unwrap();
+    TokenStream::from(quote! {
+        #code
+    })
+}
+
+// из lib.rs
+
 #[deprecated]
 pub fn create_signal_from_msg(input: &str) -> String {
     let enum_variants = parse_enum_variants(input);

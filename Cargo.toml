@@ -410,10 +410,6 @@ name = "cmp_inject_periodic"
 path = "examples/cmp_inject_periodic/cmp_inject_periodic.rs"
 
 [[example]]
-name = "create_signal_from_msg"
-path = "examples/cmp_leptos/create_signal_from_msg.rs"
-
-[[example]]
 name = "cmp_plc"
 path = "examples/cmp_plc/cmp_plc/main.rs"
 
@@ -464,10 +460,6 @@ path = "examples/executor/executor-single-thread/main.rs"
 [[example]]
 name = "env_vars"
 path = "examples/env_vars/env_vars.rs"
-
-[[example]]
-name = "message_new_macro"
-path = "examples/message/message_new_macro.rs"
 
 
 [profile.release]
