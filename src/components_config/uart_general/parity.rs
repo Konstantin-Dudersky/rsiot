@@ -20,3 +20,12 @@ impl From<Parity> for esp_idf_svc::hal::uart::config::Parity {
         }
     }
 }
+
+impl From<Parity> for f64 {
+    fn from(value: Parity) -> Self {
+        match value {
+            Parity::None => 0.0,
+            Parity::Even | Parity::Odd => 1.0,
+        }
+    }
+}

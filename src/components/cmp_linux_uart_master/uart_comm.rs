@@ -12,7 +12,7 @@ use crate::{
     executor::CheckCapacity,
 };
 
-use super::bytes_per_second;
+use super::data_rate;
 
 const READ_BUFFER_LEN: usize = 100;
 const READ_BUFFER_CHUNK: usize = 32;
@@ -33,7 +33,12 @@ pub struct UartComm {
 
 impl UartComm {
     pub fn spawn(mut self) -> super::Result<()> {
-        let bytes_per_second = bytes_per_second(&self.baudrate, &self.data_bits, &self.stop_bits);
+        let data_rate = data_rate(
+            &self.baudrate,
+            &self.data_bits,
+            &self.parity,
+            &self.stop_bits,
+        );
 
         let serial_port_builder = serialport::new("", 0)
             .path(self.port)
@@ -88,7 +93,7 @@ impl UartComm {
             // Рассчитываем время передачи данных.
             // Если использовать port.flush(), то время ожидания будет больше примерно на 10 мс
             let transmission_time = calculate_transmission_time(
-                bytes_per_second,
+                data_rate,
                 write_buffer.len(),
                 Duration::from_millis(0),
             );

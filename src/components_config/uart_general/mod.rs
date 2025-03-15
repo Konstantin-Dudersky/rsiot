@@ -10,7 +10,7 @@ mod uart_request;
 mod uart_response;
 
 pub use baudrate::Baudrate;
-pub use calculate_transmission_time::{bytes_per_second, calculate_transmission_time};
+pub use calculate_transmission_time::{calculate_transmission_time, data_rate};
 pub use data_bits::DataBits;
 pub use parity::Parity;
 pub use stop_bits::StopBits;
