@@ -17,7 +17,7 @@
 //! ## Пример
 //!
 //! ```rust
-#![doc = include_str!("../../../examples/cmp_http_server/cmp_http_server.rs")]
+#![doc = include_str!("../../../examples/cmp_http_server_and_client/cmp_http_server.rs")]
 //! ```
 //!
 //! ## Тестирование
@@ -33,8 +33,12 @@ mod routes;
 mod shared_state;
 mod tasks;
 
+use crate::components_config::http_server::PutEndpoint;
+pub use crate::components_config::http_server::{GetEndpoint, GetEndpointConfig};
 pub use component::Cmp;
 pub use config::{Config, ConfigCmpPlcData};
 pub use error::Error;
 
 type Result<T> = std::result::Result<T, Error>;
+type GetEndpointsHashMap<TMsg> = std::collections::HashMap<String, Box<dyn GetEndpoint<TMsg>>>;
+type PutEndpointsHashMap<TMsg> = std::collections::HashMap<String, Box<dyn PutEndpoint<TMsg>>>;

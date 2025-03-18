@@ -6,6 +6,12 @@
 //! cargo test -p rsiot-components-config --doc http_server
 //! ```
 
+mod get_endpoint;
+mod put_endpoint;
+
+pub use get_endpoint::{GetEndpoint, GetEndpointConfig};
+pub use put_endpoint::{PutEndpoint, PutEndpointConfig};
+
 use crate::message::*;
 
 /// Конфигурация компонента http-server
@@ -14,9 +20,6 @@ pub struct Config<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    pub this_service: TMsg::TService,
-    pub client_service: TMsg::TService,
-
     /// Порт, через который доступен сервер
     pub port: u16,
 
@@ -52,9 +55,11 @@ where
     /// #    fn_output: |_| Ok(None),
     /// # };
     /// ```
+    #[deprecated]
     pub fn_input: fn(&Message<TMsg>) -> anyhow::Result<Option<String>>,
 
     /// Данные из компонента `cmp_plc`
+    #[deprecated]
     pub cmp_plc: fn(&Message<TMsg>) -> ConfigCmpPlcData,
 
     /// Функция преобразования текста в сообщения
@@ -89,7 +94,14 @@ where
     /// },
     /// # };
     /// ```
+    #[deprecated]
     pub fn_output: fn(&str) -> anyhow::Result<Option<Message<TMsg>>>,
+
+    /// Конфигурация точек GET
+    pub get_endpoints: Vec<Box<dyn GetEndpoint<TMsg>>>,
+
+    /// Конфигурация точек PUT
+    pub put_endpoints: Vec<Box<dyn PutEndpoint<TMsg>>>,
 }
 
 /// Данные, получаемые из компонента `cmp_plc`
@@ -107,18 +119,18 @@ pub enum ConfigCmpPlcData {
 #[cfg(test)]
 mod tests {
     use super::{Config, ConfigCmpPlcData};
-    use crate::message::{example_message::*, example_service::Service, *};
+    use crate::message::{example_message::*, *};
 
     #[allow(clippy::no_effect)]
     #[test]
     fn stub() {
         Config::<Custom> {
-            this_service: Service::example_service,
-            client_service: Service::example_service,
             port: 8000,
             fn_input: |_| Ok(None),
             fn_output: |_| Ok(None),
             cmp_plc: |_| ConfigCmpPlcData::NoData,
+            get_endpoints: vec![],
+            put_endpoints: vec![],
         };
     }
 
@@ -126,8 +138,6 @@ mod tests {
     #[test]
     fn fn_input_json() {
         Config::<Custom> {
-            this_service: Service::example_service,
-            client_service: Service::example_service,
             port: 8000,
             fn_input: |msg: &Message<Custom>| {
                 let text = msg.serialize()?;
@@ -135,6 +145,8 @@ mod tests {
             },
             fn_output: |_| Ok(None),
             cmp_plc: |_| ConfigCmpPlcData::NoData,
+            get_endpoints: vec![],
+            put_endpoints: vec![],
         };
     }
 
@@ -142,8 +154,6 @@ mod tests {
     #[test]
     fn fn_output_json() {
         Config::<Custom> {
-            this_service: Service::example_service,
-            client_service: Service::example_service,
             port: 8000,
             fn_input: |_| Ok(None),
             fn_output: |text: &str| {
@@ -151,6 +161,8 @@ mod tests {
                 Ok(Some(msg))
             },
             cmp_plc: |_| ConfigCmpPlcData::NoData,
+            get_endpoints: vec![],
+            put_endpoints: vec![],
         };
     }
 }

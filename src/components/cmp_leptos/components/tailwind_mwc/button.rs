@@ -29,6 +29,12 @@ pub fn Button<FIcon, IVIcon>(
     text: &'static str,
 
     /// Событие нажатия
+    ///
+    /// Пример:
+    ///
+    /// ```rust
+    /// on_click = move || ()
+    /// ```
     on_click: impl Fn() + 'static,
 
     /// true = кнопка заблокирована

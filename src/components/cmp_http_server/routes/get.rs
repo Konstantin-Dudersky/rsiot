@@ -19,7 +19,7 @@ where
         .msg_bus
         .recv_cache_msg(&key)
         .await
-        .ok_or(Error::UnknownMessageKey(key))?;
+        .ok_or(Error::UnknownPath(key))?;
     let json = (shared_state.config.fn_input)(&msg).map_err(Error::FnOutput)?;
     let json = match json {
         Some(json) => json,

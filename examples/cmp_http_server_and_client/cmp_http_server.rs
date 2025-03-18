@@ -1,7 +1,7 @@
 //! Запуск:
 //!
 //! ```bash
-//! cargo run --example cmp_http_server --target x86_64-unknown-linux-gnu --features cmp_http_server
+//! cargo run --example cmp_http_server --features cmp_http_server
 //! cargo run --example cmp_http_server --target x86_64-unknown-linux-gnu --features cmp_http_server, single-thread
 //!
 //! Можно задать сообщение:
@@ -9,6 +9,8 @@
 //! ```json
 //! {"MessageSet":{"value":24.0,"ts":"2024-02-12T18:57:16.717277474Z","source":null}}
 //! ```
+
+mod shared;
 
 #[cfg(feature = "cmp_http_server")]
 fn main() -> anyhow::Result<()> {
@@ -19,20 +21,23 @@ fn main() -> anyhow::Result<()> {
     use tracing::Level;
     use tracing_subscriber::filter::LevelFilter;
 
+    use shared::{ClientToServer, ServerToClient};
+
     use rsiot::{
         components::{
-            cmp_http_server::{self, ConfigCmpPlcData},
+            cmp_http_server::{self, ConfigCmpPlcData, GetEndpointConfig},
             cmp_inject_periodic, cmp_logger,
         },
+        components_config::http_server::PutEndpointConfig,
         executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{example_service::Service, Message, MsgDataBound, MsgKey},
     };
 
     #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
     enum Data {
-        Msg0(f64),
+        Counter(f64),
         Msg1(f64),
-        MsgSet(f64),
+        CounterFromClient(u8),
     }
 
     impl MsgDataBound for Data {
@@ -40,19 +45,27 @@ fn main() -> anyhow::Result<()> {
     }
 
     tracing_subscriber::fmt()
-        .with_max_level(LevelFilter::DEBUG)
+        .with_max_level(LevelFilter::INFO)
         .init();
 
     let mut counter = 0.0;
 
     let logger_config = cmp_logger::Config::<Data> {
         level: Level::INFO,
-        fn_input: |msg| Ok(Some(msg.serialize()?)),
+        fn_input: |msg| {
+            let Some(msg) = msg.get_custom_data() else {
+                return Ok(None);
+            };
+            let text = match msg {
+                Data::CounterFromClient(data) => format!("Counter from client: {}", data),
+                _ => return Ok(None),
+            };
+
+            Ok(Some(text))
+        },
     };
 
     let http_server_config = cmp_http_server::Config {
-        this_service: Service::example_service,
-        client_service: Service::example_service,
         port: 8011,
         fn_output: |text: &str| {
             let msg = Message::<Data>::deserialize(text)?;
@@ -67,17 +80,38 @@ fn main() -> anyhow::Result<()> {
                 return ConfigCmpPlcData::NoData;
             };
             match msg {
-                Data::Msg0(data) => ConfigCmpPlcData::Input(data.to_string()),
+                Data::Counter(data) => ConfigCmpPlcData::Input(data.to_string()),
                 Data::Msg1(data) => ConfigCmpPlcData::Output(data.to_string()),
-                Data::MsgSet(_) => ConfigCmpPlcData::NoData,
+                Data::CounterFromClient(_) => ConfigCmpPlcData::NoData,
             }
         },
+        get_endpoints: vec![Box::new(GetEndpointConfig {
+            path: "/data/test",
+            data: ServerToClient::default(),
+            fn_input: |msg, data| {
+                let Some(msg) = msg.get_custom_data() else {
+                    return;
+                };
+                if let Data::Counter(counter) = msg {
+                    data.counter = counter
+                }
+            },
+        })],
+        put_endpoints: vec![Box::new(PutEndpointConfig {
+            path: "/enter",
+            fn_output: |data: ClientToServer| match data {
+                ClientToServer::NoData => None,
+                ClientToServer::SetCounterFromClient(data) => {
+                    Some(Message::new_custom(Data::CounterFromClient(data)))
+                }
+            },
+        })],
     };
 
     let inject_periodic_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg1 = Message::new_custom(Data::Msg0(counter));
+            let msg1 = Message::new_custom(Data::Counter(counter));
             let msg2 = Message::new_custom(Data::Msg1(counter * 2.0));
             counter += 1.0;
             vec![msg1, msg2]

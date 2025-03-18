@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 
 use axum::routing;
 use tokio::{sync::Mutex, task::JoinSet};
@@ -14,7 +14,10 @@ use crate::{
     message::{MsgDataBound, ServiceBound},
 };
 
-use super::{config::Config, routes, shared_state::SharedState, tasks};
+use super::{
+    config::Config, routes, shared_state::SharedState, tasks, GetEndpoint, GetEndpointsHashMap,
+    PutEndpoint, PutEndpointsHashMap,
+};
 
 /// Компонент для получения и ввода сообщений через HTTP Server
 pub async fn fn_process<TMsg, TService>(
@@ -27,6 +30,20 @@ where
 {
     info!("Component started, configuration: {:?}", config);
 
+    let get_endpoints = create_get_endpoints_hashmap(&config.get_endpoints);
+    let get_endpoints_paths = get_endpoints
+        .keys()
+        .map(|k| k.to_string())
+        .collect::<Vec<String>>();
+    let get_endpoints = Arc::new(Mutex::new(get_endpoints));
+
+    let put_endpoints = create_put_endpoints_hashmap(&config.put_endpoints);
+    let put_endpoints_paths = put_endpoints
+        .keys()
+        .map(|k| k.to_string())
+        .collect::<Vec<String>>();
+    let put_endpoints = Arc::new(Mutex::new(put_endpoints));
+
     // Общее состояние
     let shared_state = Arc::new(Mutex::new(SharedState {
         msg_bus: msg_bus.clone(),
@@ -34,9 +51,18 @@ where
         cmp_plc_input: "Data not received".to_string(),
         cmp_plc_output: "Data not received".to_string(),
         cmp_plc_static: "Data not received".to_string(),
+        get_endpoints: get_endpoints.clone(),
+        put_endpoints: put_endpoints.clone(),
     }));
 
     let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
+
+    // Задача обновления данных точек GET ----------------------------------------------------------
+    let task = tasks::UpdateGetEndpoints {
+        input: msg_bus.clone(),
+        get_endpoints: get_endpoints.clone(),
+    };
+    join_set_spawn(&mut task_set, task.spawn());
 
     // Задача обработки данных из `cmp_plc` --------------------------------------------------------
     let task = tasks::CmpPlcData {
@@ -58,14 +84,26 @@ where
                 .latency_unit(LatencyUnit::Micros),
         );
 
-    let router = routing::Router::new()
-        .route("/", routing::get(routes::root))
-        .route("/messages", routing::get(routes::list))
-        .route("/messages/:id", routing::get(routes::get))
-        .route("/messages", routing::put(routes::replace))
-        .route("/plc/input", routing::get(routes::plc_input))
-        .route("/plc/output", routing::get(routes::plc_output))
-        .route("/plc/static", routing::get(routes::plc_static))
+    let mut router = routing::Router::new();
+
+    // Добавляем обработчики для GET запросов
+    for path in get_endpoints_paths {
+        router = router.route(&path, routing::get(routes::get_new));
+    }
+
+    // Добавляем обработчики для PUT запросов
+    for path in put_endpoints_paths {
+        router = router.route(&path, routing::put(routes::put));
+    }
+
+    let router = router
+        // .route("/", routing::get(routes::root))
+        // .route("/messages", routing::get(routes::list))
+        // .route("/messages/{id}", routing::get(routes::get))
+        // .route("/messages", routing::put(routes::replace))
+        // .route("/plc/input", routing::get(routes::plc_input))
+        // .route("/plc/output", routing::get(routes::plc_output))
+        // .route("/plc/static", routing::get(routes::plc_static))
         .with_state(shared_state)
         .layer(layer_cors)
         .layer(layer_trace);
@@ -81,4 +119,30 @@ where
         res.unwrap().unwrap()
     }
     Ok(())
+}
+
+fn create_get_endpoints_hashmap<TMsg>(
+    config_endpoints: &[Box<dyn GetEndpoint<TMsg>>],
+) -> GetEndpointsHashMap<TMsg>
+where
+    TMsg: MsgDataBound,
+{
+    let mut endpoints = HashMap::new();
+    for endpoint in config_endpoints {
+        endpoints.insert(endpoint.get_path().to_string(), endpoint.clone());
+    }
+    endpoints
+}
+
+fn create_put_endpoints_hashmap<TMsg>(
+    config_endpoints: &[Box<dyn PutEndpoint<TMsg>>],
+) -> PutEndpointsHashMap<TMsg>
+where
+    TMsg: MsgDataBound,
+{
+    let mut endpoints = HashMap::new();
+    for endpoint in config_endpoints {
+        endpoints.insert(endpoint.get_path().to_string(), endpoint.clone());
+    }
+    endpoints
 }

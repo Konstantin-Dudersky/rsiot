@@ -15,6 +15,13 @@ where
     TMsg: MsgDataBound,
 {
     /// Название порта
+    ///
+    /// Примеры:
+    ///
+    /// ```
+    /// port: "/dev/ttyUSB0"
+    /// port: "/dev/ttyAMA0"
+    /// ```
     pub port: &'static str,
 
     /// Скорость сетевого обмена

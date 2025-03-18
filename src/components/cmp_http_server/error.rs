@@ -13,10 +13,10 @@ pub enum Error {
     #[error(transparent)]
     BindPort(StdIoError),
 
-    #[error("{0}")]
-    UnknownMessageKey(String),
+    #[error("Unknown path: {0}")]
+    UnknownPath(String),
 
-    #[error("{0}")]
+    #[error("Not configured: {0}")]
     NotConfigured(String),
 
     #[error(transparent)]
@@ -42,27 +42,18 @@ pub enum Error {
 
     #[error("TaskEndCmpPlcStatic")]
     TaskEndCmpPlcStatic,
+
+    #[error("UpdateGetEndpoints")]
+    TaskUpdateGetEndpoints,
+
+    #[error(transparent)]
+    JsonParseError(#[from] serde_json::Error),
 }
 
 /// Преобразование ошибки в понятный пользователю ответ
 impl IntoResponse for Error {
     fn into_response(self) -> axum::response::Response {
-        let body = match self {
-            Error::AxumServe(err) => format!("{:?}", err),
-            Error::BindPort(err) => format!("{:?}", err),
-            Error::Message(err) => format!("{:?}", err),
-            Error::UnknownMessageKey(key) => {
-                format!("Unknown message key: {}", key)
-            }
-            Error::FnInput(err) => format!("{}", err),
-            Error::FnOutput(err) => format!("{}", err),
-            Error::CmpOutput(err) => format!("{}", err),
-            Error::NotConfigured(err) => format!("Not configured: {}", err),
-            Error::TaskEndAxumServe => format!("{self}"),
-            Error::TaskEndCmpPlcInput => format!("{self}"),
-            Error::TaskEndCmpPlcOutput => format!("{self}"),
-            Error::TaskEndCmpPlcStatic => format!("{self}"),
-        };
+        let body = self.to_string();
         (StatusCode::INTERNAL_SERVER_ERROR, body).into_response()
     }
 }

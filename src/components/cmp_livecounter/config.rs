@@ -19,6 +19,8 @@ where
     pub generate_self_period: Duration,
 
     /// Ищем сообщения со значением счетчика
+    ///
+    /// Заглушка: `|_| None`
     pub fn_find_partner_counter: FnFindPartnerCounter<TMsg>,
 
     /// Функция для формирования сообщения о наличии связи. В функцию передается булевое значение,

@@ -26,7 +26,8 @@ async fn main() -> anyhow::Result<()> {
                 login: "admin".to_string(),
                 password: "admin".to_string(),
             };
-            let msg = message_new!("System-AuthRequestByLogin::value");
+            let msg = Message::new(MsgData::System(System::AuthRequestByLogin(value)));
+
             vec![msg]
         },
     };

@@ -188,7 +188,7 @@ where
             // Отправляем клиенту сообщение Pong для контроля связи
             if let MsgData::System(System::Ping(value)) = &msg.data {
                 let value = Pong { count: value.count };
-                let pong_msg = message_new! {"System-Pong::value"};
+                let pong_msg = Message::new(MsgData::System(System::Pong(value)));
                 send_to_client_tx.send(pong_msg).await.unwrap();
                 continue;
             }

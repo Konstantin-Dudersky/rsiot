@@ -63,7 +63,7 @@ where
                     error: err.to_string(),
                     trace_ids,
                 };
-                message_new!("System-AuthResponseErr::value")
+                Message::new(MsgData::System(System::AuthResponseErr(value)))
             }
         };
         in_out.send_output(msg).await.map_err(Error::CmpOutput)?;
@@ -90,7 +90,7 @@ where
         trace_ids,
         login: claims.login,
     };
-    let msg = message_new!("System-AuthResponseOk::value");
+    let msg = Message::new(MsgData::System(System::AuthResponseOk(value)));
     Ok(msg)
 }
 
@@ -130,7 +130,8 @@ where
         trace_ids,
         login: request_by_login.login,
     };
-    let msg = message_new!("System-AuthResponseOk::value");
+    let msg = Message::new(MsgData::System(System::AuthResponseOk(value)));
+
     Ok(msg)
 }
 
