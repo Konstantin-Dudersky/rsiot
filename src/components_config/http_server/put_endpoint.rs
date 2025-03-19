@@ -1,4 +1,4 @@
-use std::fmt::Debug;
+use std::{collections::HashMap, fmt::Debug};
 
 use serde::{de::DeserializeOwned, Serialize};
 use serde_json::from_str;
@@ -42,6 +42,20 @@ where
     fn clone_dyn(&self) -> Box<dyn PutEndpoint<TMsg>> {
         Box::new(self.clone())
     }
+}
+
+/// Создать коллекцию точек PUT на основе конфигурации
+pub fn create_put_endpoints_hashmap<TMsg>(
+    config_endpoints: &[Box<dyn PutEndpoint<TMsg>>],
+) -> HashMap<String, Box<dyn PutEndpoint<TMsg>>>
+where
+    TMsg: MsgDataBound,
+{
+    let mut endpoints = HashMap::new();
+    for endpoint in config_endpoints {
+        endpoints.insert(endpoint.get_path().to_string(), endpoint.clone());
+    }
+    endpoints
 }
 
 /// Трейт для обеспечения логики работы отдельной точик PUT

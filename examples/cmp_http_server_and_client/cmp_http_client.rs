@@ -68,7 +68,8 @@ async fn main() -> anyhow::Result<()> {
 
     let http_config = cmp_http_client::Config::<Data> {
         connection_config: cmp_http_client::ConnectionConfig {
-            base_url: "http://127.0.0.1:8011".into(),
+            base_url: "http://192.168.71.1:8010".into(),
+            // base_url: "http://localhost:8010".into(),
         },
         requests_input: vec![cmp_http_client::RequestInput {
             fn_input: |msg| {
@@ -91,7 +92,7 @@ async fn main() -> anyhow::Result<()> {
             on_failure: Vec::new,
         }],
         requests_periodic: vec![cmp_http_client::RequestPeriodic {
-            period: Duration::from_millis(2000),
+            period: Duration::from_millis(100),
             http_param: cmp_http_client::HttpParam::Get {
                 endpoint: "/data/test".to_string(),
             },

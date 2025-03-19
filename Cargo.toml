@@ -394,6 +394,10 @@ name = "cmp_raspberry_i2c_master_pm_rq8"
 path = "./examples/cmp_raspberrypi/cmp_raspberry_i2c_master_pm_rq8.rs"
 
 [[example]]
+name = "cmp_esp_http_server"
+path = "examples/cmp_http_server_and_client/cmp_esp_http_server.rs"
+
+[[example]]
 name = "cmp_http_client"
 path = "examples/cmp_http_server_and_client/cmp_http_client.rs"
 

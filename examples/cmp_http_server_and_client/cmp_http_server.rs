@@ -4,11 +4,6 @@
 //! cargo run --example cmp_http_server --features cmp_http_server
 //! cargo run --example cmp_http_server --target x86_64-unknown-linux-gnu --features cmp_http_server, single-thread
 //!
-//! Можно задать сообщение:
-//!
-//! ```json
-//! {"MessageSet":{"value":24.0,"ts":"2024-02-12T18:57:16.717277474Z","source":null}}
-//! ```
 
 mod shared;
 
@@ -25,7 +20,7 @@ fn main() -> anyhow::Result<()> {
 
     use rsiot::{
         components::{
-            cmp_http_server::{self, ConfigCmpPlcData, GetEndpointConfig},
+            cmp_http_server::{self, GetEndpointConfig},
             cmp_inject_periodic, cmp_logger,
         },
         components_config::http_server::PutEndpointConfig,
@@ -66,25 +61,7 @@ fn main() -> anyhow::Result<()> {
     };
 
     let http_server_config = cmp_http_server::Config {
-        port: 8011,
-        fn_output: |text: &str| {
-            let msg = Message::<Data>::deserialize(text)?;
-            Ok(Some(msg))
-        },
-        fn_input: |msg: &Message<Data>| {
-            let text = msg.serialize()?;
-            Ok(Some(text))
-        },
-        cmp_plc: |msg| {
-            let Some(msg) = msg.get_custom_data() else {
-                return ConfigCmpPlcData::NoData;
-            };
-            match msg {
-                Data::Counter(data) => ConfigCmpPlcData::Input(data.to_string()),
-                Data::Msg1(data) => ConfigCmpPlcData::Output(data.to_string()),
-                Data::CounterFromClient(_) => ConfigCmpPlcData::NoData,
-            }
-        },
+        port: 8010,
         get_endpoints: vec![Box::new(GetEndpointConfig {
             path: "/data/test",
             data: ServerToClient::default(),
@@ -109,7 +86,7 @@ fn main() -> anyhow::Result<()> {
     };
 
     let inject_periodic_config = cmp_inject_periodic::Config {
-        period: Duration::from_secs(2),
+        period: Duration::from_millis(100),
         fn_periodic: move || {
             let msg1 = Message::new_custom(Data::Counter(counter));
             let msg2 = Message::new_custom(Data::Msg1(counter * 2.0));

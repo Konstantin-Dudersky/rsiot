@@ -8,9 +8,9 @@
 //!
 //! - [Примеры](https://github.com/Konstantin-Dudersky/rsiot/tree/main/rsiot-http-server/examples)
 //!
-#![doc = include_str!("../../../doc/api_description.md")]
 //!
-//! Данные возвращаются в виде структур Json. Для более удобного просмотра можно использовать расширения к браузеру, например [JSON Beautifier & Editor](https://chromewebstore.google.com/detail/json-beautifier-editor/lpopeocbeepakdnipejhlpcmifheolpl)
+//! Данные возвращаются в виде структур Json. Для более удобного просмотра можно использовать
+//! расширения к браузеру, например [JSON Beautifier & Editor](https://chromewebstore.google.com/detail/json-beautifier-editor/lpopeocbeepakdnipejhlpcmifheolpl)
 //!
 //!
 //!
@@ -33,10 +33,11 @@ mod routes;
 mod shared_state;
 mod tasks;
 
-use crate::components_config::http_server::PutEndpoint;
-pub use crate::components_config::http_server::{GetEndpoint, GetEndpointConfig};
+pub use crate::components_config::http_server::{
+    GetEndpoint, GetEndpointConfig, PutEndpoint, PutEndpointConfig,
+};
 pub use component::Cmp;
-pub use config::{Config, ConfigCmpPlcData};
+pub use config::Config;
 pub use error::Error;
 
 type Result<T> = std::result::Result<T, Error>;

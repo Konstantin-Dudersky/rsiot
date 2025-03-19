@@ -1,29 +1,28 @@
 use axum::extract;
+use axum::http::Uri;
 
-use crate::message::*;
+use crate::{components_config::http_server::handler_get, message::*};
 
-use super::super::{error::Error, shared_state::TSharedState};
+use super::super::shared_state::SharedState;
 
-/// Маршрут для получения сообщений
+/// Маршрут для получения данных
 pub async fn get<TMsg, TService>(
-    extract::Path(key): extract::Path<String>,
-    extract::State(shared_state): extract::State<TSharedState<TMsg, TService>>,
-) -> Result<String, Error>
+    uri: Uri,
+    extract::State(shared_state): extract::State<SharedState<TMsg, TService>>,
+) -> Result<String, super::Error>
 where
     TMsg: MsgDataBound,
     TService: ServiceBound,
 {
-    let shared_state = shared_state.lock().await;
+    let path = uri.path();
+    let get_endpoints = shared_state.get_endpoints.lock().await;
 
-    let msg = shared_state
-        .msg_bus
-        .recv_cache_msg(&key)
-        .await
-        .ok_or(Error::UnknownPath(key))?;
-    let json = (shared_state.config.fn_input)(&msg).map_err(Error::FnOutput)?;
-    let json = match json {
-        Some(json) => json,
-        None => return Ok("".into()),
-    };
-    Ok(json)
+    let data = handler_get(
+        path,
+        &get_endpoints,
+        super::Error::UnknownPath,
+        super::Error::JsonParseError,
+    )?;
+
+    Ok(data)
 }

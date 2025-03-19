@@ -16,7 +16,7 @@ async fn main() {
 
     use rsiot::{
         components::{
-            cmp_esp_gpio, cmp_esp_mqtt_client, cmp_esp_wifi, cmp_http_server_esp,
+            cmp_esp_gpio, cmp_esp_http_server, cmp_esp_mqtt_client, cmp_esp_wifi,
             cmp_inject_periodic, cmp_logger,
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
@@ -58,19 +58,10 @@ async fn main() {
     }
 
     // cmp_http_server_esp -------------------------------------------------------------------------
-    let http_server_esp_config = cmp_http_server_esp::Config {
-        this_service: Service::cmp_esp_example,
-        client_service: Service::cmp_esp_example,
+    let http_server_esp_config = cmp_esp_http_server::Config {
         port: 8010,
-        fn_input: |msg: &Message<Custom>| {
-            let text = msg.serialize()?;
-            Ok(Some(text))
-        },
-        fn_output: |text: &str| {
-            let msg = Message::deserialize(text)?;
-            Ok(Some(msg))
-        },
-        cmp_plc: |_| cmp_http_server_esp::ConfigCmpPlcData::NoData,
+        get_endpoints: vec![],
+        put_endpoints: vec![],
     };
 
     // cmp_logger ----------------------------------------------------------------------------------
@@ -169,7 +160,7 @@ async fn main() {
     local_set.spawn_local(async {
         ComponentExecutor::<Custom, Service>::new(executor_config)
             .add_cmp(cmp_logger::Cmp::new(logger_config))
-            .add_cmp(cmp_http_server_esp::Cmp::new(http_server_esp_config))
+            .add_cmp(cmp_esp_http_server::Cmp::new(http_server_esp_config))
             .add_cmp(cmp_esp_wifi::Cmp::new(wifi_config))
             .add_cmp(cmp_esp_gpio::Cmp::new(gpio_config))
             .add_cmp(cmp_inject_periodic::Cmp::new(config_inject_periodic))

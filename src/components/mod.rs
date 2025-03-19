@@ -32,6 +32,10 @@ pub mod cmp_esp_i2c_slave;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
+pub mod cmp_esp_http_server;
+
+#[cfg(feature = "cmp_esp")]
+#[cfg(riscv32imc_esp_espidf)]
 pub mod cmp_esp_led;
 
 #[cfg(feature = "cmp_esp")]
@@ -87,10 +91,6 @@ pub mod cmp_http_client_wasm;
 #[cfg(feature = "cmp_http_server")]
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
 pub mod cmp_http_server;
-
-#[cfg(feature = "cmp_esp")]
-#[cfg(riscv32imc_esp_espidf)]
-pub mod cmp_http_server_esp;
 
 #[cfg(feature = "cmp_influxdb")]
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]

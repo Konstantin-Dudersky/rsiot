@@ -2,7 +2,7 @@
 //!
 //! Структура храняния данных точки GET
 
-use std::fmt::Debug;
+use std::{collections::HashMap, fmt::Debug};
 
 use serde::{de::DeserializeOwned, Serialize};
 use serde_json::to_string;
@@ -81,6 +81,20 @@ impl<TMsg> Clone for Box<dyn GetEndpoint<TMsg>> {
     fn clone(&self) -> Self {
         self.clone_dyn()
     }
+}
+
+/// Создать коллекцию точек GET на основе конфигурации
+pub fn create_get_endpoints_hashmap<TMsg>(
+    config_endpoints: &[Box<dyn GetEndpoint<TMsg>>],
+) -> HashMap<String, Box<dyn GetEndpoint<TMsg>>>
+where
+    TMsg: MsgDataBound,
+{
+    let mut endpoints = HashMap::new();
+    for endpoint in config_endpoints {
+        endpoints.insert(endpoint.get_path().to_string(), endpoint.clone());
+    }
+    endpoints
 }
 
 #[cfg(test)]

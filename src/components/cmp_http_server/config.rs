@@ -1,1 +1,1 @@
-pub use crate::components_config::http_server::{Config, ConfigCmpPlcData};
+pub use crate::components_config::http_server::Config;
