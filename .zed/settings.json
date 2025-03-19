@@ -31,8 +31,8 @@
             //   "logging",
             //   "cmp_auth",
             //   "cmp_filesystem",
-            "cmp_http_client",
-            "cmp_http_server"
+            // "cmp_http_client",
+            // "cmp_http_server"
             //   "cmp_filesystem",
             //   "cmp_influxdb",
             //   "cmp_linux_spi_master",
@@ -47,8 +47,8 @@
             //   "cmp_system_info",
             //   "cmp_telegram",
             //   "cmp_timescaledb",
-            //   "cmp_websocket_client",
-            //   "cmp_websocket_server"
+            "cmp_websocket_client",
+            "cmp_websocket_server"
           ]
           // ---- wasm32-unknown-unknown -----------------------------------------------------------
           // "target": "wasm32-unknown-unknown",

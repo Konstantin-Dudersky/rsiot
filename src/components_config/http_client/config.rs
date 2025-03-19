@@ -1,9 +1,8 @@
+use std::time::Duration;
+
 use crate::message::MsgDataBound;
 
-use super::{
-    connection_config::ConnectionConfig, request_input::RequestInput,
-    request_periodic::RequestPeriodic,
-};
+use super::{request_input::RequestInput, request_periodic::RequestPeriodic};
 
 /// Параметры компонента http-client
 #[derive(Clone, Debug)]
@@ -11,8 +10,10 @@ pub struct Config<TMessage>
 where
     TMessage: MsgDataBound,
 {
-    /// Параметры подключения
-    pub connection_config: ConnectionConfig,
+    /// URL сервера
+    pub base_url: String,
+    /// Таймаут запроса
+    pub timeout: Duration,
     /// Запросы, которые формируются на основе входящих сообщений
     pub requests_input: Vec<RequestInput<TMessage>>,
     /// Периодические запросы
@@ -30,9 +31,8 @@ mod tests {
     #[test]
     fn connect_with_http_server() {
         Config::<Custom> {
-            connection_config: ConnectionConfig {
-                base_url: "http://10.0.6.5:80".into(),
-            },
+            base_url: "http://10.0.6.5:80".into(),
+            timeout: Duration::from_secs(5),
             requests_input: vec![RequestInput {
                 fn_input: |msg| {
                     let param = HttpParam::Post {

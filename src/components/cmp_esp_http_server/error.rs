@@ -1,4 +1,4 @@
-use esp_idf_svc::io::EspIOError;
+use esp_idf_svc::{io::EspIOError, sys::EspError};
 
 use crate::executor::ComponentError;
 
@@ -13,10 +13,25 @@ pub enum Error {
     UnknownPath(String),
 
     #[error(transparent)]
+    Component(#[from] ComponentError),
+
+    #[error(transparent)]
     SerdeJson(#[from] serde_json::Error),
 
     #[error(transparent)]
+    TokioTaskJoin(#[from] tokio::task::JoinError),
+
+    #[error("RegisterHandler")]
+    RegisterHandler(EspError),
+
+    #[error("RequestContentLen")]
+    RequestContentLen,
+
+    #[error(transparent)]
     RequestIntoResponse(EspIOError),
+
+    #[error("RequestReadBody")]
+    RequestReadBody(String),
 
     #[error(transparent)]
     ResponseWriteAll(EspIOError),

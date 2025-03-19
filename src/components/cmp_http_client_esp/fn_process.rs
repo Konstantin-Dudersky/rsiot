@@ -54,7 +54,7 @@ where
     let mut set = JoinSet::<super::Result<()>>::new();
 
     // Парсим url
-    let url = Url::parse(&config.connection_config.base_url);
+    let url = Url::parse(&config.base_url);
     let url = match url {
         Ok(val) => val,
         Err(err) => {

@@ -1,4 +1,5 @@
 /// Ошибки cmp_http_client
+#[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error<TMessage> {
     /// Ошибка конфигурации пользователя
@@ -18,4 +19,6 @@ pub enum Error<TMessage> {
 
     /// ComponentCore
     ComponentCore(#[from] crate::executor::ComponentError),
+
+    TaskEndInputRequest,
 }

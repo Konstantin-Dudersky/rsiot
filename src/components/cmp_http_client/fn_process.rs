@@ -9,7 +9,7 @@ use tracing::{error, info};
 use url::Url;
 
 use crate::{
-    executor::{CmpInOut, ComponentError},
+    executor::{join_set_spawn, CmpInOut, ComponentError},
     message::{Message, MsgDataBound, ServiceBound},
 };
 
@@ -48,7 +48,7 @@ where
     TService: ServiceBound + 'static,
 {
     // Парсим url
-    let url = Url::parse(&config.connection_config.base_url);
+    let url = Url::parse(&config.base_url);
     let url = match url {
         Ok(val) => val,
         Err(err) => {
@@ -58,19 +58,21 @@ where
         }
     };
 
-    let mut set = JoinSet::<super::Result<(), TMsg>>::new();
+    let client = Client::builder().timeout(config.timeout).build().unwrap();
+
+    let mut task_set = JoinSet::<super::Result<(), TMsg>>::new();
 
     // запускаем периодические запросы
     for req in config.requests_periodic {
-        let future = task_periodic_request(in_out.clone(), req, url.clone());
-        set.spawn(future);
+        let task = task_periodic_request(in_out.clone(), req, url.clone(), client.clone());
+        join_set_spawn(&mut task_set, task);
     }
     // Запускаем задачи запросов на основе входного потока сообщений
     for item in config.requests_input {
-        let future = task_input_request(in_out.clone(), url.clone(), item);
-        set.spawn(future);
+        let task = task_input_request(in_out.clone(), url.clone(), item, client.clone());
+        join_set_spawn(&mut task_set, task);
     }
-    while let Some(res) = set.join_next().await {
+    while let Some(res) = task_set.join_next().await {
         res??
     }
     Ok(())
@@ -81,6 +83,7 @@ async fn task_periodic_request<TMsg, TService>(
     in_out: CmpInOut<TMsg, TService>,
     config: config::RequestPeriodic<TMsg>,
     url: Url,
+    client: Client,
 ) -> super::Result<(), TMsg>
 where
     TMsg: MsgDataBound,
@@ -94,6 +97,7 @@ where
             &config.http_param,
             config.on_success,
             config.on_failure,
+            client.clone(),
         )
         .await?;
         for msg in msgs {
@@ -115,6 +119,7 @@ async fn task_input_request<TMessage, TService>(
     mut in_out: CmpInOut<TMessage, TService>,
     url: Url,
     config: config::RequestInput<TMessage>,
+    client: Client,
 ) -> super::Result<(), TMessage>
 where
     TMessage: MsgDataBound,
@@ -126,14 +131,19 @@ where
             Some(val) => val,
             None => continue,
         };
-        let msgs =
-            process_request_and_response(&url, &http_param, config.on_success, config.on_failure)
-                .await?;
+        let msgs = process_request_and_response(
+            &url,
+            &http_param,
+            config.on_success,
+            config.on_failure,
+            client.clone(),
+        )
+        .await?;
         for msg in msgs {
             in_out.send_output(msg).await?;
         }
     }
-    Ok(())
+    Err(super::Error::TaskEndInputRequest)
 }
 
 /// Выполнение запроса и вызов коллбеков при ответе
@@ -142,8 +152,9 @@ async fn process_request_and_response<TMsg>(
     request_param: &config::HttpParam,
     on_success: config::CbkOnSuccess<TMsg>,
     on_failure: config::CbkOnFailure<TMsg>,
+    client: Client,
 ) -> super::Result<Vec<Message<TMsg>>, TMsg> {
-    let response = send_request(url.clone(), request_param).await;
+    let response = send_request(url.clone(), request_param, client).await;
     let response = match response {
         Ok(val) => val,
         Err(err) => match err {
@@ -173,6 +184,7 @@ async fn process_request_and_response<TMsg>(
 async fn send_request<TMessage>(
     url: Url,
     req: &config::HttpParam,
+    client: Client,
 ) -> super::Result<Response, TMessage> {
     let endpoint = match req {
         config::HttpParam::Get { endpoint } => endpoint,
@@ -183,7 +195,7 @@ async fn send_request<TMessage>(
         let err = err.to_string();
         Error::Configuration(err)
     })?;
-    let client = Client::new();
+
     let response = match req {
         config::HttpParam::Get { endpoint: _ } => client.get(url).send().await?,
         config::HttpParam::Put { endpoint: _, body } => {

@@ -96,7 +96,7 @@ where
             .fn_handler("/", Method::Get, move |request| {
                 route_root(request, get_endpoints.clone(), put_endpoints.clone())
             })
-            .unwrap();
+            .map_err(super::Error::RegisterHandler)?;
     }
 
     // Запросы GET
@@ -106,7 +106,7 @@ where
             .fn_handler(&path, Method::Get, move |request| {
                 route_get(request, get_endpoints.clone())
             })
-            .unwrap();
+            .map_err(super::Error::RegisterHandler)?;
     }
 
     // Запросы PUT
@@ -117,12 +117,12 @@ where
             .fn_handler(&path, Method::Put, move |request| {
                 route_put(request, put_endpoints.clone(), msg_bus.clone())
             })
-            .unwrap();
+            .map_err(super::Error::RegisterHandler)?;
     }
 
     // Ждем выполнения всех задач ------------------------------------------------------------------
     while let Some(res) = task_set.join_next().await {
-        res.unwrap().unwrap()
+        res??
     }
     Ok(())
 }
@@ -154,15 +154,14 @@ where
     let path = request.uri();
     trace!("Get request, path: {}", path);
 
-    let response_data = handler_get(
+    let response_body = handler_get(
         path,
         &get_endpoints.blocking_lock(),
         super::Error::UnknownPath,
         super::Error::SerdeJson,
     )?;
 
-    let mut response = request.into_response(200, None, &HEADERS).unwrap();
-    response.write_all(response_data.as_bytes()).unwrap();
+    send_response(request, 200, &response_body)?;
     Ok(())
 }
 
@@ -197,15 +196,22 @@ where
 
     let Some(msg) = msg else { return Ok(()) };
 
-    msg_bus.send_output_blocking(msg).unwrap();
+    msg_bus.send_output_blocking(msg)?;
 
     Ok(())
 }
 
 fn read_request_body(request: &mut Request<&mut EspHttpConnection>) -> super::Result<String> {
-    let len = request.content_len().unwrap_or(0) as usize;
+    let len = request
+        .content_len()
+        .ok_or(super::Error::RequestContentLen)? as usize;
+
     let mut buffer = vec![0; len];
-    request.read_exact(&mut buffer).unwrap();
+
+    request
+        .read_exact(&mut buffer)
+        .map_err(|e| super::Error::RequestReadBody(e.to_string()))?;
+
     let body = String::from_utf8_lossy(&buffer);
     Ok(body.to_string())
 }

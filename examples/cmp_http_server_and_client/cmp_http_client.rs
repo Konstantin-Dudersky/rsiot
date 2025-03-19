@@ -44,7 +44,7 @@ async fn main() -> anyhow::Result<()> {
 
     let mut counter = 0;
     let inject_config = cmp_inject_periodic::Config {
-        period: Duration::from_millis(100),
+        period: Duration::from_millis(1000),
         fn_periodic: move || {
             let msg = Message::new_custom(Data::CounterFromClient(counter));
             counter = counter.wrapping_add(1);
@@ -67,10 +67,9 @@ async fn main() -> anyhow::Result<()> {
     };
 
     let http_config = cmp_http_client::Config::<Data> {
-        connection_config: cmp_http_client::ConnectionConfig {
-            base_url: "http://192.168.71.1:8010".into(),
-            // base_url: "http://localhost:8010".into(),
-        },
+        base_url: "http://192.168.71.1:8010".into(),
+        // base_url: "http://localhost:8010".into(),
+        timeout: Duration::from_secs(5),
         requests_input: vec![cmp_http_client::RequestInput {
             fn_input: |msg| {
                 let msg = msg.get_custom_data()?;
@@ -92,7 +91,7 @@ async fn main() -> anyhow::Result<()> {
             on_failure: Vec::new,
         }],
         requests_periodic: vec![cmp_http_client::RequestPeriodic {
-            period: Duration::from_millis(100),
+            period: Duration::from_millis(1000),
             http_param: cmp_http_client::HttpParam::Get {
                 endpoint: "/data/test".to_string(),
             },
