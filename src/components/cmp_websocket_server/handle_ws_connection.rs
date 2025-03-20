@@ -18,18 +18,19 @@ use crate::{
 };
 
 use super::{
-    config::{Config, FnOutput},
+    config::{Config, FnOutput, WebsocketMessage},
     errors::Error,
 };
 
 /// Создание и управление подключением между сервером и клиентом
-pub async fn handle_ws_connection<TMsg, TService>(
+pub async fn handle_ws_connection<TMsg, TService, TServerToClient>(
     input: CmpInOut<TMsg, TService>,
-    config: Config<TMsg>,
+    config: Config<TMsg, TServerToClient>,
     stream_and_addr: (TcpStream, SocketAddr),
 ) where
     TMsg: MsgDataBound + 'static,
     TService: ServiceBound + 'static,
+    TServerToClient: WebsocketMessage,
 {
     let addr = stream_and_addr.1;
     let result = _handle_ws_connection(input, stream_and_addr, config).await;
@@ -42,14 +43,15 @@ pub async fn handle_ws_connection<TMsg, TService>(
     info!("Connection closed");
 }
 
-async fn _handle_ws_connection<TMsg, TService>(
+async fn _handle_ws_connection<TMsg, TService, TServerToClient>(
     in_out: CmpInOut<TMsg, TService>,
     stream_and_addr: (TcpStream, SocketAddr),
-    config: Config<TMsg>,
+    config: Config<TMsg, TServerToClient>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
     TService: ServiceBound + 'static,
+    TServerToClient: WebsocketMessage,
 {
     info!("Incoming TCP connection from: {}", stream_and_addr.1);
     let ws_stream = accept_async(stream_and_addr.0).await?;
@@ -58,33 +60,33 @@ where
 
     let (send_to_client_tx, send_to_client_rx) = mpsc::channel::<Message<TMsg>>(100);
 
-    let mut set = JoinSet::new();
+    let mut task_set = JoinSet::new();
 
     // Подготавливаем кеш для отправки
-    set.spawn(send_prepare_cache(
+    task_set.spawn(send_prepare_cache(
         in_out.clone(),
         send_to_client_tx.clone(),
     ));
     // Подготавливаем новые сообщения для отправки
-    set.spawn(send_prepare_new_msgs(
+    task_set.spawn(send_prepare_new_msgs(
         in_out.clone(),
         send_to_client_tx.clone(),
     ));
     // Отправляем клиенту
-    set.spawn(send_to_client(
+    task_set.spawn(send_to_client(
         send_to_client_rx,
         ws_stream_write,
         config.fn_input,
     ));
     // Получаем данные от клиента
-    set.spawn(recv_from_client(
+    task_set.spawn(recv_from_client(
         ws_stream_read,
         in_out,
         config.fn_output,
         send_to_client_tx.clone(),
     ));
 
-    while let Some(res) = set.join_next().await {
+    while let Some(res) = task_set.join_next().await {
         let err = match res {
             Ok(val) => match val {
                 Ok(_) => continue,
@@ -93,7 +95,7 @@ where
             Err(err) => format!("{}", err),
         };
         warn!("Connection error: {}", err);
-        set.shutdown().await;
+        task_set.shutdown().await;
     }
     Ok(())
 }

@@ -169,6 +169,12 @@ pub mod cmp_system_info;
 #[allow(dead_code)]
 pub mod cmp_timescaledb;
 
+#[cfg(any(
+    feature = "cmp_websocket_client",
+    feature = "cmp_websocket_client_wasm"
+))]
+pub mod cmp_websocket_client_general;
+
 #[cfg(feature = "cmp_websocket_client")]
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
 pub mod cmp_websocket_client;

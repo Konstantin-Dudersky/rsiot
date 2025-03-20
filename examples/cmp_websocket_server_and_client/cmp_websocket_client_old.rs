@@ -83,7 +83,7 @@ async fn main() -> anyhow::Result<()> {
         },
     };
 
-    let ws_client = cmp_websocket_client::Config {
+    let config_websocket_client = cmp_websocket_client::Config {
         url: "ws://localhost:9001".into(),
         fn_input,
         fn_output,
@@ -100,7 +100,7 @@ async fn main() -> anyhow::Result<()> {
     ComponentExecutor::<Data, Service>::new(executor_config)
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
-        .add_cmp(cmp_websocket_client::Cmp::new(ws_client))
+        .add_cmp(cmp_websocket_client::Cmp::new(config_websocket_client))
         .wait_result()
         .await?;
 

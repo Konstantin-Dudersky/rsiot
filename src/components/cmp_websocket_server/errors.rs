@@ -1,3 +1,5 @@
+use crate::components::shared_tasks;
+
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("{0}")]
@@ -9,8 +11,8 @@ pub enum Error {
     #[error("{0}")]
     TokioTaskJoin(#[from] tokio::task::JoinError),
 
-    #[error("{0}")]
-    TokioSyncMpsc(String),
+    #[error("TokioSyncMpsc")]
+    TokioSyncMpsc,
 
     #[error("{0}")]
     FnInput(anyhow::Error),
@@ -23,10 +25,19 @@ pub enum Error {
 
     #[error(transparent)]
     CmpOutput(crate::executor::ComponentError),
-}
 
-impl<TMsg> From<tokio::sync::mpsc::error::SendError<TMsg>> for Error {
-    fn from(value: tokio::sync::mpsc::error::SendError<TMsg>) -> Self {
-        Self::TokioSyncMpsc(value.to_string())
-    }
+    #[error("TaskEndInput")]
+    TaskEndInput,
+
+    #[error("TaskEndOutput")]
+    TaskEndOutput,
+
+    #[error(transparent)]
+    SharedTaskMsgBusToMpsc(shared_tasks::msgbus_to_mpsc::Error),
+
+    #[error(transparent)]
+    SharedTaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus::Error),
+
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error),
 }

@@ -34,9 +34,6 @@ pub mod websocket_client;
 #[cfg(feature = "cmp_timescaledb")]
 pub mod timescaledb;
 
-#[cfg(feature = "cmp_websocket_server")]
-pub mod websocket_server;
-
 #[cfg(feature = "executor")]
 pub mod uart_general;
 
@@ -48,3 +45,8 @@ pub mod spi_master;
 
 #[cfg(feature = "executor")]
 pub mod master_device;
+
+pub mod websocket_general;
+
+#[cfg(feature = "cmp_websocket_server")]
+pub mod websocket_server;

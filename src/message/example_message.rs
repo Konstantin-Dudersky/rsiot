@@ -54,9 +54,9 @@ pub enum DataGroup {
     DataGroupVectorTuple(Vec<(bool, String)>),
 }
 
-/// Пустое перечисление
-///
-/// TODO - появляется почему-то ошибка, хотя cargo-expand показывает корректный код
+// Пустое перечисление
+//
+// TODO - появляется почему-то ошибка, хотя cargo-expand показывает корректный код
 // #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
 // pub enum EmptyEnum {}
 

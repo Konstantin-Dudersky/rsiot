@@ -1,0 +1,25 @@
+{
+  "lsp": {
+    "rust-analyzer": {
+      "initialization_options": {
+        "check": {
+          "command": "clippy"
+        },
+        "cargo": {
+          "target": "wasm32-unknown-unknown"
+          // "features": [
+          //   "single-thread", // Активировать обязательно !
+          //   "rustdoc",
+          //   "executor",
+          //   "logging",
+          //   "cmp_http_client_wasm",
+          //   "cmp_leptos",
+          //   "cmp_plc",
+          //   "cmp_websocket_client_wasm",
+          //   "cmp_webstorage"
+          // ]
+        }
+      }
+    }
+  }
+}
