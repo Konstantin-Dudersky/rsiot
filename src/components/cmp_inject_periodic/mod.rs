@@ -1,10 +1,11 @@
 //! Компонент для периодического генерирования сообщений
 
 use async_trait::async_trait;
-use tokio::time::{sleep, Duration, Instant};
+use instant::Instant;
+use tokio::time::Duration;
 
 use crate::{
-    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
+    executor::{sleep, CmpInOut, Component, ComponentError, IComponentProcess},
     message::{AuthPermissions, Message, MsgDataBound, ServiceBound},
 };
 

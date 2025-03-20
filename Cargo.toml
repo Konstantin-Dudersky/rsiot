@@ -20,6 +20,7 @@ chrono = { version = "0.4.35", features = ["serde"] }
 crc = { version = "3.2.1" }
 document-features = { version = "0.2.8" }
 getrandom = { version = "0.2", features = ["js"] }
+instant = { version = "0.1.12", features = ["wasm-bindgen"] }
 postcard = { version = "1.0.8", features = ["use-std", "use-crc"] }
 serde = { version = "1.0.197", features = ["derive"] }
 strum = { version = "0.26.3", features = ["derive"] }
@@ -42,7 +43,6 @@ embedded-svc = { version = "0.28.0", optional = true } # TODO - HTTP request con
 envy = { version = "0.4.2", optional = true }
 heapless = { version = "0.8.0", optional = true }
 http = { version = "1.0.0", optional = true }
-instant = { version = "0.1.12", features = ["wasm-bindgen"], optional = true }
 jwt = { version = "0.16.0", optional = true }
 futures = { version = "0.3.30", optional = true }
 hmac = { version = "0.12.1", optional = true }
@@ -209,7 +209,7 @@ cmp_http_client = [
 ]
 
 ## Компонент http-клиент для платформы WASM
-cmp_http_client_wasm = ["executor", "dep:http", "dep:instant", "dep:url"]
+cmp_http_client_wasm = ["executor", "dep:http", "dep:url"]
 
 ## Компонент http-сервер
 cmp_http_server = ["executor", "dep:axum", "dep:tower-http"]
@@ -247,7 +247,7 @@ cmp_mqtt_client = ["executor", "dep:rumqttc"]
 cmp_os_process = ["executor", "tokio?/process"]
 
 ## Компонент ПЛК
-cmp_plc = ["executor", "dep:instant"]
+cmp_plc = ["executor"]
 
 ## Работа с периферией Raspberry Pi
 cmp_raspberrypi = ["executor", "dep:rppal"]
@@ -447,11 +447,11 @@ path = "examples/cmp_timescaledb/cmp_timescaledb.rs"
 
 [[example]]
 name = "cmp_websocket_client"
-path = "examples/cmp_websocket_client/cmp_websocket_client.rs"
+path = "examples/cmp_websocket_server_and_client/cmp_websocket_client.rs"
 
 [[example]]
-name = "cmp_websocket_client_wasm"
-path = "examples/cmp_websocket_client_wasm/cmp_websocket_client_wasm.rs"
+name = "cmp_websocket_server"
+path = "examples/cmp_websocket_server_and_client/cmp_websocket_server.rs"
 
 [[example]]
 name = "executor_multi_thread"
