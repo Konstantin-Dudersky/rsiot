@@ -10,8 +10,8 @@ use super::{fn_process::fn_process, Config};
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
-impl<TMainWindow, TMsg, TService> IComponentProcess<Config<TMainWindow, TMsg>, TMsg, TService>
-    for Component<Config<TMainWindow, TMsg>, TMsg, TService>
+impl<TMainWindow, TMsg, TService> IComponentProcess<Config<TMsg, TMainWindow>, TMsg, TService>
+    for Component<Config<TMsg, TMainWindow>, TMsg, TService>
 where
     TMsg: MsgDataBound + 'static,
     TService: ServiceBound + 'static,
@@ -20,7 +20,7 @@ where
 {
     async fn process(
         &self,
-        config: Config<TMainWindow, TMsg>,
+        config: Config<TMsg, TMainWindow>,
         input: CmpInOut<TMsg, TService>,
     ) -> Result<(), ComponentError> {
         let input = input.clone_with_new_id("cmp_slint", AuthPermissions::FullAccess);
@@ -30,4 +30,4 @@ where
 }
 
 /// Компонент cmp_slint
-pub type Cmp<TMainWindow, TMsg, TService> = Component<Config<TMainWindow, TMsg>, TMsg, TService>;
+pub type Cmp<TMsg, TMainWindow, TService> = Component<Config<TMsg, TMainWindow>, TMsg, TService>;
