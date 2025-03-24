@@ -17,7 +17,7 @@ where
 {
     /// Адрес Websocket-сервера
     /// "ws://localhost:9001"
-    pub url: &'static str,
+    pub url: String,
 
     /// Преобразование входящих сообщений в текст для отправки на сервер
     pub fn_client_to_server: FnClientToServer<TMsg, TClientToServer>,
@@ -43,7 +43,7 @@ where
 {
     fn default() -> Self {
         Self {
-            url: "ws://localhost:8000",
+            url: "ws://localhost:8000".into(),
             fn_client_to_server: |_| None,
             fn_server_to_client: |_| vec![],
             fn_connection_state: |_| None,

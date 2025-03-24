@@ -110,11 +110,22 @@ where
     }
 
     // Запросы PUT
-    for path in put_endpoints_paths {
+    for path in put_endpoints_paths.clone() {
         let put_endpoints = put_endpoints.clone();
         let msg_bus = in_out.clone();
         server
             .fn_handler(&path, Method::Put, move |request| {
+                route_put(request, put_endpoints.clone(), msg_bus.clone())
+            })
+            .map_err(super::Error::RegisterHandler)?;
+    }
+
+    // Запросы POST
+    for path in put_endpoints_paths {
+        let put_endpoints = put_endpoints.clone();
+        let msg_bus = in_out.clone();
+        server
+            .fn_handler(&path, Method::Post, move |request| {
                 route_put(request, put_endpoints.clone(), msg_bus.clone())
             })
             .map_err(super::Error::RegisterHandler)?;

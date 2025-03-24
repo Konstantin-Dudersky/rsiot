@@ -11,7 +11,13 @@ where
     TMessage: MsgDataBound,
 {
     /// URL сервера
-    pub base_url: String,
+    ///
+    /// *Примеры:*
+    ///
+    /// ```
+    /// base_url: "http://10.0.6.5:80"
+    /// ```
+    pub base_url: &'static str,
     /// Таймаут запроса
     pub timeout: Duration,
     /// Запросы, которые формируются на основе входящих сообщений
@@ -31,7 +37,7 @@ mod tests {
     #[test]
     fn connect_with_http_server() {
         Config::<Custom> {
-            base_url: "http://10.0.6.5:80".into(),
+            base_url: "http://10.0.6.5:80",
             timeout: Duration::from_secs(5),
             requests_input: vec![RequestInput {
                 fn_input: |msg| {

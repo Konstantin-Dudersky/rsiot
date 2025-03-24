@@ -61,7 +61,7 @@ where
     TServerToClient: WebsocketMessage + 'static,
     TClientToServer: WebsocketMessage + 'static,
 {
-    let url = Url::parse(config.url).map_err(Error::BadUrl)?;
+    let url = Url::parse(&config.url).map_err(Error::BadUrl)?;
     let url = url.to_string();
     let ws = WebSocket::open(&url).map_err(|e| Error::SetupConnection(e.to_string()))?;
     info!("Connection to websocket server established");

@@ -6,6 +6,6 @@ mod error;
 mod fn_process;
 
 pub use component::Cmp;
-pub use config::config::*;
+pub use config::*;
 
 type Result<T> = std::result::Result<T, error::Error>;

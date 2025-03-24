@@ -14,11 +14,11 @@ use crate::message::{Message, MsgDataBound, ServiceBound};
 
 use crate::executor::CmpInOut;
 
-use super::{config::config, error::Error};
+use super::{config::*, error::Error};
 
 pub async fn fn_process<TMessage, TService>(
     input: CmpInOut<TMessage, TService>,
-    config: config::Config<TMessage>,
+    config: Config<TMessage>,
 ) -> super::Result<()>
 where
     TMessage: MsgDataBound + 'static,
@@ -41,14 +41,14 @@ where
 
 async fn task_main<TMessage, TService>(
     in_out: CmpInOut<TMessage, TService>,
-    config: config::Config<TMessage>,
+    config: Config<TMessage>,
 ) -> super::Result<()>
 where
     TMessage: MsgDataBound + 'static,
     TService: ServiceBound + 'static,
 {
     // Парсим url
-    let url = Url::parse(&config.base_url);
+    let url = Url::parse(config.base_url);
     let url = match url {
         Ok(val) => val,
         Err(err) => {
@@ -80,7 +80,7 @@ where
 async fn task_input_request<TMessage, TService>(
     mut in_out: CmpInOut<TMessage, TService>,
     url: Url,
-    config: config::RequestInput<TMessage>,
+    config: RequestInput<TMessage>,
 ) -> super::Result<()>
 where
     TMessage: MsgDataBound,
@@ -88,6 +88,7 @@ where
 {
     while let Ok(msg) = in_out.recv_input().await {
         let http_param = (config.fn_input)(&msg);
+        info!("New request: {:?}", http_param);
         let http_param = match http_param {
             Some(val) => val,
             None => continue,
@@ -105,7 +106,7 @@ where
 /// Задача обработки периодического запроса
 async fn task_periodic_request<TMessage, TService>(
     output: CmpInOut<TMessage, TService>,
-    config: config::RequestPeriodic<TMessage>,
+    config: RequestPeriodic<TMessage>,
     url: Url,
 ) -> super::Result<()>
 where
@@ -139,9 +140,9 @@ where
 /// Выполнение запроса и вызов коллбеков при ответе
 async fn process_request_and_response<TMessage>(
     url: &Url,
-    request_param: &config::HttpParam,
-    on_success: config::CbkOnSuccess<TMessage>,
-    on_failure: config::CbkOnFailure<TMessage>,
+    request_param: &HttpParam,
+    on_success: CbkOnSuccess<TMessage>,
+    on_failure: CbkOnFailure<TMessage>,
 ) -> super::Result<Vec<Message<TMessage>>>
 where
     TMessage: MsgDataBound,
@@ -173,21 +174,21 @@ where
 }
 
 /// Выполнение HTTP запроса
-async fn send_request(url: Url, req: &config::HttpParam) -> super::Result<Response> {
+async fn send_request(url: Url, req: &HttpParam) -> super::Result<Response> {
     let endpoint = match req {
-        config::HttpParam::Get { endpoint } => endpoint,
-        config::HttpParam::Put { endpoint, body: _ } => endpoint,
-        config::HttpParam::Post { endpoint, body: _ } => endpoint,
+        HttpParam::Get { endpoint } => endpoint,
+        HttpParam::Put { endpoint, body: _ } => endpoint,
+        HttpParam::Post { endpoint, body: _ } => endpoint,
     };
     let url = url
         .join(endpoint)
         .map_err(|err| Error::Configuration(err.to_string()))?;
     let response = match req {
-        config::HttpParam::Get { endpoint: _ } => Request::get(url.as_ref()).send().await?,
-        config::HttpParam::Put { endpoint: _, body } => {
+        HttpParam::Get { endpoint: _ } => Request::get(url.as_ref()).send().await?,
+        HttpParam::Put { endpoint: _, body } => {
             Request::put(url.as_ref()).body(body)?.send().await?
         }
-        config::HttpParam::Post { endpoint: _, body } => {
+        HttpParam::Post { endpoint: _, body } => {
             Request::post(url.as_ref()).body(body)?.send().await?
         }
     };

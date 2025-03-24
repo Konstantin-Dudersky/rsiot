@@ -46,8 +46,8 @@ http = { version = "1.0.0", optional = true }
 jwt = { version = "0.16.0", optional = true }
 futures = { version = "0.3.30", optional = true }
 hmac = { version = "0.12.1", optional = true }
-leptos = { version = "0.8.0-alpha", features = ["csr"], optional = true }
-leptos_router = { version = "0.8.0-alpha", optional = true }
+leptos = { version = "0.8.0-beta", features = ["csr"], optional = true }
+leptos_router = { version = "0.8.0-beta", optional = true }
 linux-embedded-hal = { version = "0.4.0", optional = true, features = [
     "async-tokio",
     "gpio_cdev",
