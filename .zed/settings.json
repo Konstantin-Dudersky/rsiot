@@ -22,47 +22,47 @@
           // "target": "riscv32imc-esp-espidf",
           // "features": ["executor", "logging", "cmp_esp", "cmp_plc"]
           // ---- x86_64-unknown-linux-gnu ---------------------------------------------------------
-          // "target": "x86_64-unknown-linux-gnu",
-          // "features": [
-          // "rustdoc",
-          // "executor",
-          //   "single-thread",
-          //   "env_vars",
-          //   "logging",
-          //   "cmp_auth",
-          //   "cmp_filesystem",
-          // "cmp_http_client",
-          // "cmp_http_server"
-          //   "cmp_filesystem",
-          //   "cmp_influxdb",
-          //   "cmp_linux_spi_master",
-          //   "cmp_linux_uart_master",
-          //   "cmp_modbus_client",
-          //   "cmp_mqtt_client",
-          //   "cmp_plc",
-          //   "cmp_redis_client",
-          //   "cmp_os_process",
-          // "cmp_slint"
-          //   "cmp_surrealdb",
-          //   "cmp_system_info",
-          //   "cmp_telegram",
-          //   "cmp_timescaledb",
-          // "cmp_websocket_client"
-          // "cmp_websocket_server"
-          // ]
-          // ---- wasm32-unknown-unknown -----------------------------------------------------------
-          "target": "wasm32-unknown-unknown",
+          "target": "x86_64-unknown-linux-gnu",
           "features": [
-            "single-thread", // Активировать обязательно !
-            //   "rustdoc",
-            //   "executor",
+            // "rustdoc",
+            // "executor",
+            //   "single-thread",
+            //   "env_vars",
             //   "logging",
-            // "cmp_http_client_wasm"
-            //   "cmp_leptos",
+            //   "cmp_auth",
+            //   "cmp_filesystem",
+            // "cmp_http_client",
+            // "cmp_http_server"
+            //   "cmp_filesystem",
+            //   "cmp_influxdb",
+            //   "cmp_linux_spi_master",
+            //   "cmp_linux_uart_master",
+            //   "cmp_modbus_client",
+            //   "cmp_mqtt_client",
             //   "cmp_plc",
-            "cmp_websocket_client_wasm"
-            //   "cmp_webstorage"
+            //   "cmp_redis_client",
+            //   "cmp_os_process",
+            // "cmp_slint"
+            //   "cmp_surrealdb",
+            //   "cmp_system_info",
+            //   "cmp_telegram",
+            //   "cmp_timescaledb",
+            "cmp_websocket_client"
+            // "cmp_websocket_server"
           ]
+          // ---- wasm32-unknown-unknown -----------------------------------------------------------
+          // "target": "wasm32-unknown-unknown",
+          // "features": [
+          // "single-thread", // Активировать обязательно !
+          //   "rustdoc",
+          //   "executor",
+          //   "logging",
+          // "cmp_http_client_wasm"
+          // "cmp_leptos",
+          //   "cmp_plc",
+          // "cmp_websocket_client_wasm"
+          //   "cmp_webstorage"
+          // ]
         }
       }
     }

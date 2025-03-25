@@ -7,11 +7,9 @@ use crate::message::{Message, MsgDataBound};
 use super::StoreBound;
 
 /// Конфигурация компонента cmp_leptos
-pub struct Config<TMsg, TView, TIntoView, TInputStore, TOutputStore>
+pub struct Config<TMsg, TInputStore, TOutputStore>
 where
     TMsg: MsgDataBound,
-    TView: Fn() -> TIntoView,
-    TIntoView: IntoView,
     TInputStore: StoreBound,
     TOutputStore: StoreBound,
 {
@@ -22,7 +20,7 @@ where
     /// ```rust
     /// body_component: || view! { <App/> }
     /// ```
-    pub body_component: TView,
+    pub body_component: fn() -> AnyView,
 
     /// Значения по-умолчанию глобального хранилища входных данных
     pub input_store: TInputStore,

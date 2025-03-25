@@ -67,7 +67,7 @@ where
     TServerToClient: 'static + WebsocketMessage,
     TClientToServer: 'static + WebsocketMessage,
 {
-    let url = Url::parse(config.url)?;
+    let url = Url::parse(&config.url)?;
 
     let (ws_stream, _) = connect_async(url)
         .await

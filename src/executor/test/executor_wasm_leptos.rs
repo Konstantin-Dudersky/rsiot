@@ -30,7 +30,7 @@ fn test_wasm() {
 
         // cmp_leptos ------------------------------------------------------------------------------
         let config_leptos = cmp_leptos::Config {
-            body_component: || view! { <App/> },
+            body_component: || view! { <App/>}.into_any(),
             input_store: GlobalStore::default(),
             output_store: GlobalStore::default(),
             fn_input: |_, _| (),

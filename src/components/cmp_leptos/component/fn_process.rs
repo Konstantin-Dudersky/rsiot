@@ -10,32 +10,20 @@ use crate::{
 };
 
 use super::{
-    super::{utils, Error, GlobalState, Result},
+    super::{Error, Result},
     Config, StoreBound,
 };
 
-pub async fn fn_process<TMsg, TView, TIntoView, TService, TInputStore, TOutputStore>(
-    config: Config<TMsg, TView, TIntoView, TInputStore, TOutputStore>,
+pub async fn fn_process<TMsg, TService, TInputStore, TOutputStore>(
+    config: Config<TMsg, TInputStore, TOutputStore>,
     in_out: CmpInOut<TMsg, TService>,
 ) -> Result
 where
     TMsg: MsgDataBound + 'static,
-    TView: Fn() -> TIntoView + 'static,
-    TIntoView: IntoView,
     TService: ServiceBound + 'static,
     TInputStore: StoreBound + 'static,
     TOutputStore: StoreBound + 'static,
 {
-    let hostname = utils::define_hostname().unwrap();
-
-    let gs = GlobalState::<TMsg> {
-        hostname,
-        input: RwSignal::new(None),
-        output: RwSignal::new(None),
-        cache: in_out.cache.clone(),
-        auth_perm: RwSignal::new(AuthPermissions::NoAccess),
-    };
-
     // Монтируем корневой компонент
     let input_store = Store::new(config.input_store);
     let input_store_clone = input_store;
@@ -107,7 +95,7 @@ where
 /// Пробуем найти токен в LocalStorage.
 ///
 /// Если токен присутствует, отправляем запрос на проверку токена
-fn try_to_find_token<TMsg>() -> Option<Message<TMsg>>
+fn _try_to_find_token<TMsg>() -> Option<Message<TMsg>>
 where
     TMsg: MsgDataBound,
 {

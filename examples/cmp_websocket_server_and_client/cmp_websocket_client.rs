@@ -64,7 +64,7 @@ async fn main() -> anyhow::Result<()> {
     };
 
     let config_websocket_client = cmp_websocket_client::Config {
-        url: "ws://localhost:8011",
+        url: "ws://localhost:8011".into(),
         fn_client_to_server: |msg| {
             let msg = msg.get_custom_data()?;
             let c2s = match msg {

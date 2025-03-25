@@ -11,6 +11,7 @@
         "cmp_http_client",
         "cmp_http_server",
         "cmp_influxdb",
+        "cmp_linux_spi_master",
         "cmp_linux_uart_master",
         "cmp_modbus_client",
         "cmp_mqtt_client",
@@ -31,13 +32,7 @@
     {
       "name": "aarch64-linux-android",
       "toolchain": "+stable",
-      "features": [
-        "executor",
-        "logging",
-        "cmp_http_client",
-        "cmp_mqtt_client",
-        "cmp_slint"
-      ],
+      "features": ["executor", "logging", "cmp_http_client", "cmp_mqtt_client", "cmp_slint"],
       "add_feat": ["", "single-thread"]
     },
     {
@@ -51,6 +46,7 @@
         "cmp_http_client",
         "cmp_http_server",
         "cmp_influxdb",
+        "cmp_linux_spi_master",
         "cmp_linux_uart_master",
         "cmp_modbus_client",
         "cmp_mqtt_client",
