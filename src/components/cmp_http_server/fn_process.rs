@@ -12,19 +12,18 @@ use tracing::{info, Level};
 use crate::{
     components_config::http_server::{create_get_endpoints_hashmap, create_put_endpoints_hashmap},
     executor::{join_set_spawn, CmpInOut, ComponentError},
-    message::{MsgDataBound, ServiceBound},
+    message::MsgDataBound,
 };
 
 use super::{config::Config, routes, shared_state::SharedState, tasks};
 
 /// Компонент для получения и ввода сообщений через HTTP Server
-pub async fn fn_process<TMsg, TService>(
-    msg_bus: CmpInOut<TMsg, TService>,
+pub async fn fn_process<TMsg>(
+    msg_bus: CmpInOut<TMsg>,
     config: Config<TMsg>,
 ) -> Result<(), ComponentError>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
 {
     info!("Component started, configuration: {:?}", config);
 

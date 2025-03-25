@@ -2,25 +2,21 @@ use esp_idf_svc::mqtt::client::{EspAsyncMqttConnection, EventPayload};
 use tracing::warn;
 
 use crate::{
-    components_config::mqtt_client::ConfigFnOutput,
-    executor::CmpInOut,
-    message::{MsgDataBound, ServiceBound},
+    components_config::mqtt_client::ConfigFnOutput, executor::CmpInOut, message::MsgDataBound,
 };
 
-pub struct Output<TMsg, TService>
+pub struct Output<TMsg>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     pub connection: EspAsyncMqttConnection,
     pub config_fn_output: ConfigFnOutput<TMsg>,
-    pub in_out: CmpInOut<TMsg, TService>,
+    pub in_out: CmpInOut<TMsg>,
 }
 
-impl<TMsg, TService> Output<TMsg, TService>
+impl<TMsg> Output<TMsg>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
         while let Ok(event) = self.connection.next().await {

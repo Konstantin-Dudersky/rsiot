@@ -4,26 +4,24 @@ use tokio::{sync::broadcast::Sender, time::error};
 
 use crate::{
     executor::CmpInOut,
-    message::{Message, MsgDataBound, ServiceBound},
+    message::{Message, MsgDataBound},
 };
 
 /// Задача перенаправления сообщений из `CmpInOut` в  канал `broadcast`
-pub struct MsgBusToBroadcast<TMsg, TService>
+pub struct MsgBusToBroadcast<TMsg>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     /// Входящий поток сообщений из входа компонента
-    pub msg_bus: CmpInOut<TMsg, TService>,
+    pub msg_bus: CmpInOut<TMsg>,
 
     /// Исходящий поток сообщений
     pub output: Sender<Message<TMsg>>,
 }
 
-impl<TMsg, TService> MsgBusToBroadcast<TMsg, TService>
+impl<TMsg> MsgBusToBroadcast<TMsg>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     /// Запуск на выполнение
     pub async fn spawn(mut self) -> Result<(), Error> {

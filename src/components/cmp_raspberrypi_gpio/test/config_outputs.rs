@@ -1,9 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    components::cmp_raspberrypi_gpio,
-    message::{example_service::Service, *},
-};
+use crate::{components::cmp_raspberrypi_gpio, message::*};
 
 #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
 pub enum Custom {
@@ -11,9 +8,7 @@ pub enum Custom {
     SetOutput2(bool),
 }
 
-impl MsgDataBound for Custom {
-    type TService = Service;
-}
+impl MsgDataBound for Custom {}
 
 #[test]
 #[allow(clippy::single_element_loop)]

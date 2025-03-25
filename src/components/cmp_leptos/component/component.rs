@@ -2,26 +2,25 @@ use async_trait::async_trait;
 
 use crate::{
     executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound, ServiceBound},
+    message::{AuthPermissions, MsgDataBound},
 };
 
 use super::{fn_process::fn_process, Config, StoreBound};
 
 #[cfg(feature = "single-thread")]
 #[async_trait(?Send)]
-impl<TMsg, TService, TInputStore, TOutputStore>
-    IComponentProcess<Config<TMsg, TInputStore, TOutputStore>, TMsg, TService>
-    for Component<Config<TMsg, TInputStore, TOutputStore>, TMsg, TService>
+impl<TMsg, TInputStore, TOutputStore>
+    IComponentProcess<Config<TMsg, TInputStore, TOutputStore>, TMsg>
+    for Component<Config<TMsg, TInputStore, TOutputStore>, TMsg>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
     TInputStore: StoreBound + 'static,
     TOutputStore: StoreBound + 'static,
 {
     async fn process(
         &self,
         config: Config<TMsg, TInputStore, TOutputStore>,
-        input: CmpInOut<TMsg, TService>,
+        input: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
         fn_process(
             config,
@@ -33,5 +32,5 @@ where
 }
 
 /// Компонент cmp_leptos
-pub type Cmp<TMsg, TService, TInputStore, TOutputStore> =
-    Component<Config<TMsg, TInputStore, TOutputStore>, TMsg, TService>;
+pub type Cmp<TMsg, TInputStore, TOutputStore> =
+    Component<Config<TMsg, TInputStore, TOutputStore>, TMsg>;

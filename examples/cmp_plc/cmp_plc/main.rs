@@ -24,7 +24,7 @@ async fn main() -> anyhow::Result<()> {
             cmp_plc::{self, plc::types::Resettable},
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_service::*, Message},
+        message::Message,
     };
 
     use message::Data;
@@ -66,12 +66,11 @@ async fn main() -> anyhow::Result<()> {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
     };
 
-    ComponentExecutor::<message::Data, Service>::new(executor_config)
+    ComponentExecutor::<message::Data>::new(executor_config)
         .add_cmp(cmp_plc::Cmp::new(plc_config))
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .add_cmp(cmp_inject_periodic::Cmp::new(config_inject_periodic))

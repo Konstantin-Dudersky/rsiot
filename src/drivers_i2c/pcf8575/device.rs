@@ -3,10 +3,7 @@ use std::sync::Arc;
 use tokio::{sync::Mutex, task::JoinSet};
 use tracing::warn;
 
-use crate::{
-    executor::CmpInOut,
-    message::{MsgDataBound, ServiceBound},
-};
+use crate::{executor::CmpInOut, message::MsgDataBound};
 
 use super::{
     super::{I2cSlaveAddress, RsiotI2cDriverBase},
@@ -28,13 +25,11 @@ impl<TMsg> PCF8575<TMsg>
 where
     TMsg: MsgDataBound + 'static,
 {
-    pub async fn fn_process<TService>(
+    pub async fn fn_process(
         &self,
-        in_out: CmpInOut<TMsg, TService>,
+        in_out: CmpInOut<TMsg>,
         driver: Arc<Mutex<impl RsiotI2cDriverBase + 'static>>,
-    ) where
-        TService: ServiceBound + 'static,
-    {
+    ) {
         loop {
             let mut state = State::new();
             let mut task_set: JoinSet<Result<(), String>> = JoinSet::new();

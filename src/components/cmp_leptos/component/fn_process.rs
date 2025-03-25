@@ -14,13 +14,12 @@ use super::{
     Config, StoreBound,
 };
 
-pub async fn fn_process<TMsg, TService, TInputStore, TOutputStore>(
+pub async fn fn_process<TMsg, TInputStore, TOutputStore>(
     config: Config<TMsg, TInputStore, TOutputStore>,
-    in_out: CmpInOut<TMsg, TService>,
+    in_out: CmpInOut<TMsg>,
 ) -> Result
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
     TInputStore: StoreBound + 'static,
     TOutputStore: StoreBound + 'static,
 {
@@ -54,14 +53,13 @@ where
     Ok(())
 }
 
-async fn task_input<TMsg, TService, TInputStore>(
-    mut msg_bus: CmpInOut<TMsg, TService>,
+async fn task_input<TMsg, TInputStore>(
+    mut msg_bus: CmpInOut<TMsg>,
     fn_input: fn(&Message<TMsg>, &Store<TInputStore>),
     input_store: Store<TInputStore>,
 ) -> Result
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
     TInputStore: StoreBound + 'static,
 {
     while let Ok(msg) = msg_bus.recv_input().await {
@@ -70,14 +68,13 @@ where
     Ok(())
 }
 
-async fn task_output<TMsg, TService, TOutputStore>(
-    msg_bus: CmpInOut<TMsg, TService>,
+async fn task_output<TMsg, TOutputStore>(
+    msg_bus: CmpInOut<TMsg>,
     fn_output: fn(Store<TOutputStore>, mpsc::Sender<TMsg>),
     output_store: Store<TOutputStore>,
 ) -> Result
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
     TOutputStore: StoreBound + 'static,
 {
     let (tx, mut rx) = mpsc::channel(100);

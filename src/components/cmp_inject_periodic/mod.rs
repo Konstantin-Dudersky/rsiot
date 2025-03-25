@@ -6,7 +6,7 @@ use tokio::time::Duration;
 
 use crate::{
     executor::{sleep, CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, Message, MsgDataBound, ServiceBound},
+    message::{AuthPermissions, Message, MsgDataBound},
 };
 
 /// Конфигурация cmp_inject_periodic
@@ -27,17 +27,16 @@ where
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
-impl<TMsg, TFnPeriodic, TService> IComponentProcess<Config<TMsg, TFnPeriodic>, TMsg, TService>
-    for Component<Config<TMsg, TFnPeriodic>, TMsg, TService>
+impl<TMsg, TFnPeriodic> IComponentProcess<Config<TMsg, TFnPeriodic>, TMsg>
+    for Component<Config<TMsg, TFnPeriodic>, TMsg>
 where
     TMsg: MsgDataBound,
     TFnPeriodic: FnMut() -> Vec<Message<TMsg>> + Send + Sync,
-    TService: ServiceBound,
 {
     async fn process(
         &self,
         config: Config<TMsg, TFnPeriodic>,
-        in_out: CmpInOut<TMsg, TService>,
+        in_out: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
         fn_process(
             config,
@@ -47,14 +46,13 @@ where
     }
 }
 
-async fn fn_process<TMsg, TFnPeriodic, TService>(
+async fn fn_process<TMsg, TFnPeriodic>(
     mut config: Config<TMsg, TFnPeriodic>,
-    in_out: CmpInOut<TMsg, TService>,
+    in_out: CmpInOut<TMsg>,
 ) -> Result<(), ComponentError>
 where
     TMsg: MsgDataBound,
     TFnPeriodic: FnMut() -> Vec<Message<TMsg>> + Send + Sync,
-    TService: ServiceBound,
 {
     loop {
         let begin = Instant::now();
@@ -76,5 +74,4 @@ where
 }
 
 /// Компонент cmp_inject_periodic
-pub type Cmp<TMessage, TFnPeriodic, TService> =
-    Component<Config<TMessage, TFnPeriodic>, TMessage, TService>;
+pub type Cmp<TMessage, TFnPeriodic> = Component<Config<TMessage, TFnPeriodic>, TMessage>;

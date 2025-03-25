@@ -1,6 +1,6 @@
 use rsiot::{
     components_config::websocket_general::WebsocketMessage,
-    message::{example_service, MsgDataBound, MsgKey},
+    message::{MsgDataBound, MsgKey},
 };
 use serde::{Deserialize, Serialize};
 use strum::IntoStaticStr;
@@ -24,9 +24,7 @@ pub enum ServerMessages {
     ServerCounter(u32),
     CounterFromClient(u8),
 }
-impl MsgDataBound for ServerMessages {
-    type TService = example_service::Service;
-}
+impl MsgDataBound for ServerMessages {}
 
 // ClientMessages ----------------------------------------------------------------------------------
 
@@ -36,6 +34,4 @@ pub enum ClientMessages {
     CounterFromClient(u8),
     ConnectionState(bool),
 }
-impl MsgDataBound for ClientMessages {
-    type TService = example_service::Service;
-}
+impl MsgDataBound for ClientMessages {}

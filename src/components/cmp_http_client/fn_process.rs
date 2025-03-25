@@ -10,18 +10,17 @@ use url::Url;
 
 use crate::{
     executor::{join_set_spawn, CmpInOut, ComponentError},
-    message::{Message, MsgDataBound, ServiceBound},
+    message::{Message, MsgDataBound},
 };
 
 use super::{config, Error};
 
-pub async fn fn_process<TMsg, TService>(
-    in_out: CmpInOut<TMsg, TService>,
+pub async fn fn_process<TMsg>(
+    in_out: CmpInOut<TMsg>,
     config: config::Config<TMsg>,
 ) -> Result<(), ComponentError>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
 {
     info!("Starting http-client, configuration: {:?}", config);
 
@@ -39,13 +38,12 @@ where
 }
 
 /// Основная задача
-async fn task_main<TMsg, TService>(
-    in_out: CmpInOut<TMsg, TService>,
+async fn task_main<TMsg>(
+    in_out: CmpInOut<TMsg>,
     config: config::Config<TMsg>,
 ) -> super::Result<(), TMsg>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
 {
     // Парсим url
     let url = Url::parse(&config.base_url);
@@ -79,15 +77,14 @@ where
 }
 
 /// Задача обработки периодического запроса
-async fn task_periodic_request<TMsg, TService>(
-    in_out: CmpInOut<TMsg, TService>,
+async fn task_periodic_request<TMsg>(
+    in_out: CmpInOut<TMsg>,
     config: config::RequestPeriodic<TMsg>,
     url: Url,
     client: Client,
 ) -> super::Result<(), TMsg>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     loop {
         let begin = Instant::now();
@@ -115,15 +112,14 @@ where
 }
 
 /// Задача обработки запросов на основе входящего потока сообщений
-async fn task_input_request<TMessage, TService>(
-    mut in_out: CmpInOut<TMessage, TService>,
+async fn task_input_request<TMessage>(
+    mut in_out: CmpInOut<TMessage>,
     url: Url,
     config: config::RequestInput<TMessage>,
     client: Client,
 ) -> super::Result<(), TMessage>
 where
     TMessage: MsgDataBound,
-    TService: ServiceBound,
 {
     while let Ok(msg) = in_out.recv_input().await {
         let http_param = (config.fn_input)(&msg);

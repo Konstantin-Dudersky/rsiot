@@ -11,18 +11,14 @@ use crate::{
     components::shared_tasks::fn_process_master::FnProcessMaster,
     components_config::spi_master,
     executor::{join_set_spawn, CmpInOut},
-    message::{MsgDataBound, ServiceBound},
+    message::MsgDataBound,
 };
 
 use super::Config;
 
-pub async fn fn_process<TMsg, TService>(
-    config: Config<TMsg>,
-    msg_bus: CmpInOut<TMsg, TService>,
-) -> super::Result<()>
+pub async fn fn_process<TMsg>(config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> super::Result<()>
 where
     TMsg: 'static + MsgDataBound,
-    TService: 'static + ServiceBound,
 {
     const BUFFER_SIZE: usize = 500;
 

@@ -16,10 +16,7 @@ mod message;
 async fn main() {
     use std::time::Duration;
 
-    use rsiot::{
-        executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::example_service::Service,
-    };
+    use rsiot::executor::{ComponentExecutor, ComponentExecutorConfig};
 
     use message::Data;
 
@@ -27,12 +24,11 @@ async fn main() {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
     };
 
-    ComponentExecutor::<Data, Service>::new(executor_config)
+    ComponentExecutor::<Data>::new(executor_config)
         .add_cmp(example_component1::Cmp::new(example_component1::Config {}))
         .add_cmp(example_component2::Cmp::new(example_component2::Config {}))
         .wait_result()

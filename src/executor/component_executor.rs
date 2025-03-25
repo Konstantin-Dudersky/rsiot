@@ -16,25 +16,18 @@ use super::{
 const UPDATE_TTL_PERIOD: Duration = Duration::from_millis(200);
 
 /// Запуск коллекции компонентов в работу
-pub struct ComponentExecutor<TMsg, TService>
+pub struct ComponentExecutor<TMsg>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     task_set: JoinSet<Result<(), ComponentError>>,
-    cmp_in_out: CmpInOut<TMsg, TService>,
+    cmp_in_out: CmpInOut<TMsg>,
 }
 
 /// Настройка исполнителя
-pub struct ComponentExecutorConfig<TMsg, TService>
-where
-    TService: ServiceBound,
-{
+pub struct ComponentExecutorConfig<TMsg> {
     /// Размер буфера канала сообщения
     pub buffer_size: usize,
-
-    /// Название сервиса
-    pub service: TService,
 
     /// Функция фильтрации сообщений в зависимости от текущей авторизации
     ///
@@ -61,16 +54,12 @@ where
     pub delay_publish: Duration,
 }
 
-impl<TMsg, TService> ComponentExecutor<TMsg, TService>
+impl<TMsg> ComponentExecutor<TMsg>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound,
 {
     /// Создание коллекции компонентов
-    pub fn new(config: ComponentExecutorConfig<TMsg, TService>) -> Self
-    where
-        TService: ServiceBound + 'static,
-    {
+    pub fn new(config: ComponentExecutorConfig<TMsg>) -> Self {
         info!("ComponentExecutor start creation");
         let id = MsgTrace::generate_uuid();
         let (component_input_send, component_input) =
@@ -85,7 +74,6 @@ where
             component_output_recv,
             component_input_send.clone(),
             cache.clone(),
-            config.service.clone(),
             id,
             config.delay_publish,
         );
@@ -99,11 +87,10 @@ where
             component_input,
             component_output,
             cache.clone(),
-            &config.service.trace_name(),
+            "Trace name (maybe delete?)",
             id,
             AuthPermissions::default(),
             config.fn_auth,
-            config.service,
         );
 
         Self {
@@ -114,10 +101,7 @@ where
 
     /// Добавить компонент
     #[cfg(not(feature = "single-thread"))]
-    pub fn add_cmp(
-        mut self,
-        mut component: impl IComponent<TMsg, TService> + Send + 'static,
-    ) -> Self {
+    pub fn add_cmp(mut self, mut component: impl IComponent<TMsg> + Send + 'static) -> Self {
         component.set_interface(self.cmp_in_out.clone());
 
         self.task_set.spawn(async move { component.spawn().await });
@@ -126,7 +110,7 @@ where
     }
     /// Добавить компонент (?Send)
     #[cfg(feature = "single-thread")]
-    pub fn add_cmp(mut self, mut component: impl IComponent<TMsg, TService> + 'static) -> Self {
+    pub fn add_cmp(mut self, mut component: impl IComponent<TMsg> + 'static) -> Self {
         component.set_interface(self.cmp_in_out.clone());
 
         self.task_set
@@ -159,20 +143,17 @@ where
     }
 }
 
-async fn task_internal<TMsg, TService>(
+async fn task_internal<TMsg>(
     mut input: mpsc::Receiver<Message<TMsg>>,
     output: broadcast::Sender<Message<TMsg>>,
     cache: Cache<TMsg>,
-    service: TService,
     executor_id: Uuid,
     delay_publish: Duration,
 ) -> Result<(), ComponentError>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     debug!("Internal task of ComponentExecutor: starting");
-    let service_name = service.trace_name();
 
     // Задержка, чтобы компоненты успели запуститься и подписаться на получение сообщений
     sleep(delay_publish).await;
@@ -182,7 +163,6 @@ where
         trace!("ComponentExecutor: new message: {:?}", msg);
         // msg.add_trace_item(&executor_id, &format!("{}::internal_bus", service_name));
         msg.add_trace_item(&executor_id);
-        msg.set_service_origin(&service_name);
         let msg = save_msg_in_cache(msg, &cache).await;
         let Some(msg) = msg else { continue };
         output.send(msg).map_err(|err| {

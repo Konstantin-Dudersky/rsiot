@@ -15,18 +15,17 @@ use crate::{
     components::shared_tasks::fn_process_master::FnProcessMaster,
     components_config::spi_master,
     executor::{join_set_spawn, CmpInOut},
-    message::{MsgDataBound, ServiceBound},
+    message::MsgDataBound,
 };
 
 use super::{config::ConfigDevicesCommSettings, Config};
 
-pub async fn fn_process<TMsg, TService, TSpi, TPeripheral>(
+pub async fn fn_process<TMsg, TSpi, TPeripheral>(
     config: Config<TMsg, TSpi, TPeripheral>,
-    msg_bus: CmpInOut<TMsg, TService>,
+    msg_bus: CmpInOut<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
     TSpi: Peripheral<P = TPeripheral> + 'static,
     TPeripheral: Spi + SpiAnyPins + 'static,
 {

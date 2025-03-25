@@ -15,7 +15,6 @@ async fn main() -> anyhow::Result<()> {
     use rsiot::{
         components::{cmp_logger, cmp_modbus_client},
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::example_service::Service,
     };
 
     fmt().with_max_level(LevelFilter::INFO).init();
@@ -27,7 +26,6 @@ async fn main() -> anyhow::Result<()> {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
     };

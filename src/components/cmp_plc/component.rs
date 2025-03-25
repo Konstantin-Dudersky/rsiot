@@ -3,7 +3,7 @@ use serde::Serialize;
 
 use crate::{
     executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound, ServiceBound},
+    message::{AuthPermissions, MsgDataBound},
 };
 
 use super::{
@@ -14,11 +14,10 @@ use super::{
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(? Send))]
-impl<TMsg, TService, I, Q, S> IComponentProcess<Config<TMsg, I, Q, S>, TMsg, TService>
-    for Component<Config<TMsg, I, Q, S>, TMsg, TService>
+impl<TMsg, I, Q, S> IComponentProcess<Config<TMsg, I, Q, S>, TMsg>
+    for Component<Config<TMsg, I, Q, S>, TMsg>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
     I: Clone + Default + Send + Serialize + 'static + Sync,
     Q: Clone + Default + Send + Serialize + 'static + Sync,
     S: Clone + Default + Send + Serialize + 'static + Sync,
@@ -27,7 +26,7 @@ where
     async fn process(
         &self,
         config: Config<TMsg, I, Q, S>,
-        in_out: CmpInOut<TMsg, TService>,
+        in_out: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
         fn_process(
             in_out.clone_with_new_id("cmp_plc", AuthPermissions::FullAccess),
@@ -39,4 +38,4 @@ where
 }
 
 /// Компонент cmp_plc
-pub type Cmp<TMsg, TService, I, Q, S> = Component<Config<TMsg, I, Q, S>, TMsg, TService>;
+pub type Cmp<TMsg, I, Q, S> = Component<Config<TMsg, I, Q, S>, TMsg>;

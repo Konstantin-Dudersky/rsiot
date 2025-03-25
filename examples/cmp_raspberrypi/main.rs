@@ -19,7 +19,6 @@ mod message;
 async fn main() {
     use std::time::Duration;
 
-    use example_service::Service;
     use rsiot::{
         components::{cmp_inject_periodic, cmp_logger, cmp_raspberrypi_gpio},
         executor::{ComponentExecutor, ComponentExecutorConfig},
@@ -74,12 +73,11 @@ async fn main() {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
     };
 
-    ComponentExecutor::<Custom, Service>::new(executor_config)
+    ComponentExecutor::<Custom>::new(executor_config)
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .add_cmp(cmp_raspberrypi_gpio::Cmp::new(config_raspberrypi_gpio))
         .add_cmp(cmp_inject_periodic::Cmp::new(config_inject_periodic))

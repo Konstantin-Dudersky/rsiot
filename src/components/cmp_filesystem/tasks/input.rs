@@ -1,20 +1,16 @@
 use tokio::fs::write;
 
-use crate::{
-    executor::CmpInOut,
-    message::{MsgDataBound, ServiceBound},
-};
+use crate::{executor::CmpInOut, message::MsgDataBound};
 
 use super::super::{config::FnInput, Error};
 
-pub async fn input<TMsg, TService>(
+pub async fn input<TMsg>(
     directory: String,
     config_fn_input: FnInput<TMsg>,
-    mut in_out: CmpInOut<TMsg, TService>,
+    mut in_out: CmpInOut<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     while let Ok(msg) = in_out.recv_input().await {
         let name_and_content = (config_fn_input)(msg).map_err(Error::FnInput)?;

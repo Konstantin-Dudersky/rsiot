@@ -6,14 +6,13 @@ use crate::{components_config::http_server::handler_put, message::*};
 use super::super::shared_state::SharedState;
 
 /// Маршрут для ввода данных от клиента
-pub async fn put<TMsg, TService>(
+pub async fn put<TMsg>(
     uri: Uri,
-    extract::State(shared_state): extract::State<SharedState<TMsg, TService>>,
+    extract::State(shared_state): extract::State<SharedState<TMsg>>,
     body: String,
 ) -> Result<(), super::Error>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     let path = uri.path();
     let msg = {

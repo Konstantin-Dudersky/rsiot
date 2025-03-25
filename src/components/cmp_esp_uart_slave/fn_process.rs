@@ -15,18 +15,17 @@ use crate::components_config::uart_general::Parity;
 use crate::{
     components::shared_tasks::{filter_identical_data, mpsc_to_msgbus},
     executor::{join_set_spawn, CmpInOut},
-    message::{MsgDataBound, ServiceBound},
+    message::MsgDataBound,
 };
 
 use super::{tasks, Config};
 
-pub async fn fn_process<TMsg, TService, TUart, TPeripheral, TBufferData>(
+pub async fn fn_process<TMsg, TUart, TPeripheral, TBufferData>(
     config: Config<TMsg, TUart, TPeripheral, TBufferData>,
-    msg_bus: CmpInOut<TMsg, TService>,
+    msg_bus: CmpInOut<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: 'static + MsgDataBound,
-    TService: ServiceBound + 'static,
     TUart: Peripheral<P = TPeripheral> + 'static,
     TPeripheral: Uart,
     TBufferData: 'static,

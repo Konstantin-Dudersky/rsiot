@@ -7,18 +7,17 @@ use tokio::{sync::mpsc, task::JoinSet};
 use crate::{
     components::shared_tasks,
     executor::{join_set_spawn, CmpInOut},
-    message::{MsgDataBound, ServiceBound},
+    message::MsgDataBound,
 };
 
 use super::{tasks, Config, Error, Result};
 
-pub async fn fn_process<TMainWindow, TMsg, TService>(
+pub async fn fn_process<TMainWindow, TMsg>(
     config: Config<TMsg, TMainWindow>,
-    msg_bus: CmpInOut<TMsg, TService>,
+    msg_bus: CmpInOut<TMsg>,
 ) -> Result<()>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
     TMainWindow: ComponentHandle + 'static,
 {
     let (ch_tx_msgbus_to_input, ch_rx_msgbus_to_input) = mpsc::channel(1000);

@@ -5,7 +5,7 @@ use tokio::sync::Mutex;
 
 use crate::{
     executor::{sleep, CmpInOut},
-    message::{MsgDataBound, ServiceBound},
+    message::MsgDataBound,
 };
 
 use super::super::{
@@ -13,24 +13,22 @@ use super::super::{
     ConfigRetention,
 };
 
-pub struct ExportCurrentState<TMsg, TService, I, Q, S>
+pub struct ExportCurrentState<TMsg, I, Q, S>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
     I: Clone + Default + Send + Serialize,
     Q: Clone + Default + Send + Serialize,
     S: Clone + Default + Send + Serialize,
     FunctionBlockBase<I, Q, S>: IFunctionBlock<I, Q, S>,
 {
-    pub in_out: CmpInOut<TMsg, TService>,
+    pub in_out: CmpInOut<TMsg>,
     pub config_retention: Option<ConfigRetention<TMsg, I, Q, S>>,
     pub fb_main: Arc<Mutex<FunctionBlockBase<I, Q, S>>>,
 }
 
-impl<TMsg, TService, I, Q, S> ExportCurrentState<TMsg, TService, I, Q, S>
+impl<TMsg, I, Q, S> ExportCurrentState<TMsg, I, Q, S>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
     I: Clone + Default + Send + Serialize,
     Q: Clone + Default + Send + Serialize,
     S: Clone + Default + Send + Serialize,

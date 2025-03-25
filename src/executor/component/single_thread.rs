@@ -1,23 +1,21 @@
 use async_trait::async_trait;
 
-use crate::message::{MsgDataBound, ServiceBound};
+use crate::message::MsgDataBound;
 
 use super::super::{CmpInOut, CmpResult, ComponentError};
 
 /// Представление обобщенного компонента
-pub struct Component<TConfig, TMessage, TService>
+pub struct Component<TConfig, TMessage>
 where
     TMessage: MsgDataBound,
-    TService: ServiceBound,
 {
-    in_out: Option<CmpInOut<TMessage, TService>>,
+    in_out: Option<CmpInOut<TMessage>>,
     config: Option<TConfig>,
 }
 
-impl<TConfig, TMsg, TService> Component<TConfig, TMsg, TService>
+impl<TConfig, TMsg> Component<TConfig, TMsg>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     /// Создание компонента
     pub fn new(config: impl Into<TConfig>) -> Self {
@@ -29,13 +27,12 @@ where
 }
 
 #[async_trait(?Send)]
-impl<TConfig, TMsg, TService> IComponent<TMsg, TService> for Component<TConfig, TMsg, TService>
+impl<TConfig, TMsg> IComponent<TMsg> for Component<TConfig, TMsg>
 where
-    Self: IComponentProcess<TConfig, TMsg, TService>,
+    Self: IComponentProcess<TConfig, TMsg>,
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
-    fn set_interface(&mut self, in_out: CmpInOut<TMsg, TService>) {
+    fn set_interface(&mut self, in_out: CmpInOut<TMsg>) {
         self.in_out = Some(in_out);
     }
 
@@ -58,23 +55,21 @@ where
 ///
 /// Каждый компонент должен определить данный трейт
 #[async_trait(?Send)]
-pub trait IComponentProcess<TConfig, TMsg, TService>
+pub trait IComponentProcess<TConfig, TMsg>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     /// Основная функция компонента
-    async fn process(&self, config: TConfig, in_out: CmpInOut<TMsg, TService>) -> CmpResult;
+    async fn process(&self, config: TConfig, in_out: CmpInOut<TMsg>) -> CmpResult;
 }
 
 /// Интерфейс компонента, который используется исполнитель при добавлении компонентов
 #[async_trait(?Send)]
-pub trait IComponent<TMsg, TService>
+pub trait IComponent<TMsg>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
-    fn set_interface(&mut self, in_out: CmpInOut<TMsg, TService>);
+    fn set_interface(&mut self, in_out: CmpInOut<TMsg>);
 
     async fn spawn(&mut self) -> CmpResult;
 }

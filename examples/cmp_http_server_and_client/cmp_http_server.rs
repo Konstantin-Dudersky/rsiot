@@ -25,7 +25,7 @@ fn main() -> anyhow::Result<()> {
         },
         components_config::http_server::PutEndpointConfig,
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_service::Service, Message, MsgDataBound, MsgKey},
+        message::{Message, MsgDataBound, MsgKey},
     };
 
     #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
@@ -35,9 +35,7 @@ fn main() -> anyhow::Result<()> {
         CounterFromClient(u8),
     }
 
-    impl MsgDataBound for Data {
-        type TService = Service;
-    }
+    impl MsgDataBound for Data {}
 
     tracing_subscriber::fmt()
         .with_max_level(LevelFilter::INFO)
@@ -97,7 +95,6 @@ fn main() -> anyhow::Result<()> {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
     };

@@ -2,23 +2,21 @@ use async_trait::async_trait;
 
 use crate::{
     executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound, ServiceBound},
+    message::{AuthPermissions, MsgDataBound},
 };
 
 use super::{fn_process::fn_process, Config};
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
-impl<TMsg, TService> IComponentProcess<Config<TMsg>, TMsg, TService>
-    for Component<Config<TMsg>, TMsg, TService>
+impl<TMsg> IComponentProcess<Config<TMsg>, TMsg> for Component<Config<TMsg>, TMsg>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
 {
     async fn process(
         &self,
         config: Config<TMsg>,
-        in_out: CmpInOut<TMsg, TService>,
+        in_out: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
         fn_process(
             config,
@@ -30,4 +28,4 @@ where
 }
 
 /// Компонент cmp_webstorage
-pub type Cmp<TMsg, TService> = Component<Config<TMsg>, TMsg, TService>;
+pub type Cmp<TMsg> = Component<Config<TMsg>, TMsg>;

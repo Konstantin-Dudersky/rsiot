@@ -9,8 +9,6 @@ use tracing::Level;
 
 use crate::message::Custom;
 
-use super::message;
-
 pub async fn subscribe() {
     let config_logger = cmp_logger::Config {
         level: Level::INFO,
@@ -35,12 +33,11 @@ pub async fn subscribe() {
 
     let config_executor = ComponentExecutorConfig {
         buffer_size: 100,
-        service: message::Services::subscribe,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
     };
 
-    ComponentExecutor::<Custom, message::Services>::new(config_executor)
+    ComponentExecutor::<Custom>::new(config_executor)
         .add_cmp(cmp_logger::Cmp::new(config_logger))
         .add_cmp(cmp_mqtt_client::Cmp::new(config_mqtt_client))
         .wait_result()

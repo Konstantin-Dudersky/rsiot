@@ -32,7 +32,7 @@ async fn main() -> anyhow::Result<()> {
     use rsiot::{
         components::{cmp_logger, cmp_redis_client},
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_message::*, example_service::*, *},
+        message::{example_message::*, *},
     };
 
     fmt().init();
@@ -63,12 +63,11 @@ async fn main() -> anyhow::Result<()> {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
     };
 
-    ComponentExecutor::<Custom, Service>::new(executor_config)
+    ComponentExecutor::<Custom>::new(executor_config)
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .add_cmp(cmp_redis_client::Cmp::new(redis_config))
         .wait_result()

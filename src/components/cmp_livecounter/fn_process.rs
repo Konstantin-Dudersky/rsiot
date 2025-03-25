@@ -6,20 +6,16 @@ use tokio::{sync::mpsc, task::JoinSet};
 use crate::{
     components::shared_tasks,
     executor::{join_set_spawn, CmpInOut},
-    message::{MsgDataBound, ServiceBound},
+    message::MsgDataBound,
 };
 
 use super::{tasks, Config};
 
 const BUFFER_SIZE: usize = 100;
 
-pub async fn fn_process<TMsg, TService>(
-    config: Config<TMsg>,
-    msg_bus: CmpInOut<TMsg, TService>,
-) -> super::Result<()>
+pub async fn fn_process<TMsg>(config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> super::Result<()>
 where
     TMsg: 'static + MsgDataBound,
-    TService: 'static + ServiceBound,
 {
     let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
 

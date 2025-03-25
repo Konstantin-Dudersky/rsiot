@@ -22,7 +22,7 @@ async fn main() -> anyhow::Result<()> {
             cmp_inject_periodic, cmp_logger,
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_service::*, Message, MsgDataBound, MsgKey},
+        message::{Message, MsgDataBound, MsgKey},
     };
 
     // Message -------------------------------------------------------------------------------------
@@ -32,9 +32,7 @@ async fn main() -> anyhow::Result<()> {
         CounterFromClient(u8),
     }
 
-    impl MsgDataBound for Data {
-        type TService = Service;
-    }
+    impl MsgDataBound for Data {}
 
     //------------------------------------------------------------------------------
 
@@ -67,7 +65,7 @@ async fn main() -> anyhow::Result<()> {
     };
 
     let http_config = cmp_http_client::Config::<Data> {
-        base_url: "http://192.168.71.1:8010".into(),
+        base_url: "http://192.168.71.1:8010",
         // base_url: "http://localhost:8010".into(),
         timeout: Duration::from_secs(5),
         requests_input: vec![cmp_http_client::RequestInput {
@@ -107,7 +105,6 @@ async fn main() -> anyhow::Result<()> {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
     };

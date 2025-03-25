@@ -12,18 +12,17 @@ use crate::{
     components::cmp_websocket_client_general::{ConnectionState, WebsocketClientGeneralTasks},
     components_config::websocket_general::WebsocketMessage,
     executor::{join_set_spawn, CmpInOut, ComponentError},
-    message::{MsgDataBound, ServiceBound},
+    message::MsgDataBound,
 };
 
 use super::{config::Config, tasks, Error};
 
-pub async fn fn_process<TMessage, TService, TServerToClient, TClientToServer>(
-    input: CmpInOut<TMessage, TService>,
+pub async fn fn_process<TMessage, TServerToClient, TClientToServer>(
+    input: CmpInOut<TMessage>,
     config: Config<TMessage, TServerToClient, TClientToServer>,
 ) -> Result<(), ComponentError>
 where
     TMessage: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
     TServerToClient: 'static + WebsocketMessage,
     TClientToServer: 'static + WebsocketMessage,
 {
@@ -56,14 +55,13 @@ where
 }
 
 /// Подключаемся к серверу и запускаем потоки получения и отправки
-async fn task_connect<TMessage, TService, TServerToClient, TClientToServer>(
-    in_out: CmpInOut<TMessage, TService>,
+async fn task_connect<TMessage, TServerToClient, TClientToServer>(
+    in_out: CmpInOut<TMessage>,
     config: Config<TMessage, TServerToClient, TClientToServer>,
     ch_tx_connection_state: mpsc::Sender<bool>,
 ) -> super::Result<()>
 where
     TMessage: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
     TServerToClient: 'static + WebsocketMessage,
     TClientToServer: 'static + WebsocketMessage,
 {

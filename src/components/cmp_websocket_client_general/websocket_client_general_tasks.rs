@@ -8,19 +8,18 @@ use crate::{
         websocket_general::WebsocketMessage,
     },
     executor::{join_set_spawn, CmpInOut},
-    message::{MsgDataBound, ServiceBound},
+    message::MsgDataBound,
 };
 
 use super::tasks;
 
 /// Запуск задач, общих для всех websocket клиентов
-pub struct WebsocketClientGeneralTasks<'a, TMsg, TService, TServerToClient, TClientToServer>
+pub struct WebsocketClientGeneralTasks<'a, TMsg, TServerToClient, TClientToServer>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     /// Шина сообщений
-    pub msg_bus: CmpInOut<TMsg, TService>,
+    pub msg_bus: CmpInOut<TMsg>,
 
     /// Ёмкость очередей сообщений между задачами
     pub buffer_size: usize,
@@ -38,11 +37,10 @@ where
     pub ch_tx_connection_state: mpsc::Sender<bool>,
 }
 
-impl<TMsg, TService, TServerToClient, TClientToServer>
-    WebsocketClientGeneralTasks<'_, TMsg, TService, TServerToClient, TClientToServer>
+impl<TMsg, TServerToClient, TClientToServer>
+    WebsocketClientGeneralTasks<'_, TMsg, TServerToClient, TClientToServer>
 where
     TMsg: 'static + MsgDataBound,
-    TService: 'static + ServiceBound,
     TServerToClient: 'static + WebsocketMessage,
     TClientToServer: 'static + WebsocketMessage,
 {

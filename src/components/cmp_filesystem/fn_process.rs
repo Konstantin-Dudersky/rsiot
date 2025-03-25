@@ -1,20 +1,13 @@
 use tokio::{fs::create_dir_all, task::JoinSet};
 use tracing::info;
 
-use crate::{
-    executor::CmpInOut,
-    message::{MsgDataBound, ServiceBound},
-};
+use crate::{executor::CmpInOut, message::MsgDataBound};
 
 use super::{tasks, Config, Error};
 
-pub async fn fn_process<TMsg, TService>(
-    config: Config<TMsg>,
-    in_out: CmpInOut<TMsg, TService>,
-) -> super::Result<()>
+pub async fn fn_process<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
 {
     info!("cmp_filesystem: create folders");
     create_dir_all(&config.directory)

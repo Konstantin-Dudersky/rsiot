@@ -1,22 +1,18 @@
 use esp_idf_svc::hal::{peripheral::Peripheral, rmt::RmtChannel};
 use ws2812_esp32_rmt_driver::Ws2812Esp32Rmt;
 
-use crate::{
-    executor::CmpInOut,
-    message::{MsgDataBound, ServiceBound},
-};
+use crate::{executor::CmpInOut, message::MsgDataBound};
 
 use super::Config;
 
-pub async fn fn_process<TMsg, TService, TPeripheral, TRmt>(
+pub async fn fn_process<TMsg, TPeripheral, TRmt>(
     config: Config<TMsg, TPeripheral, TRmt>,
-    mut msg_bus: CmpInOut<TMsg, TService>,
+    mut msg_bus: CmpInOut<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
     TPeripheral: RmtChannel,
     TRmt: Peripheral<P = TPeripheral> + 'static,
-    TService: ServiceBound,
 {
     let mut ws2812 = Ws2812Esp32Rmt::new(config.rmt_channel, config.pin)?;
 

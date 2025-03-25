@@ -5,18 +5,17 @@ use url::Url;
 
 use crate::{
     executor::{CmpInOut, ComponentError},
-    message::{MsgDataBound, ServiceBound},
+    message::MsgDataBound,
 };
 
 use super::{config::Config, error::Error, model::Row};
 
-pub async fn fn_process<TMessage, TService>(
-    mut input: CmpInOut<TMessage, TService>,
+pub async fn fn_process<TMessage>(
+    mut input: CmpInOut<TMessage>,
     config: Config,
 ) -> Result<(), ComponentError>
 where
     TMessage: MsgDataBound,
-    TService: ServiceBound,
 {
     info!("Start timescaledb-storing");
 
@@ -31,13 +30,12 @@ where
     }
 }
 
-async fn task_main<TMessage, TService>(
-    input: &mut CmpInOut<TMessage, TService>,
+async fn task_main<TMessage>(
+    input: &mut CmpInOut<TMessage>,
     connection_string: &Url,
 ) -> Result<(), Error>
 where
     TMessage: MsgDataBound,
-    TService: ServiceBound,
 {
     let pool = PgPoolOptions::new()
         .max_connections(5)

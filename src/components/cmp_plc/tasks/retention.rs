@@ -11,7 +11,7 @@ use tracing::{info, warn};
 
 use crate::{
     executor::{join_set_spawn, sleep, CmpInOut},
-    message::{MsgDataBound, ServiceBound},
+    message::MsgDataBound,
 };
 
 use super::super::{
@@ -19,24 +19,22 @@ use super::super::{
     plc::{FunctionBlockBase, IFunctionBlock},
 };
 
-pub struct Retention<TMsg, TService, I, Q, S>
+pub struct Retention<TMsg, I, Q, S>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
     I: Clone + Default + Send + Serialize + 'static + Sync,
     Q: Clone + Default + Send + Serialize + 'static + Sync,
     S: Clone + Default + Send + Serialize + 'static + Sync,
     FunctionBlockBase<I, Q, S>: IFunctionBlock<I, Q, S>,
 {
-    pub cmp_in_out: CmpInOut<TMsg, TService>,
+    pub cmp_in_out: CmpInOut<TMsg>,
     pub config_retention: Option<ConfigRetention<TMsg, I, Q, S>>,
     pub fb_main: FunctionBlockBase<I, Q, S>,
 }
 
-impl<TMsg, TService, I, Q, S> Retention<TMsg, TService, I, Q, S>
+impl<TMsg, I, Q, S> Retention<TMsg, I, Q, S>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
     I: Clone + Default + Send + Serialize + 'static + Sync,
     Q: Clone + Default + Send + Serialize + 'static + Sync,
     S: Clone + Default + Send + Serialize + 'static + Sync,

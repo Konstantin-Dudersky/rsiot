@@ -1,5 +1,6 @@
 use crate::components::shared_tasks;
 
+#[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("{0}")]

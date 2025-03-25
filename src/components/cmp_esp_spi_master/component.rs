@@ -6,26 +6,24 @@ use esp_idf_svc::hal::{
 
 use crate::{
     executor::{CmpInOut, CmpResult, Component, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound, ServiceBound},
+    message::{AuthPermissions, MsgDataBound},
 };
 
 use super::{config::Config, fn_process::fn_process};
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
-impl<TMsg, TService, TSpi, TPeripheral>
-    IComponentProcess<Config<TMsg, TSpi, TPeripheral>, TMsg, TService>
-    for Component<Config<TMsg, TSpi, TPeripheral>, TMsg, TService>
+impl<TMsg, TSpi, TPeripheral> IComponentProcess<Config<TMsg, TSpi, TPeripheral>, TMsg>
+    for Component<Config<TMsg, TSpi, TPeripheral>, TMsg>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
     TSpi: Peripheral<P = TPeripheral> + 'static,
     TPeripheral: Spi + SpiAnyPins + 'static,
 {
     async fn process(
         &self,
         config: Config<TMsg, TSpi, TPeripheral>,
-        msg_bus: CmpInOut<TMsg, TService>,
+        msg_bus: CmpInOut<TMsg>,
     ) -> CmpResult {
         let in_out = msg_bus.clone_with_new_id("cmp_esp_spi_master", AuthPermissions::FullAccess);
         fn_process(config, in_out).await?;
@@ -34,5 +32,5 @@ where
 }
 
 /// Компонент cmp_esp_spi_master
-pub type Cmp<TMsg, TService, TSpi, TPeripheral, const MESSAGE_LEN: usize> =
-    Component<Config<TMsg, TSpi, TPeripheral>, TMsg, TService>;
+pub type Cmp<TMsg, TSpi, TPeripheral, const MESSAGE_LEN: usize> =
+    Component<Config<TMsg, TSpi, TPeripheral>, TMsg>;

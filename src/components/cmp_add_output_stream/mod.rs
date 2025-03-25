@@ -17,16 +17,14 @@ pub struct Config<TMessage> {
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
-impl<TMsg, TService> IComponentProcess<Config<TMsg>, TMsg, TService>
-    for Component<Config<TMsg>, TMsg, TService>
+impl<TMsg> IComponentProcess<Config<TMsg>, TMsg> for Component<Config<TMsg>, TMsg>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound,
 {
     async fn process(
         &self,
         config: Config<TMsg>,
-        in_out: CmpInOut<TMsg, TService>,
+        in_out: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
         let mut in_out =
             in_out.clone_with_new_id("cmp_add_output_stream", AuthPermissions::FullAccess);
@@ -38,4 +36,4 @@ where
 }
 
 /// Компонент cmp_add_output_stream
-pub type Cmp<TMsg, TService> = Component<Config<TMsg>, TMsg, TService>;
+pub type Cmp<TMsg> = Component<Config<TMsg>, TMsg>;

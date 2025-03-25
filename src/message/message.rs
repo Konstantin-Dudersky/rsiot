@@ -5,7 +5,7 @@ use std::{fmt::Debug, time::Duration};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use super::{MsgData, MsgDataBound, MsgRoute, MsgTrace, TimeToLiveValue, Timestamp};
+use super::{MsgData, MsgDataBound, MsgTrace, TimeToLiveValue, Timestamp};
 
 /// Сообщение
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -20,11 +20,6 @@ pub struct Message<TCustom> {
     pub trace: MsgTrace,
     /// Время жизни сообщения
     ttl: TimeToLiveValue,
-
-    /// Сервис, в котором было созданно данное сообщение.
-    ///
-    /// Устанавливается в исполнителе.
-    service_origin: Option<String>,
 }
 
 impl<TCustom> Message<TCustom>
@@ -43,7 +38,6 @@ where
             ts: Default::default(),
             trace: MsgTrace::default(),
             ttl,
-            service_origin: None,
         }
     }
 
@@ -60,7 +54,6 @@ where
             ts: Default::default(),
             trace: MsgTrace::default(),
             ttl,
-            service_origin: None,
         }
     }
 
@@ -109,63 +102,25 @@ where
         }
     }
 
-    /// Возращает название сервиса, в котором было создано данное сообщение.
-    /// Паникует, если название сервиса еще не установлено
-    pub fn service_origin(&self) -> String {
-        match &self.service_origin {
-            Some(service_origin) => service_origin.clone(),
-            None => panic!("service_origin not set"),
-        }
-    }
-
-    /// Устанавливает название сервиса, в котором было создано данное сообщение.
-    /// Если название уже установлено, то пропускаем
-    pub fn set_service_origin(&mut self, service: &str) {
-        match self.service_origin {
-            Some(_) => (),
-            None => self.service_origin = Some(service.to_string()),
-        }
-    }
-
-    /// Разрешен ли марштур данного сообщения
+    // Разрешен ли марштур данного сообщения
     // pub fn is_route_enabled(&self, src: &TCustom::TService, dst: &TCustom::TService) -> bool {
-    //     let enabled_routes = match &self.data {
+    //     let route = match &self.data {
     //         MsgData::System(data) => return data.define_enabled_routes(),
     //         MsgData::Custom(data) => data.define_enabled_routes(),
     //     };
-    //     for (src_enabled, dst_enabled) in enabled_routes {
-    //         if let Some(src_enabled) = src_enabled {
-    //             if *src != src_enabled {
-    //                 continue;
+    //     match route {
+    //         MsgRoute::SrcToAny(route_src) => *src == route_src,
+    //         MsgRoute::SrcToDst(route_src, route_dst) => *src == route_src && *dst == route_dst,
+    //         MsgRoute::AnyToAny => true,
+    //         MsgRoute::None => false,
+    //         MsgRoute::SrcToDstSeveral(routes) => {
+    //             for (route_src, route_dst) in routes {
+    //                 if *src == route_src && *dst == route_dst {
+    //                     return true;
+    //                 }
     //             }
+    //             false
     //         }
-    //         if let Some(dst_enabled) = dst_enabled {
-    //             if *dst != dst_enabled {
-    //                 continue;
-    //             }
-    //         }
-    //         return true;
     //     }
-    //     false
     // }
-    pub fn is_route_enabled(&self, src: &TCustom::TService, dst: &TCustom::TService) -> bool {
-        let route = match &self.data {
-            MsgData::System(data) => return data.define_enabled_routes(),
-            MsgData::Custom(data) => data.define_enabled_routes(),
-        };
-        match route {
-            MsgRoute::SrcToAny(route_src) => *src == route_src,
-            MsgRoute::SrcToDst(route_src, route_dst) => *src == route_src && *dst == route_dst,
-            MsgRoute::AnyToAny => true,
-            MsgRoute::None => false,
-            MsgRoute::SrcToDstSeveral(routes) => {
-                for (route_src, route_dst) in routes {
-                    if *src == route_src && *dst == route_dst {
-                        return true;
-                    }
-                }
-                false
-            }
-        }
-    }
 }

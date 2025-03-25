@@ -5,7 +5,7 @@ use tokio::sync::Mutex;
 use crate::{
     drivers_i2c::{I2cSlaveAddress, RsiotI2cDriverBase},
     executor::CmpInOut,
-    message::{Message, MsgDataBound, ServiceBound},
+    message::{Message, MsgDataBound},
 };
 
 use super::data_models;
@@ -26,23 +26,21 @@ pub struct InputData {
     pub second: u8,
 }
 
-pub struct TaskInput<TMsg, TService, Driver>
+pub struct TaskInput<TMsg, Driver>
 where
     Driver: RsiotI2cDriverBase,
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     pub address: I2cSlaveAddress,
     pub driver: Arc<Mutex<Driver>>,
     pub fn_input: fn(Message<TMsg>) -> Option<InputData>,
-    pub in_out: CmpInOut<TMsg, TService>,
+    pub in_out: CmpInOut<TMsg>,
 }
 
-impl<TMsg, TService, Driver> TaskInput<TMsg, TService, Driver>
+impl<TMsg, Driver> TaskInput<TMsg, Driver>
 where
     Driver: RsiotI2cDriverBase,
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     pub async fn spawn(mut self) -> Result<(), String> {
         while let Ok(msg) = self.in_out.recv_input().await {

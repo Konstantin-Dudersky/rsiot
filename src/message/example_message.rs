@@ -1,9 +1,6 @@
 //! Пример реализации сообщения. Можно использовать для тестирования компонентов
 
-use super::{
-    example_service::Service, Deserialize, MsgDataBound, MsgKey, MsgRoute, Serialize,
-    TimeToLiveValue,
-};
+use super::{Deserialize, MsgDataBound, MsgKey, Serialize, TimeToLiveValue};
 
 /// Пример реализации сообщения. Можно использовать для тестирования компонентов
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgKey)]
@@ -61,12 +58,6 @@ pub enum DataGroup {
 // pub enum EmptyEnum {}
 
 impl MsgDataBound for Custom {
-    type TService = Service;
-
-    fn define_enabled_routes(&self) -> MsgRoute<Self::TService> {
-        MsgRoute::default()
-    }
-
     fn define_time_to_live(&self) -> TimeToLiveValue {
         TimeToLiveValue::Infinite
     }

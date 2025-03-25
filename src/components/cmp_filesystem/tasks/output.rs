@@ -1,21 +1,17 @@
 use tokio::fs::{read, read_dir};
 use tracing::warn;
 
-use crate::{
-    executor::CmpInOut,
-    message::{MsgDataBound, ServiceBound},
-};
+use crate::{executor::CmpInOut, message::MsgDataBound};
 
 use super::super::{config::FnOutput, Error};
 
-pub async fn output<TMsg, TService>(
+pub async fn output<TMsg>(
     directory: String,
     config_fn_output: FnOutput<TMsg>,
-    in_out: CmpInOut<TMsg, TService>,
+    in_out: CmpInOut<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     // Читаем содержимое папки
     let mut reader = read_dir(directory).await.map_err(Error::CreateDirError)?;

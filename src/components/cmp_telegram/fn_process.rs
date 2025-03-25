@@ -2,18 +2,14 @@ use tokio::task::JoinSet;
 
 use crate::{
     executor::{join_set_spawn, CmpInOut},
-    message::{MsgDataBound, ServiceBound},
+    message::MsgDataBound,
 };
 
 use super::{tasks, Config, TelegramBot};
 
-pub async fn fn_process<TMsg, TService>(
-    config: Config<TMsg>,
-    msg_bus: CmpInOut<TMsg, TService>,
-) -> super::Result<()>
+pub async fn fn_process<TMsg>(config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
 {
     let bot = TelegramBot::new(config.bot_token, config.chat_id);
 

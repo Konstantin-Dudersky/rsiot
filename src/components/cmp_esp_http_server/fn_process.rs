@@ -15,7 +15,7 @@ use crate::{
         create_get_endpoints_hashmap, create_put_endpoints_hashmap, handler_get, handler_put,
     },
     executor::{join_set_spawn, CmpInOut},
-    message::{system_messages, MsgData, MsgDataBound, ServiceBound},
+    message::{system_messages, MsgData, MsgDataBound},
 };
 
 use super::{
@@ -31,13 +31,9 @@ const HEADERS: [(&str, &str); 4] = [
     ("Access-Control-Allow-Headers", "*"),
 ];
 
-pub async fn fn_process<TMsg, TService>(
-    mut in_out: CmpInOut<TMsg, TService>,
-    config: Config<TMsg>,
-) -> super::Result<()>
+pub async fn fn_process<TMsg>(mut in_out: CmpInOut<TMsg>, config: Config<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
 {
     let get_endpoints = create_get_endpoints_hashmap(&config.get_endpoints);
     let get_endpoints_paths = get_endpoints
@@ -176,14 +172,13 @@ where
     Ok(())
 }
 
-fn route_put<TMsg, TService>(
+fn route_put<TMsg>(
     mut request: Request<&mut EspHttpConnection>,
     put_endpoints: Arc<Mutex<PutEndpointsHashMap<TMsg>>>,
-    msg_bus: CmpInOut<TMsg, TService>,
+    msg_bus: CmpInOut<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     let path = &request.uri().to_string();
     trace!("Put request, path: {}", path);

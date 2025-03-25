@@ -10,28 +10,26 @@ use tracing::{info, trace, warn};
 
 use crate::{
     executor::CmpInOut,
-    message::{Message, MsgDataBound, PhyQuantity, ServiceBound},
+    message::{Message, MsgDataBound, PhyQuantity},
 };
 
 use super::{I2cSlaveAddress, RsiotI2cDriverBase};
 
 use calculate_values::calculate_values;
 
-pub struct BMP180<TMsg, TService>
+pub struct BMP180<TMsg>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     pub address: I2cSlaveAddress,
     pub fn_output: fn(BMP180Data) -> Vec<Message<TMsg>>,
     pub oversampling: BMP180Oversampling,
-    pub cmp_in_out: CmpInOut<TMsg, TService>,
+    pub cmp_in_out: CmpInOut<TMsg>,
 }
 
-impl<TMsg, TService> BMP180<TMsg, TService>
+impl<TMsg> BMP180<TMsg>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     pub async fn fn_process(&self, driver: Arc<Mutex<impl RsiotI2cDriverBase>>) {
         let calibration_data: CalibrationData = loop {

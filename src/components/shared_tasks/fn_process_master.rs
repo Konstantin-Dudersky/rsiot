@@ -9,28 +9,20 @@ use tokio::{
 use crate::{
     components_config::master_device::{self, AddressBound, DeviceTrait, RequestResponseBound},
     executor::{join_set_spawn, CmpInOut},
-    message::{Message, MsgDataBound, ServiceBound},
+    message::{Message, MsgDataBound},
 };
 
 use super::{filter_identical_data, mpsc_to_msgbus, msgbus_to_broadcast};
 
 /// Запуск задач, общих для всех компонентов, выполняющих опрос устройств по шине
-pub struct FnProcessMaster<
-    'a,
-    TMsg,
-    TService,
-    TError,
-    TFieldbusRequest,
-    TFieldbusResponse,
-    TAddress,
-> where
+pub struct FnProcessMaster<'a, TMsg, TError, TFieldbusRequest, TFieldbusResponse, TAddress>
+where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
     TError: Send + Sync + 'static,
     TAddress: AddressBound,
 {
     /// Шина сообщений
-    pub msg_bus: CmpInOut<TMsg, TService>,
+    pub msg_bus: CmpInOut<TMsg>,
 
     /// Ёмкость очередей сообщений между задачами
     pub buffer_size: usize,
@@ -54,11 +46,10 @@ pub struct FnProcessMaster<
     pub devices: Vec<Box<dyn DeviceTrait<TMsg, TFieldbusRequest, TFieldbusResponse, TAddress>>>,
 }
 
-impl<TMsg, TService, TError, TFieldbusRequest, TFieldbusResponse, TAddress>
-    FnProcessMaster<'_, TMsg, TService, TError, TFieldbusRequest, TFieldbusResponse, TAddress>
+impl<TMsg, TError, TFieldbusRequest, TFieldbusResponse, TAddress>
+    FnProcessMaster<'_, TMsg, TError, TFieldbusRequest, TFieldbusResponse, TAddress>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
     TError: Send + Sync + 'static,
     TFieldbusRequest: RequestResponseBound<TAddress> + 'static,
     TFieldbusResponse: RequestResponseBound<TAddress> + 'static,

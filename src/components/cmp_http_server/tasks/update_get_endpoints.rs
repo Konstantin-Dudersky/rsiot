@@ -2,26 +2,21 @@ use std::sync::Arc;
 
 use tokio::sync::Mutex;
 
-use crate::{
-    executor::CmpInOut,
-    message::{MsgDataBound, ServiceBound},
-};
+use crate::{executor::CmpInOut, message::MsgDataBound};
 
 use super::GetEndpointsHashMap;
 
-pub struct UpdateGetEndpoints<TMsg, TService>
+pub struct UpdateGetEndpoints<TMsg>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
-    pub input: CmpInOut<TMsg, TService>,
+    pub input: CmpInOut<TMsg>,
     pub get_endpoints: Arc<Mutex<GetEndpointsHashMap<TMsg>>>,
 }
 
-impl<TMsg, TService> UpdateGetEndpoints<TMsg, TService>
+impl<TMsg> UpdateGetEndpoints<TMsg>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
         while let Ok(msg) = self.input.recv_input().await {

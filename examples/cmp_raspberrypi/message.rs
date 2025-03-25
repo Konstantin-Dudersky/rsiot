@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use rsiot::message::{example_service::*, *};
+use rsiot::message::*;
 
 #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
 pub enum Custom {
@@ -9,12 +9,6 @@ pub enum Custom {
 }
 
 impl MsgDataBound for Custom {
-    type TService = Service;
-
-    fn define_enabled_routes(&self) -> MsgRoute<Self::TService> {
-        MsgRoute::default()
-    }
-
     fn define_time_to_live(&self) -> rsiot::message::TimeToLiveValue {
         TimeToLiveValue::Infinite
     }

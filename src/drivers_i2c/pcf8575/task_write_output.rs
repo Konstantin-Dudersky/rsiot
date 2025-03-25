@@ -4,7 +4,7 @@ use tokio::sync::Mutex;
 
 use crate::{
     executor::CmpInOut,
-    message::{Message, MsgDataBound, ServiceBound},
+    message::{Message, MsgDataBound},
 };
 
 use super::{
@@ -13,13 +13,12 @@ use super::{
 };
 
 /// Обработка и запись выходов
-pub struct TaskWriteOutput<TMsg, TService, Driver>
+pub struct TaskWriteOutput<TMsg, Driver>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
     Driver: RsiotI2cDriverBase,
 {
-    pub in_out: CmpInOut<TMsg, TService>,
+    pub in_out: CmpInOut<TMsg>,
     pub fn_input: fn(Message<TMsg>) -> Option<bool>,
     pub state: State,
     pub driver: Arc<Mutex<Driver>>,
@@ -27,11 +26,10 @@ where
     pub pin: usize,
 }
 
-impl<TMsg, TService, Driver> TaskWriteOutput<TMsg, TService, Driver>
+impl<TMsg, Driver> TaskWriteOutput<TMsg, Driver>
 where
     Driver: RsiotI2cDriverBase,
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     pub async fn spawn(&mut self) -> Result<(), String> {
         while let Ok(msg) = self.in_out.recv_input().await {

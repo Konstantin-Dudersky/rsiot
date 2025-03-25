@@ -17,7 +17,7 @@ async fn main() -> anyhow::Result<()> {
             cmp_surrealdb::{self, RequestInputConfig},
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_service::*, Deserialize, Message, MsgDataBound, MsgKey, Serialize},
+        message::{Deserialize, Message, MsgDataBound, MsgKey, Serialize},
     };
 
     #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
@@ -25,9 +25,7 @@ async fn main() -> anyhow::Result<()> {
         Request(u16),
     }
 
-    impl MsgDataBound for Custom {
-        type TService = Service;
-    }
+    impl MsgDataBound for Custom {}
 
     tracing_subscriber::fmt().init();
 
@@ -71,12 +69,11 @@ async fn main() -> anyhow::Result<()> {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
     };
 
-    ComponentExecutor::<Custom, Service>::new(executor_config)
+    ComponentExecutor::<Custom>::new(executor_config)
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
         .add_cmp(cmp_surrealdb::Cmp::new(surrealdb_config))
         .wait_result()

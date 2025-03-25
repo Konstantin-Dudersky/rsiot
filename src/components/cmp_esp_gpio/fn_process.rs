@@ -1,20 +1,13 @@
 use esp_idf_svc::hal::gpio::{Level, PinDriver};
 use tokio::task::JoinSet;
 
-use crate::{
-    executor::CmpInOut,
-    message::{MsgDataBound, ServiceBound},
-};
+use crate::{executor::CmpInOut, message::MsgDataBound};
 
 use super::{Config, ConfigGpioInput, ConfigGpioOutput};
 
-pub async fn fn_process<TMsg, TService>(
-    config: Config<TMsg>,
-    in_out: CmpInOut<TMsg, TService>,
-) -> super::Result<()>
+pub async fn fn_process<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
 {
     let mut task_set = JoinSet::new();
     for config_input in config.inputs {
@@ -31,12 +24,9 @@ where
 }
 
 /// Функция чтения одного входа
-async fn gpio_input<TMsg, TService>(
-    config_input: ConfigGpioInput<TMsg>,
-    in_out: CmpInOut<TMsg, TService>,
-) where
+async fn gpio_input<TMsg>(config_input: ConfigGpioInput<TMsg>, in_out: CmpInOut<TMsg>)
+where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     let mut pin = PinDriver::input(config_input.peripherals).unwrap();
     pin.set_pull(config_input.pull).unwrap();
@@ -51,12 +41,9 @@ async fn gpio_input<TMsg, TService>(
 }
 
 /// Функция записи одного выхода
-async fn gpio_output<TMsg, TService>(
-    config_output: ConfigGpioOutput<TMsg>,
-    mut in_out: CmpInOut<TMsg, TService>,
-) where
+async fn gpio_output<TMsg>(config_output: ConfigGpioOutput<TMsg>, mut in_out: CmpInOut<TMsg>)
+where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     let mut pin = PinDriver::output(config_output.peripherals).unwrap();
 

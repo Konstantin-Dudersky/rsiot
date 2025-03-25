@@ -5,42 +5,35 @@
 
 use std::{collections::HashMap, net::SocketAddr, sync::Arc};
 
+use futures::StreamExt;
 use futures::TryFutureExt;
-use futures::{
-    stream::{SplitSink, SplitStream},
-    SinkExt, StreamExt,
-};
 use tokio::{
     net::{TcpListener, TcpStream},
-    spawn,
     sync::{broadcast, mpsc, Mutex},
     task::JoinSet,
     time::{sleep, Duration},
 };
 use tokio_tungstenite::accept_async;
-use tokio_util::sync::CancellationToken;
 use tracing::{error, info, warn};
 
 use crate::{
     components::shared_tasks,
     executor::{join_set_spawn, CmpInOut, ComponentError},
-    message::{MsgDataBound, ServiceBound},
+    message::MsgDataBound,
 };
 
 use super::{
-    async_task_utils::cancellable_task,
     config::{Config, WebsocketMessage},
     errors::Error,
     tasks, ServerToClientCache,
 };
 
-pub async fn fn_process<TMessage, TService, TServerToClient, TClientToServer>(
-    input: CmpInOut<TMessage, TService>,
+pub async fn fn_process<TMessage, TServerToClient, TClientToServer>(
+    input: CmpInOut<TMessage>,
     config: Config<TMessage, TServerToClient, TClientToServer>,
 ) -> Result<(), ComponentError>
 where
     TMessage: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
     TServerToClient: 'static + WebsocketMessage,
     TClientToServer: 'static + WebsocketMessage,
 {
@@ -49,10 +42,8 @@ where
         config
     );
 
-    let cancel = CancellationToken::new();
-
     loop {
-        let result = task_main(input.clone(), config.clone(), cancel.clone()).await;
+        let result = task_main(input.clone(), config.clone()).await;
         match result {
             Ok(_) => (),
             Err(err) => error!("{:?}", err),
@@ -62,14 +53,12 @@ where
     }
 }
 
-async fn task_main<TMessage, TService, TServerToClient, TClientToServer>(
-    in_out: CmpInOut<TMessage, TService>,
+async fn task_main<TMessage, TServerToClient, TClientToServer>(
+    in_out: CmpInOut<TMessage>,
     config: Config<TMessage, TServerToClient, TClientToServer>,
-    cancel: CancellationToken,
 ) -> super::Result<()>
 where
     TMessage: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
     TServerToClient: 'static + WebsocketMessage,
     TClientToServer: 'static + WebsocketMessage,
 {

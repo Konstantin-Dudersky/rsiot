@@ -8,7 +8,7 @@ use tracing::info;
 use crate::{
     components::shared_tasks,
     executor::{join_set_spawn, Cache, CmpInOut},
-    message::{MsgDataBound, ServiceBound},
+    message::MsgDataBound,
 };
 
 use super::{
@@ -17,13 +17,12 @@ use super::{
     tasks, Error,
 };
 
-pub async fn fn_process<TMsg, TService, I, Q, S>(
-    in_out: CmpInOut<TMsg, TService>,
+pub async fn fn_process<TMsg, I, Q, S>(
+    in_out: CmpInOut<TMsg>,
     config: Config<TMsg, I, Q, S>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
     I: Clone + Default + Send + Serialize + 'static + Sync,
     Q: Clone + Default + Send + Serialize + 'static + Sync,
     S: Clone + Default + Send + Serialize + 'static + Sync,

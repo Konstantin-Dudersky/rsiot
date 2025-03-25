@@ -1,19 +1,6 @@
 #[cfg(feature = "cmp_plc")]
 #[allow(dead_code, unused_variables)]
 fn main() {
-    // service -------------------------------------------------------------------------------------
-
-    use rsiot::message::MsgRoute;
-    use rsiot::message::ServiceBound;
-
-    #[allow(non_camel_case_types)]
-    #[derive(Debug, Clone, PartialEq)]
-    pub enum Service {
-        cmp_esp_example,
-    }
-
-    impl ServiceBound for Service {}
-
     // messages ------------------------------------------------------------------------------------
     use rsiot::message::{MsgDataBound, MsgKey, TimeToLiveValue};
     use serde::{Deserialize, Serialize};
@@ -29,12 +16,6 @@ fn main() {
     }
 
     impl MsgDataBound for Custom {
-        type TService = Service;
-
-        fn define_enabled_routes(&self) -> MsgRoute<Self::TService> {
-            MsgRoute::default()
-        }
-
         fn define_time_to_live(&self) -> rsiot::message::TimeToLiveValue {
             TimeToLiveValue::Infinite
         }

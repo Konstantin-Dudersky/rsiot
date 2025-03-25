@@ -11,18 +11,17 @@ use url::Url;
 
 use crate::{
     executor::CmpInOut,
-    message::{Message, MsgDataBound, ServiceBound},
+    message::{Message, MsgDataBound},
 };
 
 use super::{config, Error};
 
-pub async fn fn_process<TMsg, TService>(
+pub async fn fn_process<TMsg>(
     config: config::Config<TMsg>,
-    in_out: CmpInOut<TMsg, TService>,
+    in_out: CmpInOut<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
 {
     // Необходимо подождать, пока поднимется Wi-Fi
     sleep(Duration::from_secs(2)).await;
@@ -43,13 +42,9 @@ where
 }
 
 /// Основная задача
-async fn task_main<TMsg, TService>(
-    in_out: CmpInOut<TMsg, TService>,
-    config: config::Config<TMsg>,
-) -> super::Result<()>
+async fn task_main<TMsg>(in_out: CmpInOut<TMsg>, config: config::Config<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
 {
     let mut set = JoinSet::<super::Result<()>>::new();
 
@@ -85,14 +80,13 @@ where
 }
 
 /// Задача обработки периодического запроса
-async fn task_periodic_request<TMsg, TService>(
-    in_out: CmpInOut<TMsg, TService>,
+async fn task_periodic_request<TMsg>(
+    in_out: CmpInOut<TMsg>,
     config: config::RequestPeriodic<TMsg>,
     url: Url,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     loop {
         let begin = Instant::now();

@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use serde::{de::DeserializeOwned, Serialize};
 
-use super::{MsgKey, ServiceBound, TimeToLiveValue};
+use super::{MsgKey, TimeToLiveValue};
 
 /// Ограничения на данные, которые могут содержать сообщения
 ///
@@ -16,18 +16,13 @@ use super::{MsgKey, ServiceBound, TimeToLiveValue};
 pub trait MsgDataBound:
     Clone + Debug + DeserializeOwned + MsgKey + PartialEq + Send + Serialize + Sync
 {
-    /// Перечисление, содержащее названия всех сервисов
-    type TService: ServiceBound;
+    // Перечисление, содержащее названия всех сервисов
+    // type TService: ServiceBound;
 
-    // #[allow(clippy::type_complexity)]
-    // fn define_enabled_routes(&self) -> Vec<(Option<Self::TService>, Option<Self::TService>)> {
-    //     vec![(None, None)]
+    // Разрешенные маршруты сообщения
+    // fn define_enabled_routes(&self) -> MsgRoute<Self::TService> {
+    //     MsgRoute::default()
     // }
-
-    /// Разрешенные маршруты сообщения
-    fn define_enabled_routes(&self) -> MsgRoute<Self::TService> {
-        MsgRoute::default()
-    }
 
     /// Задать ограничение времени жизни сообщения
     ///

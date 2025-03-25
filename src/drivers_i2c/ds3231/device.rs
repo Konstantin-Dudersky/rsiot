@@ -5,7 +5,7 @@ use tracing::warn;
 
 use crate::{
     executor::CmpInOut,
-    message::{Message, MsgDataBound, ServiceBound},
+    message::{Message, MsgDataBound},
 };
 
 use super::{
@@ -15,10 +15,9 @@ use super::{
 };
 
 /// Часы реального времени
-pub struct DS3231<TMsg, TService>
+pub struct DS3231<TMsg>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     /// Адрес. По-умолчанию 0x68
     pub address: I2cSlaveAddress,
@@ -29,13 +28,12 @@ where
     /// Период чтения данных с часов
     pub fn_output_period: Duration,
     /// Внутренняя шина сообщений
-    pub in_out: CmpInOut<TMsg, TService>,
+    pub in_out: CmpInOut<TMsg>,
 }
 
-impl<TMsg, TService> DS3231<TMsg, TService>
+impl<TMsg> DS3231<TMsg>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
 {
     /// Запустить опрос датчика
     pub async fn spawn(&self, driver: Arc<Mutex<impl RsiotI2cDriverBase + 'static>>) {

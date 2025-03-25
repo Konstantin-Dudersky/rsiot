@@ -10,19 +10,18 @@ use tokio::task::JoinSet;
 use tracing::{error, info};
 use url::Url;
 
-use crate::message::{Message, MsgDataBound, ServiceBound};
+use crate::message::{Message, MsgDataBound};
 
 use crate::executor::CmpInOut;
 
 use super::{config::*, error::Error};
 
-pub async fn fn_process<TMessage, TService>(
-    input: CmpInOut<TMessage, TService>,
+pub async fn fn_process<TMessage>(
+    input: CmpInOut<TMessage>,
     config: Config<TMessage>,
 ) -> super::Result<()>
 where
     TMessage: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
 {
     info!("Starting http-client-wasm, configuration: {:?}", config);
 
@@ -39,13 +38,12 @@ where
     }
 }
 
-async fn task_main<TMessage, TService>(
-    in_out: CmpInOut<TMessage, TService>,
+async fn task_main<TMessage>(
+    in_out: CmpInOut<TMessage>,
     config: Config<TMessage>,
 ) -> super::Result<()>
 where
     TMessage: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
 {
     // Парсим url
     let url = Url::parse(config.base_url);
@@ -77,14 +75,13 @@ where
 }
 
 /// Задача обработки запросов на основе входящего потока сообщений
-async fn task_input_request<TMessage, TService>(
-    mut in_out: CmpInOut<TMessage, TService>,
+async fn task_input_request<TMessage>(
+    mut in_out: CmpInOut<TMessage>,
     url: Url,
     config: RequestInput<TMessage>,
 ) -> super::Result<()>
 where
     TMessage: MsgDataBound,
-    TService: ServiceBound,
 {
     while let Ok(msg) = in_out.recv_input().await {
         let http_param = (config.fn_input)(&msg);
@@ -104,14 +101,13 @@ where
 }
 
 /// Задача обработки периодического запроса
-async fn task_periodic_request<TMessage, TService>(
-    output: CmpInOut<TMessage, TService>,
+async fn task_periodic_request<TMessage>(
+    output: CmpInOut<TMessage>,
     config: RequestPeriodic<TMessage>,
     url: Url,
 ) -> super::Result<()>
 where
     TMessage: MsgDataBound,
-    TService: ServiceBound,
 {
     loop {
         let begin = Instant::now();

@@ -6,22 +6,17 @@ use tracing::info;
 
 use rsiot::{
     executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{MsgDataBound, ServiceBound},
+    message::MsgDataBound,
 };
 
 pub struct Config {}
 
 #[async_trait]
-impl<TMsg, TService> IComponentProcess<Config, TMsg, TService> for Component<Config, TMsg, TService>
+impl<TMsg> IComponentProcess<Config, TMsg> for Component<Config, TMsg>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
-    async fn process(
-        &self,
-        _config: Config,
-        _input: CmpInOut<TMsg, TService>,
-    ) -> Result<(), ComponentError> {
+    async fn process(&self, _config: Config, _input: CmpInOut<TMsg>) -> Result<(), ComponentError> {
         loop {
             info!("Component 1");
             sleep(Duration::from_secs(2)).await;
@@ -29,4 +24,4 @@ where
     }
 }
 
-pub type Cmp<TMsg, TService> = Component<Config, TMsg, TService>;
+pub type Cmp<TMsg> = Component<Config, TMsg>;

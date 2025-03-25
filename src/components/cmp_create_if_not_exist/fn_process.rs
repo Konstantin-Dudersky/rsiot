@@ -2,20 +2,13 @@ use std::time::Duration;
 
 use tokio::time::sleep;
 
-use crate::{
-    executor::CmpInOut,
-    message::{MsgDataBound, ServiceBound},
-};
+use crate::{executor::CmpInOut, message::MsgDataBound};
 
 use super::Config;
 
-pub async fn fn_process<TMsg, TService>(
-    config: Config<TMsg>,
-    msg_bus: CmpInOut<TMsg, TService>,
-) -> super::Result<()>
+pub async fn fn_process<TMsg>(config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     sleep(config.delay).await;
 

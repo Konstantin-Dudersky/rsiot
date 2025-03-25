@@ -22,15 +22,6 @@ async fn main() {
     link_patches();
     configure_logging(LevelFilter::INFO).unwrap();
 
-    // service -------------------------------------------------------------------------------------
-    #[allow(non_camel_case_types)]
-    #[derive(Debug, Clone, PartialEq)]
-    pub enum Service {
-        cmp_esp_example,
-    }
-
-    impl ServiceBound for Service {}
-
     // message -------------------------------------------------------------------------------------
     #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
     pub enum Custom {
@@ -38,12 +29,6 @@ async fn main() {
     }
 
     impl MsgDataBound for Custom {
-        type TService = Service;
-
-        fn define_enabled_routes(&self) -> MsgRoute<Self::TService> {
-            MsgRoute::default()
-        }
-
         fn define_time_to_live(&self) -> rsiot::message::TimeToLiveValue {
             TimeToLiveValue::Infinite
         }
@@ -97,7 +82,6 @@ async fn main() {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 10,
-        service: Service::cmp_esp_example,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
     };
@@ -105,7 +89,7 @@ async fn main() {
     let local_set = LocalSet::new();
 
     local_set.spawn_local(async {
-        ComponentExecutor::<Custom, Service>::new(executor_config)
+        ComponentExecutor::<Custom>::new(executor_config)
             .add_cmp(cmp_logger::Cmp::new(logger_config))
             .add_cmp(cmp_esp_led::Cmp::new(config_esp_led))
             .add_cmp(cmp_inject_periodic::Cmp::new(config_inject_periodic))

@@ -28,15 +28,6 @@ async fn main() {
     link_patches();
     configure_logging(LevelFilter::INFO).unwrap();
 
-    // service -------------------------------------------------------------------------------------
-    #[allow(non_camel_case_types)]
-    #[derive(Debug, Clone, PartialEq)]
-    pub enum Service {
-        cmp_esp_example,
-    }
-
-    impl ServiceBound for Service {}
-
     // message -------------------------------------------------------------------------------------
     #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
     enum Custom {
@@ -44,9 +35,7 @@ async fn main() {
         CounterFromClient(u8),
     }
 
-    impl MsgDataBound for Custom {
-        type TService = Service;
-    }
+    impl MsgDataBound for Custom {}
 
     // cmp_http_server_esp -------------------------------------------------------------------------
     let http_server_esp_config = cmp_esp_http_server::Config {
@@ -135,7 +124,6 @@ async fn main() {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 10,
-        service: Service::cmp_esp_example,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
     };
@@ -143,7 +131,7 @@ async fn main() {
     let local_set = LocalSet::new();
 
     local_set.spawn_local(async {
-        ComponentExecutor::<Custom, Service>::new(executor_config)
+        ComponentExecutor::<Custom>::new(executor_config)
             .add_cmp(cmp_logger::Cmp::new(logger_config))
             .add_cmp(cmp_esp_http_server::Cmp::new(http_server_esp_config))
             .add_cmp(cmp_esp_wifi::Cmp::new(wifi_config))

@@ -10,18 +10,17 @@ use crate::{
     components::cmp_websocket_client_general::{ConnectionState, WebsocketClientGeneralTasks},
     components_config::websocket_general::WebsocketMessage,
     executor::{join_set_spawn, CmpInOut},
-    message::{MsgDataBound, ServiceBound},
+    message::MsgDataBound,
 };
 
 use super::{tasks, Config, Error};
 
-pub async fn fn_process<TMessage, TService, TServerToClient, TClientToServer>(
+pub async fn fn_process<TMessage, TServerToClient, TClientToServer>(
     config: Config<TMessage, TServerToClient, TClientToServer>,
-    input: CmpInOut<TMessage, TService>,
+    input: CmpInOut<TMessage>,
 ) -> super::Result<()>
 where
     TMessage: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
     TServerToClient: WebsocketMessage + 'static,
     TClientToServer: WebsocketMessage + 'static,
 {
@@ -50,14 +49,13 @@ where
     }
 }
 
-async fn task_main<TMessage, TService, TServerToClient, TClientToServer>(
+async fn task_main<TMessage, TServerToClient, TClientToServer>(
     config: Config<TMessage, TServerToClient, TClientToServer>,
-    msg_bus: CmpInOut<TMessage, TService>,
+    msg_bus: CmpInOut<TMessage>,
     ch_tx_connection_state: mpsc::Sender<bool>,
 ) -> super::Result<()>
 where
     TMessage: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
     TServerToClient: WebsocketMessage + 'static,
     TClientToServer: WebsocketMessage + 'static,
 {

@@ -2,7 +2,7 @@ use async_trait::async_trait;
 
 use crate::{
     executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound, ServiceBound},
+    message::{AuthPermissions, MsgDataBound},
 };
 
 use super::{
@@ -12,19 +12,18 @@ use super::{
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
-impl<TMessage, TService, TServerToClient, TClientToServer>
-    IComponentProcess<Config<TMessage, TServerToClient, TClientToServer>, TMessage, TService>
-    for Component<Config<TMessage, TServerToClient, TClientToServer>, TMessage, TService>
+impl<TMessage, TServerToClient, TClientToServer>
+    IComponentProcess<Config<TMessage, TServerToClient, TClientToServer>, TMessage>
+    for Component<Config<TMessage, TServerToClient, TClientToServer>, TMessage>
 where
     TMessage: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
     TServerToClient: 'static + WebsocketMessage,
     TClientToServer: 'static + WebsocketMessage,
 {
     async fn process(
         &self,
         config: Config<TMessage, TServerToClient, TClientToServer>,
-        input: CmpInOut<TMessage, TService>,
+        input: CmpInOut<TMessage>,
     ) -> Result<(), ComponentError> {
         fn_process(
             input.clone_with_new_id("cmp_websocket_server", AuthPermissions::FullAccess),
@@ -35,5 +34,5 @@ where
 }
 
 /// Компонент cmp_websocker_server
-pub type Cmp<TMessage, TService, TServerToClient, TClientToServer> =
-    Component<Config<TMessage, TServerToClient, TClientToServer>, TMessage, TService>;
+pub type Cmp<TMessage, TServerToClient, TClientToServer> =
+    Component<Config<TMessage, TServerToClient, TClientToServer>, TMessage>;

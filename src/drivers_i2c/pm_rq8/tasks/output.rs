@@ -1,23 +1,18 @@
-use crate::{
-    executor::CmpInOut,
-    message::{MsgDataBound, ServiceBound},
-};
+use crate::{executor::CmpInOut, message::MsgDataBound};
 
 use super::{I2cResponse, TaskInput};
 
-pub struct Output<TMsg, TService>
+pub struct Output<TMsg>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     pub input: TaskInput<I2cResponse>,
-    pub output: CmpInOut<TMsg, TService>,
+    pub output: CmpInOut<TMsg>,
 }
 
-impl<TMsg, TService> Output<TMsg, TService>
+impl<TMsg> Output<TMsg>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
         while let Some(_response) = self.input.recv().await {}

@@ -12,7 +12,7 @@ async fn main() {
     use rsiot::{
         components::{cmp_esp_nvs, cmp_inject_periodic, cmp_logger},
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_message::*, example_service::*, *},
+        message::{example_message::*, *},
     };
 
     link_patches();
@@ -20,7 +20,6 @@ async fn main() {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 10,
-        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
     };
@@ -67,7 +66,7 @@ async fn main() {
     let local_set = LocalSet::new();
 
     local_set.spawn_local(async {
-        ComponentExecutor::<Custom, Service>::new(executor_config)
+        ComponentExecutor::<Custom>::new(executor_config)
             .add_cmp(cmp_inject_periodic::Cmp::new(inject_periodic_config))
             .add_cmp(cmp_logger::Cmp::new(logger_config))
             .add_cmp(cmp_esp_nvs::Cmp::new(storage_config))

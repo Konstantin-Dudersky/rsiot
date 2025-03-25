@@ -12,7 +12,7 @@ async fn main() {
     use rsiot::{
         components::cmp_system_info,
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_message::*, example_service::Service},
+        message::example_message::*,
     };
     use tracing::info;
 
@@ -20,7 +20,6 @@ async fn main() {
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 100,
-        service: Service::example_service,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
     };
@@ -33,7 +32,7 @@ async fn main() {
         },
     };
 
-    ComponentExecutor::<Custom, Service>::new(executor_config)
+    ComponentExecutor::<Custom>::new(executor_config)
         .add_cmp(cmp_system_info::Cmp::new(system_info_config))
         .wait_result()
         .await

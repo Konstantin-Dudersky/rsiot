@@ -4,10 +4,7 @@ use byteorder::{BigEndian, ReadBytesExt};
 use tokio::{sync::Mutex, task::JoinSet, time::sleep};
 use tracing::warn;
 
-use crate::{
-    executor::CmpInOut,
-    message::{MsgDataBound, ServiceBound},
-};
+use crate::{executor::CmpInOut, message::MsgDataBound};
 
 use super::{
     super::{I2cSlaveAddress, RsiotI2cDriverBase},
@@ -15,10 +12,9 @@ use super::{
 };
 
 /// АЦП ADS1115
-pub struct ADS1115<TMsg, TService, Driver>
+pub struct ADS1115<TMsg, Driver>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
     Driver: RsiotI2cDriverBase,
 {
     /// Адрес
@@ -30,13 +26,12 @@ where
     /// Ссылка на драйвер
     pub driver: Arc<Mutex<Driver>>,
 
-    pub cmp_in_out: CmpInOut<TMsg, TService>,
+    pub cmp_in_out: CmpInOut<TMsg>,
 }
 
-impl<TMsg, TService, Driver> ADS1115<TMsg, TService, Driver>
+impl<TMsg, Driver> ADS1115<TMsg, Driver>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound + 'static,
     Driver: RsiotI2cDriverBase + 'static,
 {
     pub async fn spawn(&self) {
@@ -78,22 +73,20 @@ fn convert_response_to_voltage(
     Ok(volt)
 }
 
-struct TaskInput<TMsg, TService, Driver>
+struct TaskInput<TMsg, Driver>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
     Driver: RsiotI2cDriverBase,
 {
     pub address: I2cSlaveAddress,
     pub input: config::InputConfig<TMsg>,
     pub driver: Arc<Mutex<Driver>>,
-    pub cmp_in_out: CmpInOut<TMsg, TService>,
+    pub cmp_in_out: CmpInOut<TMsg>,
 }
 
-impl<TMsg, TService, Driver> TaskInput<TMsg, TService, Driver>
+impl<TMsg, Driver> TaskInput<TMsg, Driver>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
     Driver: RsiotI2cDriverBase,
 {
     pub async fn spawn(&self) -> Result<(), String> {

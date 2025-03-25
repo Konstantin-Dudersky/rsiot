@@ -1,4 +1,4 @@
-use rsiot::message::{example_service::Service, Deserialize, MsgDataBound, MsgKey, Serialize};
+use rsiot::message::{Deserialize, MsgDataBound, MsgKey, Serialize};
 
 #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
 pub enum Data {
@@ -6,6 +6,4 @@ pub enum Data {
     OutputValue(u16),
 }
 
-impl MsgDataBound for Data {
-    type TService = Service;
-}
+impl MsgDataBound for Data {}

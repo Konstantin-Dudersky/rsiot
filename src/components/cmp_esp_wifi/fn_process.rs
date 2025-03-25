@@ -11,18 +11,14 @@ use tracing::{info, warn};
 
 use crate::{
     executor::CmpInOut,
-    message::{system_messages, Message, MsgData, MsgDataBound, ServiceBound},
+    message::{system_messages, Message, MsgData, MsgDataBound},
 };
 
 use super::Config;
 
-pub async fn fn_process<TMsg, TService>(
-    config: Config,
-    in_out: CmpInOut<TMsg, TService>,
-) -> super::Result<()>
+pub async fn fn_process<TMsg>(config: Config, in_out: CmpInOut<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     let wifi_config = prepare_wifi_config(&config);
 
@@ -145,14 +141,10 @@ where
     }
 }
 
-async fn state_connect<T, TMsg, TService>(
-    wifi: &mut AsyncWifi<T>,
-    in_out: &CmpInOut<TMsg, TService>,
-) -> ConnectionState
+async fn state_connect<T, TMsg>(wifi: &mut AsyncWifi<T>, in_out: &CmpInOut<TMsg>) -> ConnectionState
 where
     T: Wifi<Error = EspError> + NonBlocking + NetifStatus,
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     info!("Wifi state: connect");
     let res = wifi.connect().await;
@@ -194,10 +186,9 @@ where
     ConnectionState::Connect
 }
 
-async fn state_onlyap<TMsg, TService>(in_out: &CmpInOut<TMsg, TService>) -> ConnectionState
+async fn state_onlyap<TMsg>(in_out: &CmpInOut<TMsg>) -> ConnectionState
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     info!("Wifi state: only AP");
     wifi_connected(in_out).await.unwrap();
@@ -220,10 +211,9 @@ enum ConnectionState {
     OnlyAP,
 }
 
-async fn wifi_connected<TMsg, TService>(in_out: &CmpInOut<TMsg, TService>) -> super::Result<()>
+async fn wifi_connected<TMsg>(in_out: &CmpInOut<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     // Рассылаем сообщение - wifi подключен
     let msg = Message::new(MsgData::System(system_messages::System::EspWifiConnected));

@@ -5,23 +5,20 @@ use tokio::sync::Mutex;
 use tracing::warn;
 
 use crate::{
-    drivers_i2c::RsiotI2cDriverBase,
-    executor::CmpInOut,
-    message::{MsgDataBound, ServiceBound},
+    drivers_i2c::RsiotI2cDriverBase, executor::CmpInOut, message::MsgDataBound,
     serde_utils::postcard_serde,
 };
 
 use super::Config;
 
 /// Устройство I2C
-pub struct Device<TMsg, TService, TDriver>
+pub struct Device<TMsg, TDriver>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
     TDriver: RsiotI2cDriverBase,
 {
     /// Внутренняя шина сообщений
-    pub msg_bus: CmpInOut<TMsg, TService>,
+    pub msg_bus: CmpInOut<TMsg>,
 
     /// Конфигурация
     pub config: Config<TMsg>,
@@ -30,10 +27,9 @@ where
     pub driver: Arc<Mutex<TDriver>>,
 }
 
-impl<TMsg, TService, TDriver> Device<TMsg, TService, TDriver>
+impl<TMsg, TDriver> Device<TMsg, TDriver>
 where
     TMsg: MsgDataBound + 'static,
-    TService: ServiceBound,
     TDriver: RsiotI2cDriverBase + 'static,
 {
     /// Запуск на выполнение

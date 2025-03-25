@@ -1,24 +1,22 @@
 use crate::{
     executor::CmpInOut,
-    message::{Message, MsgDataBound, ServiceBound},
+    message::{Message, MsgDataBound},
 };
 
 use super::TelegramBot;
 
-pub struct Input<TMsg, TService>
+pub struct Input<TMsg>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
-    pub input: CmpInOut<TMsg, TService>,
+    pub input: CmpInOut<TMsg>,
     pub bot: TelegramBot,
     pub fn_input: fn(Message<TMsg>) -> Option<String>,
 }
 
-impl<TMsg, TService> Input<TMsg, TService>
+impl<TMsg> Input<TMsg>
 where
     TMsg: MsgDataBound,
-    TService: ServiceBound,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
         while let Ok(msg) = self.input.recv_input().await {
