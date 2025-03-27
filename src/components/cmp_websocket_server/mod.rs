@@ -7,18 +7,28 @@
 //!
 //! # Пример
 //!
+//! ## Файл `shared::ws_client_server/client_to_server.rs`
 //! ```
-// #![doc = include_str!("../../../examples/cmp_websocket_server.rs")]
+#![doc = include_str!("doc/client_to_server.rs")]
+//!```
+//!
+//! ## Файл `shared::ws_client_server/server_to_client.rs`
+//! ```
+#![doc = include_str!("doc/server_to_client.rs")]
+//!```
+//!
+//! ## Файл `cmp_websocket_server/mod.rs`
+//! ```
+#![doc = include_str!("doc/new.rs")]
 //! ```
 
-#![cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
-
-mod async_task_utils;
 mod component;
 mod config;
 mod errors;
 mod fn_process;
 // mod handle_ws_connection;
+#[cfg(feature = "rustdoc")]
+mod doc;
 mod tasks;
 
 pub use component::Cmp;

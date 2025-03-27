@@ -44,7 +44,7 @@ async fn main() -> anyhow::Result<()> {
 
     let ws_server_config = cmp_websocket_server::Config {
         port: 8011,
-        fn_input: |msg: &Message<ServerMessages>| {
+        fn_server_to_client: |msg: &Message<ServerMessages>| {
             let msg = msg.get_custom_data()?;
             let s2c = match msg {
                 ServerMessages::ServerCounter(counter) => ServerToClient::ServerCounter(counter),
@@ -52,12 +52,11 @@ async fn main() -> anyhow::Result<()> {
             };
             Some(s2c)
         },
-        fn_output: |c2s: ClientToServer| {
+        fn_client_to_server: |c2s: ClientToServer| {
             let msg = match c2s {
                 ClientToServer::ClientCounter(counter) => {
                     Message::new_custom(ServerMessages::CounterFromClient(counter))
                 }
-                _ => return vec![],
             };
             vec![msg]
         },

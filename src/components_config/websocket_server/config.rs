@@ -13,10 +13,10 @@ where
     pub port: u16,
 
     /// Функция преобразования входящих сообщений в перечисление, пересылаемое по вебсокету
-    pub fn_input: FnInput<TMsg, TServerToClient>,
+    pub fn_server_to_client: FnInput<TMsg, TServerToClient>,
 
     /// Функция перечисления, пересылаемых по вебсокету, в исходящий поток сообщений
-    pub fn_output: FnOutput<TMsg, TClientToServer>,
+    pub fn_client_to_server: FnOutput<TMsg, TClientToServer>,
 }
 
 /// Функция преобразования входящих сообщений в перечисление, пересылаемое по вебсокету
