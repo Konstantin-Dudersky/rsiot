@@ -4,7 +4,7 @@ use tokio_tungstenite::{MaybeTlsStream, WebSocketStream};
 
 pub struct Receive {
     pub websocket_read: SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>,
-    pub output: mpsc::Sender<String>,
+    pub output: mpsc::Sender<Vec<u8>>,
 }
 
 impl Receive {
@@ -12,8 +12,7 @@ impl Receive {
         while let Some(msg) = self.websocket_read.next().await {
             let data = msg
                 .map_err(|e| super::Error::TaskReceive(e.to_string()))?
-                .into_text()
-                .map_err(|e| super::Error::TaskReceive(e.to_string()))?;
+                .into_data();
 
             self.output
                 .send(data)

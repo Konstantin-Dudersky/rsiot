@@ -1,4 +1,4 @@
-use crate::message::Message;
+use crate::{message::Message, serde_utils::SerdeAlgKind};
 
 use super::WebsocketMessage;
 
@@ -9,6 +9,9 @@ where
     TServerToClient: WebsocketMessage,
     TClientToServer: WebsocketMessage,
 {
+    /// Алгоритм сериализации и десериализации сообщений
+    pub serde_alg: SerdeAlgKind,
+
     /// Порт, через который доступен сервер
     pub port: u16,
 

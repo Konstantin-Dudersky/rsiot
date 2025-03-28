@@ -16,6 +16,7 @@ use tokio::{
 use tokio_tungstenite::accept_async;
 use tracing::{error, info, warn};
 
+use crate::serde_utils::SerdeAlg;
 use crate::{
     components::shared_tasks,
     executor::{join_set_spawn, CmpInOut, ComponentError},
@@ -67,6 +68,8 @@ where
     let listener = create_tcp_listener(addr).await?;
 
     let cache = Arc::new(Mutex::new(HashMap::new()));
+
+    let serde_alg = SerdeAlg::new(config.serde_alg);
 
     let (ch_tx_msgbus_to_mpsc, ch_rx_msgbus_to_mpsc) = mpsc::channel(1000);
     let (ch_tx_input_to_clients, ch_rx_input_to_clients) = broadcast::channel(1000);
@@ -121,6 +124,7 @@ where
             ch_tx_clients_to_output,
             cache.clone(),
             stream_and_addr,
+            serde_alg,
         );
         join_set_spawn(&mut task_set, task);
     }
@@ -133,13 +137,15 @@ pub async fn handle_ws_connection<TServerToClient, TClientToServer>(
     output: mpsc::Sender<TClientToServer>,
     cache: ServerToClientCache<TServerToClient>,
     stream_and_addr: (TcpStream, SocketAddr),
+    serde_alg: SerdeAlg,
 ) -> super::Result<()>
 where
     TServerToClient: 'static + WebsocketMessage,
     TClientToServer: 'static + WebsocketMessage,
 {
     let addr = stream_and_addr.1;
-    let result = _handle_ws_connection(input, output, cache.clone(), stream_and_addr).await;
+    let result =
+        _handle_ws_connection(input, output, cache.clone(), stream_and_addr, serde_alg).await;
     match result {
         Ok(_) => (),
         Err(err) => {
@@ -156,6 +162,7 @@ async fn _handle_ws_connection<TServerToClient, TClientToServer>(
     output: mpsc::Sender<TClientToServer>,
     cache: ServerToClientCache<TServerToClient>,
     stream_and_addr: (TcpStream, SocketAddr),
+    serde_alg: SerdeAlg,
 ) -> super::Result<()>
 where
     TServerToClient: 'static + WebsocketMessage,
@@ -173,6 +180,7 @@ where
         input: input.resubscribe(),
         websocket_write,
         cache: cache.clone(),
+        serde_alg,
     };
     join_set_spawn(&mut task_set, task.spawn());
 
@@ -180,6 +188,7 @@ where
     let task = tasks::RcvFromClient {
         output: output.clone(),
         websocket_read,
+        serde_alg,
     };
     join_set_spawn(&mut task_set, task.spawn());
 

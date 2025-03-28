@@ -1,7 +1,7 @@
 //! Запуск:
 //!
 //! ```bash
-//! cargo run --example cmp_websocket_client --features "cmp_websocket_client"
+//! cargo run --example cmp_websocket_client --features "cmp_websocket_client, serde_json"
 //! ```
 
 mod shared;
@@ -17,6 +17,7 @@ async fn main() -> anyhow::Result<()> {
         components::{cmp_inject_periodic, cmp_logger, cmp_websocket_client},
         executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{Message, MsgDataBound, MsgKey},
+        serde_utils::SerdeAlgKind,
     };
 
     use shared::{ClientMessages, ClientToServer, ServerToClient};
@@ -56,12 +57,13 @@ async fn main() -> anyhow::Result<()> {
         period: Duration::from_secs(2),
         fn_periodic: move || {
             let msg = Message::new_custom(ClientMessages::CounterFromClient(counter));
-            counter += 1;
+            counter = counter.wrapping_add(1);
             vec![msg]
         },
     };
 
     let config_websocket_client = cmp_websocket_client::Config {
+        serde_alg: SerdeAlgKind::Json,
         url: "ws://localhost:8011".into(),
         fn_client_to_server: |msg| {
             let msg = msg.get_custom_data()?;

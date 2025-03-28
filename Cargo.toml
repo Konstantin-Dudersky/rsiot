@@ -156,7 +156,7 @@ cfg_aliases = "0.2.0"
 [features]
 
 # TODO - удалить serde-json из дефолтных фич, когда все компоненты будут готовы
-default = ["serde-json"]
+default = ["serde_json"]
 
 ## Конфигурирование через переменные
 env_vars = ["dep:clap", "dep:dotenvy", "dep:envy", "dep:toml", "dep:url"]
@@ -179,8 +179,8 @@ logging = [
 ## Работа в однопоточном режиме
 single-thread = []
 
-serde-json = ["dep:serde_json"]
-serde-toml = ["dep:toml"]
+serde_json = ["dep:serde_json"]
+serde_toml = ["dep:toml"]
 
 ## Компонент аутентификации
 cmp_auth = ["executor", "dep:jwt", "dep:hmac", "dep:sha2"]

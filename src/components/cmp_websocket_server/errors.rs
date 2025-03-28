@@ -1,4 +1,4 @@
-use crate::components::shared_tasks;
+use crate::{components::shared_tasks, serde_utils};
 
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
@@ -40,5 +40,5 @@ pub enum Error {
     SharedTaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus::Error),
 
     #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
+    Serde(#[from] serde_utils::Error),
 }

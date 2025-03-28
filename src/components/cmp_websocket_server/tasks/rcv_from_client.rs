@@ -1,16 +1,14 @@
-// Рассмотреть возможность замены на бинарный протокол
-
 use futures::{stream::SplitStream, StreamExt};
-use serde_json::from_str;
 use tokio::{net::TcpStream, sync::mpsc};
 use tokio_tungstenite::WebSocketStream;
 use tracing::{debug, trace};
 
-use crate::components_config::websocket_server::WebsocketMessage;
+use crate::{components_config::websocket_server::WebsocketMessage, serde_utils::SerdeAlg};
 
 pub struct RcvFromClient<TClientToServer> {
     pub output: mpsc::Sender<TClientToServer>,
     pub websocket_read: SplitStream<WebSocketStream<TcpStream>>,
+    pub serde_alg: SerdeAlg,
 }
 
 impl<TClientToServer> RcvFromClient<TClientToServer>
@@ -19,12 +17,12 @@ where
 {
     pub async fn spawn(mut self) -> super::Result<()> {
         while let Some(data) = self.websocket_read.next().await {
-            let data = data?.into_text()?;
+            let data = data?.into_data();
             if data.is_empty() {
                 break;
             }
 
-            let c2s: TClientToServer = from_str(&data)?;
+            let c2s: TClientToServer = self.serde_alg.deserialize(&data)?;
             trace!("New message from websocket client: {:?}", c2s);
             self.output
                 .send(c2s)

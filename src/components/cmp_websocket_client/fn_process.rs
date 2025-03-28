@@ -9,13 +9,17 @@ use tracing::{error, info, warn};
 use url::Url;
 
 use crate::{
-    components::cmp_websocket_client_general::{ConnectionState, WebsocketClientGeneralTasks},
     components_config::websocket_general::WebsocketMessage,
     executor::{join_set_spawn, CmpInOut, ComponentError},
     message::MsgDataBound,
+    serde_utils::SerdeAlg,
 };
 
-use super::{config::Config, tasks, Error};
+use super::{
+    cmp_websocket_client_general::{ConnectionState, WebsocketClientGeneralTasks},
+    config::Config,
+    tasks, Error,
+};
 
 pub async fn fn_process<TMessage, TServerToClient, TClientToServer>(
     input: CmpInOut<TMessage>,
@@ -27,6 +31,8 @@ where
     TClientToServer: 'static + WebsocketMessage,
 {
     info!("cmp_websocket_client starting");
+
+    let serde_alg = SerdeAlg::new(config.serde_alg);
 
     let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
     let (ch_tx_connection_state, ch_rx_connection_state) = mpsc::channel(1000);
@@ -42,6 +48,7 @@ where
             input.clone(),
             config.clone(),
             ch_tx_connection_state.clone(),
+            serde_alg,
         )
         .await;
         match res {
@@ -59,6 +66,7 @@ async fn task_connect<TMessage, TServerToClient, TClientToServer>(
     in_out: CmpInOut<TMessage>,
     config: Config<TMessage, TServerToClient, TClientToServer>,
     ch_tx_connection_state: mpsc::Sender<bool>,
+    serde_alg: SerdeAlg,
 ) -> super::Result<()>
 where
     TMessage: MsgDataBound + 'static,
@@ -83,6 +91,7 @@ where
         fn_client_to_server: config.fn_client_to_server,
         fn_server_to_client: config.fn_server_to_client,
         ch_tx_connection_state: ch_tx_connection_state.clone(),
+        serde_alg,
     };
     let (ch_rx_input_to_send, ch_tx_receive_to_output) = ws_general.spawn();
 
@@ -106,47 +115,3 @@ where
     }
     Ok(())
 }
-
-// /// Задача отправки данных на сервер Websocket
-// async fn task_send<TMessage, TService>(
-//     mut input: CmpInOut<TMessage, TService>,
-//     mut write: SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, TungsteniteMessage>,
-//     fn_send: fn(&Message<TMessage>) -> anyhow::Result<Option<String>>,
-// ) -> Result<(), Error<TMessage>>
-// where
-//     TMessage: MsgDataBound,
-//     TService: ServiceBound,
-// {
-//     while let Ok(msg) = input.recv_input().await {
-//         let text = (fn_send)(&msg).map_err(Error::FnInput)?;
-//         if let Some(text) = text {
-//             let text = TungsteniteMessage::Text(text);
-//             write.send(text).await?;
-//         }
-//     }
-//     Ok(())
-// }
-
-// /// Задача приема данных с сервера Websocket
-// async fn task_recv<TMessage, TService>(
-//     output: CmpInOut<TMessage, TService>,
-//     mut read: SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>,
-//     fn_recv: FnOutput<TMessage>,
-// ) -> Result<(), Error<TMessage>>
-// where
-//     TMessage: MsgDataBound,
-//     TService: ServiceBound,
-// {
-//     while let Some(msg) = read.next().await {
-//         let data = msg?.into_text()?;
-//         let msgs = (fn_recv)(&data).map_err(|err| Error::FnOutput(err))?;
-//         let msgs = match msgs {
-//             Some(msgs) => msgs,
-//             None => continue,
-//         };
-//         for msg in msgs {
-//             output.send_output(msg).await.map_err(Error::CmpOutput)?;
-//         }
-//     }
-//     Ok(())
-// }

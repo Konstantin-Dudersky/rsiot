@@ -5,9 +5,13 @@
 //! cargo run --example cmp_filesystem --features="cmp_filesystem, serde-json"
 //! ```
 
+#[cfg(feature = "cmp_filesystem")]
 mod config_filesystem;
+#[cfg(feature = "cmp_filesystem")]
 mod config_inject_periodic;
+#[cfg(feature = "cmp_filesystem")]
 mod config_logger;
+#[cfg(feature = "cmp_filesystem")]
 mod messages;
 
 #[cfg(feature = "cmp_filesystem")]

@@ -9,6 +9,7 @@ use crate::{
     },
     executor::{join_set_spawn, CmpInOut},
     message::MsgDataBound,
+    serde_utils::SerdeAlg,
 };
 
 use super::tasks;
@@ -18,6 +19,9 @@ pub struct WebsocketClientGeneralTasks<'a, TMsg, TServerToClient, TClientToServe
 where
     TMsg: MsgDataBound,
 {
+    /// Алгоритм сериализации / десериализации
+    pub serde_alg: SerdeAlg,
+
     /// Шина сообщений
     pub msg_bus: CmpInOut<TMsg>,
 
@@ -47,7 +51,7 @@ where
     /// Запуск задач.
     ///
     /// Возвращает кортеж с каналами передачи запросов / ответов
-    pub fn spawn(self) -> (mpsc::Receiver<String>, mpsc::Sender<String>) {
+    pub fn spawn(self) -> (mpsc::Receiver<Vec<u8>>, mpsc::Sender<Vec<u8>>) {
         let (ch_tx_msgbus_to_input, ch_rx_msgbus_to_input) = mpsc::channel(self.buffer_size);
         let (ch_tx_input_to_send, ch_rx_input_to_send) = mpsc::channel(self.buffer_size);
         let (ch_tx_receive_to_output, ch_rx_receive_to_output) = mpsc::channel(self.buffer_size);
@@ -68,6 +72,7 @@ where
             input: ch_rx_msgbus_to_input,
             output: ch_tx_input_to_send,
             fn_input: self.fn_client_to_server,
+            serde_alg: self.serde_alg,
         };
         join_set_spawn(self.task_set, task.spawn());
 
@@ -77,6 +82,7 @@ where
             output: ch_tx_output_to_msgbus,
             output_connection_state: self.ch_tx_connection_state,
             fn_output: self.fn_server_to_client,
+            serde_alg: self.serde_alg,
         };
         join_set_spawn(self.task_set, task.spawn());
 

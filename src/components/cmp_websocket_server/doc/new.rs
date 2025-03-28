@@ -1,4 +1,4 @@
-use crate::{components::cmp_websocket_server, message::Message};
+use crate::{components::cmp_websocket_server, message::Message, serde_utils::SerdeAlgKind};
 
 use super::{client_to_server::*, messages::*, server_to_client::*};
 
@@ -7,6 +7,7 @@ pub fn new() -> crate::executor::Component<
     Msg,
 > {
     let config = cmp_websocket_server::Config {
+        serde_alg: SerdeAlgKind::Json,
         port: 8011,
         fn_server_to_client: |msg: &Message<Msg>| {
             let msg = msg.get_custom_data()?;

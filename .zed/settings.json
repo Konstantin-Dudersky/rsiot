@@ -24,16 +24,16 @@
           // ---- x86_64-unknown-linux-gnu ---------------------------------------------------------
           "target": "x86_64-unknown-linux-gnu",
           "features": [
-            "rustdoc",
+            // "rustdoc",
             // "executor",
             // "single-thread",
             //   "env_vars",
             //   "logging",
             //   "cmp_auth",
             //   "cmp_filesystem",
-            "cmp_http_client",
+            // "cmp_http_client",
             //   "cmp_http_server",
-            "cmp_filesystem",
+            // "cmp_filesystem",
             //   "cmp_influxdb",
             //   "cmp_linux_spi_master",
             //   "cmp_linux_uart_master",
@@ -49,7 +49,8 @@
             //   "cmp_timescaledb",
             "cmp_websocket_client",
             "cmp_websocket_server",
-            "serde-toml"
+            "serde_json"
+            // "serde_toml"
           ]
           // ---- wasm32-unknown-unknown -----------------------------------------------------------
           // "target": "wasm32-unknown-unknown",
@@ -61,7 +62,7 @@
           // "cmp_http_client_wasm",
           // "cmp_leptos",
           // "cmp_plc",
-          // "cmp_websocket_client_wasm",
+          // "cmp_websocket_client_wasm"
           // "cmp_webstorage"
           // ]
         }

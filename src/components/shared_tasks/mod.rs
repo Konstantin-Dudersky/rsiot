@@ -7,3 +7,9 @@ pub mod fn_process_master;
 pub mod mpsc_to_msgbus;
 pub mod msgbus_to_broadcast;
 pub mod msgbus_to_mpsc;
+
+#[cfg(any(
+    feature = "cmp_websocket_client",
+    feature = "cmp_websocket_client_wasm"
+))]
+pub mod cmp_websocket_client_general;

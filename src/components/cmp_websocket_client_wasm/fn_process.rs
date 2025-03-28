@@ -7,13 +7,16 @@ use tracing::{info, warn};
 use url::Url;
 
 use crate::{
-    components::cmp_websocket_client_general::{ConnectionState, WebsocketClientGeneralTasks},
     components_config::websocket_general::WebsocketMessage,
     executor::{join_set_spawn, CmpInOut},
     message::MsgDataBound,
+    serde_utils::SerdeAlg,
 };
 
-use super::{tasks, Config, Error};
+use super::{
+    cmp_websocket_client_general::{ConnectionState, WebsocketClientGeneralTasks},
+    tasks, Config, Error,
+};
 
 pub async fn fn_process<TMessage, TServerToClient, TClientToServer>(
     config: Config<TMessage, TServerToClient, TClientToServer>,
@@ -59,6 +62,8 @@ where
     TServerToClient: WebsocketMessage + 'static,
     TClientToServer: WebsocketMessage + 'static,
 {
+    let serde_alg = SerdeAlg::new(config.serde_alg);
+
     let url = Url::parse(&config.url).map_err(Error::BadUrl)?;
     let url = url.to_string();
     let ws = WebSocket::open(&url).map_err(|e| Error::SetupConnection(e.to_string()))?;
@@ -75,6 +80,7 @@ where
         fn_client_to_server: config.fn_client_to_server,
         fn_server_to_client: config.fn_server_to_client,
         ch_tx_connection_state,
+        serde_alg,
     };
     let (ch_rx_input_to_send, ch_tx_receive_to_output) = ws_general.spawn();
 

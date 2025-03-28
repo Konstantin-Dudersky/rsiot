@@ -1,6 +1,9 @@
 //! Конфигурация websocket-клиента
 
-use crate::{components_config::websocket_general::WebsocketMessage, message::Message};
+use crate::{
+    components_config::websocket_general::WebsocketMessage, message::Message,
+    serde_utils::SerdeAlgKind,
+};
 
 /// Преобразование входящих сообщений в текст для отправки на сервер
 pub type FnClientToServer<TMsg, TClientToServer> = fn(&Message<TMsg>) -> Option<TClientToServer>;
@@ -15,6 +18,9 @@ where
     TServerToClient: WebsocketMessage,
     TClientToServer: WebsocketMessage,
 {
+    /// Алгоритм сериализации / десериализации
+    pub serde_alg: SerdeAlgKind,
+
     /// Адрес Websocket-сервера
     /// "ws://localhost:9001"
     pub url: String,
@@ -43,6 +49,7 @@ where
 {
     fn default() -> Self {
         Self {
+            serde_alg: SerdeAlgKind::Json,
             url: "ws://localhost:8000".into(),
             fn_client_to_server: |_| None,
             fn_server_to_client: |_| vec![],

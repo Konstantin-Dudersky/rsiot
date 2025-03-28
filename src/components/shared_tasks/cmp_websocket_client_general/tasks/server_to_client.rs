@@ -1,15 +1,18 @@
 use tokio::sync::mpsc;
+use tracing::warn;
 
 use crate::{
     components_config::{websocket_client::FnServerToClient, websocket_general::WebsocketMessage},
     message::{Message, MsgDataBound},
+    serde_utils::SerdeAlg,
 };
 
 pub struct ServerToClient<TMsg, TServerToClient> {
-    pub input: mpsc::Receiver<String>,
+    pub input: mpsc::Receiver<Vec<u8>>,
     pub output: mpsc::Sender<Message<TMsg>>,
     pub output_connection_state: mpsc::Sender<bool>,
     pub fn_output: FnServerToClient<TMsg, TServerToClient>,
+    pub serde_alg: SerdeAlg,
 }
 
 impl<TMsg, TServerToClient> ServerToClient<TMsg, TServerToClient>
@@ -20,9 +23,16 @@ where
     pub async fn spawn(mut self) -> super::Result<()> {
         let mut conn_state_sended = false;
 
-        while let Some(text) = self.input.recv().await {
-            let s2c: TServerToClient = serde_json::from_str(&text)
-                .map_err(|e| super::Error::Deserialization(e.to_string()))?;
+        while let Some(bytes) = self.input.recv().await {
+            let s2c = self.serde_alg.deserialize(&bytes);
+            let s2c = match s2c {
+                Ok(v) => v,
+                Err(e) => {
+                    warn!("Deserialization error: {:?}", e);
+                    continue;
+                }
+            };
+
             let msgs = (self.fn_output)(s2c);
 
             if !conn_state_sended {

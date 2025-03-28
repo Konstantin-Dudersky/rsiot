@@ -5,7 +5,7 @@ use tracing::trace;
 
 pub struct Receive {
     pub websocket_read: SplitStream<WebSocket>,
-    pub output: mpsc::Sender<String>,
+    pub output: mpsc::Sender<Vec<u8>>,
 }
 
 impl Receive {
@@ -16,13 +16,12 @@ impl Receive {
                 Ok(text) => text,
                 Err(_) => continue,
             };
-            let text = match text {
-                Message::Text(value) => value,
-                Message::Bytes(_) => todo!(),
+            let bytes = match text {
+                Message::Text(value) => value.as_bytes().to_vec(),
+                Message::Bytes(bytes) => bytes,
             };
-
             self.output
-                .send(text)
+                .send(bytes)
                 .await
                 .map_err(|_| super::Error::TokioSyncMpsc)?;
         }

@@ -1,8 +1,10 @@
 use tokio::sync::mpsc;
+use tracing::warn;
 
 use crate::{
     components_config::{websocket_client::FnClientToServer, websocket_general::WebsocketMessage},
     message::{Message, MsgDataBound},
+    serde_utils::SerdeAlg,
 };
 
 pub struct ClientToServer<TMsg, TClientToServer>
@@ -10,8 +12,9 @@ where
     TClientToServer: WebsocketMessage,
 {
     pub input: mpsc::Receiver<Message<TMsg>>,
-    pub output: mpsc::Sender<String>,
+    pub output: mpsc::Sender<Vec<u8>>,
     pub fn_input: FnClientToServer<TMsg, TClientToServer>,
+    pub serde_alg: SerdeAlg,
 }
 
 impl<TMsg, TClientToServer> ClientToServer<TMsg, TClientToServer>
@@ -24,11 +27,17 @@ where
             let c2s = (self.fn_input)(&msg);
             let Some(c2s) = c2s else { continue };
 
-            let text = serde_json::to_string(&c2s)
-                .map_err(|e| super::Error::Serialization(e.to_string()))?;
+            let bytes = self.serde_alg.serialize(&c2s);
+            let bytes = match bytes {
+                Ok(v) => v,
+                Err(e) => {
+                    warn!("Serialization error: {:?}", e);
+                    continue;
+                }
+            };
 
             self.output
-                .send(text)
+                .send(bytes)
                 .await
                 .map_err(|_| super::Error::TokioSyncMpsc)?;
         }

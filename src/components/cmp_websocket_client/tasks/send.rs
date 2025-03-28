@@ -5,14 +5,14 @@ use tokio_tungstenite::{
 };
 
 pub struct Send {
-    pub input: mpsc::Receiver<String>,
+    pub input: mpsc::Receiver<Vec<u8>>,
     pub websocket_write: SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, TungsteniteMessage>,
 }
 
 impl Send {
     pub async fn spawn(mut self) -> super::Result<()> {
-        while let Some(text) = self.input.recv().await {
-            let text = TungsteniteMessage::Text(text);
+        while let Some(bytes) = self.input.recv().await {
+            let text = TungsteniteMessage::Binary(bytes);
             self.websocket_write
                 .send(text)
                 .await

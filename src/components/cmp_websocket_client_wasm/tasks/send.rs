@@ -3,14 +3,14 @@ use gloo::net::websocket::{futures::WebSocket, Message};
 use tokio::sync::mpsc;
 
 pub struct Send {
-    pub input: mpsc::Receiver<String>,
+    pub input: mpsc::Receiver<Vec<u8>>,
     pub websocket_write: SplitSink<WebSocket, Message>,
 }
 
 impl Send {
     pub async fn spawn(mut self) -> super::Result<()> {
-        while let Some(text) = self.input.recv().await {
-            let text = Message::Text(text);
+        while let Some(bytes) = self.input.recv().await {
+            let text = Message::Bytes(bytes);
             self.websocket_write
                 .send(text)
                 .await
