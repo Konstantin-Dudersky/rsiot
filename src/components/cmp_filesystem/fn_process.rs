@@ -1,29 +1,116 @@
-use tokio::{fs::create_dir_all, task::JoinSet};
-use tracing::info;
+use tokio::fs::{read, try_exists, write};
+use tracing::warn;
 
-use crate::{executor::CmpInOut, message::MsgDataBound};
+use crate::{
+    executor::CmpInOut,
+    message::{Message, MsgDataBound},
+    serde_utils::SerdeAlg,
+};
 
-use super::{tasks, Config, Error};
+use super::{BufferBound, CallFnOutputKind, Config, Error};
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg, TBuffer>(
+    config: Config<TMsg, TBuffer>,
+    mut msg_bus: CmpInOut<TMsg>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
+    TBuffer: BufferBound,
 {
-    info!("cmp_filesystem: create folders");
-    create_dir_all(&config.directory)
-        .await
-        .map_err(Error::CreateDirError)?;
+    let serde_alg = SerdeAlg::new(config.serde_alg);
 
-    // Загрузка сообщений из файловой системы - выполняем один раз
-    tasks::output(config.directory.clone(), config.fn_output, in_out.clone()).await?;
+    // Проверяем, существует ли файл
+    let check_exist = try_exists(&config.filename).await;
+    let need_file_create = match check_exist {
+        Err(err) => {
+            warn!("Read file error: {:?}", err);
+            true
+        }
+        Ok(v) if !v => {
+            warn!("File {} not found", config.filename);
+            true
+        }
+        _ => false,
+    };
 
-    let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
-
-    task_set.spawn(tasks::input(config.directory, config.fn_input, in_out));
-
-    while let Some(res) = task_set.join_next().await {
-        res??;
+    // Создаем файл при необходимости
+    if need_file_create {
+        let buffer = TBuffer::default();
+        write_to_file(&config.filename, &serde_alg, &buffer).await?;
     }
 
+    // Читаем файл
+    let buffer = read_from_file(&config.filename, &serde_alg).await;
+    let mut buffer: TBuffer = match buffer {
+        Ok(buffer) => buffer,
+        Err(err) => {
+            warn!("Read file error: {:?}, maybe buffer struct changed", err);
+            TBuffer::default()
+        }
+    };
+
+    send_messages(config.fn_output, &buffer, &msg_bus).await?;
+
+    while let Ok(msg) = msg_bus.recv_input().await {
+        let Some(msg) = msg.get_custom_data() else {
+            continue;
+        };
+        let new_buffer = (config.fn_input)(&msg, &buffer);
+        let Some(new_buffer) = new_buffer else {
+            continue;
+        };
+        buffer = new_buffer;
+        write_to_file(&config.filename, &serde_alg, &buffer).await?;
+        if matches!(config.call_fn_output_kind, CallFnOutputKind::OnStartup) {
+            continue;
+        }
+        buffer = read_from_file(&config.filename, &serde_alg).await?;
+        send_messages(config.fn_output, &buffer, &msg_bus).await?;
+    }
+
+    Ok(())
+}
+
+async fn write_to_file<TBuffer>(
+    filename: &str,
+    serde_alg: &SerdeAlg,
+    buffer: &TBuffer,
+) -> super::Result<()>
+where
+    TBuffer: BufferBound,
+{
+    let buffer_bytes = serde_alg.serialize(buffer)?;
+    write(filename, buffer_bytes)
+        .await
+        .map_err(|e| Error::WriteFileError(e, filename.to_string()))?;
+    Ok(())
+}
+
+async fn read_from_file<TBuffer>(filename: &str, serde_alg: &SerdeAlg) -> super::Result<TBuffer>
+where
+    TBuffer: BufferBound,
+{
+    let buffer_bytes = read(filename).await.map_err(super::Error::ReadFileError)?;
+    let buffer: TBuffer = serde_alg.deserialize(&buffer_bytes)?;
+    Ok(buffer)
+}
+
+async fn send_messages<TMsg, TBuffer>(
+    fn_output: super::config::FnOutput<TMsg, TBuffer>,
+    buffer: &TBuffer,
+    msg_bus: &CmpInOut<TMsg>,
+) -> super::Result<()>
+where
+    TMsg: MsgDataBound,
+    TBuffer: BufferBound,
+{
+    let msgs = (fn_output)(buffer);
+    for msg in msgs {
+        let msg = Message::new_custom(msg);
+        msg_bus
+            .send_output(msg)
+            .await
+            .map_err(|_| super::Error::TokioMpscSend)?;
+    }
     Ok(())
 }

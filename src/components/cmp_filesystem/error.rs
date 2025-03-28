@@ -15,8 +15,8 @@ pub enum Error {
     #[error("TokioTaskJoin: {0}")]
     TokioTaskJoin(#[from] tokio::task::JoinError),
 
-    #[error("WriteFileError: {0}")]
-    WriteFileError(std::io::Error),
+    #[error("WriteFileError: {0}; filename: {1}")]
+    WriteFileError(std::io::Error, String),
 
     #[error("ReadFileError: {0}")]
     ReadFileError(std::io::Error),
@@ -24,11 +24,11 @@ pub enum Error {
     #[error("ReadDirEntryError: {0}")]
     ReadDirEntryError(std::io::Error),
 
-    #[error("CreateDirError: {0}")]
-    CreateDirError(std::io::Error),
+    #[error("TokioMpscSend")]
+    TokioMpscSend,
 
-    #[error("ReadDirError: {0}")]
-    ReadDirError(std::io::Error),
+    #[error(transparent)]
+    Serde(#[from] crate::serde_utils::Error),
 }
 
 impl From<Error> for ComponentError {

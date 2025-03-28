@@ -55,7 +55,7 @@ linux-embedded-hal = { version = "0.4.0", optional = true, features = [
     "spi",
 ], default-features = false }
 log = { version = "0.4.21", optional = true }
-reactive_stores = { version = "0.2.0-alpha", optional = true }
+reactive_stores = { version = "0.2.0-beta", optional = true }
 redis = { version = "0.25.0", features = ["tokio-comp"], optional = true }
 reqwest = { version = "0.12.14", features = ["json"], optional = true }
 rumqttc = { version = "0.24.0", optional = true }
@@ -153,11 +153,9 @@ tokio = { version = "^1.36.0", features = [
 embuild = { version = "0.31.3", features = ["espidf"] }
 cfg_aliases = "0.2.0"
 
-# TODO - delete
-# cc = "=1.1.30" # Necessary until a new version of `esp-idf-sys` is released
-
 [features]
 
+# TODO - удалить serde-json из дефолтных фич, когда все компоненты будут готовы
 default = ["serde-json"]
 
 ## Конфигурирование через переменные
@@ -182,6 +180,7 @@ logging = [
 single-thread = []
 
 serde-json = ["dep:serde_json"]
+serde-toml = ["dep:toml"]
 
 ## Компонент аутентификации
 cmp_auth = ["executor", "dep:jwt", "dep:hmac", "dep:sha2"]
@@ -364,10 +363,6 @@ path = "examples/cmp_esp_nvs/cmp_esp_nvs.rs"
 [[example]]
 name = "cmp_esp_led"
 path = "examples/cmp_esp/cmp_esp_led.rs"
-
-[[example]]
-name = "cmp_filesystem"
-path = "./examples/cmp_filesystem/cmp_filesystem.rs"
 
 [[example]]
 name = "cmp_linux_serial_master"
