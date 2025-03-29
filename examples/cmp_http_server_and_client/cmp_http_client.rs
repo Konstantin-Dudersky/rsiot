@@ -23,6 +23,7 @@ async fn main() -> anyhow::Result<()> {
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{Message, MsgDataBound, MsgKey},
+        serde_utils::SerdeAlgKind,
     };
 
     // Message -------------------------------------------------------------------------------------
@@ -65,8 +66,9 @@ async fn main() -> anyhow::Result<()> {
     };
 
     let http_config = cmp_http_client::Config::<Data> {
-        base_url: "http://192.168.71.1:8010",
-        // base_url: "http://localhost:8010".into(),
+        serde_alg: SerdeAlgKind::Json,
+        // base_url: "http://192.168.71.1:8010",
+        base_url: "http://localhost:8010".into(),
         timeout: Duration::from_secs(5),
         requests_input: vec![cmp_http_client::RequestInput {
             fn_input: |msg| {

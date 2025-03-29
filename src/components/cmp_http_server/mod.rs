@@ -34,12 +34,11 @@ mod shared_state;
 mod tasks;
 
 pub use crate::components_config::http_server::{
-    GetEndpoint, GetEndpointConfig, PutEndpoint, PutEndpointConfig,
+    GetEndpoint, GetEndpointConfig, GetEndpointsCollection, PutEndpoint, PutEndpointConfig,
+    PutEndpointsCollection,
 };
 pub use component::Cmp;
 pub use config::Config;
 pub use error::Error;
 
 type Result<T> = std::result::Result<T, Error>;
-type GetEndpointsHashMap<TMsg> = std::collections::HashMap<String, Box<dyn GetEndpoint<TMsg>>>;
-type PutEndpointsHashMap<TMsg> = std::collections::HashMap<String, Box<dyn PutEndpoint<TMsg>>>;

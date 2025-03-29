@@ -1,7 +1,7 @@
 //! Запуск:
 //!
 //! ```bash
-//! cargo run --example cmp_http_server --features cmp_http_server
+//! cargo run --example cmp_http_server --features="cmp_http_server, serde_json"
 //! cargo run --example cmp_http_server --target x86_64-unknown-linux-gnu --features cmp_http_server, single-thread
 //!
 
@@ -26,6 +26,7 @@ fn main() -> anyhow::Result<()> {
         components_config::http_server::PutEndpointConfig,
         executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{Message, MsgDataBound, MsgKey},
+        serde_utils::SerdeAlgKind,
     };
 
     #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
@@ -61,18 +62,17 @@ fn main() -> anyhow::Result<()> {
     let http_server_config = cmp_http_server::Config {
         port: 8010,
         get_endpoints: vec![Box::new(GetEndpointConfig {
+            serde_alg: SerdeAlgKind::Json,
             path: "/data/test",
             data: ServerToClient::default(),
             fn_input: |msg, data| {
-                let Some(msg) = msg.get_custom_data() else {
-                    return;
-                };
                 if let Data::Counter(counter) = msg {
-                    data.counter = counter
+                    data.counter = *counter
                 }
             },
         })],
         put_endpoints: vec![Box::new(PutEndpointConfig {
+            serde_alg: SerdeAlgKind::Json,
             path: "/enter",
             fn_output: |data: ClientToServer| match data {
                 ClientToServer::NoData => None,

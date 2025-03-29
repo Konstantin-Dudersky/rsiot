@@ -19,6 +19,7 @@ async fn main() {
         executor::{ComponentExecutor, ComponentExecutorConfig},
         logging::configure_logging,
         message::*,
+        serde_utils::SerdeAlgKind,
     };
     use tokio::task::LocalSet;
     use tracing::{level_filters::LevelFilter, Level};
@@ -42,31 +43,28 @@ async fn main() {
         port: 8010,
         get_endpoints: vec![
             Box::new(GetEndpointConfig {
+                serde_alg: SerdeAlgKind::Json,
                 path: "/data/test",
                 data: ServerToClient::default(),
                 fn_input: |msg, data| {
-                    let Some(msg) = msg.get_custom_data() else {
-                        return;
-                    };
                     if let Custom::Counter(counter) = msg {
-                        data.counter = counter
+                        data.counter = *counter
                     }
                 },
             }),
             Box::new(GetEndpointConfig {
+                serde_alg: SerdeAlgKind::Json,
                 path: "/data/test2",
                 data: ServerToClient::default(),
                 fn_input: |msg, data| {
-                    let Some(msg) = msg.get_custom_data() else {
-                        return;
-                    };
                     if let Custom::Counter(counter) = msg {
-                        data.counter = counter
+                        data.counter = *counter
                     }
                 },
             }),
         ],
         put_endpoints: vec![Box::new(PutEndpointConfig {
+            serde_alg: SerdeAlgKind::Json,
             path: "/enter",
             fn_output: |data: ClientToServer| match data {
                 ClientToServer::NoData => None,

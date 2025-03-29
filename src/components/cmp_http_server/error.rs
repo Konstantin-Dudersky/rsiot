@@ -47,7 +47,7 @@ pub enum Error {
     TaskUpdateGetEndpoints,
 
     #[error(transparent)]
-    JsonParseError(#[from] serde_json::Error),
+    Serde(#[from] crate::serde_utils::Error),
 }
 
 /// Преобразование ошибки в понятный пользователю ответ

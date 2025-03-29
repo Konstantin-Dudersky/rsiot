@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use crate::message::MsgDataBound;
+use crate::{message::MsgDataBound, serde_utils::SerdeAlgKind};
 
 use super::{request_input::RequestInput, request_periodic::RequestPeriodic};
 
@@ -10,14 +10,17 @@ pub struct Config<TMessage>
 where
     TMessage: MsgDataBound,
 {
+    /// Алгоритм сериализации / десериализации
+    pub serde_alg: SerdeAlgKind,
+
     /// URL сервера
     ///
     /// *Примеры:*
     ///
     /// ```
-    /// base_url: "http://10.0.6.5:80"
+    /// base_url: "http://10.0.6.5:80".into()
     /// ```
-    pub base_url: &'static str,
+    pub base_url: String,
     /// Таймаут запроса
     pub timeout: Duration,
     /// Запросы, которые формируются на основе входящих сообщений
@@ -30,14 +33,18 @@ where
 mod tests {
     use std::time::Duration;
 
-    use crate::message::{example_message::*, *};
+    use crate::{
+        message::{example_message::*, *},
+        serde_utils::SerdeAlgKind,
+    };
 
     use super::super::*;
 
     #[test]
     fn connect_with_http_server() {
         Config::<Custom> {
-            base_url: "http://10.0.6.5:80",
+            serde_alg: SerdeAlgKind::Json,
+            base_url: "http://10.0.6.5:80".into(),
             timeout: Duration::from_secs(5),
             requests_input: vec![RequestInput {
                 fn_input: |msg| {

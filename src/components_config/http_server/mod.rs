@@ -1,74 +1,17 @@
 //! Конфигурация HTTP-сервера
-//!
-//! Тестирование:
-//!
-//! ```bash
-//! cargo test -p rsiot-components-config --doc http_server
-//! ```
 
+mod config;
+mod content_types;
 mod get_endpoint;
+mod get_endpoints_collection;
 mod handlers;
 mod put_endpoint;
+mod put_endpoints_collection;
 
-pub use get_endpoint::{create_get_endpoints_hashmap, GetEndpoint, GetEndpointConfig};
-pub use handlers::{handler_get, handler_info, handler_put};
-pub use put_endpoint::{create_put_endpoints_hashmap, PutEndpoint, PutEndpointConfig};
-
-use crate::message::*;
-
-/// Конфигурация компонента http-server
-#[derive(Clone, Debug)]
-pub struct Config<TMsg>
-where
-    TMsg: MsgDataBound,
-{
-    /// Порт, через который доступен сервер
-    pub port: u16,
-
-    /// Конфигурация точек GET
-    pub get_endpoints: Vec<Box<dyn GetEndpoint<TMsg>>>,
-
-    /// Конфигурация точек PUT
-    pub put_endpoints: Vec<Box<dyn PutEndpoint<TMsg>>>,
-}
-
-/// Коллекция точек GET
-pub type GetEndpointsHashMap<TMsg> = std::collections::HashMap<String, Box<dyn GetEndpoint<TMsg>>>;
-/// Коллекция точек PUT
-pub type PutEndpointsHashMap<TMsg> = std::collections::HashMap<String, Box<dyn PutEndpoint<TMsg>>>;
-
-#[cfg(test)]
-mod tests {
-    use super::Config;
-    use crate::message::example_message::*;
-
-    #[allow(clippy::no_effect)]
-    #[test]
-    fn stub() {
-        Config::<Custom> {
-            port: 8000,
-            get_endpoints: vec![],
-            put_endpoints: vec![],
-        };
-    }
-
-    #[allow(clippy::no_effect)]
-    #[test]
-    fn fn_input_json() {
-        Config::<Custom> {
-            port: 8000,
-            get_endpoints: vec![],
-            put_endpoints: vec![],
-        };
-    }
-
-    #[allow(clippy::no_effect)]
-    #[test]
-    fn fn_output_json() {
-        Config::<Custom> {
-            port: 8000,
-            get_endpoints: vec![],
-            put_endpoints: vec![],
-        };
-    }
-}
+pub use config::Config;
+pub use content_types::ContentType;
+pub use get_endpoint::{GetEndpoint, GetEndpointConfig};
+pub use get_endpoints_collection::GetEndpointsCollection;
+pub use handlers::handler_info;
+pub use put_endpoint::{PutEndpoint, PutEndpointConfig};
+pub use put_endpoints_collection::PutEndpointsCollection;

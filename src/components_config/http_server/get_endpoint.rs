@@ -1,17 +1,20 @@
-//! Попытка переделать HTTP сервер
-//!
-//! Структура храняния данных точки GET
+//! Структура хранения данных точки GET
 
-use std::{collections::HashMap, fmt::Debug};
+use std::fmt::Debug;
 
 use serde::{de::DeserializeOwned, Serialize};
-use serde_json::to_string;
 
-use crate::message::{Message, MsgDataBound};
+use crate::{
+    message::MsgDataBound,
+    serde_utils::{self, SerdeAlg, SerdeAlgKind},
+};
 
 /// Конфигурация отдельной точки GET
 #[derive(Clone, Debug)]
 pub struct GetEndpointConfig<TMsg, TData> {
+    /// Алгоритм сериализации / десериализации
+    pub serde_alg: SerdeAlgKind,
+
     /// Путь
     ///
     /// Примеры:
@@ -31,7 +34,7 @@ pub struct GetEndpointConfig<TMsg, TData> {
     pub data: TData,
 
     /// Функция обновления данных на основе входящих сообщений
-    pub fn_input: fn(&Message<TMsg>, &mut TData),
+    pub fn_input: fn(&TMsg, &mut TData),
 }
 
 impl<TMsg, TData> GetEndpoint<TMsg> for GetEndpointConfig<TMsg, TData>
@@ -43,12 +46,13 @@ where
         self.path
     }
 
-    fn fn_input(&mut self, msg: &Message<TMsg>) {
+    fn fn_input(&mut self, msg: &TMsg) {
         (self.fn_input)(msg, &mut self.data)
     }
 
-    fn get_json_data(&self) -> Result<String, serde_json::Error> {
-        to_string(&self.data)
+    fn serialize(&self) -> Result<Vec<u8>, serde_utils::Error> {
+        let serde_alg = SerdeAlg::new(self.serde_alg);
+        serde_alg.serialize(&self.data)
     }
 
     fn clone_dyn(&self) -> Box<dyn GetEndpoint<TMsg>> {
@@ -67,11 +71,11 @@ where
     /// Получить путь для роутера
     fn get_path(&self) -> &str;
 
-    /// Получить сохраненные данные в формате JSON
-    fn get_json_data(&self) -> Result<String, serde_json::Error>;
+    /// Сериализация данных
+    fn serialize(&self) -> Result<Vec<u8>, serde_utils::Error>;
 
     /// Обновление данных на основе входящих сообщений
-    fn fn_input(&mut self, msg: &Message<TMsg>);
+    fn fn_input(&mut self, msg: &TMsg);
 
     /// Поддержка клонирования
     fn clone_dyn(&self) -> Box<dyn GetEndpoint<TMsg>>;
@@ -81,20 +85,6 @@ impl<TMsg> Clone for Box<dyn GetEndpoint<TMsg>> {
     fn clone(&self) -> Self {
         self.clone_dyn()
     }
-}
-
-/// Создать коллекцию точек GET на основе конфигурации
-pub fn create_get_endpoints_hashmap<TMsg>(
-    config_endpoints: &[Box<dyn GetEndpoint<TMsg>>],
-) -> HashMap<String, Box<dyn GetEndpoint<TMsg>>>
-where
-    TMsg: MsgDataBound,
-{
-    let mut endpoints = HashMap::new();
-    for endpoint in config_endpoints {
-        endpoints.insert(endpoint.get_path().to_string(), endpoint.clone());
-    }
-    endpoints
 }
 
 #[cfg(test)]
@@ -118,11 +108,13 @@ mod tests {
         struct Data2 {}
 
         let end1 = GetEndpointConfig {
+            serde_alg: SerdeAlgKind::Json,
             path: "/1",
             data: Data1 {},
             fn_input: |_, _| (),
         };
         let end2 = GetEndpointConfig {
+            serde_alg: SerdeAlgKind::Json,
             path: "/2",
             data: Data2 {},
             fn_input: |_, _| (),

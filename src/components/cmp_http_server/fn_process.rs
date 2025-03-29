@@ -10,7 +10,7 @@ use tower_http::{
 use tracing::{info, Level};
 
 use crate::{
-    components_config::http_server::{create_get_endpoints_hashmap, create_put_endpoints_hashmap},
+    components_config::http_server::{GetEndpointsCollection, PutEndpointsCollection},
     executor::{join_set_spawn, CmpInOut, ComponentError},
     message::MsgDataBound,
 };
@@ -27,18 +27,12 @@ where
 {
     info!("Component started, configuration: {:?}", config);
 
-    let get_endpoints = create_get_endpoints_hashmap(&config.get_endpoints);
-    let get_endpoints_paths = get_endpoints
-        .keys()
-        .map(|k| k.to_string())
-        .collect::<Vec<String>>();
+    let get_endpoints = GetEndpointsCollection::new(&config.get_endpoints);
+    let get_endpoints_paths = get_endpoints.all_paths();
     let get_endpoints = Arc::new(Mutex::new(get_endpoints));
 
-    let put_endpoints = create_put_endpoints_hashmap(&config.put_endpoints);
-    let put_endpoints_paths = put_endpoints
-        .keys()
-        .map(|k| k.to_string())
-        .collect::<Vec<String>>();
+    let put_endpoints = PutEndpointsCollection::new(&config.put_endpoints);
+    let put_endpoints_paths = put_endpoints.all_paths();
     let put_endpoints = Arc::new(Mutex::new(put_endpoints));
 
     // Общее состояние

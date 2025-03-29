@@ -4,14 +4,14 @@ use tokio::sync::Mutex;
 
 use crate::{executor::CmpInOut, message::MsgDataBound};
 
-use super::GetEndpointsHashMap;
+use super::GetEndpointsCollection;
 
 pub struct UpdateGetEndpoints<TMsg>
 where
     TMsg: MsgDataBound,
 {
     pub input: CmpInOut<TMsg>,
-    pub get_endpoints: Arc<Mutex<GetEndpointsHashMap<TMsg>>>,
+    pub get_endpoints: Arc<Mutex<GetEndpointsCollection<TMsg>>>,
 }
 
 impl<TMsg> UpdateGetEndpoints<TMsg>
@@ -20,11 +20,11 @@ where
 {
     pub async fn spawn(mut self) -> super::Result<()> {
         while let Ok(msg) = self.input.recv_input().await {
+            let Some(msg) = msg.get_custom_data() else {
+                continue;
+            };
             let mut get_endpoints = self.get_endpoints.lock().await;
-
-            for endpoint in get_endpoints.values_mut() {
-                endpoint.fn_input(&msg);
-            }
+            get_endpoints.fn_input(&msg);
         }
 
         Err(super::Error::TaskUpdateGetEndpoints)

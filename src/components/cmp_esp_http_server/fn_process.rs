@@ -11,17 +11,12 @@ use tokio::{sync::Mutex, task::JoinSet, time::sleep};
 use tracing::{info, trace, warn};
 
 use crate::{
-    components_config::http_server::{
-        create_get_endpoints_hashmap, create_put_endpoints_hashmap, handler_get, handler_put,
-    },
+    components_config::http_server::{GetEndpointsCollection, PutEndpointsCollection},
     executor::{join_set_spawn, CmpInOut},
     message::{system_messages, MsgData, MsgDataBound},
 };
 
-use super::{
-    config::{handler_info, GetEndpointsHashMap, PutEndpointsHashMap},
-    tasks, Config,
-};
+use super::{config::handler_info, tasks, Config};
 
 /// Заголовки для разрешения CORS
 const HEADERS: [(&str, &str); 4] = [
@@ -35,18 +30,12 @@ pub async fn fn_process<TMsg>(mut in_out: CmpInOut<TMsg>, config: Config<TMsg>) 
 where
     TMsg: MsgDataBound + 'static,
 {
-    let get_endpoints = create_get_endpoints_hashmap(&config.get_endpoints);
-    let get_endpoints_paths = get_endpoints
-        .keys()
-        .map(|k| k.to_string())
-        .collect::<Vec<String>>();
+    let get_endpoints = GetEndpointsCollection::new(&config.get_endpoints);
+    let get_endpoints_paths = get_endpoints.all_paths();
     let get_endpoints = Arc::new(Mutex::new(get_endpoints));
 
-    let put_endpoints = create_put_endpoints_hashmap(&config.put_endpoints);
-    let put_endpoints_paths = put_endpoints
-        .keys()
-        .map(|k| k.to_string())
-        .collect::<Vec<String>>();
+    let put_endpoints = PutEndpointsCollection::new(&config.put_endpoints);
+    let put_endpoints_paths = put_endpoints.all_paths();
     let put_endpoints = Arc::new(Mutex::new(put_endpoints));
 
     // Необходимо подождать, пока поднимется Wi-Fi
@@ -136,8 +125,8 @@ where
 
 fn route_root<TMsg>(
     request: Request<&mut EspHttpConnection>,
-    get_endpoints: Arc<Mutex<GetEndpointsHashMap<TMsg>>>,
-    put_endpoints: Arc<Mutex<PutEndpointsHashMap<TMsg>>>,
+    get_endpoints: Arc<Mutex<GetEndpointsCollection<TMsg>>>,
+    put_endpoints: Arc<Mutex<PutEndpointsCollection<TMsg>>>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
@@ -147,13 +136,13 @@ where
         &put_endpoints.blocking_lock(),
     );
 
-    send_response(request, 200, &body)?;
+    send_response(request, 200, body.as_bytes())?;
     Ok(())
 }
 
 fn route_get<TMsg>(
     request: Request<&mut EspHttpConnection>,
-    get_endpoints: Arc<Mutex<GetEndpointsHashMap<TMsg>>>,
+    get_endpoints: Arc<Mutex<GetEndpointsCollection<TMsg>>>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
@@ -161,20 +150,18 @@ where
     let path = request.uri();
     trace!("Get request, path: {}", path);
 
-    let response_body = handler_get(
-        path,
-        &get_endpoints.blocking_lock(),
-        super::Error::UnknownPath,
-        super::Error::SerdeJson,
-    )?;
+    let response_bytes = {
+        let get_endpoints = get_endpoints.blocking_lock();
+        get_endpoints.handler(path, super::Error::UnknownPath, super::Error::Serde)?
+    };
 
-    send_response(request, 200, &response_body)?;
+    send_response(request, 200, &response_bytes)?;
     Ok(())
 }
 
 fn route_put<TMsg>(
     mut request: Request<&mut EspHttpConnection>,
-    put_endpoints: Arc<Mutex<PutEndpointsHashMap<TMsg>>>,
+    put_endpoints: Arc<Mutex<PutEndpointsCollection<TMsg>>>,
     msg_bus: CmpInOut<TMsg>,
 ) -> super::Result<()>
 where
@@ -185,17 +172,15 @@ where
 
     let body = read_request_body(&mut request)?;
 
-    let msg = handler_put(
-        path,
-        &body,
-        &put_endpoints.blocking_lock(),
-        super::Error::UnknownPath,
-        super::Error::SerdeJson,
-    );
+    let msg = {
+        let put_endpoints = put_endpoints.blocking_lock();
+        put_endpoints.handler(path, &body, super::Error::UnknownPath, super::Error::Serde)
+    };
+
     let msg = match msg {
         Ok(val) => val,
         Err(err) => {
-            send_response(request, 400, &err.to_string())?;
+            send_response(request, 400, err.to_string().as_bytes())?;
             return Err(err);
         }
     };
@@ -207,7 +192,7 @@ where
     Ok(())
 }
 
-fn read_request_body(request: &mut Request<&mut EspHttpConnection>) -> super::Result<String> {
+fn read_request_body(request: &mut Request<&mut EspHttpConnection>) -> super::Result<Vec<u8>> {
     let len = request
         .content_len()
         .ok_or(super::Error::RequestContentLen)? as usize;
@@ -218,20 +203,19 @@ fn read_request_body(request: &mut Request<&mut EspHttpConnection>) -> super::Re
         .read_exact(&mut buffer)
         .map_err(|e| super::Error::RequestReadBody(e.to_string()))?;
 
-    let body = String::from_utf8_lossy(&buffer);
-    Ok(body.to_string())
+    Ok(buffer)
 }
 
 fn send_response(
     request: Request<&mut EspHttpConnection>,
     status_code: u16,
-    body: &str,
+    body: &[u8],
 ) -> super::Result<()> {
     let mut response = request
         .into_response(status_code, None, &HEADERS)
         .map_err(super::Error::RequestIntoResponse)?;
     response
-        .write_all(body.as_bytes())
+        .write_all(body)
         .map_err(super::Error::ResponseWriteAll)?;
     Ok(())
 }

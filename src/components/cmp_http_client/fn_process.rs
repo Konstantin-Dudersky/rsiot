@@ -46,7 +46,7 @@ where
     TMsg: MsgDataBound + 'static,
 {
     // Парсим url
-    let url = Url::parse(config.base_url);
+    let url = Url::parse(&config.base_url);
     let url = match url {
         Ok(val) => val,
         Err(err) => {

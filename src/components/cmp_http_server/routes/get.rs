@@ -1,7 +1,8 @@
 use axum::extract;
 use axum::http::Uri;
+use axum::http::{header, HeaderMap};
 
-use crate::{components_config::http_server::handler_get, message::*};
+use crate::message::*;
 
 use super::super::shared_state::SharedState;
 
@@ -9,19 +10,22 @@ use super::super::shared_state::SharedState;
 pub async fn get<TMsg>(
     uri: Uri,
     extract::State(shared_state): extract::State<SharedState<TMsg>>,
-) -> Result<String, super::Error>
+) -> (HeaderMap, Result<Vec<u8>, super::Error>)
 where
     TMsg: MsgDataBound,
 {
     let path = uri.path();
-    let get_endpoints = shared_state.get_endpoints.lock().await;
 
-    let data = handler_get(
-        path,
-        &get_endpoints,
-        super::Error::UnknownPath,
-        super::Error::JsonParseError,
-    )?;
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        header::CONTENT_TYPE,
+        "text/plain; charset=utf-8".parse().unwrap(),
+    );
 
-    Ok(data)
+    let data = {
+        let get_endpoints = shared_state.get_endpoints.lock().await;
+        get_endpoints.handler(path, super::Error::UnknownPath, super::Error::Serde)
+    };
+
+    (headers, data)
 }

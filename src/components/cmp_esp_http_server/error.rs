@@ -1,6 +1,6 @@
 use esp_idf_svc::{io::EspIOError, sys::EspError};
 
-use crate::executor::ComponentError;
+use crate::{executor::ComponentError, serde_utils};
 
 /// Ошибки cmp_esp_http_server
 #[allow(missing_docs)]
@@ -16,7 +16,7 @@ pub enum Error {
     Component(#[from] ComponentError),
 
     #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error),
+    Serde(#[from] serde_utils::Error),
 
     #[error(transparent)]
     TokioTaskJoin(#[from] tokio::task::JoinError),
