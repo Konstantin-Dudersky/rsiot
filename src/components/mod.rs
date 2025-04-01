@@ -72,6 +72,14 @@ pub mod cmp_external_fn_process;
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
 pub mod cmp_filesystem;
 
+// #[cfg(feature = "cmp_http_client_2")]
+// #[cfg(any(
+//     aarch64_linux_android,
+//     aarch64_unknown_linux_gnu,
+//     x8664_unknown_linux_gnu
+// ))]
+// pub mod cmp_http_client;
+
 #[cfg(feature = "cmp_http_client")]
 #[cfg(any(
     aarch64_linux_android,

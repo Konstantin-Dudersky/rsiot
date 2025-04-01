@@ -1,7 +1,7 @@
 //! Запуск:
 //!
 //! ```bash
-//! cargo run --example cmp_http_client --features="cmp_http_client, serde_json"
+//! cargo run --example cmp_http_client --features cmp_http_client
 //! ```
 
 mod shared;
@@ -10,13 +10,17 @@ mod shared;
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     use serde::{Deserialize, Serialize};
+    use serde_json::from_str;
     use tokio::time::Duration;
     use tracing::{level_filters::LevelFilter, Level};
 
     use shared::{ClientToServer, ServerToClient};
 
     use rsiot::{
-        components::{cmp_http_client, cmp_inject_periodic, cmp_logger},
+        components::{
+            cmp_http_client::{self},
+            cmp_inject_periodic, cmp_logger,
+        },
         executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{Message, MsgDataBound, MsgKey},
         serde_utils::SerdeAlgKind,
@@ -66,37 +70,39 @@ async fn main() -> anyhow::Result<()> {
         // base_url: "http://192.168.71.1:8010",
         base_url: "http://localhost:8010".into(),
         timeout: Duration::from_secs(5),
-        requests_input: vec![Box::new(cmp_http_client::RequestInputConfig::<
-            Data,
-            (),
-            ClientToServer,
-        > {
-            serde_alg: SerdeAlgKind::Json,
-            request_kind: cmp_http_client::RequestKind::Put,
-            endpoint: "/enter".to_string(),
-            fn_create_request: |msg| match msg {
-                Data::CounterFromClient(counter) => {
-                    let c2s = ClientToServer::SetCounterFromClient(*counter);
-                    Some(c2s)
+        requests_input: vec![cmp_http_client::RequestInput {
+            fn_input: |msg| {
+                let msg = msg.get_custom_data()?;
+                match msg {
+                    Data::CounterFromClient(counter) => {
+                        let data = ClientToServer::SetCounterFromClient(counter);
+                        let body = serde_json::to_string(&data).unwrap();
+
+                        let param = cmp_http_client::HttpParam::Put {
+                            endpoint: "/enter".to_string(),
+                            body,
+                        };
+                        Some(param)
+                    }
+                    _ => None,
                 }
-                _ => None,
             },
-            fn_process_response_success: |_| vec![],
-            fn_process_response_error: Vec::new,
-        })],
-        requests_periodic: vec![Box::new(cmp_http_client::RequestPeriodicConfig::<
-            Data,
-            ServerToClient,
-            (),
-        > {
-            serde_alg: SerdeAlgKind::Json,
-            request_kind: cmp_http_client::RequestKind::Get,
-            endpoint: "/data/test".to_string(),
+            on_success: |_| Ok(vec![]),
+            on_failure: Vec::new,
+        }],
+        requests_periodic: vec![cmp_http_client::RequestPeriodic {
             period: Duration::from_millis(1000),
-            request_body: (),
-            fn_process_response_success: |s2c| vec![Data::CounterFromServer(s2c.counter)],
-            fn_process_response_error: Vec::new,
-        })],
+            http_param: cmp_http_client::HttpParam::Get {
+                endpoint: "/data/test".to_string(),
+            },
+            on_success: |body| {
+                let res = from_str::<ServerToClient>(body)?;
+                Ok(vec![Message::new_custom(Data::CounterFromServer(
+                    res.counter,
+                ))])
+            },
+            on_failure: Vec::new,
+        }],
     };
 
     let executor_config = ComponentExecutorConfig {

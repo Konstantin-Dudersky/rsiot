@@ -1,0 +1,26 @@
+[package]
+name = "hmi-ui"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+strum = { version = "*", features = ["derive"] }
+rsiot = { path = "../../../", features = [
+    "cmp_leptos",
+    "cmp_websocket_client_wasm",
+    "logging",
+    "single-thread",
+] }
+tokio = { version = "1.37.0", features = ["rt"] }
+tracing = "*"
+gloo = { version = "0.11.0", features = [
+    "dialogs",
+    "futures",
+    "net",
+    "storage",
+    "timers",
+    "utils",
+] }
+
+leptos = { version = "0.7.3", features = ["csr"] }

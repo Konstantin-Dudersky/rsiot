@@ -8,7 +8,14 @@
     feature = "cmp_http_client",
     feature = "cmp_http_client_wasm",
 ))]
+pub mod http_client_old;
+
 pub mod http_client;
+
+pub mod http_general;
+
+#[cfg(any(feature = "cmp_http_server", feature = "cmp_esp"))]
+pub mod http_server;
 
 #[cfg(feature = "cmp_influxdb")]
 pub mod influxdb_v2;
@@ -18,9 +25,6 @@ pub mod modbus_client;
 
 #[cfg(any(feature = "cmp_mqtt_client", feature = "cmp_esp"))]
 pub mod mqtt_client;
-
-#[cfg(any(feature = "cmp_http_server", feature = "cmp_esp"))]
-pub mod http_server;
 
 #[cfg(feature = "cmp_redis_client")]
 pub mod redis_client;

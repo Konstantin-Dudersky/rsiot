@@ -9,7 +9,9 @@ use serde::{de::DeserializeOwned, Serialize};
 /// ```rust
 /// #[derive(Clone, Debug, Deserialize, IntoStaticStr, Serialize)]
 /// ```
-pub trait WebsocketMessage:
-    Clone + std::fmt::Debug + DeserializeOwned + Into<&'static str> + Send + Serialize + Sync
+pub trait HttpDataBound:
+    Clone + std::fmt::Debug + Default + DeserializeOwned + Send + Serialize + Sync
 {
 }
+
+impl HttpDataBound for () {}

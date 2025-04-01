@@ -24,16 +24,19 @@ where
     /// Таймаут запроса
     pub timeout: Duration,
     /// Запросы, которые формируются на основе входящих сообщений
-    pub requests_input: Vec<Box<dyn RequestInput<TMessage>>>,
+    pub requests_input: Vec<RequestInput<TMessage>>,
     /// Периодические запросы
-    pub requests_periodic: Vec<Box<dyn RequestPeriodic<TMessage>>>,
+    pub requests_periodic: Vec<RequestPeriodic<TMessage>>,
 }
 
 #[cfg(test)]
 mod tests {
     use std::time::Duration;
 
-    use crate::{message::example_message::*, serde_utils::SerdeAlgKind};
+    use crate::{
+        message::{example_message::*, *},
+        serde_utils::SerdeAlgKind,
+    };
 
     use super::super::*;
 
@@ -43,23 +46,28 @@ mod tests {
             serde_alg: SerdeAlgKind::Json,
             base_url: "http://10.0.6.5:80".into(),
             timeout: Duration::from_secs(5),
-            requests_input: vec![Box::new(RequestInputConfig::<Custom, (), ()> {
-                serde_alg: SerdeAlgKind::Json,
-                request_kind: RequestKind::Post,
-                endpoint: "/messages".into(),
-                fn_create_request: |_msg| Some(()),
-                fn_process_response_success: |_| vec![],
-                fn_process_response_error: Vec::new,
-            })],
-            requests_periodic: vec![Box::new(RequestPeriodicConfig::<Custom, (), ()> {
-                serde_alg: SerdeAlgKind::Json,
-                request_kind: RequestKind::Get,
-                endpoint: "/messages".into(),
+            requests_input: vec![RequestInput {
+                fn_input: |msg| {
+                    let param = HttpParam::Post {
+                        endpoint: "/messages".into(),
+                        body: msg.serialize().unwrap(),
+                    };
+                    Some(param)
+                },
+                on_success: |_| Ok(vec![]),
+                on_failure: Vec::new,
+            }],
+            requests_periodic: vec![RequestPeriodic {
                 period: Duration::from_secs(2),
-                request_body: (),
-                fn_process_response_success: |_| vec![],
-                fn_process_response_error: Vec::new,
-            })],
+                http_param: HttpParam::Get {
+                    endpoint: "/messages".into(),
+                },
+                on_success: |data| {
+                    let msgs = Message::deserialize_many(data)?;
+                    Ok(msgs)
+                },
+                on_failure: Vec::new,
+            }],
         };
     }
 }

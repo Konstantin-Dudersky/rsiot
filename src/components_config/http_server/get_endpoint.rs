@@ -11,7 +11,7 @@ use crate::{
 
 /// Конфигурация отдельной точки GET
 #[derive(Clone, Debug)]
-pub struct GetEndpointConfig<TMsg, TData> {
+pub struct GetEndpointConfig<TMsg, TServerToClient> {
     /// Алгоритм сериализации / десериализации
     pub serde_alg: SerdeAlgKind,
 
@@ -31,28 +31,28 @@ pub struct GetEndpointConfig<TMsg, TData> {
     /// ```rust
     /// #[derive(Clone, Debug, Default, Deserialize, Serialize)]
     /// ```
-    pub data: TData,
+    pub server_to_client_data: TServerToClient,
 
     /// Функция обновления данных на основе входящих сообщений
-    pub fn_input: fn(&TMsg, &mut TData),
+    pub fn_input: fn(&TMsg, &mut TServerToClient),
 }
 
-impl<TMsg, TData> GetEndpoint<TMsg> for GetEndpointConfig<TMsg, TData>
+impl<TMsg, TServerToClient> GetEndpoint<TMsg> for GetEndpointConfig<TMsg, TServerToClient>
 where
     TMsg: 'static + MsgDataBound,
-    TData: 'static + Clone + Debug + DeserializeOwned + Serialize + Send + Sync,
+    TServerToClient: 'static + Clone + Debug + DeserializeOwned + Serialize + Send + Sync,
 {
     fn get_path(&self) -> &str {
         self.path
     }
 
     fn fn_input(&mut self, msg: &TMsg) {
-        (self.fn_input)(msg, &mut self.data)
+        (self.fn_input)(msg, &mut self.server_to_client_data)
     }
 
     fn serialize(&self) -> Result<Vec<u8>, serde_utils::Error> {
         let serde_alg = SerdeAlg::new(self.serde_alg);
-        serde_alg.serialize(&self.data)
+        serde_alg.serialize(&self.server_to_client_data)
     }
 
     fn clone_dyn(&self) -> Box<dyn GetEndpoint<TMsg>> {
@@ -60,7 +60,7 @@ where
     }
 }
 
-/// Трейт для обеспечения логики работы отдельной точик GET
+/// Трейт для обеспечения логики работы отдельной точки GET
 ///
 /// В разных точках хранят данные в разных структурах (поле `data`). Трейт нужен для обработки в
 /// массиве
@@ -110,13 +110,13 @@ mod tests {
         let end1 = GetEndpointConfig {
             serde_alg: SerdeAlgKind::Json,
             path: "/1",
-            data: Data1 {},
+            server_to_client_data: Data1 {},
             fn_input: |_, _| (),
         };
         let end2 = GetEndpointConfig {
             serde_alg: SerdeAlgKind::Json,
             path: "/2",
-            data: Data2 {},
+            server_to_client_data: Data2 {},
             fn_input: |_, _| (),
         };
         vec_trait.push(Box::new(end1));
