@@ -29,6 +29,9 @@ pub enum Error {
     #[error("TaskInput")]
     TaskEndInput,
 
+    #[error("TaskOutput")]
+    TaskEndOutput,
+
     #[error(transparent)]
     TaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus::Error),
 }

@@ -33,7 +33,7 @@ where
             Ok(val) => val,
             Err(err) => {
                 warn!("Error loading messages: {}", err);
-                return Ok(());
+                HashMap::new()
             }
         };
 
@@ -64,6 +64,6 @@ where
                 .map_err(|e| super::Error::TokioSyncMpsc(e.to_string()))?;
         }
 
-        Ok(())
+        Err(super::Error::TaskEndOutput)
     }
 }
