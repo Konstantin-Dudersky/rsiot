@@ -38,6 +38,13 @@ where
     let (channel_plc_to_filter_send, channel_plc_to_filter_recv) = mpsc::channel(buffer_size);
     let (channel_filter_to_output_send, channel_filter_to_output_recv) = mpsc::channel(buffer_size);
 
+    // Сохранение входных сообщений в кеше
+    let task = tasks::SaveInputInCache {
+        in_out: in_out.clone(),
+        input_msg_cache: input_msg_cache.clone(),
+    };
+    join_set_spawn(&mut task_set, task.spawn());
+
     // Ожидаем данные для восстановления памяти
     let fb_main = tasks::Retention {
         cmp_in_out: in_out.clone(),
@@ -47,13 +54,6 @@ where
     .spawn()
     .await?;
     let fb_main = Arc::new(Mutex::new(fb_main));
-
-    // Сохранение входных сообщений в кеше
-    let task = tasks::SaveInputInCache {
-        in_out: in_out.clone(),
-        input_msg_cache: input_msg_cache.clone(),
-    };
-    join_set_spawn(&mut task_set, task.spawn());
 
     // Выполнение цикла ПЛК
     let task = tasks::PlcLoop {
