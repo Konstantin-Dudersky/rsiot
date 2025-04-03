@@ -33,6 +33,11 @@ where
             Ok(val) => val,
             Err(err) => {
                 warn!("Error loading messages: {}", err);
+                match self.storage_kind {
+                    ConfigStorageKind::LocalStorage => LocalStorage::clear(),
+                    ConfigStorageKind::SessionStorage => SessionStorage::clear(),
+                }
+                warn!("Storage {:?} cleared", self.storage_kind);
                 HashMap::new()
             }
         };

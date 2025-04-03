@@ -55,7 +55,7 @@ where
 }
 
 /// Вид хранилища - localstorage или sessionStorage
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub enum ConfigStorageKind {
     /// Сохраняет данные при перезапуске браузера
     LocalStorage,
