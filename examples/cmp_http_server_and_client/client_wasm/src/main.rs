@@ -4,29 +4,38 @@ use std::time::Duration;
 
 use leptos::task::{spawn_local, Executor};
 use rsiot::{
-    components::{cmp_inject_periodic, cmp_logger, cmp_websocket_client_wasm},
+    components::{cmp_http_client_wasm, cmp_inject_periodic, cmp_logger},
     executor::{ComponentExecutor, ComponentExecutorConfig},
     logging::configure_logging,
     message::*,
+    serde_utils::SerdeAlgKind,
 };
 use tokio::task::LocalSet;
 use tracing::Level;
 
-use shared::{ClientMessages, ClientToServer, ServerToClient};
+use shared::{ClientToServer, ServerToClient};
 
 fn main() {
     configure_logging("debug").unwrap();
 
+    // Message -------------------------------------------------------------------------------------
+    #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
+    enum Data {
+        CounterFromServer(f64),
+        CounterFromClient(u8),
+    }
+
+    impl MsgDataBound for Data {}
+
     // cmp_logger ----------------------------------------------------------------------------------
-    let config_logger = cmp_logger::Config {
+    let logger_config = cmp_logger::Config {
         level: Level::INFO,
         fn_input: |msg| {
             let Some(msg) = msg.get_custom_data() else {
                 return Ok(None);
             };
             let text = match msg {
-                ClientMessages::ServerCounter(counter) => format!("Server counter: {}", counter),
-                ClientMessages::ConnectionState(state) => format!("Connection state: {}", state),
+                Data::CounterFromServer(data) => format!("Counter from server: {}", data),
                 _ => return Ok(None),
             };
             Ok(Some(text))
@@ -34,47 +43,58 @@ fn main() {
     };
 
     // cmp_inject_periodic -------------------------------------------------------------------------
-    let mut counter_client = 0;
-    let config_inject_periodic = cmp_inject_periodic::Config {
-        period: Duration::from_millis(100),
+    let mut counter = 0;
+    let inject_config = cmp_inject_periodic::Config {
+        period: Duration::from_millis(1000),
         fn_periodic: move || {
-            let msg = Message::new_custom(ClientMessages::CounterFromClient(counter_client));
-            counter_client = counter_client.wrapping_add(1);
+            let msg = Message::new_custom(Data::CounterFromClient(counter));
+            counter = counter.wrapping_add(1);
             vec![msg]
         },
     };
 
     // cmp_websocket_client_wasm -------------------------------------------------------------------
-    let config_websocket_client_wasm =
-        cmp_websocket_client_wasm::Config::<ClientMessages, ServerToClient, ClientToServer> {
-            url: "ws://localhost:8011",
-            fn_client_to_server: |msg| {
-                let msg = msg.get_custom_data()?;
-                let c2s = match msg {
-                    ClientMessages::CounterFromClient(counter) => {
-                        ClientToServer::ClientCounter(counter)
-                    }
-                    _ => return None,
-                };
-                Some(c2s)
+    let http_config = cmp_http_client_wasm::Config::<Data> {
+        serde_alg: SerdeAlgKind::Json,
+        // base_url: "http://192.168.71.1:8010",
+        base_url: "http://localhost:8010".into(),
+        timeout: Duration::from_secs(5),
+        requests_input: vec![Box::new(cmp_http_client_wasm::RequestInputConfig::<
+            Data,
+            (),
+            ClientToServer,
+        > {
+            serde_alg: SerdeAlgKind::Json,
+            request_kind: cmp_http_client_wasm::RequestKind::Put,
+            endpoint: "/enter".to_string(),
+            fn_create_request: |msg| match msg {
+                Data::CounterFromClient(counter) => {
+                    let c2s = ClientToServer::SetCounterFromClient(*counter);
+                    Some(c2s)
+                }
+                _ => None,
             },
-            fn_server_to_client: |s2c: ServerToClient| {
-                let msg = match s2c {
-                    ServerToClient::ServerCounter(counter) => {
-                        Message::new_custom(ClientMessages::ServerCounter(counter))
-                    }
-                };
-                vec![msg]
-            },
-            fn_connection_state: |state| {
-                Some(Message::new_custom(ClientMessages::ConnectionState(state)))
-            },
-        };
+            fn_process_response_success: |_| vec![],
+            fn_process_response_error: Vec::new,
+        })],
+        requests_periodic: vec![Box::new(cmp_http_client_wasm::RequestPeriodicConfig::<
+            Data,
+            ServerToClient,
+            (),
+        > {
+            serde_alg: SerdeAlgKind::Json,
+            request_kind: cmp_http_client_wasm::RequestKind::Get,
+            endpoint: "/data/test".to_string(),
+            period: Duration::from_millis(500),
+            request_body: (),
+            fn_process_response_success: |s2c| vec![Data::CounterFromServer(s2c.counter)],
+            fn_process_response_error: Vec::new,
+        })],
+    };
 
     // executor ------------------------------------------------------------------------------------
     let config_executor = ComponentExecutorConfig {
         buffer_size: 1000,
-        service: example_service::Service::example_service,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(200),
     };
@@ -86,16 +106,13 @@ fn main() {
     context.spawn_local(async move {});
 
     context.spawn_local(async move {
-        ComponentExecutor::<ClientMessages, example_service::Service>::new(config_executor)
-            .add_cmp(cmp_websocket_client_wasm::Cmp::new(
-                config_websocket_client_wasm,
-            ))
-            .add_cmp(cmp_logger::Cmp::new(config_logger))
-            .add_cmp(cmp_inject_periodic::Cmp::new(config_inject_periodic))
+        ComponentExecutor::<Data>::new(config_executor)
+            .add_cmp(cmp_http_client_wasm::Cmp::new(http_config))
+            .add_cmp(cmp_logger::Cmp::new(logger_config))
+            .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
             .wait_result()
             .await
             .unwrap();
-        // Ok(()) as anyhow::Result<()>
     });
     spawn_local(context);
 }

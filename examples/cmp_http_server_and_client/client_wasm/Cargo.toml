@@ -8,7 +8,7 @@ serde = { version = "1", features = ["derive"] }
 strum = { version = "*", features = ["derive"] }
 rsiot = { path = "../../../", features = [
     "cmp_leptos",
-    "cmp_websocket_client_wasm",
+    "cmp_http_client_wasm",
     "logging",
     "single-thread",
 ] }

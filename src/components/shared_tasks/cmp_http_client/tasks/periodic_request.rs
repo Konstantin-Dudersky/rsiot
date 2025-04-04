@@ -1,12 +1,10 @@
 use std::time::Duration;
 
-use tokio::{
-    sync::{broadcast, mpsc},
-    time::sleep,
-};
+use tokio::sync::{broadcast, mpsc};
 
 use crate::{
     components_config::http_client::{MsgRequest, RequestPeriodic},
+    executor::sleep,
     message::{Message, MsgDataBound},
 };
 

@@ -29,12 +29,6 @@ pub mod mqtt_client;
 #[cfg(feature = "cmp_redis_client")]
 pub mod redis_client;
 
-#[cfg(any(
-    feature = "cmp_websocket_client",
-    feature = "cmp_websocket_client_wasm"
-))]
-pub mod websocket_client;
-
 #[cfg(feature = "cmp_timescaledb")]
 pub mod timescaledb;
 
@@ -49,6 +43,11 @@ pub mod spi_master;
 
 #[cfg(feature = "executor")]
 pub mod master_device;
+#[cfg(any(
+    feature = "cmp_websocket_client",
+    feature = "cmp_websocket_client_wasm"
+))]
+pub mod websocket_client;
 
 pub mod websocket_general;
 

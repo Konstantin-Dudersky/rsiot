@@ -1,41 +1,16 @@
-use rsiot::{
-    components_config::websocket_general::WebsocketMessage,
-    message::{example_service, MsgDataBound, MsgKey},
-};
+use rsiot::components_config::http_general::HttpDataBound;
 use serde::{Deserialize, Serialize};
-use strum::IntoStaticStr;
 
-#[derive(Clone, Debug, IntoStaticStr, Deserialize, Serialize)]
-pub enum ServerToClient {
-    ServerCounter(u32),
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+pub struct ServerToClient {
+    pub counter: f64,
 }
-impl WebsocketMessage for ServerToClient {}
+impl HttpDataBound for ServerToClient {}
 
-#[derive(Clone, Debug, IntoStaticStr, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub enum ClientToServer {
-    ClientCounter(u8),
+    #[default]
+    NoData,
+    SetCounterFromClient(u8),
 }
-impl WebsocketMessage for ClientToServer {}
-
-// ServerMessages ----------------------------------------------------------------------------------
-
-#[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
-pub enum ServerMessages {
-    ServerCounter(u32),
-    CounterFromClient(u8),
-}
-impl MsgDataBound for ServerMessages {
-    type TService = example_service::Service;
-}
-
-// ClientMessages ----------------------------------------------------------------------------------
-
-#[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
-pub enum ClientMessages {
-    ServerCounter(u32),
-    CounterFromClient(u8),
-    ConnectionState(bool),
-}
-impl MsgDataBound for ClientMessages {
-    type TService = example_service::Service;
-}
+impl HttpDataBound for ClientToServer {}
