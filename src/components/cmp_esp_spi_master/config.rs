@@ -3,7 +3,7 @@ use esp_idf_svc::hal::spi::config::{MODE_0, MODE_1, MODE_2, MODE_3};
 use esp_idf_svc::hal::{peripheral::Peripheral, spi::Spi};
 
 use crate::components_config::master_device::DeviceTrait;
-use crate::components_config::spi_master;
+use crate::components_config::spi_master::{self, ConfigDeviceSpiMode};
 use crate::message::MsgDataBound;
 
 /// Конфигурация компонента cmp_esp_spi_master
@@ -48,14 +48,6 @@ pub struct ConfigDevicesCommSettings {
     pub spi_mode: ConfigDeviceSpiMode,
 }
 
-/// Режим работы SPI
-#[allow(missing_docs)]
-pub enum ConfigDeviceSpiMode {
-    Mode0,
-    Mode1,
-    Mode2,
-    Mode3,
-}
 impl From<ConfigDeviceSpiMode> for esp_idf_svc::hal::spi::config::Mode {
     fn from(value: ConfigDeviceSpiMode) -> Self {
         match value {

@@ -93,8 +93,6 @@ where
         )
         .unwrap();
 
-        // TODO - добавить в конфигурацию
-
         let mut spi_devices: Vec<SpiDeviceDriver<'_, &SpiDriver<'_>>> = self
             .devices_comm_settings
             .into_iter()

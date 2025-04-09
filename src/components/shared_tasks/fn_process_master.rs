@@ -64,29 +64,29 @@ where
         mpsc::Receiver<TFieldbusRequest>,
         broadcast::Sender<TFieldbusResponse>,
     ) {
-        // Создание каналов передачи данных ------------------------------------------------------------
+        // Создание каналов передачи данных --------------------------------------------------------
 
         // Канал передачи со входа компонента на устройства
         let (ch_tx_msgbus_to_devices, ch_rx_msgbus_to_devices) =
             broadcast::channel::<Message<TMsg>>(self.buffer_size);
 
-        // Канал передачи данных из драйверов в канал SPI
+        // Канал передачи запросов из устройств в канал шины
         let (ch_tx_devices_to_fieldbus, ch_rx_devices_to_fieldbus) =
             mpsc::channel::<TFieldbusRequest>(self.buffer_size);
 
-        // Канал передачи из канала SPI всем драйверам
+        // Канал передачи ответов из канала шины всем устройствам
         let (ch_tx_fieldbus_to_devices, ch_rx_fieldbus_to_devices) =
             broadcast::channel::<TFieldbusResponse>(self.buffer_size);
 
-        // Канал передачи из устройств на фильтр
+        // Канал передачи сообщений из устройств на фильтр
         let (ch_tx_devices_to_filter, ch_rx_devices_to_filter) =
             mpsc::channel::<Message<TMsg>>(self.buffer_size);
 
-        // Канал передачи из фильтра на выход компонента
+        // Канал передачи сообщений из фильтра на выход компонента
         let (ch_tx_filter_to_msgbus, ch_rx_filter_to_msgbus) =
             mpsc::channel::<Message<TMsg>>(self.buffer_size);
 
-        // Передача входящих сообщений на драйвера устройств -------------------------------------------
+        // Передача входящих сообщений на устройства -----------------------------------------------
         let task = msgbus_to_broadcast::MsgBusToBroadcast {
             msg_bus: self.msg_bus.clone(),
             output: ch_tx_msgbus_to_devices,
@@ -96,7 +96,7 @@ where
             task.spawn().map_err(self.error_msgbus_to_broadcast),
         );
 
-        // Задачи выполнения драйверов устройств -------------------------------------------------------
+        // Задачи выполнения устройств -------------------------------------------------------------
         for device in self.devices {
             let ch_rx_msgbus_to_devices = ch_rx_msgbus_to_devices.resubscribe();
             let ch_tx_device_to_fieldbus = ch_tx_devices_to_fieldbus.clone();
@@ -115,14 +115,14 @@ where
             );
         }
 
-        // Фильтрация одинаковых сообщений -------------------------------------------------------------
+        // Фильтрация одинаковых сообщений ---------------------------------------------------------
         let task = filter_identical_data::FilterIdenticalData {
             input: ch_rx_devices_to_filter,
             output: ch_tx_filter_to_msgbus,
         };
         join_set_spawn(self.task_set, task.spawn().map_err(self.error_filter));
 
-        // Создаем исходящие сообщения -----------------------------------------------------------------
+        // Создаем исходящие сообщения -------------------------------------------------------------
         let task = mpsc_to_msgbus::MpscToMsgBus {
             input: ch_rx_filter_to_msgbus,
             msg_bus: self.msg_bus.clone(),

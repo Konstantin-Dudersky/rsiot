@@ -29,3 +29,12 @@ where
         value
     }
 }
+
+impl<T> From<T> for Resettable<T>
+where
+    T: Clone + Debug + Default + PartialEq + Serialize,
+{
+    fn from(value: T) -> Self {
+        Resettable::new(value)
+    }
+}

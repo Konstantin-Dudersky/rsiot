@@ -66,6 +66,12 @@
       "add_feat": ["", "single-thread"]
     },
     {
+      "name": "riscv32imc-esp-espidf",
+      "toolchain": "+nightly",
+      "features": ["cmp_esp", "cmp_plc", "executor"],
+      "add_feat": ["single-thread"]
+    },
+    {
       "name": "wasm32-unknown-unknown",
       "toolchain": "+stable",
       "features": [
@@ -77,12 +83,6 @@
         "cmp_websocket_client_wasm",
         "cmp_webstorage"
       ],
-      "add_feat": ["single-thread"]
-    },
-    {
-      "name": "riscv32imc-esp-espidf",
-      "toolchain": "+nightly-2024-10-01",
-      "features": ["cmp_esp", "cmp_plc", "executor"],
       "add_feat": ["single-thread"]
     }
   ]

@@ -45,7 +45,7 @@ async fn main() {
             Box::new(GetEndpointConfig {
                 serde_alg: SerdeAlgKind::Json,
                 path: "/data/test",
-                data: ServerToClient::default(),
+                server_to_client_data: ServerToClient::default(),
                 fn_input: |msg, data| {
                     if let Custom::Counter(counter) = msg {
                         data.counter = *counter
@@ -55,7 +55,7 @@ async fn main() {
             Box::new(GetEndpointConfig {
                 serde_alg: SerdeAlgKind::Json,
                 path: "/data/test2",
-                data: ServerToClient::default(),
+                server_to_client_data: ServerToClient::default(),
                 fn_input: |msg, data| {
                     if let Custom::Counter(counter) = msg {
                         data.counter = *counter

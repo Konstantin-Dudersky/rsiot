@@ -5,7 +5,7 @@ use tokio::{
 };
 
 use linux_embedded_hal::spidev::{Spidev, SpidevOptions, SpidevTransfer};
-use tracing::trace;
+use tracing::{info, trace};
 
 use crate::{
     components::shared_tasks::fn_process_master::FnProcessMaster,
@@ -14,7 +14,7 @@ use crate::{
     message::MsgDataBound,
 };
 
-use super::Config;
+use super::{config::ConfigDevicesCommSettings, Config};
 
 pub async fn fn_process<TMsg>(config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> super::Result<()>
 where
@@ -40,8 +40,7 @@ where
     let task = SpiComm {
         input: ch_rx_devices_to_fieldbus,
         output: ch_tx_fieldbus_to_devices,
-        spi_adapter_path: config.spi_adapter_path,
-        baudrate: config.baudrate,
+        devices_comm_settings: config.devices_comm_settings,
     };
     join_set_spawn(&mut task_set, task.spawn());
 
@@ -55,20 +54,31 @@ where
 struct SpiComm {
     pub input: mpsc::Receiver<spi_master::FieldbusRequest>,
     pub output: broadcast::Sender<spi_master::FieldbusResponse>,
-    pub spi_adapter_path: Vec<&'static str>,
-    pub baudrate: u32,
+    pub devices_comm_settings: Vec<ConfigDevicesCommSettings>,
 }
 
 impl SpiComm {
     pub async fn spawn(mut self) -> super::Result<()> {
-        let options = SpidevOptions::new().max_speed_hz(self.baudrate).build();
+        // let options = SpidevOptions::new().max_speed_hz(self.baudrate).build();
 
-        let mut spi_devices = vec![];
-        for spi_device in self.spi_adapter_path {
-            let mut spi_comm_device = Spidev::open(spi_device).unwrap();
-            spi_comm_device.configure(&options).unwrap();
-            spi_devices.push(spi_comm_device);
-        }
+        let mut spi_devices: Vec<Spidev> = self
+            .devices_comm_settings
+            .into_iter()
+            .map(|dvc| {
+                let mut device = Spidev::open(dvc.spi_adapter_path).unwrap();
+                let options = SpidevOptions::new()
+                    .max_speed_hz(dvc.baudrate)
+                    .mode(dvc.spi_mode.into())
+                    .build();
+                device.configure(&options).unwrap();
+                device
+            })
+            .collect();
+        // for spi_device in self.spi_adapter_path {
+        //     let mut spi_comm_device = Spidev::open(spi_device).unwrap();
+        //     spi_comm_device.configure(&options).unwrap();
+        //     spi_devices.push(spi_comm_device);
+        // }
 
         while let Some(request) = self.input.recv().await {
             trace!("New spi request: {:?}", request);
@@ -129,6 +139,7 @@ async fn make_spi_operation(
                 SpidevTransfer::read(&mut read_data),
             ];
             device.transfer_multiple(&mut transaction).unwrap();
+            info!("Read data: {:?}", read_data);
             Some(read_data)
         }
         spi_master::Operation::Write(write_data) => {

@@ -10,7 +10,8 @@ use tracing::{error, info, warn};
 use url::Url;
 
 use crate::{
-    executor::CmpInOut,
+    components::shared_tasks::cmp_http_client::HttpClientGeneral,
+    executor::{join_set_spawn, CmpInOut},
     message::{Message, MsgDataBound},
 };
 
@@ -18,7 +19,7 @@ use super::{config, Error};
 
 pub async fn fn_process<TMsg>(
     config: config::Config<TMsg>,
-    in_out: CmpInOut<TMsg>,
+    msg_bus: CmpInOut<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
@@ -28,17 +29,30 @@ where
 
     info!("Starting http-client, configuration: {:?}", config);
 
-    loop {
-        let res = task_main(in_out.clone(), config.clone()).await;
-        match res {
-            Ok(_) => (),
-            Err(err) => {
-                error!("Error in http-client: {:?}", err);
-            }
-        }
-        info!("Restarting...");
-        sleep(Duration::from_secs(2)).await;
+    let mut task_set = JoinSet::new();
+
+    let http_client_general = HttpClientGeneral {
+        msg_bus,
+        buffer_size: 100,
+        task_set: &mut task_set,
+        requests_input: config.requests_input,
+        requests_periodic: config.requests_periodic,
+    };
+
+    let (ch_rx_requests, ch_tx_reponse) = http_client_general.spawn();
+
+    let task = tasks::HttpClient {
+        input: ch_rx_requests,
+        output: ch_tx_reponse,
+        base_url: config.base_url,
+        timeout: config.timeout,
+    };
+    join_set_spawn(&mut task_set, task.spawn());
+
+    while let Some(res) = task_set.join_next().await {
+        res??;
     }
+    Ok(())
 }
 
 /// Основная задача

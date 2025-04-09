@@ -6,4 +6,4 @@ TODO - tauri вывод с камеры (WebRTC?) - ошибка RtcPeerConnecti
 - TODO - cmp_s7_client
 - TODO - cmp_opcua_client
 
-TODO - Заменить toolchain в файле target_config.json для таргета riscv32imc-esp-espidf на актуальный найтли.
+TODO - доделать cmp_http_client_esp
