@@ -5,11 +5,14 @@
 
 #[cfg(feature = "serde_json")]
 mod json;
+#[cfg(feature = "serde_postcard")]
+mod postcard;
 #[cfg(feature = "serde_toml")]
 mod toml;
 
 mod error;
 // TODO - удалить
+#[cfg(feature = "serde_postcard")]
 pub mod postcard_serde;
 mod serde_alg;
 mod serde_alg_kind;

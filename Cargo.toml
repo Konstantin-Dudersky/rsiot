@@ -12,19 +12,18 @@ version = "0.0.83"
 
 
 [dependencies]
-anyhow = { version = "1.0.80" }
+anyhow = { version = "1.0.97" }
 bincode = { version = "1.3.3" }
 bitvec = { version = "1.0.1" }
 byteorder = { version = "1.5.0" }
-chrono = { version = "0.4.35", features = ["serde"] }
+chrono = { version = "0.4.40", features = ["serde"] }
 crc = { version = "3.2.1" }
-document-features = { version = "0.2.8" }
+document-features = { version = "0.2.11" }
 getrandom = { version = "0.2", features = ["js"] }
-instant = { version = "0.1.12", features = ["wasm-bindgen"] }
-postcard = { version = "1.0.8", features = ["use-std", "use-crc"] }
+instant = { version = "0.1.13", features = ["wasm-bindgen"] }
 serde = { version = "1.0.197", features = ["derive"] }
-strum = { version = "0.26.3", features = ["derive"] }
-thiserror = { version = "2.0.3" }
+strum = { version = "0.27.1", features = ["derive"] }
+thiserror = { version = "2.0.12" }
 tracing = { version = "0.1.40", features = ["log"] }
 uuid = { version = "1.7.0", features = [
     "macro-diagnostics",
@@ -55,6 +54,10 @@ linux-embedded-hal = { version = "0.4.0", optional = true, features = [
     "spi",
 ], default-features = false }
 log = { version = "0.4.21", optional = true }
+postcard = { version = "1.1.1", features = [
+    "use-std",
+    "use-crc",
+], optional = true }
 reactive_stores = { version = "0.2.0-beta", optional = true }
 redis = { version = "0.25.0", features = ["tokio-comp"], optional = true }
 reqwest = { version = "0.12.14", features = ["json"], optional = true }
@@ -180,6 +183,7 @@ logging = [
 single-thread = []
 
 serde_json = ["dep:serde_json"]
+serde_postcard = ["dep:postcard"]
 serde_toml = ["dep:toml"]
 
 ## Компонент аутентификации
@@ -189,6 +193,8 @@ cmp_auth = ["executor", "dep:jwt", "dep:hmac", "dep:sha2"]
 cmp_esp = [
     "executor",
     "single-thread",
+    # TODO - удалить
+    "serde_postcard",
     "dep:embedded-graphics",
     "dep:embedded-svc",
     "dep:heapless",
@@ -249,7 +255,7 @@ cmp_os_process = ["executor", "tokio?/process"]
 cmp_plc = ["executor"]
 
 ## Работа с периферией Raspberry Pi
-cmp_raspberrypi = ["executor", "dep:rppal"]
+cmp_raspberrypi = ["executor", "serde_postcard", "dep:rppal"]
 
 ## Компонент клиента Redis
 cmp_redis_client = ["executor", "dep:futures", "dep:redis", "dep:url"]

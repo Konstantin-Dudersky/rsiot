@@ -4,7 +4,7 @@ use linux_embedded_hal::serialport;
 
 use crate::components_config::master_device::DeviceTrait;
 use crate::components_config::uart_general::{
-    Baudrate, DataBits, Parity, StopBits, UartRequest, UartResponse,
+    Baudrate, DataBits, FieldbusRequest, FieldbusResponse, Parity, StopBits,
 };
 use crate::message::MsgDataBound;
 
@@ -61,9 +61,8 @@ where
     /// ```
     pub pin_rts: Option<u32>,
 
-    /// TODO - переделать на вектор универсальных устройств
-    // pub devices: Vec<TestDevice<TMsg>>,
-    pub devices: Vec<Box<dyn DeviceTrait<TMsg, UartRequest, UartResponse, u8>>>,
+    /// Массив устройств
+    pub devices: Vec<Box<dyn DeviceTrait<TMsg, FieldbusRequest, FieldbusResponse>>>,
 }
 
 impl<TMsg> Default for Config<TMsg>
@@ -77,10 +76,10 @@ where
             data_bits: DataBits::default(),
             parity: Parity::default(),
             stop_bits: StopBits::default(),
-            devices: vec![],
             timeout: Duration::from_millis(100),
             gpio_chip: "/dev/gpiochip0",
             pin_rts: Some(17),
+            devices: vec![],
         }
     }
 }

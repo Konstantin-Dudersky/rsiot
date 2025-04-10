@@ -19,9 +19,8 @@ where
     pub devices_comm_settings: Vec<ConfigDevicesCommSettings>,
 
     /// Драйвера устройств
-    pub devices: Vec<
-        Box<dyn DeviceTrait<TMsg, spi_master::FieldbusRequest, spi_master::FieldbusResponse, u8>>,
-    >,
+    pub devices:
+        Vec<Box<dyn DeviceTrait<TMsg, spi_master::FieldbusRequest, spi_master::FieldbusResponse>>>,
 }
 
 /// Настройки коммуникации с устройствами

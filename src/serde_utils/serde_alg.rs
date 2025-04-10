@@ -3,7 +3,7 @@ use serde::{de::DeserializeOwned, Serialize};
 use super::{Error, SerdeAlgKind};
 
 /// Алгоритм сериализации / десериализации
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct SerdeAlg {
     kind: SerdeAlgKind,
 }
@@ -27,6 +27,9 @@ impl SerdeAlg {
             #[cfg(feature = "serde_toml")]
             SerdeAlgKind::Toml => super::toml::serialize(data),
 
+            #[cfg(feature = "serde_postcard")]
+            SerdeAlgKind::Postcard => super::postcard::serialize(data),
+
             _ => Err(Error::UnknownAlg(self.kind)),
         }
     }
@@ -43,6 +46,9 @@ impl SerdeAlg {
 
             #[cfg(feature = "serde_toml")]
             SerdeAlgKind::Toml => super::toml::deserialize(data),
+
+            #[cfg(feature = "serde_postcard")]
+            SerdeAlgKind::Postcard => super::postcard::deserialize(data),
 
             _ => Err(Error::UnknownAlg(self.kind)),
         }

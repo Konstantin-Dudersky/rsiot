@@ -23,18 +23,19 @@ where
         error_filter: super::Error::TaskFilterIdenticalData,
         error_mpsc_to_msgbus: super::Error::TaskMpscToMsgBus,
         error_master_device: super::Error::Device,
+        error_tokiompscsend: || super::Error::TokioSyncMpscSend,
         devices: config.devices,
     };
 
-    let (ch_rx_devices_to_fieldbus, ch_tx_fieldbus_to_devices) = config_fn_process_master.spawn();
+    let (ch_rx_addindex_to_fieldbus, ch_tx_fieldbus_to_split) = config_fn_process_master.spawn();
 
     // Коммуникация UART
     //
     // Запускаем в отдельном потоке, чтобы не было увеличенного времени ожидания в точках await
     let task = UartComm {
         pin_rts: config.pin_rts,
-        ch_rx_devices_to_fieldbus,
-        ch_tx_fieldbus_to_devices,
+        ch_rx_addindex_to_fieldbus,
+        ch_tx_fieldbus_to_split,
         port: config.port,
         timeout: config.timeout,
         baudrate: config.baudrate,

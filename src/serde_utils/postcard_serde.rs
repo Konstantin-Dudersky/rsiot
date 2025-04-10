@@ -1,5 +1,7 @@
 //! Сериализация / десериализация, используя Postcard - <https://postcard.jamesmunns.com/intro>
 
+#![deprecated]
+
 use std::fmt::Debug;
 
 use crc::{Crc, Digest, Table, CRC_32_ISCSI};

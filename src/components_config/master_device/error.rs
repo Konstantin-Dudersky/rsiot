@@ -8,4 +8,7 @@ pub enum Error {
 
     #[error("TokioTaskJoin: {0}")]
     TokioTaskJoin(#[from] tokio::task::JoinError),
+
+    #[error("TokioSyncMpsc")]
+    TokioSyncMpsc,
 }

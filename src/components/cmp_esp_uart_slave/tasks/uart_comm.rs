@@ -4,15 +4,14 @@ use esp_idf_svc::hal::{
 };
 use tracing::{info, trace, warn};
 
-use crate::components_config::uart_general::{UartRequest, UartResponse};
+use crate::components_config::uart_general::{FieldbusRequest, FieldbusResponse};
 
 use super::super::TFnUartComm;
 use super::Buffer;
 
 pub struct UartComm<TBufferData> {
-    pub address: u8,
     pub uart: AsyncUartDriver<'static, UartDriver<'static>>,
-    pub fn_uart_comm: TFnUartComm<UartRequest, UartResponse, TBufferData>,
+    pub fn_uart_comm: TFnUartComm<FieldbusRequest, FieldbusResponse, TBufferData>,
     pub buffer_data: Buffer<TBufferData>,
 }
 
@@ -31,7 +30,7 @@ impl<TBufferData> UartComm<TBufferData> {
 
             let read_len = self.uart.read(&mut read_buffer).await;
 
-            let _read_len = match read_len {
+            let read_len = match read_len {
                 Ok(val) => val,
                 Err(err) => {
                     warn!("Error reading from uart: {:?}", err);
@@ -41,27 +40,16 @@ impl<TBufferData> UartComm<TBufferData> {
 
             trace!("Read UART buffer: {:?}", read_buffer);
 
-            let request = match UartRequest::from_read_buffer(&mut read_buffer) {
-                Ok(val) => val,
-                Err(err) => {
-                    warn!("Deserialization error: {:?}", err);
-                    continue;
-                }
-            };
+            let fieldbus_request = FieldbusRequest::from_read_buffer(&read_buffer[..read_len]);
 
-            if request.address != self.address {
-                continue;
-            }
-
-            trace!("Request: {:?}", request);
-            let address = request.address;
+            trace!("Request: {:?}", fieldbus_request);
 
             let response = {
                 let mut buffer_data = self.buffer_data.lock().await;
-                (self.fn_uart_comm)(request, &mut buffer_data)
+                (self.fn_uart_comm)(fieldbus_request, &mut buffer_data)
             };
 
-            let mut response = match response {
+            let response = match response {
                 Ok(val) => val,
                 Err(err) => {
                     let err = format!("fn_uart_comm error: {err}");
@@ -69,11 +57,10 @@ impl<TBufferData> UartComm<TBufferData> {
                     continue;
                 }
             };
-            response.address = address;
 
             trace!("Response: {:?}", response);
 
-            let write_buffer = response.to_write_buffer()?;
+            let write_buffer = response.to_write_buffer();
 
             self.uart.write_all(&write_buffer).await.unwrap();
             self.uart.flush().await.unwrap();

@@ -4,16 +4,15 @@ use esp_idf_svc::hal::{
     spi::{config, Operation, Spi, SpiAnyPins, SpiDeviceDriver, SpiDriver, SpiDriverConfig},
     units::FromValueType,
 };
-use tokio::{
-    sync::{broadcast, mpsc},
-    task::JoinSet,
-    time::sleep,
-};
+use tokio::{sync::mpsc, task::JoinSet, time::sleep};
 use tracing::trace;
 
 use crate::{
     components::shared_tasks::fn_process_master::FnProcessMaster,
-    components_config::spi_master,
+    components_config::{
+        master_device::{FieldbusRequestWithIndex, FieldbusResponseWithIndex},
+        spi_master,
+    },
     executor::{join_set_spawn, CmpInOut},
     message::MsgDataBound,
 };
@@ -41,6 +40,7 @@ where
         error_filter: super::Error::TaskFilter,
         error_mpsc_to_msgbus: super::Error::TaskMpscToMsgBus,
         error_master_device: super::Error::DeviceError,
+        error_tokiompscsend: || super::Error::TokioMpscSend,
         devices: config.devices,
     };
     let (ch_rx_devices_to_fieldbus, ch_tx_fieldbus_to_devices) = config_fn_process_master.spawn();
@@ -69,8 +69,8 @@ where
     TSpi: Peripheral<P = TPeripheral> + 'static,
     TPeripheral: Spi + SpiAnyPins,
 {
-    pub input: mpsc::Receiver<spi_master::FieldbusRequest>,
-    pub output: broadcast::Sender<spi_master::FieldbusResponse>,
+    pub input: mpsc::Receiver<FieldbusRequestWithIndex<spi_master::FieldbusRequest>>,
+    pub output: mpsc::Sender<FieldbusResponseWithIndex<spi_master::FieldbusResponse>>,
     pub spi: TSpi,
     pub pin_miso: AnyIOPin,
     pub pin_mosi: AnyIOPin,
@@ -104,21 +104,22 @@ where
             })
             .collect();
 
-        while let Some(request) = self.input.recv().await {
-            trace!("New spi request: {:?}", request);
+        while let Some(request_with_index) = self.input.recv().await {
+            trace!("New spi request: {:?}", request_with_index);
 
-            let pin_cs = request.pin_cs as usize;
+            let device_index = request_with_index.device_index;
+            let request = request_with_index.request;
 
             // Номер CS недоступен
-            if pin_cs >= spi_devices.len() {
+            if device_index >= spi_devices.len() {
                 let err = super::Error::CsNotAvailable {
-                    cs: request.pin_cs,
+                    cs: device_index as u8,
                     max_cs: spi_devices.len() as u8,
                 };
                 return Err(err);
             }
 
-            let selected_device = &mut spi_devices[pin_cs];
+            let selected_device = &mut spi_devices[device_index];
 
             // Ответы от слейва
             let mut response_payload = vec![];
@@ -132,13 +133,16 @@ where
             }
 
             let response = spi_master::FieldbusResponse {
-                pin_cs: request.pin_cs,
                 request_creation_time: request.request_creation_time,
                 request_kind: request.request_kind,
                 payload: response_payload,
             };
+            let response_with_index = FieldbusResponseWithIndex {
+                device_index,
+                response,
+            };
 
-            self.output.send(response).unwrap();
+            self.output.send(response_with_index).await.unwrap();
         }
         Ok(())
     }

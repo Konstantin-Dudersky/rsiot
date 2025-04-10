@@ -6,5 +6,5 @@ pub struct ConfigPeriodicRequest<TRequest, TBuffer> {
     pub period: Duration,
 
     /// Функция создания запросов на основе данных из буфера
-    pub fn_requests: fn(&TBuffer) -> Vec<TRequest>,
+    pub fn_requests: fn(&TBuffer) -> anyhow::Result<Vec<TRequest>>,
 }

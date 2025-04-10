@@ -1,24 +1,20 @@
 use std::time::Duration;
 
 use tokio::{sync::mpsc, time::sleep};
+use tracing::{trace, warn};
 
-use super::{
-    set_address_and_send_to_fieldbus::set_address_and_send_to_fieldbus, AddressBound, Buffer,
-    RequestResponseBound,
-};
+use super::{Buffer, Error, RequestResponseBound};
 
-pub struct PeriodicRequest<TRequest, TBuffer, TAddress> {
-    pub address: TAddress,
+pub struct PeriodicRequest<TRequest, TBuffer> {
     pub buffer: Buffer<TBuffer>,
     pub period: Duration,
-    pub fn_request: fn(&TBuffer) -> Vec<TRequest>,
+    pub fn_request: fn(&TBuffer) -> anyhow::Result<Vec<TRequest>>,
     pub ch_tx_device_to_fieldbus: mpsc::Sender<TRequest>,
 }
 
-impl<TRequest, TBuffer, TAddress> PeriodicRequest<TRequest, TBuffer, TAddress>
+impl<TRequest, TBuffer> PeriodicRequest<TRequest, TBuffer>
 where
-    TRequest: RequestResponseBound<TAddress>,
-    TAddress: AddressBound,
+    TRequest: RequestResponseBound,
 {
     pub async fn spawn(self) -> super::Result<()> {
         loop {
@@ -27,12 +23,21 @@ where
                 (self.fn_request)(&mut buffer)
             };
 
-            set_address_and_send_to_fieldbus(
-                requests,
-                self.address,
-                &self.ch_tx_device_to_fieldbus,
-            )
-            .await;
+            let requests = match requests {
+                Ok(v) => v,
+                Err(e) => {
+                    warn!("Error in fn_request: {:?}", e);
+                    continue;
+                }
+            };
+
+            for request in requests {
+                trace!("Request: {:?}", request);
+                self.ch_tx_device_to_fieldbus
+                    .send(request)
+                    .await
+                    .map_err(|_| Error::TokioSyncMpsc)?;
+            }
 
             sleep(self.period).await
         }

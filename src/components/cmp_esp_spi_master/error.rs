@@ -29,6 +29,9 @@ pub enum Error {
 
     #[error("CS number {cs} not availbalve; amount of configured CS: {max_cs}")]
     CsNotAvailable { cs: u8, max_cs: u8 },
+
+    #[error("TokioMpscSend")]
+    TokioMpscSend,
 }
 
 impl From<Error> for ComponentError {

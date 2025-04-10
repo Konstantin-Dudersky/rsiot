@@ -1,15 +1,14 @@
-use tokio::{
-    sync::{broadcast, mpsc},
-    task::JoinSet,
-    time::sleep,
-};
+use tokio::{sync::mpsc, task::JoinSet, time::sleep};
 
 use linux_embedded_hal::spidev::{Spidev, SpidevOptions, SpidevTransfer};
 use tracing::{info, trace};
 
 use crate::{
     components::shared_tasks::fn_process_master::FnProcessMaster,
-    components_config::spi_master,
+    components_config::{
+        master_device::{FieldbusRequestWithIndex, FieldbusResponseWithIndex},
+        spi_master,
+    },
     executor::{join_set_spawn, CmpInOut},
     message::MsgDataBound,
 };
@@ -32,6 +31,7 @@ where
         error_filter: super::Error::TaskFilter,
         error_mpsc_to_msgbus: super::Error::TaskMpscToMsgBus,
         error_master_device: super::Error::DeviceError,
+        error_tokiompscsend: || super::Error::TokioSyncMpsc,
         devices: config.devices,
     };
     let (ch_rx_devices_to_fieldbus, ch_tx_fieldbus_to_devices) = config_fn_process_master.spawn();
@@ -52,15 +52,13 @@ where
 }
 
 struct SpiComm {
-    pub input: mpsc::Receiver<spi_master::FieldbusRequest>,
-    pub output: broadcast::Sender<spi_master::FieldbusResponse>,
+    pub input: mpsc::Receiver<FieldbusRequestWithIndex<spi_master::FieldbusRequest>>,
+    pub output: mpsc::Sender<FieldbusResponseWithIndex<spi_master::FieldbusResponse>>,
     pub devices_comm_settings: Vec<ConfigDevicesCommSettings>,
 }
 
 impl SpiComm {
     pub async fn spawn(mut self) -> super::Result<()> {
-        // let options = SpidevOptions::new().max_speed_hz(self.baudrate).build();
-
         let mut spi_devices: Vec<Spidev> = self
             .devices_comm_settings
             .into_iter()
@@ -74,27 +72,23 @@ impl SpiComm {
                 device
             })
             .collect();
-        // for spi_device in self.spi_adapter_path {
-        //     let mut spi_comm_device = Spidev::open(spi_device).unwrap();
-        //     spi_comm_device.configure(&options).unwrap();
-        //     spi_devices.push(spi_comm_device);
-        // }
 
-        while let Some(request) = self.input.recv().await {
-            trace!("New spi request: {:?}", request);
+        while let Some(fieldbus_request) = self.input.recv().await {
+            trace!("New spi request: {:?}", fieldbus_request);
 
-            let pin_cs = request.pin_cs as usize;
+            let device_index = fieldbus_request.device_index;
 
             // Номер CS недоступен
-            if pin_cs >= spi_devices.len() {
+            if device_index >= spi_devices.len() {
                 let err = super::Error::CsNotAvailable {
-                    cs: request.pin_cs,
+                    cs: device_index as u8,
                     max_cs: spi_devices.len() as u8,
                 };
                 return Err(err);
             }
 
-            let selected_device = &mut spi_devices[pin_cs];
+            let selected_device = &mut spi_devices[device_index];
+            let request = fieldbus_request.request;
 
             // Ответы от слейва
             let mut response_payload = vec![];
@@ -108,13 +102,20 @@ impl SpiComm {
             }
 
             let response = spi_master::FieldbusResponse {
-                pin_cs: request.pin_cs,
                 request_creation_time: request.request_creation_time,
                 request_kind: request.request_kind,
                 payload: response_payload,
             };
 
-            self.output.send(response).unwrap();
+            let response_with_index = FieldbusResponseWithIndex {
+                device_index,
+                response,
+            };
+
+            self.output
+                .send(response_with_index)
+                .await
+                .map_err(|_| super::Error::TokioSyncMpsc)?;
         }
         Ok(())
     }

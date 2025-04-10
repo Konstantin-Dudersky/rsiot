@@ -1,26 +1,27 @@
 use tokio::sync::mpsc;
+use tracing::trace;
 
-use super::{
-    set_address_and_send_to_fieldbus::set_address_and_send_to_fieldbus, AddressBound,
-    RequestResponseBound,
-};
+use super::{Error, RequestResponseBound};
 
-pub struct InitRequest<TFieldbusRequest, TAddress> {
-    pub address: TAddress,
+pub struct InitRequest<TFieldbusRequest> {
     pub fn_init_requests: fn() -> Vec<TFieldbusRequest>,
     pub ch_tx_device_to_fieldbus: mpsc::Sender<TFieldbusRequest>,
 }
 
-impl<TFieldbusRequest, TAddress> InitRequest<TFieldbusRequest, TAddress>
+impl<TFieldbusRequest> InitRequest<TFieldbusRequest>
 where
-    TFieldbusRequest: RequestResponseBound<TAddress>,
-    TAddress: AddressBound,
+    TFieldbusRequest: RequestResponseBound,
 {
     pub async fn spawn(self) -> super::Result<()> {
         let requests = (self.fn_init_requests)();
 
-        set_address_and_send_to_fieldbus(requests, self.address, &self.ch_tx_device_to_fieldbus)
-            .await;
+        for request in requests {
+            trace!("Request: {:?}", request);
+            self.ch_tx_device_to_fieldbus
+                .send(request)
+                .await
+                .map_err(|_| Error::TokioSyncMpsc)?;
+        }
 
         Ok(())
     }

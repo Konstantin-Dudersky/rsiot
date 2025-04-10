@@ -1,7 +1,5 @@
 use std::fmt::Debug;
 
-use super::AddressBound;
-
 /// Ограничения для структур запросов и ответов
 ///
 /// На структурах необходимо реализовать:
@@ -9,14 +7,8 @@ use super::AddressBound;
 /// ```rust
 /// #[derive(Clone, Debug)]
 /// ```
-pub trait RequestResponseBound<TAddress>
+pub trait RequestResponseBound
 where
     Self: Clone + Debug + Send + Sync,
-    TAddress: AddressBound,
 {
-    /// Адрес устройства
-    fn address(&self) -> TAddress;
-
-    /// Задать адрес устройства
-    fn set_address(&mut self, address: TAddress);
 }

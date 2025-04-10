@@ -1,7 +1,4 @@
-use crate::{
-    components::shared_tasks, components_config::master_device, executor::ComponentError,
-    serde_utils::postcard_serde,
-};
+use crate::{components::shared_tasks, components_config::master_device, executor::ComponentError};
 
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
@@ -21,8 +18,8 @@ pub enum Error {
     #[error("TaskEndUartComm")]
     TaskEndUartComm,
 
-    #[error("TokioSyncBroadcastSend: {0}")]
-    TokioSyncBroadcastSend(String),
+    #[error("TokioSyncMpscSend")]
+    TokioSyncMpscSend,
 
     #[error(transparent)]
     TaskFilterIdenticalData(shared_tasks::filter_identical_data::Error),
@@ -51,8 +48,8 @@ pub enum Error {
     #[error(transparent)]
     Device(master_device::Error),
 
-    #[error(transparent)]
-    Postcard(#[from] postcard_serde::Error),
+    #[error("BufferFull")]
+    BufferFull,
 }
 
 impl From<Error> for ComponentError {

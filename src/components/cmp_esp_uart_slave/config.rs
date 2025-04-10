@@ -23,9 +23,6 @@ where
     TUart: Peripheral<P = TPeripheral> + 'static,
     TPeripheral: Uart,
 {
-    /// Адрес устройства на шине
-    pub address: u8,
-
     /// Интерфейс uart
     ///
     /// Пример:
@@ -80,7 +77,7 @@ where
     pub fn_input: TFnInput<TMsg, TBufferData>,
 
     /// Функция коммуникации по UART
-    pub fn_uart_comm: TFnUartComm<UartRequest, UartResponse, TBufferData>,
+    pub fn_uart_comm: TFnUartComm<FieldbusRequest, FieldbusResponse, TBufferData>,
 
     /// Функция для преобразования полученных данных UART в исходящие сообщения.
     ///

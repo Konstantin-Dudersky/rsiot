@@ -7,7 +7,3 @@ mod fieldbus_response;
 pub use config_device_spi_mode::ConfigDeviceSpiMode;
 pub use fieldbus_request::{FieldbusRequest, Operation};
 pub use fieldbus_response::FieldbusResponse;
-
-use super::master_device::AddressBound;
-
-impl AddressBound for u8 {}

@@ -69,7 +69,6 @@ where
 
     // Задача коммуникации по протоклу UART
     let task = tasks::UartComm {
-        address: config.address,
         uart,
         fn_uart_comm: config.fn_uart_comm,
         buffer_data: buffer_data.clone(),

@@ -1,27 +1,23 @@
 use tokio::sync::{broadcast, mpsc};
+use tracing::{trace, warn};
 
 use crate::message::{Message, MsgDataBound};
 
-use super::{
-    set_address_and_send_to_fieldbus::set_address_and_send_to_fieldbus, AddressBound, Buffer,
-    BufferBound, RequestResponseBound,
-};
+use super::{Buffer, BufferBound, Error, RequestResponseBound};
 
-pub struct InputRequest<TMsg, TRequest, TBuffer, TAddress> {
-    pub address: TAddress,
+pub struct InputRequest<TMsg, TRequest, TBuffer> {
     pub buffer: Buffer<TBuffer>,
     pub ch_rx_msgbus_to_device: broadcast::Receiver<Message<TMsg>>,
     pub ch_tx_device_to_fieldbus: mpsc::Sender<TRequest>,
     pub fn_msgs_to_buffer: fn(&Message<TMsg>, &mut TBuffer),
-    pub fn_buffer_to_request: fn(&TBuffer) -> Vec<TRequest>,
+    pub fn_buffer_to_request: fn(&TBuffer) -> anyhow::Result<Vec<TRequest>>,
 }
 
-impl<TMsg, TRequest, TBuffer, TAddress> InputRequest<TMsg, TRequest, TBuffer, TAddress>
+impl<TMsg, TRequest, TBuffer> InputRequest<TMsg, TRequest, TBuffer>
 where
     TMsg: MsgDataBound,
-    TRequest: RequestResponseBound<TAddress>,
+    TRequest: RequestResponseBound,
     TBuffer: BufferBound,
-    TAddress: AddressBound,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
         while let Ok(msg) = self.ch_rx_msgbus_to_device.recv().await {
@@ -35,12 +31,21 @@ where
                 (self.fn_buffer_to_request)(&buffer)
             };
 
-            set_address_and_send_to_fieldbus(
-                requests,
-                self.address,
-                &self.ch_tx_device_to_fieldbus,
-            )
-            .await;
+            let requests = match requests {
+                Ok(v) => v,
+                Err(e) => {
+                    warn!("Error in fn_buffer_to_request: {}", e);
+                    continue;
+                }
+            };
+
+            for request in requests {
+                trace!("Request: {:?}", request);
+                self.ch_tx_device_to_fieldbus
+                    .send(request)
+                    .await
+                    .map_err(|_| Error::TokioSyncMpsc)?;
+            }
         }
 
         Ok(())
