@@ -1,6 +1,6 @@
 //! Функциональный блок
 
-use std::time::Duration;
+use std::time::{Duration, SystemTime};
 
 use serde::{Deserialize, Serialize};
 
@@ -36,6 +36,7 @@ where
             fb_system_data: FbSystemData {
                 first_call: true,
                 period,
+                last_call_time: SystemTime::now(),
             },
             ..Default::default()
         }
@@ -48,6 +49,7 @@ where
             fb_system_data: FbSystemData {
                 first_call: true,
                 period,
+                last_call_time: SystemTime::now(),
             },
             ..Default::default()
         }
@@ -56,6 +58,8 @@ where
     /// Вызов функционального блока
     pub fn call(&mut self, input: &mut I, period: Duration) -> Q {
         self.fb_system_data.period = period;
+        // TODO - замерять фактический период вызова функционального блока, а не передавать
+        // константу
         self.output = FunctionBlockBase::logic(input, &mut self.stat, &self.fb_system_data);
         self.input = input.clone();
         self.fb_system_data.first_call = false;
@@ -81,11 +85,27 @@ pub trait IFunctionBlock<I, Q, S> {
 }
 
 /// Системные данные функционального блока
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct FbSystemData {
     /// true - первый вызов функционального блока
     pub first_call: bool,
 
     /// Период вызова блока
     pub period: Duration,
+
+    /// Время последнего вызова.
+    ///
+    /// TODO - если нет ошибок компиляции в разных таргетах, сделать на основе этого поля
+    /// определение периодичности вызовов и убрать ручное задание period
+    pub last_call_time: SystemTime,
+}
+
+impl Default for FbSystemData {
+    fn default() -> Self {
+        Self {
+            first_call: true,
+            period: Duration::from_millis(100),
+            last_call_time: SystemTime::now(),
+        }
+    }
 }

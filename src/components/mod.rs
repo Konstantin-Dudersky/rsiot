@@ -100,9 +100,13 @@ pub mod cmp_http_client_wasm;
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
 pub mod cmp_http_server;
 
+// #[cfg(feature = "cmp_influxdb")]
+// #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
+// pub mod cmp_influxdb;
+
 #[cfg(feature = "cmp_influxdb")]
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
-pub mod cmp_influxdb;
+pub mod cmp_influxdb3;
 
 pub mod cmp_inject_periodic;
 

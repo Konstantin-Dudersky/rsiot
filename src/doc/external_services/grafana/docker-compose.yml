@@ -2,7 +2,7 @@ services:
   grafana:
     container_name: grafana
     hostname: grafana
-    image: grafana/grafana:10.2.3 # https://hub.docker.com/r/grafana/grafana/tags
+    image: grafana/grafana:11.6.3 # https://hub.docker.com/r/grafana/grafana/tags
     environment:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
       - GF_AUTH_ANONYMOUS_ENABLED=true

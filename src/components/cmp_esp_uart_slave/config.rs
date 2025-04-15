@@ -14,7 +14,7 @@ pub type TFnOutput<TMsg, TBufferData> = fn(&TBufferData) -> Vec<Message<TMsg>>;
 
 /// Функция для работы коммуникации I2C
 pub type TFnUartComm<TRequest, TResponse, TBufferData> =
-    fn(TRequest, &mut TBufferData) -> anyhow::Result<TResponse>;
+    fn(TRequest, &mut TBufferData) -> anyhow::Result<Option<TResponse>>;
 
 /// Конфигурация cmp_esp_uart_slave
 pub struct Config<TMsg, TUart, TPeripheral, TBufferData>

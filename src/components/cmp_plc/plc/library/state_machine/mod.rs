@@ -22,11 +22,7 @@ impl<TState> IFunctionBlock<I<TState>, Q<TState>, S<TState>>
 where
     TState: Copy + Default + PartialEq + Serialize,
 {
-    fn logic(
-        input: &mut I<TState>,
-        stat: &mut S<TState>,
-        _system_data: &FbSystemData,
-    ) -> Q<TState> {
-        logic::logic(input, stat)
+    fn logic(input: &mut I<TState>, stat: &mut S<TState>, system_data: &FbSystemData) -> Q<TState> {
+        logic::logic(input, stat, system_data)
     }
 }

@@ -22,7 +22,6 @@ fn test1() {
     let sm_output = sm.call(
         &mut super::I {
             new_state: States::State1,
-            cycle_time: Duration::from_millis(100),
         },
         period,
     );
@@ -34,7 +33,6 @@ fn test1() {
     let sm_output = sm.call(
         &mut super::I {
             new_state: States::State2,
-            cycle_time: Duration::from_millis(100),
         },
         period,
     );
@@ -47,7 +45,6 @@ fn test1() {
     let sm_output = sm.call(
         &mut super::I {
             new_state: States::State2,
-            cycle_time: Duration::from_millis(100),
         },
         period,
     );
@@ -60,7 +57,6 @@ fn test1() {
     let sm_output = sm.call(
         &mut super::I {
             new_state: States::State2,
-            cycle_time: Duration::from_millis(100),
         },
         period,
     );

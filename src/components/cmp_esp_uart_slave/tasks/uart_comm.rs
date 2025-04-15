@@ -57,6 +57,9 @@ impl<TBufferData> UartComm<TBufferData> {
                     continue;
                 }
             };
+            let Some(response) = response else {
+                continue;
+            };
 
             trace!("Response: {:?}", response);
 

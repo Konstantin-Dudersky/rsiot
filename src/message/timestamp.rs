@@ -1,10 +1,10 @@
-use chrono::{DateTime, FixedOffset, Timelike, Utc};
+use chrono::{DateTime, Datelike, FixedOffset, Local, Timelike, Weekday};
 use serde::{Deserialize, Serialize};
 
 /// Метка времени
 ///
 /// Тип на основе `chrono::DateTime<FixedOffset>`. По-умолчанию создается текущая метка времени.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Timestamp(pub DateTime<FixedOffset>);
 
 impl Timestamp {
@@ -23,6 +23,19 @@ impl Timestamp {
         self.0.timestamp_nanos_opt()
     }
 
+    /// Возвращает номер дня недели. 1 = понедельник, 7 = воскресенье
+    pub fn weekday(&self) -> u8 {
+        match self.0.weekday() {
+            Weekday::Mon => 1,
+            Weekday::Tue => 2,
+            Weekday::Wed => 3,
+            Weekday::Thu => 4,
+            Weekday::Fri => 5,
+            Weekday::Sat => 6,
+            Weekday::Sun => 7,
+        }
+    }
+
     /// Часы
     pub fn hour(&self) -> u32 {
         self.0.hour()
@@ -32,12 +45,17 @@ impl Timestamp {
     pub fn minute(&self) -> u32 {
         self.0.minute()
     }
+
+    /// Секунды
+    pub fn second(&self) -> u32 {
+        self.0.second()
+    }
 }
 
 /// TODO - вместо Utc использовать местный часовой пояс?
 impl Default for Timestamp {
     fn default() -> Self {
-        Self(Utc::now().into())
+        Self(Local::now().into())
     }
 }
 

@@ -20,6 +20,7 @@ where
     TMsg: 'static + MsgDataBound,
     TMainWindow: 'static + ComponentHandle,
 {
+    // TODO - если fn_output пустой, сваливается в ошибку
     pub async fn spawn(self) -> Result<()> {
         let (ch_tx, mut ch_rx) = mpsc::channel(1000);
 

@@ -2,10 +2,10 @@
 
 mod config;
 mod error;
+mod field_value;
 mod line_protocol_item;
-mod value_type;
 
-pub use config::Config;
+pub use config::{Config, FnInput};
 pub use error::Error;
+pub use field_value::FieldValue;
 pub use line_protocol_item::LineProtocolItem;
-pub use value_type::ValueType;

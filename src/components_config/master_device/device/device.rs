@@ -52,7 +52,7 @@ where
     /// ```rust
     /// |buffer| {vec![]}
     /// ```
-    pub fn_buffer_to_msgs: fn(&TBuffer) -> Vec<Message<TMsg>>,
+    pub fn_buffer_to_msgs: fn(&mut TBuffer) -> Vec<Message<TMsg>>,
 
     /// Значения в буфере при инициализации
     pub buffer_default: TBuffer,

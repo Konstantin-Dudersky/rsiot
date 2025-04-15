@@ -20,6 +20,9 @@ pub mod http_server;
 #[cfg(feature = "cmp_influxdb")]
 pub mod influxdb_v2;
 
+#[cfg(feature = "cmp_influxdb")]
+pub mod influxdb3;
+
 #[cfg(feature = "cmp_modbus_client")]
 pub mod modbus_client;
 

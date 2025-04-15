@@ -9,17 +9,17 @@ use crate::serde_utils::{SerdeAlg, SerdeAlgKind};
 use super::{crc_alg::CrcAlg, Error, FieldbusRequest, FieldbusResponse, UartPacket};
 
 /// Протокол передачи
-#[derive(Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Protocol {
-    address: u8,
+    pub address: u8,
     serde_alg: SerdeAlg,
 }
 impl Protocol {
     /// Создание протокола
-    pub fn new(address: u8, serde_alg_kind: SerdeAlgKind) -> Self {
+    pub fn new(address: u8) -> Self {
         Self {
             address,
-            serde_alg: SerdeAlg::new(serde_alg_kind),
+            serde_alg: SerdeAlg::new(SerdeAlgKind::Postcard),
         }
     }
 
