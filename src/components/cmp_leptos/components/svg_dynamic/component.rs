@@ -7,7 +7,7 @@ use tracing::warn;
 use uuid::Uuid;
 use wasm_bindgen::{closure::Closure, JsCast};
 
-use super::create_svg_animation;
+use super::{create_svg_animation, Error};
 
 use super::{
     set_global_style::set_global_style,
@@ -28,17 +28,24 @@ where
 
     let id_clone = id.clone();
 
-    // track_counter отслеживает кол-во обновлений элемента div_ref. Значение 2 означает, что
-    // svg загружен и можно запускать обновление элементов. Почему 2? ХЗ
+    // track_counter отслеживает кол-во обновлений элемента div_ref. При полной перезагрузке
+    // страницы проход по SVG элементам выполняется сразу без проблем. При переходе между
+    // страницами, необходимо подождать, пока track_counter будет равен 2. Почему 2? ХЗ
     let mut track_counter = 0;
+    let mut inited = false;
     Effect::new(move || {
         div_ref.track();
         track_counter += 1;
-        if track_counter == 2 {
+        if !inited {
             let id_clone = id_clone.clone();
             let svg_input = svg_input.clone();
             let svg_output = svg_output.clone();
-            setup_svg_input_and_output(id_clone, svg_input, svg_output);
+            let res = setup_svg_input_and_output(id_clone, svg_input, svg_output);
+            match res {
+                Ok(_) => inited = true,
+                Err(err) if track_counter >= 2 => warn!("Error: {}", err),
+                _ => (),
+            }
         }
     });
 
@@ -51,12 +58,12 @@ fn setup_svg_input_and_output<FOutput>(
     id_clone: String,
     svg_input: Vec<SvgInput>,
     svg_output: SvgOutput<FOutput>,
-) where
+) -> Result<(), Error>
+where
     FOutput: Fn(&str) + 'static,
 {
     // Задаем стили элементов svg файла
-    let id_clone = id_clone.clone();
-    Effect::new(move |_| set_global_style(&id_clone));
+    set_global_style(&id_clone)?;
 
     // Создаем эффекты для анимации svg
     for input in svg_input {
@@ -92,6 +99,8 @@ fn setup_svg_input_and_output<FOutput>(
                 .unwrap();
         });
     }
+
+    Ok(())
 }
 
 /// Извлечение id элемента из события
@@ -169,39 +178,3 @@ fn create_effect_for_svg_input(input: &SvgInput) -> Option<()> {
     }
     Some(())
 }
-
-// div_ref.on_load(move |_| {
-// Задаем стили элементов svg файла
-// create_effect(move |_| {
-//     let id_clone = id_clone.clone();
-//     set_global_style(id_clone)
-// });
-
-// for input in svg_input {
-//     create_effect(move |_| create_effect_for_svg_input(&input).unwrap());
-// }
-
-// for id in svg_output.ids {
-//     let cb_clone = output_callback.clone();
-//     // Не знаю, зачем нужно оборачивать в create_effect, но без него `get_element_by_id` не
-//     // находится
-//     create_effect(move |_| {
-//         let Some(svg_element) = get_svg_element_by_id(&id) else {
-//             return;
-//         };
-
-//         info!("Регистрация коллбеков для вызова");
-
-//         let lock = cb_clone.lock().unwrap();
-
-//         svg_element
-//             .add_event_listener_with_callback("click", lock.as_ref().unchecked_ref())
-//             .unwrap();
-//         svg_element
-//             .style()
-//             .set_property("cursor", "pointer")
-//             .unwrap();
-//     });
-// }
-// });
-//

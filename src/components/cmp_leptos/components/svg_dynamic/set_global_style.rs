@@ -2,16 +2,17 @@
 
 use leptos::{leptos_dom::helpers::document, wasm_bindgen::JsCast};
 
-use super::{super::material_theme::MaterialTheme, change_svg_prop, INK_LABEL};
+use super::{super::material_theme::MaterialTheme, change_svg_prop, Error, INK_LABEL};
 
-pub fn set_global_style(svg_id: &str) {
+pub fn set_global_style(svg_id: &str) -> Result<(), Error> {
     let root_node = document()
         .get_element_by_id(svg_id)
-        .unwrap()
+        .ok_or_else(|| Error::ElementNotFound(svg_id.to_string()))?
         .parent_node()
         .unwrap();
 
     node_process(root_node);
+    Ok(())
 }
 
 /// Рекурсивно проходим по всем узлам документа
