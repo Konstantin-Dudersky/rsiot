@@ -86,10 +86,9 @@ where
         let fb_main = match retention_restore {
             ConfigRetentionRestoreResult::NoRestoreData => self.fb_main.clone(),
             ConfigRetentionRestoreResult::RestoreDeserializationError => self.fb_main.clone(),
-            ConfigRetentionRestoreResult::RestoreData(stat) => self
-                .fb_main
-                .clone()
-                .new_with_restore_stat(stat, self.fb_main.get_period()),
+            ConfigRetentionRestoreResult::RestoreData(stat) => {
+                self.fb_main.clone().new_with_restore_stat(stat)
+            }
         };
 
         Ok(fb_main)

@@ -1,11 +1,16 @@
 //! Функциональный блок
 
-use std::time::{Duration, SystemTime};
+use std::time::Duration;
 
 use serde::{Deserialize, Serialize};
 
+#[cfg(not(target_arch = "wasm32"))]
+use std::time::SystemTime;
+#[cfg(target_arch = "wasm32")]
+use web_time::SystemTime;
+
 /// Функциональный блок
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct FunctionBlockBase<I, Q, S>
 where
     I: Clone + Default + Serialize,
@@ -14,13 +19,41 @@ where
     Self: IFunctionBlock<I, Q, S>,
 {
     /// Входные данные
-    pub input: I,
+    pub i: I,
     /// Выходные данные
-    pub output: Q,
+    pub q: Q,
     /// Статичные данные - сохраняются между вызовами
-    pub stat: S,
-    /// Системные данные функционального блока
-    fb_system_data: FbSystemData,
+    pub s: S,
+
+    calc_period_errors: usize,
+
+    /// Время последнего вызова.
+    ///
+    /// TODO - если нет ошибок компиляции в разных таргетах, сделать на основе этого поля
+    /// определение периодичности вызовов и убрать ручное задание period
+    pub last_call_time: SystemTime,
+
+    /// true - первый вызов функционального блока
+    pub first_call: bool,
+}
+
+impl<I, Q, S> Default for FunctionBlockBase<I, Q, S>
+where
+    I: Clone + Default + Serialize,
+    Q: Clone + Default + Serialize,
+    S: Clone + Default + Serialize,
+    Self: IFunctionBlock<I, Q, S>,
+{
+    fn default() -> Self {
+        Self {
+            i: I::default(),
+            q: Q::default(),
+            s: S::default(),
+            calc_period_errors: 0,
+            last_call_time: SystemTime::now(),
+            first_call: true,
+        }
+    }
 }
 
 impl<I, Q, S> FunctionBlockBase<I, Q, S>
@@ -31,44 +64,49 @@ where
     Self: IFunctionBlock<I, Q, S>,
 {
     /// Создание экземпляра функционального блока со значениями по-умолчанию
-    pub fn new(period: Duration) -> Self {
-        Self {
-            fb_system_data: FbSystemData {
-                first_call: true,
-                period,
-                last_call_time: SystemTime::now(),
-            },
-            ..Default::default()
-        }
+    pub fn new() -> Self {
+        Self::default()
     }
 
     /// Создание экземпляра функционального блока с восстановленными значениями области stat
-    pub(crate) fn new_with_restore_stat(self, stat: S, period: Duration) -> Self {
+    pub(crate) fn new_with_restore_stat(self, stat: S) -> Self {
         Self {
-            stat,
-            fb_system_data: FbSystemData {
-                first_call: true,
-                period,
-                last_call_time: SystemTime::now(),
-            },
+            s: stat,
             ..Default::default()
         }
     }
 
     /// Вызов функционального блока
-    pub fn call(&mut self, input: &mut I, period: Duration) -> Q {
-        self.fb_system_data.period = period;
+    pub fn call(&mut self, input: &mut I) -> Q {
+        let now = SystemTime::now();
+
+        let period = now.duration_since(self.last_call_time);
+        self.last_call_time = now;
+
+        let period = match period {
+            Ok(v) => {
+                if v >= Duration::from_millis(5000) {
+                    Duration::from_millis(5000)
+                } else {
+                    v
+                }
+            }
+            Err(_) => {
+                self.calc_period_errors += 1;
+                Duration::from_millis(0)
+            }
+        };
+
+        let fb_system_data = FbSystemData {
+            first_call: self.first_call,
+            period,
+        };
         // TODO - замерять фактический период вызова функционального блока, а не передавать
         // константу
-        self.output = FunctionBlockBase::logic(input, &mut self.stat, &self.fb_system_data);
-        self.input = input.clone();
-        self.fb_system_data.first_call = false;
-        self.output.clone()
-    }
-
-    /// Период вызова блока
-    pub fn get_period(&self) -> Duration {
-        self.fb_system_data.period
+        self.q = FunctionBlockBase::logic(input, &mut self.s, &fb_system_data);
+        self.i = input.clone();
+        self.first_call = false;
+        self.q.clone()
     }
 }
 
@@ -78,9 +116,6 @@ pub trait IFunctionBlock<I, Q, S> {
     ///
     /// Нужно переопределить для своего функционального блока.
     /// Вызывать самому не нужно, вызывается функцией `call`
-    ///
-    /// TODO: рассмотреть возможность добавления аргумента fn_output, чтобы блок самостоятельно
-    /// мог генерировать исходящие сообщения
     fn logic(input: &mut I, stat: &mut S, fb_system_data: &FbSystemData) -> Q;
 }
 
@@ -92,12 +127,6 @@ pub struct FbSystemData {
 
     /// Период вызова блока
     pub period: Duration,
-
-    /// Время последнего вызова.
-    ///
-    /// TODO - если нет ошибок компиляции в разных таргетах, сделать на основе этого поля
-    /// определение периодичности вызовов и убрать ручное задание period
-    pub last_call_time: SystemTime,
 }
 
 impl Default for FbSystemData {
@@ -105,7 +134,6 @@ impl Default for FbSystemData {
         Self {
             first_call: true,
             period: Duration::from_millis(100),
-            last_call_time: SystemTime::now(),
         }
     }
 }

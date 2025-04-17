@@ -79,7 +79,7 @@ where
             fn_cycle_init: |_| (),
             fn_input: |_, _| (),
             fn_output: |_| vec![],
-            fb_main: FunctionBlockBase::new(Duration::default()),
+            fb_main: FunctionBlockBase::new(),
             period: Duration::default(),
             retention: None,
         }

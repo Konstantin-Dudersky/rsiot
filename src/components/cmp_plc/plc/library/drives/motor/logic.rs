@@ -4,20 +4,17 @@ use super::{IHmiCommand, QHmiPermission, QHmiStatus, QMode, QState, I, Q, S};
 
 use super::super::select_mode;
 
-pub fn logic(input: &I, stat: &mut S, system_data: &FbSystemData) -> Q {
+pub fn logic(input: &I, stat: &mut S, _system_data: &FbSystemData) -> Q {
     // Выбор режима
-    stat.mode.call(
-        &mut select_mode::I {
-            mode_source: input.mode_source,
-            mode_auto: input.mode_auto,
-            mode_man: input.mode_man,
-            mode_local: false,
-            mode_oos: false,
-            hmi_command: input.hmi_command.into(),
-        },
-        system_data.period,
-    );
-    let mode = stat.mode.output.mode;
+    stat.mode.call(&mut select_mode::I {
+        mode_source: input.mode_source,
+        mode_auto: input.mode_auto,
+        mode_man: input.mode_man,
+        mode_local: false,
+        mode_oos: false,
+        hmi_command: input.hmi_command.into(),
+    });
+    let mode = stat.mode.q.mode;
 
     // Команда на запуск
     stat.state = match mode {
@@ -51,10 +48,10 @@ pub fn logic(input: &I, stat: &mut S, system_data: &FbSystemData) -> Q {
                 man_start: mode == QMode::Manual,
                 man_stop: mode == QMode::Manual,
 
-                mode_auto: stat.mode.output.hmi_status.hmi_permission.mode_auto,
-                mode_man: stat.mode.output.hmi_status.hmi_permission.mode_man,
-                mode_local: stat.mode.output.hmi_status.hmi_permission.mode_local,
-                mode_oos: stat.mode.output.hmi_status.hmi_permission.mode_oos,
+                mode_auto: stat.mode.q.hmi_status.hmi_permission.mode_auto,
+                mode_man: stat.mode.q.hmi_status.hmi_permission.mode_man,
+                mode_local: stat.mode.q.hmi_status.hmi_permission.mode_local,
+                mode_oos: stat.mode.q.hmi_status.hmi_permission.mode_oos,
             },
             mode,
             state: stat.state,

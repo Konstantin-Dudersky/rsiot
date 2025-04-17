@@ -45,9 +45,9 @@ where
             let stat;
             {
                 let fb_main = self.fb_main.lock().await;
-                input = fb_main.input.clone();
-                output = fb_main.output.clone();
-                stat = fb_main.stat.clone();
+                input = fb_main.i.clone();
+                output = fb_main.q.clone();
+                stat = fb_main.s.clone();
             }
             let msgs = (config_retention.fn_export)(&input, &output, &stat);
             let Some(msgs) = msgs else { continue };

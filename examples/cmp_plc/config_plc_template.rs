@@ -57,7 +57,7 @@ fn main() {
             fn_cycle_init,
             fn_input,
             fn_output,
-            fb_main: fb_main::FB::new(Duration::from_millis(200)),
+            fb_main: fb_main::FB::new(),
             period: Duration::from_millis(200),
             retention: None,
         }

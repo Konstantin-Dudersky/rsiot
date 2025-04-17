@@ -16,50 +16,36 @@ fn test1() {
         State2,
     }
 
-    let period = Duration::from_millis(100);
-
-    let mut sm = super::FB::new(Duration::from_millis(100));
-    let sm_output = sm.call(
-        &mut super::I {
-            new_state: States::State1,
-        },
-        period,
-    );
+    let mut sm = super::FB::new();
+    let sm_output = sm.call(&mut super::I {
+        new_state: States::State1,
+    });
 
     assert_eq!(sm_output.current_state, States::State1);
     assert_eq!(sm_output.state_time, Duration::from_millis(100));
 
     // Переходим в состояние State2
-    let sm_output = sm.call(
-        &mut super::I {
-            new_state: States::State2,
-        },
-        period,
-    );
+    let sm_output = sm.call(&mut super::I {
+        new_state: States::State2,
+    });
 
     assert_eq!(sm_output.current_state, States::State2);
     assert_eq!(sm_output.state_time, Duration::from_millis(0));
     assert!(sm_output.is_first_cycle);
 
     // Остаемся состояние State2
-    let sm_output = sm.call(
-        &mut super::I {
-            new_state: States::State2,
-        },
-        period,
-    );
+    let sm_output = sm.call(&mut super::I {
+        new_state: States::State2,
+    });
 
     assert_eq!(sm_output.current_state, States::State2);
     assert_eq!(sm_output.state_time, Duration::from_millis(100));
     assert!(!sm_output.is_first_cycle);
 
     // Остаемся состояние State2
-    let sm_output = sm.call(
-        &mut super::I {
-            new_state: States::State2,
-        },
-        period,
-    );
+    let sm_output = sm.call(&mut super::I {
+        new_state: States::State2,
+    });
 
     assert_eq!(sm_output.current_state, States::State2);
     assert_eq!(sm_output.state_time, Duration::from_millis(200));
