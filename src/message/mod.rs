@@ -18,11 +18,6 @@ pub mod system_messages;
 mod time_to_live;
 mod timestamp;
 
-/// Пока эти модули не нужны, в будущем скорее всего можно удалить
-pub mod eav;
-#[allow(unused_imports)]
-mod eav_helpers;
-
 pub use auth_roles::AuthPermissions;
 pub use error::Error;
 pub use example_message_channel::ExampleMessageChannel;
