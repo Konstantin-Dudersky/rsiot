@@ -1,19 +1,24 @@
 use tokio::sync::mpsc;
 use tracing::trace;
 
-use super::{Error, RequestResponseBound};
+use super::{Buffer, BufferBound, Error, RequestResponseBound};
 
-pub struct InitRequest<TFieldbusRequest> {
-    pub fn_init_requests: fn() -> Vec<TFieldbusRequest>,
+pub struct InitRequest<TFieldbusRequest, TBuffer> {
+    pub buffer: Buffer<TBuffer>,
+    pub fn_init_requests: fn(&TBuffer) -> Vec<TFieldbusRequest>,
     pub ch_tx_device_to_fieldbus: mpsc::Sender<TFieldbusRequest>,
 }
 
-impl<TFieldbusRequest> InitRequest<TFieldbusRequest>
+impl<TFieldbusRequest, TBuffer> InitRequest<TFieldbusRequest, TBuffer>
 where
     TFieldbusRequest: RequestResponseBound,
+    TBuffer: BufferBound,
 {
     pub async fn spawn(self) -> super::Result<()> {
-        let requests = (self.fn_init_requests)();
+        let requests = {
+            let buffer = self.buffer.lock().await;
+            (self.fn_init_requests)(&buffer)
+        };
 
         for request in requests {
             trace!("Request: {:?}", request);

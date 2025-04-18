@@ -11,8 +11,10 @@ use super::{crc_alg::CrcAlg, Error, FieldbusRequest, FieldbusResponse, UartPacke
 /// Протокол передачи
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Protocol {
+    /// Адрес устройства
     pub address: u8,
-    serde_alg: SerdeAlg,
+    /// Алгоритм сериализации / десериализации
+    pub serde_alg: SerdeAlg,
 }
 impl Protocol {
     /// Создание протокола

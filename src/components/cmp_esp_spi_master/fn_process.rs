@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use esp_idf_svc::hal::{
     gpio::AnyIOPin,
     peripheral::Peripheral,
@@ -7,7 +5,7 @@ use esp_idf_svc::hal::{
     units::FromValueType,
 };
 use tokio::{sync::mpsc, task::JoinSet, time::sleep};
-use tracing::{info, trace};
+use tracing::trace;
 
 use crate::{
     components::shared_tasks::fn_process_master::FnProcessMaster,
@@ -33,8 +31,6 @@ where
     const BUFFER_SIZE: usize = 500;
 
     let mut task_set = JoinSet::new();
-
-    // sleep(Duration::from_millis(1000)).await;
 
     let config_fn_process_master = FnProcessMaster {
         msg_bus: msg_bus.clone(),

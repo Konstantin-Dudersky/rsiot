@@ -2,7 +2,6 @@
 
 use std::collections::HashMap;
 use tokio::sync::mpsc;
-// use tracing::info;
 
 use crate::message::{Message, MsgDataBound};
 
@@ -33,8 +32,6 @@ where
 
         while let Some(msg) = self.input.recv().await {
             let key = &msg.key;
-
-            // info!("Key: {key}");
 
             let msg_cache = cache.get(key);
 

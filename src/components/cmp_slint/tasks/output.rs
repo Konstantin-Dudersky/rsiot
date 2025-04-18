@@ -28,6 +28,7 @@ where
             .upgrade_in_event_loop(move |h| (self.fn_output)(h, ch_tx))?;
 
         while let Some(msg) = ch_rx.recv().await {
+            let msg = Message::new_custom(msg);
             self.output
                 .send(msg)
                 .await

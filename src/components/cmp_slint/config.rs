@@ -5,8 +5,8 @@ use tokio::sync::mpsc;
 
 use crate::message::{Message, MsgDataBound};
 
-pub type FnInput<TMsg, TMainWindow> = fn(Message<TMsg>, TMainWindow);
-pub type FnOutput<TMsg, TMainWindow> = fn(TMainWindow, mpsc::Sender<Message<TMsg>>);
+pub type FnInput<TMsg, TMainWindow> = fn(TMsg, TMainWindow);
+pub type FnOutput<TMsg, TMainWindow> = fn(TMainWindow, mpsc::Sender<TMsg>);
 
 /// Настройки компонента cmp_slint
 pub struct Config<TMsg, TMainWindow>

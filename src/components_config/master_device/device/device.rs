@@ -19,7 +19,7 @@ where
     TFieldbusRequest: RequestResponseBound,
 {
     /// Запросы при инициализации устройства
-    pub fn_init_requests: fn() -> Vec<TFieldbusRequest>,
+    pub fn_init_requests: fn(&TBuffer) -> Vec<TFieldbusRequest>,
 
     /// Периодические запросы
     pub periodic_requests: Vec<ConfigPeriodicRequest<TFieldbusRequest, TBuffer>>,
@@ -84,6 +84,7 @@ where
         //
         // Приостанавливаем выполнение, пока не будет выполнена задача
         let task = tasks::InitRequest {
+            buffer: buffer.clone(),
             fn_init_requests: self.fn_init_requests,
             ch_tx_device_to_fieldbus: ch_tx_device_to_fieldbus.clone(),
         };
@@ -145,7 +146,7 @@ where
 {
     fn default() -> Self {
         DeviceBase {
-            fn_init_requests: Vec::new,
+            fn_init_requests: |_| vec![],
             periodic_requests: vec![],
             fn_msgs_to_buffer: |_, _| (),
             fn_buffer_to_request: |_| Ok(vec![]),

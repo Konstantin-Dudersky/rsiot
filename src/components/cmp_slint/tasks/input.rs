@@ -22,6 +22,9 @@ where
 {
     pub async fn spawn(mut self) -> Result<()> {
         while let Some(msg) = self.input.recv().await {
+            let Some(msg) = msg.get_custom_data() else {
+                continue;
+            };
             self.slint_window
                 .upgrade_in_event_loop(move |h| (self.fn_input)(msg, h))?;
         }
