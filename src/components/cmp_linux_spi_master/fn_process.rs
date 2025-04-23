@@ -1,3 +1,5 @@
+use std::io::{Read, Write};
+
 use tokio::{sync::mpsc, task::JoinSet, time::sleep};
 
 use linux_embedded_hal::spidev::{Spidev, SpidevOptions, SpidevTransfer};
@@ -67,6 +69,8 @@ impl SpiComm {
                 let options = SpidevOptions::new()
                     .max_speed_hz(dvc.baudrate)
                     .mode(dvc.spi_mode.into())
+                    .lsb_first(false)
+                    // .bits_per_word(8)
                     .build();
                 device.configure(&options).unwrap();
                 device
@@ -135,17 +139,24 @@ async fn make_spi_operation(
         }
         spi_master::Operation::WriteRead(write_data, read_len) => {
             let mut read_data = vec![0; *read_len as usize];
-            let mut transaction = [
-                SpidevTransfer::write(write_data),
-                SpidevTransfer::read(&mut read_data),
-            ];
-            device.transfer_multiple(&mut transaction).unwrap();
-            info!("Read data: {:?}", read_data);
+            // let mut transaction = [
+            //     SpidevTransfer::write(write_data),
+            //     SpidevTransfer::read(&mut read_data),
+            // ];
+            // device.transfer_multiple(&mut transaction).unwrap();
+            //
+            device.write_all(write_data).unwrap();
+            device.read_exact(&mut read_data).unwrap();
+
+            trace!("Read data: {:?}", read_data);
             Some(read_data)
         }
         spi_master::Operation::Write(write_data) => {
-            let mut transaction = [SpidevTransfer::write(write_data)];
-            device.transfer_multiple(&mut transaction).unwrap();
+            // let mut transaction = [SpidevTransfer::write(write_data)];
+            // device.transfer_multiple(&mut transaction).unwrap();\
+            //
+            device.write_all(write_data).unwrap();
+            //
             None
         }
     }

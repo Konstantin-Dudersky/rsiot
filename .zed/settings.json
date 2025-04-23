@@ -11,6 +11,7 @@
           // "target": "aarch64-unknown-linux-gnu",
           // "features": [
           //   "rustdoc",
+          // "cmp_math"
           //   "cmp_plc",
           // "cmp_raspberrypi"
           //   "cmp_slint",
@@ -33,8 +34,9 @@
             // "cmp_http_server",
             // "cmp_filesystem",
             // "cmp_influxdb"
-            // "cmp_linux_spi_master"
+            "cmp_linux_spi_master",
             // "cmp_linux_uart_master"
+            "cmp_math",
             //   "cmp_modbus_client",
             //   "cmp_mqtt_client",
             "cmp_plc",

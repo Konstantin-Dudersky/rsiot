@@ -247,6 +247,9 @@ cmp_linux_uart_master = ["executor", "dep:linux-embedded-hal"]
 ## Компонент Modbus клиент
 cmp_modbus_client = ["executor", "dep:tokio-modbus"]
 
+## Компонент математической обработки данных
+cmp_math = ["executor"]
+
 ## Комонент клиента MQTT
 cmp_mqtt_client = ["executor", "dep:rumqttc"]
 

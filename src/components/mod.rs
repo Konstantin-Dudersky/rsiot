@@ -124,6 +124,9 @@ pub mod cmp_linux_uart_master;
 
 pub mod cmp_logger;
 
+#[cfg(feature = "cmp_math")]
+pub mod cmp_math;
+
 #[cfg(feature = "cmp_modbus_client")]
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
 pub mod cmp_modbus_client;
