@@ -1,41 +1,49 @@
-use std::net::IpAddr;
+use std::{net::IpAddr, time::Duration};
 
-use super::{InputConfig, PeriodicConfig};
+use crate::components_config::master_device::DeviceTrait;
 
 /// Конфигурация cmp_modbus_client
-#[derive(Clone, Debug)]
-pub struct Config<TMessage> {
+#[derive(Debug)]
+pub struct Config<TMsg> {
     /// true - разрешение работы
     pub enabled: bool,
 
+    /// Массив настроек коммуникации с устройствами
+    ///
+    /// Порядок элементов в этом массиве должен соответствовать порядку устройств в массиве devices
+    pub devices_comm_settings: Vec<ConfigDevicesCommSettings>,
+
+    /// Драйвера устройств
+    pub devices: Vec<Box<dyn DeviceTrait<TMsg, super::FieldbusRequest, super::FieldbusResponse>>>,
+}
+
+/// Настройки коммуникации с устройствами
+#[derive(Clone, Copy, Debug)]
+pub struct ConfigDevicesCommSettings {
     /// Настройки подключения к опрашиваемому устройтву
-    pub connection_config: ClientType,
+    pub client_type: ClientType,
 
     /// Адрес подчиненного устройства (обычно 1)
     pub unit_id: u8,
 
-    /// Конфигурация запросов на основе входных сообщений
-    pub input_config: Vec<InputConfig<TMessage>>,
+    /// Таймаут
+    pub timeout: Duration,
 
-    /// Конфигурация периодических запросов
-    pub periodic_config: Vec<PeriodicConfig<TMessage>>,
+    /// Допустимое кол-во одновременных соединений
+    pub concurrent_connections: u8,
 }
 
 /// Конфигурация Modbus клиента
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum ClientType {
     /// Вариант для Modbus TCP
-    Tcp(TcpClientType),
+    Tcp {
+        /// IP-адрес устройства
+        host: IpAddr,
+
+        /// Порт устройства (обычно 502)
+        port: u16,
+    },
     /// Вариант для Modbus RTU
     Rtu,
-}
-
-/// Конфигурация Modbus TCP клиента
-#[derive(Clone, Debug)]
-pub struct TcpClientType {
-    /// IP-адрес устройства
-    pub host: IpAddr,
-
-    /// Порт устройства (обычно 502)
-    pub port: u16,
 }

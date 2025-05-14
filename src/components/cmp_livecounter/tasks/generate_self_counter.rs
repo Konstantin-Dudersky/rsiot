@@ -19,6 +19,7 @@ impl<TMsg> GenerateSelfCounter<TMsg> {
         loop {
             self_counter = self_counter.wrapping_add(1);
             let msg = (self.fn_generate_self_counter)(self_counter);
+            let Some(msg) = msg else { continue };
             self.output.send(msg).await.unwrap();
             sleep(self.generate_self_period).await
         }

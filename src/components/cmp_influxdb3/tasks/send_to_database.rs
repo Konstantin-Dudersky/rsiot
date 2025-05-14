@@ -20,8 +20,10 @@ impl SendToDatabase {
             match msg {
                 SendToDatabaseMessage::LineProtocolItem(item) => cache.push(item),
                 SendToDatabaseMessage::SendByTimer => {
-                    handle_request(&self.url, &self.database, &cache).await?;
-                    cache.clear();
+                    let res = handle_request(&self.url, &self.database, &cache).await;
+                    if res.is_ok() {
+                        cache.clear();
+                    }
                 }
             }
         }

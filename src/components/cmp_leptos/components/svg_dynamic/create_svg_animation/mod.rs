@@ -20,4 +20,7 @@ mod text_content;
 pub use text_content::text_content;
 
 mod fill;
-pub use fill::fill;
+pub use fill::{fill, fill_color};
+
+mod visible;
+pub use visible::visible;

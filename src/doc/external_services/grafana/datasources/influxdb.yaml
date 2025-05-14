@@ -6,9 +6,6 @@ datasources:
     access: proxy
     url: http://${INFLUXDB_HOST}:${INFLUXDB_PORT}
     jsonData:
-      version: Flux
-      organization: ${INFLUXDB_ORG}
-      defaultBucket: ${INFLUXDB_BUCKET}
-      tlsSkipVerify: true
-    secureJsonData:
-      token: ${INFLUXDB_TOKEN}
+      version: InfluxQL
+      dbName: ${INFLUXDB_dbName}
+      httpMode: POST

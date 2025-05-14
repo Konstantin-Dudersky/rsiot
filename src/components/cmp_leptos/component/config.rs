@@ -18,7 +18,7 @@ where
     /// **Примеры**
     ///
     /// ```rust
-    /// body_component: || view! { <App/> }
+    /// body_component: || view! { <app::App/> }.into_any()
     /// ```
     pub body_component: fn() -> AnyView,
 

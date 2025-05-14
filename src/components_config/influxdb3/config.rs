@@ -28,10 +28,11 @@ pub struct Config<TMsg> {
     /// База данных
     pub database: String,
 
+    /// Периодичность отправки данных для сохранения в базе данных
+    pub send_period: Duration,
+
     /// Функция преобразования сообщения в строки протокола InfluxDB
     pub fn_input: FnInput<TMsg>,
-
-    pub send_period: Duration,
 }
 
 #[cfg(test)]

@@ -61,7 +61,6 @@ where
     /// Время ожидания ответа
     pub timeout: Duration,
 
-    /// TODO - переделать на вектор универсальных устройств
     // pub devices: Vec<TestDevice<TMsg>>,
     pub devices: Vec<Box<dyn DeviceTrait<TMsg, UartRequest, UartResponse, u8>>>,
 }

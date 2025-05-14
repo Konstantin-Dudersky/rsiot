@@ -4,12 +4,10 @@ use crate::{components::shared_tasks, executor::ComponentError};
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    /// Reqwest
-    #[error("Reqwest error: {0}")]
+    #[error("cmp_influxdb | Reqwest error: {0}")]
     Reqwest(#[from] reqwest::Error),
 
-    /// RequestParameters
-    #[error("Status: {status}, message: {message}")]
+    #[error("cmp_influxdb | Status: {status}, message: {message}")]
     RequestParameters {
         /// status
         status: reqwest::StatusCode,
@@ -17,30 +15,28 @@ pub enum Error {
         message: String,
     },
 
-    /// WrongTimestamp
-    #[error("Cannot represent timetamp as Unix time: {0:?}")]
+    #[error("cmp_influxdb | Cannot represent timetamp as Unix time: {0:?}")]
     WrongTimestamp(crate::message::Timestamp),
 
-    /// Config
-    #[error(transparent)]
+    #[error("cmp_influxdb | {0}")]
     Config(#[from] crate::components_config::influxdb_v2::Error),
 
-    #[error(transparent)]
+    #[error("cmp_influxdb | {0}")]
     TaskMsgBusToMpsc(shared_tasks::msgbus_to_mpsc::Error),
 
-    #[error("TaskInputEnd")]
+    #[error("cmp_influxdb | TaskInputEnd")]
     TaskInputEnd,
 
-    #[error("TaskPeriodicEnd")]
+    #[error("cmp_influxdb | TaskPeriodicEnd")]
     TaskPeriodicEnd,
 
-    #[error("TaskSendToDatabase")]
+    #[error("cmp_influxdb | TaskSendToDatabase")]
     TaskSendToDatabase,
 
-    #[error("TokioMpsc")]
+    #[error("cmp_influxdb | TokioMpsc")]
     TokioMpsc,
 
-    #[error("TokioJoin")]
+    #[error("cmp_influxdb | TokioJoin")]
     TokioJoin(#[from] tokio::task::JoinError),
 }
 

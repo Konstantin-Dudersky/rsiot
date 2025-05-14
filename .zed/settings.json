@@ -33,16 +33,16 @@
             // "cmp_http_client",
             // "cmp_http_server",
             // "cmp_filesystem",
-            // "cmp_influxdb"
-            "cmp_linux_spi_master",
+            "cmp_influxdb",
+            // "cmp_linux_spi_master",
             // "cmp_linux_uart_master"
-            "cmp_math",
-            //   "cmp_modbus_client",
+            // "cmp_math",
+            "cmp_modbus_client"
             //   "cmp_mqtt_client",
-            "cmp_plc",
+            // "cmp_plc",
             // "cmp_redis_client",
             //   "cmp_os_process",
-            "cmp_slint"
+            // "cmp_slint"
             //   "cmp_surrealdb",
             //   "cmp_system_info",
             //   "cmp_telegram",

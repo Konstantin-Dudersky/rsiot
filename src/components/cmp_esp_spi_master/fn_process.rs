@@ -164,14 +164,17 @@ async fn make_spi_operation<'a>(
         }
         spi_master::Operation::WriteRead(write_data, read_len) => {
             let mut read_data = vec![0; *read_len as usize];
+            trace!("Write SPI data: {:x?}", write_data);
             let mut transaction = [
                 Operation::Write(write_data),
                 Operation::Read(&mut read_data),
             ];
             device.transaction(&mut transaction).unwrap();
+            trace!("Read SPI data: {:x?}", read_data);
             Some(read_data)
         }
         spi_master::Operation::Write(write_data) => {
+            trace!("Write SPI data: {:x?}", write_data);
             let mut transaction = [Operation::Write(write_data)];
             device.transaction(&mut transaction).unwrap();
             None

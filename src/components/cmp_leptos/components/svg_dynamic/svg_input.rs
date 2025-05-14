@@ -1,4 +1,5 @@
 use leptos::prelude::*;
+use palette::Srgb;
 
 use crate::components::cmp_leptos::components::MaterialTheme;
 #[cfg(feature = "cmp_plc")]
@@ -7,7 +8,11 @@ use crate::components::cmp_plc::plc::library;
 #[derive(Clone)]
 pub(crate) enum SvgInputSignal {
     Fill(Signal<MaterialTheme>),
+    FillColor(Signal<Srgb<u8>>),
+
     TextContent(Signal<String>),
+
+    Visible(Signal<bool>),
 
     #[cfg(feature = "cmp_plc")]
     PlcDrivesMotor(Signal<library::drives::motor::QHmiStatus>),
@@ -29,12 +34,19 @@ pub struct SvgInput {
 }
 
 impl SvgInput {
-    /// Заливка цветом
-    // pub fn fill(id: &str, signal: impl Into<Signal<Srgb<u8>>>) -> Self {
+    /// Заливка цветом (цвета темы)
     pub fn fill(id: &str, signal: impl Into<Signal<MaterialTheme>>) -> Self {
         Self {
             id: id.to_string(),
             signal: SvgInputSignal::Fill(signal.into()),
+        }
+    }
+
+    /// Заливка цветом
+    pub fn fill_color(id: &str, signal: impl Into<Signal<Srgb<u8>>>) -> Self {
+        Self {
+            id: id.to_string(),
+            signal: SvgInputSignal::FillColor(signal.into()),
         }
     }
 
@@ -43,6 +55,14 @@ impl SvgInput {
         Self {
             id: id.to_string(),
             signal: SvgInputSignal::TextContent(signal.into()),
+        }
+    }
+
+    /// Видимость элемента
+    pub fn visible(id: &str, signal: impl Into<Signal<bool>>) -> Self {
+        Self {
+            id: id.to_string(),
+            signal: SvgInputSignal::Visible(signal.into()),
         }
     }
 

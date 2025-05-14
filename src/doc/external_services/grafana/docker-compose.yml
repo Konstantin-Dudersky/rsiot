@@ -15,12 +15,12 @@ services:
         # настройки источника - логгер loki
       - LOKI_HOST=loki
       - LOKI_PORT=3100
-        # настройки источника - InfluxDB
-      - INFLUXDB_HOST=influxdb
-      - INFLUXDB_PORT=8086
-      - INFLUXDB_ORG=org
-      - INFLUXDB_BUCKET=bucket
-      - INFLUXDB_TOKEN=token
+        # настройки источника - InfluxDB 3
+      - INFLUXDB_HOST=uscada-influxdb
+      - INFLUXDB_PORT=8181
+      - INFLUXDB_dbName=mydb
+    networks:
+      - network_internal
     ports:
       - "3000:3000"
     profiles:
@@ -31,8 +31,7 @@ services:
       - ./config_services/grafana/dashboards:/etc/grafana/provisioning/dashboards
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-    networks:
-      - network_internal
+    user: "root:root"
 
 networks:
   network_internal:

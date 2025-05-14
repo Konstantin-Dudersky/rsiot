@@ -1,9 +1,7 @@
-use std::io::{Read, Write};
-
 use tokio::{sync::mpsc, task::JoinSet, time::sleep};
 
 use linux_embedded_hal::spidev::{Spidev, SpidevOptions, SpidevTransfer};
-use tracing::{info, trace};
+use tracing::trace;
 
 use crate::{
     components::shared_tasks::fn_process_master::FnProcessMaster,
@@ -44,6 +42,7 @@ where
         output: ch_tx_fieldbus_to_devices,
         devices_comm_settings: config.devices_comm_settings,
     };
+
     join_set_spawn(&mut task_set, task.spawn());
 
     while let Some(res) = task_set.join_next().await {
@@ -70,7 +69,6 @@ impl SpiComm {
                     .max_speed_hz(dvc.baudrate)
                     .mode(dvc.spi_mode.into())
                     .lsb_first(false)
-                    // .bits_per_word(8)
                     .build();
                 device.configure(&options).unwrap();
                 device
@@ -139,24 +137,17 @@ async fn make_spi_operation(
         }
         spi_master::Operation::WriteRead(write_data, read_len) => {
             let mut read_data = vec![0; *read_len as usize];
-            // let mut transaction = [
-            //     SpidevTransfer::write(write_data),
-            //     SpidevTransfer::read(&mut read_data),
-            // ];
-            // device.transfer_multiple(&mut transaction).unwrap();
-            //
-            device.write_all(write_data).unwrap();
-            device.read_exact(&mut read_data).unwrap();
-
-            trace!("Read data: {:?}", read_data);
+            let mut transaction = [
+                SpidevTransfer::write(write_data),
+                SpidevTransfer::read(&mut read_data),
+            ];
+            device.transfer_multiple(&mut transaction).unwrap();
+            trace!("Read data: {:x?}", read_data);
             Some(read_data)
         }
         spi_master::Operation::Write(write_data) => {
-            // let mut transaction = [SpidevTransfer::write(write_data)];
-            // device.transfer_multiple(&mut transaction).unwrap();\
-            //
-            device.write_all(write_data).unwrap();
-            //
+            let mut transaction = [SpidevTransfer::write(write_data)];
+            device.transfer_multiple(&mut transaction).unwrap();
             None
         }
     }

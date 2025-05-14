@@ -1,15 +1,11 @@
+//! Структуры данных для работы клиента Modbus
+
 mod config;
-mod input_config;
-mod periodic_config;
-mod request;
-mod response;
-mod types;
+mod fieldbus_request;
+mod fieldbus_response;
 
 pub use {
-    config::{ClientType, Config, TcpClientType},
-    input_config::InputConfig,
-    periodic_config::PeriodicConfig,
-    request::Request,
-    response::Response,
-    types::{FnOnFailure, FnOnSuccess},
+    config::{ClientType, Config, ConfigDevicesCommSettings},
+    fieldbus_request::{FieldbusRequest, RequestContent},
+    fieldbus_response::{FieldbusResponse, ResponseContent},
 };

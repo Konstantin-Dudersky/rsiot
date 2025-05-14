@@ -159,7 +159,11 @@ fn create_effect_for_svg_input(input: &SvgInput) -> Option<()> {
     match input.signal {
         SvgInputSignal::Fill(color) => create_svg_animation::fill(&svg_element, color),
 
+        SvgInputSignal::FillColor(color) => create_svg_animation::fill_color(&svg_element, color),
+
         SvgInputSignal::TextContent(text) => create_svg_animation::text_content(&svg_element, text),
+
+        SvgInputSignal::Visible(visible) => create_svg_animation::visible(&svg_element, visible),
 
         #[cfg(feature = "cmp_plc")]
         SvgInputSignal::PlcDrivesMotor(hmi_status) => {

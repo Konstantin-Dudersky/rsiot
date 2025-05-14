@@ -4,7 +4,7 @@ use crate::message::{Message, MsgDataBound};
 
 pub type FnFindPartnerCounter<TMsg> = fn(&Message<TMsg>) -> Option<u8>;
 pub type FnCheckPartnerCounter<TMsg> = fn(bool) -> Message<TMsg>;
-pub type FnGenerateSelfCounter<TMsg> = fn(u8) -> Message<TMsg>;
+pub type FnGenerateSelfCounter<TMsg> = fn(u8) -> Option<Message<TMsg>>;
 
 /// Конфигурация cmp_check_livecounter
 #[derive(Clone)]

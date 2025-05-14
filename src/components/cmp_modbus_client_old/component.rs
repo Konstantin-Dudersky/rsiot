@@ -20,11 +20,10 @@ where
         in_out: CmpInOut<TMessage>,
     ) -> Result<(), ComponentError> {
         fn_process(
-            config,
             in_out.clone_with_new_id("cmp_modbus_client", AuthPermissions::FullAccess),
+            config,
         )
-        .await?;
-        Ok(())
+        .await
     }
 }
 
