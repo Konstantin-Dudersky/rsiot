@@ -16,6 +16,11 @@ fn main() {
             target_os = "linux",
             target_env = "gnu"
         ) },
+        armv7_unknown_linux_gnueabihf: { all (
+            target_arch = "arm",
+            target_vendor = "unknown",
+            target_os = "linux"
+        ) },
         riscv32imc_esp_espidf: { all (
             target_arch = "riscv32",
             target_vendor = "espressif",

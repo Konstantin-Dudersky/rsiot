@@ -3,12 +3,20 @@
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     /// Loki error
-    #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+    #[cfg(any(
+        aarch64_unknown_linux_gnu,
+        armv7_unknown_linux_gnueabihf,
+        x8664_unknown_linux_gnu
+    ))]
     #[error("Loki error: {0}")]
     Loki(#[from] tracing_loki::Error),
 
     /// Parse error
-    #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+    #[cfg(any(
+        aarch64_unknown_linux_gnu,
+        armv7_unknown_linux_gnueabihf,
+        x8664_unknown_linux_gnu
+    ))]
     #[error("Parse error: {0}")]
     Parse(#[from] url::ParseError),
 

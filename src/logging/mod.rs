@@ -59,9 +59,17 @@ mod target_wasm32;
 #[cfg(target_arch = "wasm32")]
 pub use target_wasm32::configure_logging;
 
-#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
 mod target_x86_64;
-#[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
 pub use target_x86_64::configure_logging;
 
 #[cfg(riscv32imc_esp_espidf)]
