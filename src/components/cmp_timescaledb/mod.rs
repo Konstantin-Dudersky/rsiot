@@ -5,6 +5,8 @@
 //! ## Разработка
 //!
 //! Запустить тестовую базу данных из файла docker compose - см README в корне
+//!
+//! TODO - добавить в target_config после устранения ошибок
 
 mod component;
 mod config;

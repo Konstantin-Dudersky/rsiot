@@ -1,6 +1,9 @@
 use tokio::{sync::mpsc, task::JoinSet, time::sleep};
 
-use linux_embedded_hal::spidev::{Spidev, SpidevOptions, SpidevTransfer};
+use linux_embedded_hal::{
+    gpio_cdev::{Chip, LineHandle, LineRequestFlags},
+    spidev::{Spidev, SpidevOptions, SpidevTransfer},
+};
 use tracing::trace;
 
 use crate::{
@@ -13,7 +16,10 @@ use crate::{
     message::MsgDataBound,
 };
 
-use super::{config::ConfigDevicesCommSettings, Config};
+use super::{
+    config::{ConfigDevicesCommSettings, LinuxDevice},
+    Config, Error,
+};
 
 pub async fn fn_process<TMsg>(config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> super::Result<()>
 where
@@ -27,11 +33,11 @@ where
         msg_bus: msg_bus.clone(),
         buffer_size: BUFFER_SIZE,
         task_set: &mut task_set,
-        error_msgbus_to_broadcast: super::Error::TaskMsgbusToBroadcast,
-        error_filter: super::Error::TaskFilter,
-        error_mpsc_to_msgbus: super::Error::TaskMpscToMsgBus,
-        error_master_device: super::Error::DeviceError,
-        error_tokiompscsend: || super::Error::TokioSyncMpsc,
+        error_msgbus_to_broadcast: Error::TaskMsgbusToBroadcast,
+        error_filter: Error::TaskFilter,
+        error_mpsc_to_msgbus: Error::TaskMpscToMsgBus,
+        error_master_device: Error::DeviceError,
+        error_tokiompscsend: || Error::TokioSyncMpsc,
         devices: config.devices,
     };
     let (ch_rx_devices_to_fieldbus, ch_tx_fieldbus_to_devices) = config_fn_process_master.spawn();
@@ -58,20 +64,54 @@ struct SpiComm {
     pub devices_comm_settings: Vec<ConfigDevicesCommSettings>,
 }
 
+struct SpidevWithCS {
+    pub spidev: Spidev,
+    pub cs: Option<LineHandle>,
+}
+
 impl SpiComm {
     pub async fn spawn(mut self) -> super::Result<()> {
-        let mut spi_devices: Vec<Spidev> = self
+        let mut spi_devices: Vec<SpidevWithCS> = self
             .devices_comm_settings
             .into_iter()
-            .map(|dvc| {
-                let mut device = Spidev::open(dvc.spi_adapter_path).unwrap();
-                let options = SpidevOptions::new()
+            .enumerate()
+            .map(|(index, dvc)| {
+                let spidev = match &dvc.linux_device {
+                    LinuxDevice::Spi { dev_spi } => dev_spi,
+                    LinuxDevice::SpiWithCs { dev_spi, .. } => dev_spi,
+                };
+                let mut spidev = Spidev::open(spidev).unwrap();
+                let spi_options = SpidevOptions::new()
                     .max_speed_hz(dvc.baudrate)
                     .mode(dvc.spi_mode.into())
-                    .lsb_first(false)
                     .build();
-                device.configure(&options).unwrap();
-                device
+                spidev.configure(&spi_options).unwrap();
+
+                let cs = match dvc.linux_device {
+                    LinuxDevice::SpiWithCs {
+                        dev_spi,
+                        dev_gpio,
+                        gpio_line,
+                        ..
+                    } => {
+                        let mut chip = Chip::new(dev_gpio)
+                            .map_err(|e| Error::GpioSetup(e.to_string()))
+                            .unwrap();
+                        let cs = chip
+                            .get_line(gpio_line as u32)
+                            .map_err(|e| Error::GpioSetup(e.to_string()))
+                            .unwrap();
+                        let consumer = format!("CS{index} for {dev_spi}");
+                        let cs = cs
+                            .request(LineRequestFlags::OUTPUT, 1, &consumer)
+                            .map_err(|e| Error::GpioSetup(e.to_string()))
+                            .unwrap();
+                        Some(cs)
+                    }
+                    LinuxDevice::Spi { .. } => None,
+                };
+
+                SpidevWithCS { spidev, cs }
             })
             .collect();
 
@@ -82,7 +122,7 @@ impl SpiComm {
 
             // Номер CS недоступен
             if device_index >= spi_devices.len() {
-                let err = super::Error::CsNotAvailable {
+                let err = Error::CsNotAvailable {
                     cs: device_index as u8,
                     max_cs: spi_devices.len() as u8,
                 };
@@ -95,12 +135,22 @@ impl SpiComm {
             // Ответы от слейва
             let mut response_payload = vec![];
 
+            // Устанавливаем CS
+            if let Some(handle) = &selected_device.cs {
+                handle.set_value(0).unwrap();
+            }
+
             // Выполняем все операции в цикле
             for operation in request.operations {
-                let response = make_spi_operation(selected_device, &operation).await;
+                let response = make_spi_operation(&mut selected_device.spidev, &operation).await;
                 if let Some(response) = response {
                     response_payload.push(response);
                 }
+            }
+
+            // Сбрасываем CS
+            if let Some(handle) = &selected_device.cs {
+                handle.set_value(1).unwrap();
             }
 
             let response = spi_master::FieldbusResponse {
@@ -117,7 +167,7 @@ impl SpiComm {
             self.output
                 .send(response_with_index)
                 .await
-                .map_err(|_| super::Error::TokioSyncMpsc)?;
+                .map_err(|_| Error::TokioSyncMpsc)?;
         }
         Ok(())
     }

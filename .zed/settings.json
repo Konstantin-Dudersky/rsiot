@@ -19,7 +19,13 @@
           // ]
           // ---- armv7-unknown-linux-gnueabihf ----------------------------------------------------
           "target": "armv7-unknown-linux-gnueabihf",
-          "features": ["cmp_linux_spi_master"]
+          "features": [
+            "rustdoc",
+            "cmp_influxdb",
+            "cmp_linux_spi_master",
+            "cmp_linux_uart_master",
+            "cmp_slint"
+          ]
           // ---- riscv32imc-esp-espidf ------------------------------------------------------------
           // "target": "riscv32imc-esp-espidf",
           // "features": ["executor", "logging", "cmp_esp", "cmp_plc", "serde_postcard"]
@@ -49,7 +55,7 @@
           //   "cmp_surrealdb",
           //   "cmp_system_info",
           //   "cmp_telegram",
-          //   "cmp_timescaledb",
+          // "cmp_timescaledb"
           // "cmp_websocket_client",
           // "cmp_websocket_server",
           // "serde_json",

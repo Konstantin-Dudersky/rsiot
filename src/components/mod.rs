@@ -105,7 +105,11 @@ pub mod cmp_http_server;
 // pub mod cmp_influxdb;
 
 #[cfg(feature = "cmp_influxdb")]
-#[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
 pub mod cmp_influxdb3;
 
 pub mod cmp_inject_periodic;
@@ -123,7 +127,11 @@ pub mod cmp_leptos;
 pub mod cmp_linux_spi_master;
 
 #[cfg(feature = "cmp_linux_uart_master")]
-#[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
 pub mod cmp_linux_uart_master;
 
 pub mod cmp_logger;
@@ -170,6 +178,7 @@ pub mod cmp_redis_client;
 #[cfg(any(
     aarch64_linux_android,
     aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
     x8664_unknown_linux_gnu
 ))]
 pub mod cmp_slint;

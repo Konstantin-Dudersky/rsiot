@@ -25,20 +25,32 @@ where
 
 /// Настройки коммуникации с устройствами
 pub struct ConfigDevicesCommSettings {
-    /// Путь к устройству SPI.
-    ///
-    /// Пример:
-    ///
-    /// ```rust
-    /// spi_adapter_path: "/dev/spidev0.0"
-    /// ```
-    pub spi_adapter_path: &'static str,
+    /// Конфигурация устройства Linux
+    pub linux_device: LinuxDevice,
 
     /// Частота тактов
     pub baudrate: u32,
 
     /// Режим работы SPI
     pub spi_mode: ConfigDeviceSpiMode,
+}
+
+/// Конфигурация устройства Linux
+pub enum LinuxDevice {
+    /// Только SPI
+    Spi {
+        /// Устройство SPI, например "/dev/spidev0.0"
+        dev_spi: String,
+    },
+    /// SPI + chip select, который управляется через GPIO
+    SpiWithCs {
+        /// Устройство SPI, например "/dev/spidev0.0"
+        dev_spi: String,
+        /// Устройство SPI, например  "/dev/gpiochip0"
+        dev_gpio: String,
+        /// Номер линии GPIO. 0 .. 31
+        gpio_line: u8,
+    },
 }
 
 impl From<ConfigDeviceSpiMode> for SpiModeFlags {
