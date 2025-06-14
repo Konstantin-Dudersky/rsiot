@@ -28,7 +28,7 @@ where
             let body = match body {
                 Ok(v) => v,
                 Err(e) => {
-                    let err = format!("Deserialization error: {}", e);
+                    let err = format!("Deserialization error: {e}");
                     warn!("{}", err);
                     return None;
                 }

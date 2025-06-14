@@ -129,11 +129,11 @@ where
                 Ok(result) => match result {
                     Ok(_) => msg = "Component has finished executing".to_string(),
                     Err(err) => {
-                        msg = format!("Component has finished executing with error: {:?}", err);
+                        msg = format!("Component has finished executing with error: {err:?}");
                     }
                 },
                 Err(err) => {
-                    msg = format!("Component has finished executing with error: {:?}", err);
+                    msg = format!("Component has finished executing with error: {err:?}");
                 }
             };
             error!(msg);
@@ -166,10 +166,8 @@ where
         let msg = save_msg_in_cache(msg, &cache).await;
         let Some(msg) = msg else { continue };
         output.send(msg).map_err(|err| {
-            let err = format!(
-                "Internal task of ComponentExecutor: send to channel error, {:?}",
-                err
-            );
+            let err =
+                format!("Internal task of ComponentExecutor: send to channel error, {err:?}",);
             ComponentError::Initialization(err)
         })?;
     }
@@ -195,7 +193,7 @@ where
         for key in keys_for_delete {
             let remove_result = cache.remove(&key);
             if remove_result.is_none() {
-                let err = format!("Message with key {} not found in cache", key);
+                let err = format!("Message with key {key} not found in cache",);
                 return Err(ComponentError::Execution(err));
             }
         }

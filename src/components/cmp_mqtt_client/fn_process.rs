@@ -1,71 +1,58 @@
 use std::time::Duration;
 
-use rumqttc::mqttbytes::QoS;
 use rumqttc::{AsyncClient, MqttOptions};
-use tokio::{task::JoinSet, time::sleep};
-use tracing::{error, info};
+use tokio::task::JoinSet;
+use tracing::info;
 
+use crate::components_config::mqtt_client::ConfigPublish;
+use crate::executor::join_set_spawn;
+use crate::serde_utils::SerdeAlg;
 use crate::{executor::CmpInOut, message::MsgDataBound};
 
+use super::config::MqttMsgGen;
 use super::{tasks, Config};
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg>(config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
     loop {
         info!("Starting");
-        let res = main(config.clone(), in_out.clone()).await;
-        match res {
-            Ok(_) => (),
-            Err(err) => {
-                error!("Error in cmp_mqtt_client: {}", err);
-            }
+
+        let mut mqttoptions = MqttOptions::new(&config.client_id, &config.host, config.port);
+        mqttoptions.set_keep_alive(Duration::from_secs(5));
+
+        let (client, eventloop) = AsyncClient::new(mqttoptions, config.client_capacity);
+
+        let mqtt_msg_gen = MqttMsgGen {
+            serde_alg: SerdeAlg::new(config.serde_alg),
+        };
+
+        let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
+
+        // Отправление входящих сообщений на MQTT-брокер
+        if let ConfigPublish::Publish { fn_publish } = config.publish {
+            let task = tasks::Publish {
+                msg_bus: msg_bus.clone(),
+                fn_publish,
+                mqtt_msg_gen: mqtt_msg_gen.clone(),
+                client: client.clone(),
+            };
+            join_set_spawn(&mut task_set, task.spawn());
         }
-        info!("Restarting...");
-        sleep(Duration::from_secs(2)).await;
+
+        // Получение сообщения от MQTT-брокера
+        let task = tasks::Subscribe {
+            msg_bus: msg_bus.clone(),
+            eventloop,
+            client,
+            mqtt_msg_gen: mqtt_msg_gen.clone(),
+            subscribe: config.subscribe.clone(),
+        };
+        join_set_spawn(&mut task_set, task.spawn());
+
+        while let Some(res) = task_set.join_next().await {
+            res??
+        }
     }
-}
-
-async fn main<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> super::Result<()>
-where
-    TMsg: MsgDataBound + 'static,
-{
-    let mut mqttoptions = MqttOptions::new(config.client_id, config.host, config.port);
-    mqttoptions.set_keep_alive(Duration::from_secs(50000)); // TODO - прерывает обмен
-
-    let (client, eventloop) = AsyncClient::new(mqttoptions, 10);
-    client.subscribe("rsiot/#", QoS::ExactlyOnce).await?;
-
-    let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
-
-    // Отправление сообщений из кеша на MQTT-брокер
-    let task = tasks::SendCache {
-        in_out: in_out.clone(),
-        config_fn_input: config.fn_input,
-        client: client.clone(),
-    };
-    task_set.spawn(task.spawn());
-
-    // Отправление входящих сообщений на MQTT-брокер
-    let task = tasks::Input {
-        in_out: in_out.clone(),
-        config_fn_input: config.fn_input,
-        client,
-    };
-    task_set.spawn(task.spawn());
-
-    // Получение сообщения от MQTT-брокера
-    let task = tasks::Output {
-        in_out,
-        config_fn_output: config.fn_output,
-        eventloop,
-    };
-    task_set.spawn(task.spawn());
-
-    while let Some(res) = task_set.join_next().await {
-        res??
-    }
-
-    Ok(())
 }

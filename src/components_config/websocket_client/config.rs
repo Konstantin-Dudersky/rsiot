@@ -6,10 +6,10 @@ use crate::{
 };
 
 /// Преобразование входящих сообщений в текст для отправки на сервер
-pub type FnClientToServer<TMsg, TClientToServer> = fn(&Message<TMsg>) -> Option<TClientToServer>;
+pub type FnClientToServer<TMsg, TClientToServer> = fn(&TMsg) -> Option<TClientToServer>;
 
 /// Преобразование полученного от сервера текста в исходящие сообщения
-pub type FnServerToClient<TMsg, TServerToClient> = fn(TServerToClient) -> Vec<Message<TMsg>>;
+pub type FnServerToClient<TMsg, TServerToClient> = fn(TServerToClient) -> Vec<TMsg>;
 
 /// Настройки Websocket-клиента
 #[derive(Clone, Debug)]

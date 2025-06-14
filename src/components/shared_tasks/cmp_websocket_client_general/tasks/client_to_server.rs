@@ -24,6 +24,9 @@ where
 {
     pub async fn spawn(mut self) -> super::Result<()> {
         while let Some(msg) = self.input.recv().await {
+            let Some(msg) = msg.get_custom_data() else {
+                continue;
+            };
             let c2s = (self.fn_input)(&msg);
             let Some(c2s) = c2s else { continue };
 

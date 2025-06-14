@@ -1,4 +1,8 @@
-//! cargo run -p rsiot --example cmp_mqtt_client --features "cmp_mqtt_client" --target="x86_64-unknown-linux-gnu"
+//! docker run -d --name nanomq -p 1883:1883 -p 8083:8083 -p 8883:8883 emqx/nanomq:latest
+//!
+//! docker rm -f nanomq
+//!
+//! cargo run --example cmp_mqtt_client --features "cmp_mqtt_client, serde_json" --target="x86_64-unknown-linux-gnu"
 
 #[cfg(feature = "cmp_mqtt_client")]
 mod message;
@@ -6,6 +10,9 @@ mod message;
 mod publish;
 #[cfg(feature = "cmp_mqtt_client")]
 mod subscribe;
+
+mod config_mqtt_server_publish;
+mod config_mqtt_server_subscribe;
 
 #[cfg(feature = "cmp_mqtt_client")]
 #[tokio::main]

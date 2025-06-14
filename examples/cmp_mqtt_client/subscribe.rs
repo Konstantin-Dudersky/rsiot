@@ -1,33 +1,24 @@
 use std::time::Duration;
 
 use rsiot::{
-    components::{cmp_logger, cmp_mqtt_client},
+    components::cmp_logger,
     executor::{ComponentExecutor, ComponentExecutorConfig},
-    message::Message,
 };
 use tracing::Level;
 
-use crate::message::Custom;
+use crate::{config_mqtt_server_subscribe, message::Custom};
 
 pub async fn subscribe() {
     let config_logger = cmp_logger::Config {
         level: Level::INFO,
         fn_input: |msg| {
-            let text = msg.serialize()?;
-            let text = format!("Subscribe: {text}");
+            let Some(msg) = msg.get_custom_data() else {
+                return Ok(None);
+            };
+            let text = match msg {
+                Custom::Counter(c) => format!("{c}"),
+            };
             Ok(Some(text))
-        },
-    };
-
-    let config_mqtt_client = cmp_mqtt_client::Config {
-        client_id: "subscribe".into(),
-        host: "localhost".into(),
-        port: 1883,
-        fn_input: |_| Ok(None),
-        fn_output: |payload: &[u8]| {
-            let payload = String::from_utf8_lossy(payload);
-            let msg = Message::deserialize(&payload)?;
-            Ok(Some(msg))
         },
     };
 
@@ -39,7 +30,7 @@ pub async fn subscribe() {
 
     ComponentExecutor::<Custom>::new(config_executor)
         .add_cmp(cmp_logger::Cmp::new(config_logger))
-        .add_cmp(cmp_mqtt_client::Cmp::new(config_mqtt_client))
+        .add_cmp(config_mqtt_server_subscribe::cmp())
         .wait_result()
         .await
         .unwrap();

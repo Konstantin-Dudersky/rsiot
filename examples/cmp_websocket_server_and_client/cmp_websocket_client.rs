@@ -66,10 +66,9 @@ async fn main() -> anyhow::Result<()> {
         serde_alg: SerdeAlgKind::Json,
         url: "ws://localhost:8011".into(),
         fn_client_to_server: |msg| {
-            let msg = msg.get_custom_data()?;
             let c2s = match msg {
                 ClientMessages::CounterFromClient(counter) => {
-                    ClientToServer::ClientCounter(counter)
+                    ClientToServer::ClientCounter(*counter)
                 }
                 _ => return None,
             };
@@ -77,9 +76,7 @@ async fn main() -> anyhow::Result<()> {
         },
         fn_server_to_client: |s2c: ServerToClient| {
             let msg = match s2c {
-                ServerToClient::ServerCounter(counter) => {
-                    Message::new_custom(ClientMessages::ServerCounter(counter))
-                }
+                ServerToClient::ServerCounter(counter) => ClientMessages::ServerCounter(counter),
             };
             vec![msg]
         },

@@ -42,9 +42,9 @@ pub mod cmp_esp_led;
 #[cfg(riscv32imc_esp_espidf)]
 pub mod cmp_esp_i2c_master;
 
-#[cfg(feature = "cmp_esp")]
-#[cfg(riscv32imc_esp_espidf)]
-pub mod cmp_esp_mqtt_client;
+// #[cfg(feature = "cmp_esp")]
+// #[cfg(riscv32imc_esp_espidf)]
+// pub mod cmp_esp_mqtt_client;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
@@ -72,14 +72,6 @@ pub mod cmp_external_fn_process;
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
 pub mod cmp_filesystem;
 
-// #[cfg(feature = "cmp_http_client_2")]
-// #[cfg(any(
-//     aarch64_linux_android,
-//     aarch64_unknown_linux_gnu,
-//     x8664_unknown_linux_gnu
-// ))]
-// pub mod cmp_http_client;
-
 #[cfg(feature = "cmp_http_client")]
 #[cfg(any(
     aarch64_linux_android,
@@ -99,10 +91,6 @@ pub mod cmp_http_client_wasm;
 #[cfg(feature = "cmp_http_server")]
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
 pub mod cmp_http_server;
-
-// #[cfg(feature = "cmp_influxdb")]
-// #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
-// pub mod cmp_influxdb;
 
 #[cfg(feature = "cmp_influxdb")]
 #[cfg(any(
@@ -215,6 +203,3 @@ pub mod cmp_webstorage;
 
 #[allow(dead_code, unused_imports)]
 pub mod shared_tasks;
-
-#[cfg(any(feature = "cmp_esp", feature = "cmp_mqtt_client"))]
-mod shared_mqtt_client;

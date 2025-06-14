@@ -62,6 +62,6 @@ impl<const SIZE: usize> MeasureExecutionTime<SIZE> {
         let sum: u128 = self.values.into_iter().sum();
         let avg = sum as f64 / slice_end as f64;
 
-        format!("AVG: {:.0}, MIN: {}, MAX: {}", avg, min, max)
+        format!("AVG: {avg:.0}, MIN: {min}, MAX: {max}")
     }
 }

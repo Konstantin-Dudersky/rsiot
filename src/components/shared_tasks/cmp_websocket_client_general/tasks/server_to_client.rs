@@ -44,6 +44,7 @@ where
             }
 
             for msg in msgs {
+                let msg = Message::new_custom(msg);
                 self.output
                     .send(msg)
                     .await
