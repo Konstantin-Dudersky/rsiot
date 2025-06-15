@@ -11,7 +11,9 @@ mod publish;
 #[cfg(feature = "cmp_mqtt_client")]
 mod subscribe;
 
+#[cfg(feature = "cmp_mqtt_client")]
 mod config_mqtt_server_publish;
+#[cfg(feature = "cmp_mqtt_client")]
 mod config_mqtt_server_subscribe;
 
 #[cfg(feature = "cmp_mqtt_client")]

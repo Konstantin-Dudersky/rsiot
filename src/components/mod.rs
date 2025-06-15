@@ -106,6 +106,14 @@ pub mod cmp_inject_periodic;
 #[cfg(wasm32_unknown_unknown)]
 pub mod cmp_leptos;
 
+#[cfg(feature = "cmp_linux_i2c_master")]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
+pub mod cmp_linux_i2c_master;
+
 #[cfg(feature = "cmp_linux_spi_master")]
 #[cfg(any(
     aarch64_unknown_linux_gnu,

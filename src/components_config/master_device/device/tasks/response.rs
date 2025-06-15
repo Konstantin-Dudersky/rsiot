@@ -10,7 +10,7 @@ pub struct Response<TMsg, TResponse, TBuffer> {
     pub ch_rx_fieldbus_to_device: mpsc::Receiver<TResponse>,
     pub ch_tx_output_to_filter: mpsc::Sender<Message<TMsg>>,
     pub fn_response_to_buffer: fn(TResponse, &mut TBuffer) -> anyhow::Result<()>,
-    pub fn_buffer_to_msgs: fn(&mut TBuffer) -> Vec<Message<TMsg>>,
+    pub fn_buffer_to_msgs: fn(&mut TBuffer) -> Vec<TMsg>,
 }
 
 impl<TMsg, TResponse, TBuffer> Response<TMsg, TResponse, TBuffer>
@@ -33,6 +33,7 @@ where
             drop(buffer);
 
             for msg in msgs {
+                let msg = Message::new_custom(msg);
                 self.ch_tx_output_to_filter.send(msg).await.unwrap();
             }
         }

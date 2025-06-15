@@ -17,6 +17,9 @@ pub mod http_general;
 #[cfg(any(feature = "cmp_http_server", feature = "cmp_esp"))]
 pub mod http_server;
 
+#[cfg(feature = "executor")]
+pub mod i2c_master;
+
 #[cfg(feature = "cmp_influxdb")]
 pub mod influxdb_v2;
 
