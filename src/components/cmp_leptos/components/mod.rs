@@ -11,6 +11,6 @@ mod theme;
 #[cfg(feature = "cmp_plc")]
 pub mod plc_lib;
 
-pub use go2rtc::Go2rtc;
+pub use go2rtc::{Go2rtc, Go2rtcMode};
 pub use material_theme::MaterialTheme;
 pub use theme::Theme;

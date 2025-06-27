@@ -135,22 +135,25 @@ impl SpiComm {
             // Ответы от слейва
             let mut response_payload = vec![];
 
-            // Устанавливаем CS
-            if let Some(handle) = &selected_device.cs {
-                handle.set_value(0).unwrap();
-            }
-
             // Выполняем все операции в цикле
+            //
+            // Сигналом CS управляем после каждой операции. В противном случае в Luckfox например
+            // коммуникация работает плохо
             for operation in request.operations {
+                // Устанавливаем CS
+                if let Some(pin_cs) = &selected_device.cs {
+                    pin_cs.set_value(0).unwrap();
+                }
+
                 let response = make_spi_operation(&mut selected_device.spidev, &operation).await;
                 if let Some(response) = response {
                     response_payload.push(response);
                 }
-            }
 
-            // Сбрасываем CS
-            if let Some(handle) = &selected_device.cs {
-                handle.set_value(1).unwrap();
+                // Сбрасываем CS
+                if let Some(pin_cs) = &selected_device.cs {
+                    pin_cs.set_value(1).unwrap();
+                }
             }
 
             let response = spi_master::FieldbusResponse {

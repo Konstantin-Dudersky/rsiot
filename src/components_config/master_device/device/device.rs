@@ -35,7 +35,7 @@ where
     /// let msgs = msgs.iter().map(|m| Message::new_custom(*m)).collect();
     /// msgs
     /// ```
-    pub fn_msgs_to_buffer: fn(&Message<TMsg>, &mut TBuffer),
+    pub fn_msgs_to_buffer: fn(&TMsg, &mut TBuffer),
 
     /// Преобразование данных из буфера в массив запросов на шине
     pub fn_buffer_to_request: fn(&TBuffer) -> anyhow::Result<Vec<TFieldbusRequest>>,

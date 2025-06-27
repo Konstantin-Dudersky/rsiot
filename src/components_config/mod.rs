@@ -49,6 +49,7 @@ pub mod spi_master;
 
 #[cfg(feature = "executor")]
 pub mod master_device;
+
 #[cfg(any(
     feature = "cmp_websocket_client",
     feature = "cmp_websocket_client_wasm"

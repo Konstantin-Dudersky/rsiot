@@ -34,7 +34,7 @@
           "target": "x86_64-unknown-linux-gnu",
           "features": [
             // "rustdoc",
-            // "executor",
+            "executor",
             // "single-thread",
             //   "env_vars",
             //   "logging",
@@ -44,8 +44,8 @@
             // "cmp_http_server",
             // "cmp_filesystem",
             // "cmp_influxdb",
-            "cmp_linux_i2c_master"
-            // "cmp_linux_spi_master",
+            // "cmp_linux_i2c_master"
+            "cmp_linux_spi_master"
             // "cmp_linux_uart_master"
             // "cmp_math",
             // "cmp_modbus_client"
