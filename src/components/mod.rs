@@ -189,8 +189,6 @@ pub mod cmp_system_info;
 
 #[cfg(feature = "cmp_timescaledb")]
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
-#[allow(unused_variables)]
-#[allow(dead_code)]
 pub mod cmp_timescaledb;
 
 #[cfg(feature = "cmp_websocket_client")]

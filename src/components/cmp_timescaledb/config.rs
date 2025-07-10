@@ -1,9 +1,25 @@
-pub use crate::components_config::timescaledb::Config;
+use crate::message::MsgDataBound;
 
-pub struct ConfigAlias(pub Config);
+use super::Row;
 
-impl From<Config> for ConfigAlias {
-    fn from(value: Config) -> Self {
-        Self(value)
-    }
+pub type FnInput<TMsg> = fn(&TMsg) -> Option<Vec<Row>>;
+
+/// Конфигурация Timescaledb
+#[derive(Clone, Debug)]
+pub struct Config<TMsg>
+where
+    TMsg: MsgDataBound,
+{
+    /// Строка подключения к БД
+    ///
+    /// Примеры:
+    ///
+    /// - ```String::from("postgres://user:password@localhost:5432/db_name")```
+    pub connection_string: String,
+
+    /// Максимальное количество подключений к БД
+    pub max_connections: u32,
+
+    /// Функция преобразования сообщений в строки для Timescaledb
+    pub fn_input: FnInput<TMsg>,
 }

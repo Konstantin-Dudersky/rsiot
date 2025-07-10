@@ -1,0 +1,49 @@
+services:
+  timescaledb:
+    command: postgres
+      -c config_file=/etc/postgresql/postgresql.conf
+      -c hba_file=/etc/postgresql/pg_hba.conf
+    container_name: timescaledb
+    healthcheck:
+      test: pg_isready -d db_prod
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
+    hostname: timescaledb
+    image: timescale/timescaledb:latest-pg17
+    networks:
+      - network_internal
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - timescaledb_volume:/var/lib/postgresql/data
+
+  pgadmin:
+    container_name: pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=test@test.com
+      - PGADMIN_DEFAULT_PASSWORD=123
+    hostname: pgadmin
+    image: dpage/pgadmin4:latest
+    ports:
+      - "8000:80"
+    networks:
+      - network_internal
+    volumes:
+      - pgadmin_volume:/var/lib/pgadmin
+
+networks:
+  network_internal:
+
+volumes:
+  pgadmin_volume:
+  timescaledb_volume:

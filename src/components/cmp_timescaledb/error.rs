@@ -1,12 +1,10 @@
-use sqlx::Error as SqlxError;
+use url::ParseError;
 
-#[derive(Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum Error {
-    SqlxError(SqlxError),
-}
+    #[error(transparent)]
+    SqlxError(#[from] sqlx::Error),
 
-impl From<SqlxError> for Error {
-    fn from(value: SqlxError) -> Self {
-        Self::SqlxError(value)
-    }
+    #[error(transparent)]
+    ParseError(#[from] ParseError),
 }

@@ -14,5 +14,8 @@ mod error;
 mod fn_process;
 mod model;
 
-/// Компонент сохранения сообщений в TimescaleDB
-pub use {component::Cmp, config::Config};
+pub use {
+    component::Cmp,
+    config::Config,
+    model::{AggType, Row},
+};

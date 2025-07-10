@@ -1,43 +1,39 @@
 //! Модель строки в БД
 
-use chrono::{DateTime, FixedOffset};
-use sqlx::FromRow;
-
-use crate::message::eav;
+use sqlx::{types::time::OffsetDateTime, FromRow};
 
 use super::agg_type::AggType;
 
 /// Модель строки в БД
 #[derive(Debug, FromRow)]
 pub struct Row {
-    pub ts: DateTime<FixedOffset>,
+    /// Метка времени
+    pub time: OffsetDateTime,
+    /// Сущность
     pub entity: String,
+    /// Атрибут
     pub attr: String,
-    pub value: Option<f64>,
+    /// Значение
+    pub value: f64,
+    /// Аггрегация, с помощью которой значение было получено
     pub agg: AggType,
-    pub aggts: Option<DateTime<FixedOffset>>,
+    /// Метка времени аггрегации
+    pub aggts: Option<OffsetDateTime>,
+    /// Массив следующих аггрегаций
     pub aggnext: Vec<AggType>,
 }
 
-impl From<eav::EavModel> for Row {
-    fn from(eav_model: eav::EavModel) -> Self {
-        let value = match eav_model.value {
-            eav::ValueType::bool(_) => todo!(),
-            eav::ValueType::f64(value) => value,
-            eav::ValueType::String(_) => todo!(),
-            eav::ValueType::u64(value) => value as f64,
-        };
-
-        let row = Row {
-            ts: eav_model.ts.0,
-            entity: eav_model.entity,
-            attr: eav_model.attr.unwrap_or_default(),
-            value: Some(value),
-            agg: eav_model.agg.into(),
-            aggts: eav_model.aggts.map(|v| v.0),
-            aggnext: eav_model.aggnext.iter().map(|a| a.clone().into()).collect(),
-        };
-
-        row
+impl Row {
+    /// Создать строку в таблице, только entity, attr и value
+    pub fn new_simple(entity: &str, attr: &str, value: f64) -> Self {
+        Self {
+            time: OffsetDateTime::now_utc(),
+            entity: entity.to_string(),
+            attr: attr.to_string(),
+            value,
+            agg: AggType::Curr,
+            aggts: None,
+            aggnext: vec![],
+        }
     }
 }

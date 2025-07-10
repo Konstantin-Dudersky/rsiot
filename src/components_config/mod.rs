@@ -35,9 +35,6 @@ pub mod mqtt_client;
 #[cfg(feature = "cmp_redis_client")]
 pub mod redis_client;
 
-#[cfg(feature = "cmp_timescaledb")]
-pub mod timescaledb;
-
 #[cfg(feature = "executor")]
 pub mod uart_general;
 

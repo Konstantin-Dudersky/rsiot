@@ -18,17 +18,17 @@ CREATE TYPE AggType AS ENUM (
 
 -- table raw
 CREATE TABLE raw (
-    time        TIMESTAMPTZ         NOT NULL,
+    ts          TIMESTAMPTZ         NOT NULL,
     entity      TEXT                NOT NULL,
     attr        TEXT                NOT NULL,
     value       DOUBLE PRECISION    NULL,
     agg         AggType             NOT NULL,
     aggts       TIMESTAMPTZ         NULL,
     aggnext     AggType[]           NULL,
-    UNIQUE (time, entity, attr, agg)
+    UNIQUE (ts, entity, attr, agg)
 );
 SELECT create_hypertable(
-    'raw', 'time',
+    'raw', 'ts',
     chunk_time_interval => INTERVAL '24 hours'
 );
 ALTER TABLE raw SET (

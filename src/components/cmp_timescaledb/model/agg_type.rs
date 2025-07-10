@@ -1,41 +1,22 @@
-use sqlx::{
-    postgres::{PgHasArrayType, PgTypeInfo},
-    Type,
-};
-
-use crate::message::eav;
+use sqlx::Type;
 
 /// Представление аггрегации в БД
 #[derive(Debug, Clone, Type)]
-#[sqlx(type_name = "agg_type", rename_all = "lowercase")]
 pub enum AggType {
+    /// Актуальное значение
     Curr,
+    /// Первое значение в интервале
     First,
+    /// Приращение значения в интервале
     Inc,
+    /// Сумма значений в интервале
     Sum,
+    /// Среднее значение в интервале
     Mean,
+    /// Минимальное значение в интервале
     Min,
+    /// Максимальное значение в интервале
     Max,
+    /// Количество значений в интервале
     Count,
-}
-
-impl PgHasArrayType for AggType {
-    fn array_type_info() -> PgTypeInfo {
-        PgTypeInfo::with_name("agg_type[]")
-    }
-}
-
-impl From<eav::AggType> for AggType {
-    fn from(value: eav::AggType) -> Self {
-        match value {
-            eav::AggType::Count => Self::Count,
-            eav::AggType::Current => Self::Curr,
-            eav::AggType::First => Self::First,
-            eav::AggType::Inc => Self::Inc,
-            eav::AggType::Max => Self::Max,
-            eav::AggType::Mean => Self::Mean,
-            eav::AggType::Min => Self::Min,
-            eav::AggType::Sum => Self::Sum,
-        }
-    }
 }

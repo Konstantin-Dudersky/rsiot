@@ -34,7 +34,7 @@
           "target": "x86_64-unknown-linux-gnu",
           "features": [
             // "rustdoc",
-            "executor",
+            // "executor",
             // "single-thread",
             //   "env_vars",
             //   "logging",
@@ -45,7 +45,7 @@
             // "cmp_filesystem",
             // "cmp_influxdb",
             // "cmp_linux_i2c_master"
-            "cmp_linux_spi_master"
+            // "cmp_linux_spi_master"
             // "cmp_linux_uart_master"
             // "cmp_math",
             // "cmp_modbus_client"
@@ -57,7 +57,7 @@
             //   "cmp_surrealdb",
             //   "cmp_system_info",
             //   "cmp_telegram",
-            // "cmp_timescaledb"
+            "cmp_timescaledb"
             // "cmp_websocket_client",
             // "cmp_websocket_server"
             // "serde_json",
