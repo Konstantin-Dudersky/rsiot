@@ -151,10 +151,6 @@ pub mod cmp_mqtt_client;
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
 pub mod cmp_os_process;
 
-#[cfg(feature = "cmp_telegram")]
-#[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
-pub mod cmp_telegram;
-
 #[cfg(feature = "cmp_plc")]
 pub mod cmp_plc;
 
@@ -187,8 +183,16 @@ pub mod cmp_surrealdb;
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
 pub mod cmp_system_info;
 
-#[cfg(feature = "cmp_timescaledb")]
+#[cfg(feature = "cmp_telegram")]
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
+pub mod cmp_telegram;
+
+#[cfg(feature = "cmp_timescaledb")]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
 pub mod cmp_timescaledb;
 
 #[cfg(feature = "cmp_websocket_client")]

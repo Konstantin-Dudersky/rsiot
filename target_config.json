@@ -23,6 +23,7 @@
         "cmp_surrealdb",
         "cmp_system_info",
         "cmp_telegram",
+        "cmp_timescaledb",
         "cmp_websocket_client",
         "cmp_websocket_server",
         "env_vars"
@@ -59,6 +60,7 @@
         "cmp_surrealdb",
         "cmp_system_info",
         "cmp_telegram",
+        "cmp_timescaledb",
         "cmp_websocket_client",
         "cmp_websocket_server",
         "env_vars"
@@ -68,7 +70,7 @@
     {
       "name": "armv7-unknown-linux-gnueabihf",
       "toolchain": "+stable",
-      "features": ["executor", "logging", "cmp_linux_spi_master"],
+      "features": ["executor", "logging", "cmp_linux_spi_master", "cmp_timescaledb"],
       "add_feat": ["", "single-thread"]
     },
     {

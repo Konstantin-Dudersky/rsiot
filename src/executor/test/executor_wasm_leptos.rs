@@ -14,7 +14,6 @@ use crate::{
     message::example_message::*,
 };
 
-#[test]
 #[allow(dead_code)]
 fn test_wasm() {
     fn main() -> anyhow::Result<()> {

@@ -1,9 +1,3 @@
-//! Запуск:
-//!
-//! ```bash
-//! RUST_LOG=debug cargo run --example cmp_timescaledb --features "cmp_timescaledb"
-//! ```
-
 #[cfg(feature = "cmp_timescaledb")]
 mod message;
 
@@ -29,7 +23,7 @@ async fn main() -> anyhow::Result<()> {
 
     let mut counter = 0;
     let inject_config = cmp_inject_periodic::Config {
-        period: Duration::from_secs(2),
+        period: Duration::from_millis(10),
         fn_periodic: move || {
             let msg = Message::new_custom(Custom::Counter(counter));
             counter += 1;
@@ -38,8 +32,9 @@ async fn main() -> anyhow::Result<()> {
     };
 
     let config_timescaledb = cmp_timescaledb::Config {
-        connection_string: "postgres://postgres:postgres@localhost:5432/db_data_test".into(),
+        connection_string: "postgres://postgres:postgres@localhost:5432/db_data".into(),
         max_connections: 5,
+        send_period: Duration::from_secs(2),
         fn_input: |msg| {
             let row = match msg {
                 Custom::Counter(v) => Row::new_simple("counter", "value", *v as f64),
@@ -49,7 +44,7 @@ async fn main() -> anyhow::Result<()> {
     };
 
     let executor_config = ComponentExecutorConfig {
-        buffer_size: 100,
+        buffer_size: 1000,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
     };

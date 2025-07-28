@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use crate::message::MsgDataBound;
 
 use super::Row;
@@ -19,6 +21,9 @@ where
 
     /// Максимальное количество подключений к БД
     pub max_connections: u32,
+
+    /// Периодичность отправки данных для сохранения в базе данных
+    pub send_period: Duration,
 
     /// Функция преобразования сообщений в строки для Timescaledb
     pub fn_input: FnInput<TMsg>,

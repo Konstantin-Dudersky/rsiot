@@ -7690,6 +7690,7 @@ dependencies = [
  "sysinfo 0.30.13",
  "teloxide",
  "thiserror 2.0.12",
+ "time",
  "tokio",
  "tokio-modbus",
  "tokio-tungstenite 0.21.0",

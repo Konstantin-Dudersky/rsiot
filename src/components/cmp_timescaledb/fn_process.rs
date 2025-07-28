@@ -1,22 +1,26 @@
-use sqlx::{postgres::PgPoolOptions, query, Pool, Postgres};
-use tokio::time::{sleep, Duration};
-use tokio_util::task::TaskTracker;
-use tracing::{debug, error, info};
+use futures::TryFutureExt;
+use tokio::{
+    sync::mpsc,
+    task::JoinSet,
+    time::{sleep, Duration},
+};
+use tracing::{error, info};
 use url::Url;
 
 use crate::{
-    executor::{CmpInOut, ComponentError},
+    components::shared_tasks,
+    executor::{join_set_spawn, CmpInOut, ComponentError},
     message::MsgDataBound,
 };
 
-use super::{config::Config, error::Error, model::Row};
+use super::{config::Config, error::Error, tasks, Result};
 
 pub async fn fn_process<TMsg>(
     mut input: CmpInOut<TMsg>,
     config: Config<TMsg>,
-) -> Result<(), ComponentError>
+) -> std::result::Result<(), ComponentError>
 where
-    TMsg: MsgDataBound,
+    TMsg: 'static + MsgDataBound,
 {
     info!("Start cmp_timescaledb");
 
@@ -31,55 +35,69 @@ where
     }
 }
 
-async fn task_main<TMsg>(input: &mut CmpInOut<TMsg>, config: &Config<TMsg>) -> Result<(), Error>
+async fn task_main<TMsg>(in_out: &mut CmpInOut<TMsg>, config: &Config<TMsg>) -> Result<()>
 where
-    TMsg: MsgDataBound,
+    TMsg: 'static + MsgDataBound,
 {
     let connection_string = Url::parse(&config.connection_string)?;
 
-    let pool = PgPoolOptions::new()
-        .max_connections(config.max_connections)
-        .connect(connection_string.as_str())
-        .await?;
+    let (ch_tx_msgbus_to_input, ch_rx_msgbus_to_input) = mpsc::channel(1000);
+    let (ch_tx_input_to_database, ch_rx_input_to_database) = mpsc::channel(1000);
 
-    let task_tracker = TaskTracker::new();
+    let mut task_set = JoinSet::new();
 
-    while let Ok(msg) = input.recv_input().await {
-        let Some(msg) = msg.get_custom_data() else {
-            continue;
-        };
+    let task = shared_tasks::msgbus_to_mpsc::MsgBusToMpsc {
+        msg_bus: in_out.clone(),
+        output: ch_tx_msgbus_to_input,
+    };
+    join_set_spawn(&mut task_set, task.spawn().map_err(Error::TaskMsgBusToMpsc));
 
-        let rows = (config.fn_input)(&msg);
-        let Some(rows) = rows else { continue };
+    let task = tasks::Input {
+        input: ch_rx_msgbus_to_input,
+        output: ch_tx_input_to_database.clone(),
+        fn_input: config.fn_input,
+    };
+    join_set_spawn(&mut task_set, task.spawn());
 
-        for row in rows {
-            let task = save_row_in_db(row, pool.clone());
-            task_tracker.spawn(task);
-        }
+    let task = tasks::Periodic {
+        output: ch_tx_input_to_database,
+        period: config.send_period,
+    };
+    join_set_spawn(&mut task_set, task.spawn());
+
+    let task = tasks::SendToDatabase {
+        input: ch_rx_input_to_database,
+        connection_string,
+        max_connections: config.max_connections,
+    };
+    join_set_spawn(&mut task_set, task.spawn());
+
+    while let Some(res) = task_set.join_next().await {
+        res??;
     }
 
     Ok(())
 }
 
-async fn save_row_in_db(row: Row, pool: Pool<Postgres>) -> Result<(), Error> {
-    debug!("Save row in database: {:?}", row);
-    query(
-        r#"
-INSERT INTO raw
-VALUES ($1, $2, $3, $4, $5, $6, $7)
-ON CONFLICT (time, entity, attr, agg) DO UPDATE
-    SET value = excluded.value,
-         aggts = excluded.aggts,
-         aggnext = excluded.aggnext;"#,
-    )
-    .bind(row.time)
-    .bind(&row.entity)
-    .bind(&row.attr)
-    .bind(row.value)
-    .bind(&row.agg)
-    .bind(row.aggts)
-    .bind(&row.aggnext)
-    .execute(&pool)
-    .await?;
-    Ok(())
-}
+// async fn save_row_in_db(row: Row, pool: Pool<Postgres>) -> Result<()> {
+//     debug!("Save row in database: {:?}", row);
+//     query(
+//         r#"
+// INSERT INTO raw
+// VALUES ($1, $2, $3, $4, $5, $6, $7)
+// ON CONFLICT (time, entity, attr, agg) DO UPDATE
+//     SET value = excluded.value,
+//          aggts = excluded.aggts,
+//          aggnext = excluded.aggnext;"#,
+//     )
+//     .bind(row.time)
+//     .bind(&row.entity)
+//     .bind(&row.attr)
+//     .bind(row.value)
+//     .bind(&row.agg)
+//     .bind(row.aggts)
+//     .bind(&row.aggnext)
+//     .execute(&pool)
+//     .await?;
+//     Ok(())
+// }

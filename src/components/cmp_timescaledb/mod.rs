@@ -5,17 +5,19 @@
 //! ## Разработка
 //!
 //! Запустить тестовую базу данных из файла docker compose - см README в корне
-//!
-//! TODO - добавить в target_config после устранения ошибок
 
 mod component;
 mod config;
 mod error;
 mod fn_process;
 mod model;
+mod tasks;
 
 pub use {
     component::Cmp,
     config::Config,
+    error::Error,
     model::{AggType, Row},
 };
+
+type Result<T> = std::result::Result<T, Error>;

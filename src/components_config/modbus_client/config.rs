@@ -5,15 +5,15 @@ use crate::components_config::master_device::DeviceTrait;
 /// Конфигурация cmp_modbus_client
 #[derive(Debug)]
 pub struct Config<TMsg> {
-    /// true - разрешение работы
+    /// true - включение опроса
     pub enabled: bool,
 
-    /// Массив настроек коммуникации с устройствами
+    /// Вектор настроек коммуникации с устройствами
     ///
     /// Порядок элементов в этом массиве должен соответствовать порядку устройств в массиве devices
     pub devices_comm_settings: Vec<ConfigDevicesCommSettings>,
 
-    /// Драйвера устройств
+    /// Вектор драйверов опрашиваемых устройств
     pub devices: Vec<Box<dyn DeviceTrait<TMsg, super::FieldbusRequest, super::FieldbusResponse>>>,
 }
 
@@ -23,13 +23,13 @@ pub struct ConfigDevicesCommSettings {
     /// Настройки подключения к опрашиваемому устройтву
     pub client_type: ClientType,
 
-    /// Адрес подчиненного устройства (обычно 1)
+    /// Unit ID опрашиваемого устройства
     pub unit_id: u8,
 
-    /// Таймаут
+    /// Таймаут ожидания ответа
     pub timeout: Duration,
 
-    /// Допустимое кол-во одновременных соединений
+    /// Максимальное количество одновременных соединений с данным устройством
     pub concurrent_connections: u8,
 }
 

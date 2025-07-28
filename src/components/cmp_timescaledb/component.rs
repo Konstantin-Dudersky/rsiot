@@ -10,7 +10,7 @@ use super::{config::Config, fn_process::fn_process};
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
 impl<TMsg> IComponentProcess<Config<TMsg>, TMsg> for Component<Config<TMsg>, TMsg>
 where
-    TMsg: MsgDataBound,
+    TMsg: 'static + MsgDataBound,
 {
     async fn process(
         &self,
