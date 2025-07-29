@@ -31,6 +31,7 @@ where
     };
     join_set_spawn(
         &mut task_set,
+        "cmp_livecounter",
         task.spawn().map_err(super::Error::TaskMsgBusToMpsc),
     );
 
@@ -40,7 +41,7 @@ where
         fn_find_partner_counter: config.fn_find_partner_counter,
         live_counter: partner_live_counter.clone(),
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_livecounter", task.spawn());
 
     // Периодическая проверка счетчика
     let task = tasks::CheckPartnerPeriod {
@@ -49,7 +50,7 @@ where
         check_partner_period: config.check_partner_period,
         live_counter: partner_live_counter,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_livecounter", task.spawn());
 
     // Передача сообщений на выход компонента
     let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
@@ -58,6 +59,7 @@ where
     };
     join_set_spawn(
         &mut task_set,
+        "cmp_livecounter",
         task.spawn().map_err(super::Error::TaskMpscToMsgBus),
     );
 
@@ -67,7 +69,7 @@ where
         fn_generate_self_counter: config.fn_generate_self_counter,
         generate_self_period: config.generate_self_period,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_livecounter", task.spawn());
 
     while let Some(result) = task_set.join_next().await {
         result??;

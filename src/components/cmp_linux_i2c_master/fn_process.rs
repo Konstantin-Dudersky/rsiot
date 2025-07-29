@@ -44,7 +44,7 @@ where
         dev_i2c: config.dev_i2c,
     };
 
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_linux_i2c_master", task.spawn());
 
     while let Some(res) = task_set.join_next().await {
         res??

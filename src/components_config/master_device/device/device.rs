@@ -98,7 +98,7 @@ where
             fn_msgs_to_buffer: self.fn_msgs_to_buffer,
             fn_buffer_to_request: self.fn_buffer_to_request,
         };
-        join_set_spawn(&mut task_set, task.spawn());
+        join_set_spawn(&mut task_set, "master_device", task.spawn());
 
         // Задача создания периодических запросов
         for periodic_request in self.periodic_requests {
@@ -108,7 +108,7 @@ where
                 fn_request: periodic_request.fn_requests,
                 ch_tx_device_to_fieldbus: ch_tx_device_to_fieldbus.clone(),
             };
-            join_set_spawn(&mut task_set, task.spawn());
+            join_set_spawn(&mut task_set, "master_device", task.spawn());
         }
 
         // Задача обработки ответа
@@ -119,7 +119,7 @@ where
             fn_response_to_buffer: self.fn_response_to_buffer,
             fn_buffer_to_msgs: self.fn_buffer_to_msgs,
         };
-        join_set_spawn(&mut task_set, task.spawn());
+        join_set_spawn(&mut task_set, "master_device", task.spawn());
 
         // Задачи фильтрации одинаковых сообщений
         let task = shared_tasks::filter_identical_data::FilterIdenticalData {
@@ -128,6 +128,7 @@ where
         };
         join_set_spawn(
             &mut task_set,
+            "master_device",
             task.spawn().map_err(super::Error::TaskFilterIdenticalData),
         );
 

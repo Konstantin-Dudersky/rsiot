@@ -64,6 +64,7 @@ where
         };
         join_set_spawn(
             self.task_set,
+            "websocket_client_general_tasks",
             task.spawn().map_err(super::Error::TaskMsgbusToMpsc),
         );
 
@@ -74,7 +75,11 @@ where
             fn_input: self.fn_client_to_server,
             serde_alg: self.serde_alg,
         };
-        join_set_spawn(self.task_set, task.spawn());
+        join_set_spawn(
+            self.task_set,
+            "websocket_client_general_tasks",
+            task.spawn(),
+        );
 
         // Преобразование полученного текста в сообщение
         let task = tasks::ServerToClient {
@@ -84,7 +89,11 @@ where
             fn_output: self.fn_server_to_client,
             serde_alg: self.serde_alg,
         };
-        join_set_spawn(self.task_set, task.spawn());
+        join_set_spawn(
+            self.task_set,
+            "websocket_client_general_tasks",
+            task.spawn(),
+        );
 
         // Пересылка сообщений на шину
         let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
@@ -93,6 +102,7 @@ where
         };
         join_set_spawn(
             self.task_set,
+            "websocket_client_general_tasks",
             task.spawn().map_err(super::Error::TaskMpscToMsgBus),
         );
 

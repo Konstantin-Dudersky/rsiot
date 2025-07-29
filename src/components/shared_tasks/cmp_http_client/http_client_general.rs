@@ -50,7 +50,11 @@ where
             msg_bus: self.msg_bus.clone(),
             output: ch_tx_msgbus_to_input,
         };
-        join_set_spawn(self.task_set, task.spawn().map_err(Error::TaskMsgBusToMpsc));
+        join_set_spawn(
+            self.task_set,
+            "cmp_http_client",
+            task.spawn().map_err(Error::TaskMsgBusToMpsc),
+        );
 
         // Создание HTTP-запросов на основе входящих сообщений
         let task = tasks::InputRequest {
@@ -58,7 +62,7 @@ where
             output: ch_tx_requests.clone(),
             request_input_config: self.requests_input.clone(),
         };
-        join_set_spawn(self.task_set, task.spawn());
+        join_set_spawn(self.task_set, "cmp_http_client", task.spawn());
 
         // Создание периодических HTTP-запросов
         for pr in self.requests_periodic.iter() {
@@ -66,7 +70,7 @@ where
                 output: ch_tx_requests.clone(),
                 request_periodic: pr.clone(),
             };
-            join_set_spawn(self.task_set, task.spawn());
+            join_set_spawn(self.task_set, "cmp_http_client", task.spawn());
         }
 
         // Обработка ответов от сервера
@@ -76,14 +80,18 @@ where
             requests_input: self.requests_input,
             requests_periodic: self.requests_periodic,
         };
-        join_set_spawn(self.task_set, task.spawn());
+        join_set_spawn(self.task_set, "cmp_http_client", task.spawn());
 
         // Отправка исходящих сообщений
         let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
             input: ch_rx_output_to_msgbus,
             msg_bus: self.msg_bus,
         };
-        join_set_spawn(self.task_set, task.spawn().map_err(Error::TaskMpscToMsgBus));
+        join_set_spawn(
+            self.task_set,
+            "cmp_http_client",
+            task.spawn().map_err(Error::TaskMpscToMsgBus),
+        );
 
         (ch_rx_requests, ch_tx_reponse)
     }

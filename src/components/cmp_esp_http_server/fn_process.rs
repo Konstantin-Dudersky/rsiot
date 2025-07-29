@@ -71,7 +71,7 @@ where
         input: in_out.clone(),
         get_endpoints: get_endpoints.clone(),
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_esp_http_server", task.spawn());
 
     // Корневой запрос - перечень точек
     {

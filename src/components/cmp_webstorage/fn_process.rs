@@ -28,6 +28,7 @@ where
     };
     join_set_spawn(
         &mut task_set,
+        "cmp_webstorage",
         task_0.spawn().map_err(super::Error::TaskMsgBusToMpsc),
     );
 
@@ -38,7 +39,7 @@ where
         storage_kind: config.storage_kind,
         fn_input: config.fn_input,
     };
-    join_set_spawn(&mut task_set, task_1.spawn());
+    join_set_spawn(&mut task_set, "cmp_webstorage", task_1.spawn());
 
     // Загрузка значений из хранилища и отправка исходящих сообщений
     let task_2 = tasks::Output {
@@ -48,7 +49,7 @@ where
         default_messages: config.default_messages,
         fn_output: config.fn_output,
     };
-    join_set_spawn(&mut task_set, task_2.spawn());
+    join_set_spawn(&mut task_set, "cmp_webstorage", task_2.spawn());
 
     // Отправка исходящих сообщений
     let task_3 = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
@@ -57,6 +58,7 @@ where
     };
     join_set_spawn(
         &mut task_set,
+        "cmp_webstorage",
         task_3.spawn().map_err(super::Error::TaskMpscToMsgBus),
     );
 

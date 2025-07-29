@@ -85,6 +85,7 @@ where
     };
     join_set_spawn(
         &mut task_set,
+        "cmp_websocket_server",
         task.spawn().map_err(super::Error::SharedTaskMsgBusToMpsc),
     );
 
@@ -95,7 +96,7 @@ where
         fn_input: config.fn_server_to_client,
         cache: cache.clone(),
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_websocket_server", task.spawn());
 
     // Создание исходящих сообщений ----------------------------------------------------------------
     let task = tasks::Output {
@@ -103,7 +104,7 @@ where
         output: ch_tx_mpsc_to_msgbus,
         fn_output: config.fn_client_to_server,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_websocket_server", task.spawn());
 
     // Исходящие сообщения в шину сообщений --------------------------------------------------------
     let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
@@ -112,6 +113,7 @@ where
     };
     join_set_spawn(
         &mut task_set,
+        "cmp_websocket_server",
         task.spawn().map_err(super::Error::SharedTaskMpscToMsgBus),
     );
 
@@ -126,7 +128,7 @@ where
             stream_and_addr,
             serde_alg,
         );
-        join_set_spawn(&mut task_set, task);
+        join_set_spawn(&mut task_set, "cmp_websocket_server", task);
     }
 
     Ok(())
@@ -182,7 +184,7 @@ where
         cache: cache.clone(),
         serde_alg,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_websocket_server", task.spawn());
 
     // Получение данных от клиента
     let task = tasks::RcvFromClient {
@@ -190,7 +192,7 @@ where
         websocket_read,
         serde_alg,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_websocket_server", task.spawn());
 
     while let Some(res) = task_set.join_next().await {
         let err = match res {

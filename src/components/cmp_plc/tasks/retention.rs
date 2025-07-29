@@ -47,7 +47,7 @@ where
             // Таймаут
             // В tokio есть timeout в модуле time, но использование модуля вызывает панику в WASM.
             let task = task_retention_timeout(config_retention.restore_timeout);
-            join_set_spawn(&mut task_set_retention, task);
+            join_set_spawn(&mut task_set_retention, "cmp_plc", task);
 
             task_set_retention.spawn(async move {
                 while let Ok(msg) = self.cmp_in_out.recv_input().await {

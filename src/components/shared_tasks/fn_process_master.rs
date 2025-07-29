@@ -120,6 +120,7 @@ where
         };
         join_set_spawn(
             self.task_set,
+            "fn_process_master",
             task.spawn().map_err(self.error_msgbus_to_broadcast),
         );
 
@@ -135,7 +136,11 @@ where
                 ch_rx_fieldbus_to_device,
                 ch_tx_devices_to_filter,
             );
-            join_set_spawn(self.task_set, task.map_err(self.error_master_device));
+            join_set_spawn(
+                self.task_set,
+                "fn_process_master",
+                task.map_err(self.error_master_device),
+            );
         }
 
         // Задачи добавления индекса
@@ -146,7 +151,7 @@ where
                 device_index,
                 error_tokiompscsend: self.error_tokiompscsend,
             };
-            join_set_spawn(self.task_set, task.spawn());
+            join_set_spawn(self.task_set, "fn_process_master", task.spawn());
         }
 
         // Задача разделения ответов
@@ -155,14 +160,18 @@ where
             output: ch_tx_split_to_devices,
             error_tokiompscsend: self.error_tokiompscsend,
         };
-        join_set_spawn(self.task_set, task.spawn());
+        join_set_spawn(self.task_set, "fn_process_master", task.spawn());
 
         // Фильтрация одинаковых сообщений ---------------------------------------------------------
         let task = filter_identical_data::FilterIdenticalData {
             input: ch_rx_devices_to_filter,
             output: ch_tx_filter_to_msgbus,
         };
-        join_set_spawn(self.task_set, task.spawn().map_err(self.error_filter));
+        join_set_spawn(
+            self.task_set,
+            "fn_process_master",
+            task.spawn().map_err(self.error_filter),
+        );
 
         // Создаем исходящие сообщения -------------------------------------------------------------
         let task = mpsc_to_msgbus::MpscToMsgBus {
@@ -171,6 +180,7 @@ where
         };
         join_set_spawn(
             self.task_set,
+            "fn_process_master",
             task.spawn().map_err(self.error_mpsc_to_msgbus),
         );
 

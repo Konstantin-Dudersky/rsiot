@@ -42,10 +42,10 @@ where
     let mut task_set: JoinSet<Result> = JoinSet::new();
 
     let task = task_input(in_out.clone(), config.fn_input, input_store);
-    join_set_spawn(&mut task_set, task);
+    join_set_spawn(&mut task_set, "cmp_leptos", task);
 
     let task = task_output(in_out.clone(), config.fn_output, output_store);
-    join_set_spawn(&mut task_set, task);
+    join_set_spawn(&mut task_set, "cmp_leptos", task);
 
     while let Some(task_result) = task_set.join_next().await {
         task_result??

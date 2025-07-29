@@ -35,10 +35,12 @@ uuid = { version = "1.7.0", features = [
     "js",
 ] }
 
+any_spawner = { version = "0.3.0", optional = true }
 async-trait = { version = "0.1.77", optional = true }
 axum = { version = "0.8.1", optional = true }
 clap = { version = "^4.4.18", features = ["derive"], optional = true }
 console_error_panic_hook = { version = " 0.1.7", optional = true }
+console-subscriber = { version = "0.4.1", optional = true }
 dotenvy = { version = "0.15.7", optional = true }
 embedded-graphics = { version = "0.8.1", optional = true }
 embedded-svc = { version = "0.28.0", optional = true } # TODO - HTTP request content_len()
@@ -86,6 +88,7 @@ tokio = { version = "^1.37.0", features = [
     "sync",
     "rt",
     "time",
+    "tracing",
 ], optional = true }
 tokio-modbus = { version = "0.11.0", default-features = false, features = [
     "tcp",
@@ -116,9 +119,6 @@ ws2812-esp32-rmt-driver = { version = "0.12.0", features = [
 ], optional = true }
 
 rsiot-macros = { version = "0.0.73", path = "./rsiot-macros" }
-
-
-# [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
@@ -192,6 +192,21 @@ serde_json = ["dep:serde_json"]
 serde_postcard = ["dep:postcard"]
 serde_toml = ["dep:toml"]
 
+log_console = ["dep:tracing-subscriber"]
+log_esp = ["dep:log"]
+log_loki = [
+    "dep:tokio",
+    "dep:tracing-loki",
+    "dep:tracing-subscriber",
+    "dep:url",
+]
+log_tokio = ["dep:console-subscriber", "dep:tracing-subscriber"]
+log_webconsole = [
+    "dep:console_error_panic_hook",
+    "dep:tracing-subscriber",
+    "dep:tracing-web",
+]
+
 ## Компонент аутентификации
 cmp_auth = ["executor", "dep:jwt", "dep:hmac", "dep:sha2"]
 
@@ -234,6 +249,7 @@ cmp_filesystem = ["executor", "tokio?/fs"]
 ## Компонент для создания интерфейсов на базе Leptos
 cmp_leptos = [
     "executor",
+    "dep:any_spawner",
     "dep:leptos",
     "dep:palette",
     "dep:reactive_stores",
@@ -377,29 +393,31 @@ path = "examples/cmp_esp_nvs/cmp_esp_nvs.rs"
 name = "cmp_esp_led"
 path = "examples/cmp_esp/cmp_esp_led.rs"
 
-[[example]]
-name = "cmp_linux_serial_master"
-path = "examples/cmp_raspberrypi/cmp_linux_serial_master/main.rs"
+# TODO - скорее всего удалить
 
-[[example]]
-name = "cmp_raspberry_i2c_master_ads1115"
-path = "./examples/cmp_raspberrypi/cmp_raspberry_i2c_master_ads1115.rs"
+# [[example]]
+# name = "cmp_linux_serial_master"
+# path = "examples/cmp_raspberrypi/cmp_linux_serial_master/main.rs"
 
-[[example]]
-name = "cmp_raspberry_i2c_master_bmp180"
-path = "./examples/cmp_raspberrypi/cmp_raspberry_i2c_master_bmp180.rs"
+# [[example]]
+# name = "cmp_raspberry_i2c_master_ads1115"
+# path = "./examples/cmp_raspberrypi/cmp_raspberry_i2c_master_ads1115.rs"
 
-[[example]]
-name = "cmp_raspberry_i2c_master_pcf8575"
-path = "./examples/cmp_raspberrypi/cmp_raspberry_i2c_master_pcf8575.rs"
+# [[example]]
+# name = "cmp_raspberry_i2c_master_bmp180"
+# path = "./examples/cmp_raspberrypi/cmp_raspberry_i2c_master_bmp180.rs"
 
-[[example]]
-name = "cmp_raspberry_i2c_master_pm_di16"
-path = "./examples/cmp_raspberrypi/cmp_raspberry_i2c_master_pm_di16.rs"
+# [[example]]
+# name = "cmp_raspberry_i2c_master_pcf8575"
+# path = "./examples/cmp_raspberrypi/cmp_raspberry_i2c_master_pcf8575.rs"
 
-[[example]]
-name = "cmp_raspberry_i2c_master_pm_rq8"
-path = "./examples/cmp_raspberrypi/cmp_raspberry_i2c_master_pm_rq8.rs"
+# [[example]]
+# name = "cmp_raspberry_i2c_master_pm_di16"
+# path = "./examples/cmp_raspberrypi/cmp_raspberry_i2c_master_pm_di16.rs"
+
+# [[example]]
+# name = "cmp_raspberry_i2c_master_pm_rq8"
+# path = "./examples/cmp_raspberrypi/cmp_raspberry_i2c_master_pm_rq8.rs"
 
 [[example]]
 name = "cmp_esp_http_server"

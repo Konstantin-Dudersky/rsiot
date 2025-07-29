@@ -40,14 +40,14 @@ where
             fn_input_window: self.fn_input_window,
             buffer: buffer.clone(),
         };
-        join_set_spawn(&mut task_set, task.spawn());
+        join_set_spawn(&mut task_set, "cmp_math", task.spawn());
 
         let task = TaskOutput {
             output: self.output,
             fn_output: self.fn_output,
             buffer: buffer.clone(),
         };
-        join_set_spawn(&mut task_set, task.spawn());
+        join_set_spawn(&mut task_set, "cmp_math", task.spawn());
 
         while let Some(res) = task_set.join_next().await {
             res??;

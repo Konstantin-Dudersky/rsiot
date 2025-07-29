@@ -49,7 +49,7 @@ where
         input: msg_bus.clone(),
         get_endpoints: get_endpoints.clone(),
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_http_server", task.spawn());
 
     // Задача работы сервера Axum ------------------------------------------------------------------
     let layer_cors = CorsLayer::permissive();
@@ -85,7 +85,7 @@ where
         port: config.port,
         router,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_http_server", task.spawn());
 
     // Ждем выполнения всех задач ------------------------------------------------------------------
     while let Some(res) = task_set.join_next().await {

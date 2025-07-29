@@ -61,7 +61,7 @@ where
         output: ch_tx_fieldbus_to_devices,
         comm_settings: config.devices_comm_settings,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_modbus_client", task.spawn());
 
     while let Some(res) = task_set.join_next().await {
         res??;

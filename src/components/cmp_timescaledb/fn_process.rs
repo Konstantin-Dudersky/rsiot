@@ -50,27 +50,31 @@ where
         msg_bus: in_out.clone(),
         output: ch_tx_msgbus_to_input,
     };
-    join_set_spawn(&mut task_set, task.spawn().map_err(Error::TaskMsgBusToMpsc));
+    join_set_spawn(
+        &mut task_set,
+        "cmp_timescaledb",
+        task.spawn().map_err(Error::TaskMsgBusToMpsc),
+    );
 
     let task = tasks::Input {
         input: ch_rx_msgbus_to_input,
         output: ch_tx_input_to_database.clone(),
         fn_input: config.fn_input,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_timescaledb", task.spawn());
 
     let task = tasks::Periodic {
         output: ch_tx_input_to_database,
         period: config.send_period,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_timescaledb", task.spawn());
 
     let task = tasks::SendToDatabase {
         input: ch_rx_input_to_database,
         connection_string,
         max_connections: config.max_connections,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_timescaledb", task.spawn());
 
     while let Some(res) = task_set.join_next().await {
         res??;

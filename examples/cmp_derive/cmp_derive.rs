@@ -1,7 +1,7 @@
 //! Запуск:
 //!
 //! ```bash
-//! cargo run --package rsiot-extra-components --example cmp_derive
+//! cargo run --example cmp_derive --features "executor, log_tokio"
 //! ```
 //!
 //!
@@ -9,9 +9,12 @@
 //! cargo run --package rsiot-extra-components --example cmp_derive --features single-thread
 //! ```
 
-#[cfg(feature = "executor")]
+#[cfg(all(feature = "executor", feature = "log_console", feature = "log_tokio"))]
 fn main() -> anyhow::Result<()> {
-    use std::time::Duration;
+    use std::{
+        net::{Ipv4Addr, SocketAddrV4},
+        time::Duration,
+    };
 
     use tokio::runtime;
     #[cfg(feature = "single-thread")]
@@ -24,10 +27,16 @@ fn main() -> anyhow::Result<()> {
             cmp_inject_periodic, cmp_logger,
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
+        logging::{LogConfig, LogConfigFilter},
         message::{example_message::*, *},
     };
 
-    tracing_subscriber::fmt().init();
+    LogConfig {
+        filter: LogConfigFilter::String("info"),
+        tokio_console_addr: SocketAddrV4::new(Ipv4Addr::UNSPECIFIED, 6669),
+    }
+    .run()
+    .unwrap();
 
     #[derive(Clone, Default, PartialEq)]
     struct ValueInstantString {
@@ -116,5 +125,7 @@ fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[cfg(not(feature = "executor"))]
-fn main() {}
+#[cfg(not(all(feature = "executor", feature = "log_console", feature = "log_tokio")))]
+fn main() {
+    unimplemented!()
+}

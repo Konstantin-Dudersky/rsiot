@@ -1,9 +1,7 @@
 use std::time::Duration;
 
-use leptos::{
-    prelude::*,
-    task::{spawn_local, Executor},
-};
+use any_spawner::Executor;
+use leptos::{prelude::*, task::spawn_local};
 use reactive_stores::Store;
 use tokio::task::LocalSet;
 

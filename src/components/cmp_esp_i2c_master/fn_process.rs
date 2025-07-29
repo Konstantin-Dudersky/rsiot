@@ -134,7 +134,7 @@ where
                     config,
                     driver: driver.clone(),
                 };
-                join_set_spawn(&mut task_set, device.spawn());
+                join_set_spawn(&mut task_set, "cmp_esp_i2c_master", device.spawn());
             }
 
             drivers_i2c::I2cDevices::PM_RQ8(config) => {
@@ -143,7 +143,7 @@ where
                     config,
                     driver: driver.clone(),
                 };
-                join_set_spawn(&mut task_set, device.spawn());
+                join_set_spawn(&mut task_set, "cmp_esp_i2c_master", device.spawn());
             }
 
             drivers_i2c::I2cDevices::SSD1306 {} => {

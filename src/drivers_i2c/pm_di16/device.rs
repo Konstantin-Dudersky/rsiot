@@ -66,7 +66,7 @@ where
             fn_output_period: self.config.fn_output_period,
             driver: self.driver,
         };
-        join_set_spawn(&mut task_set, task.spawn());
+        join_set_spawn(&mut task_set, "pm_di16", task.spawn());
 
         // Фильтрация одинаковых сообщений
         let task = shared_tasks::filter_identical_data::FilterIdenticalData {
@@ -75,6 +75,7 @@ where
         };
         join_set_spawn(
             &mut task_set,
+            "pm_di16",
             task.spawn().map_err(super::Error::TaskFilterIdenticalData),
         );
 
@@ -85,6 +86,7 @@ where
         };
         join_set_spawn(
             &mut task_set,
+            "pm_di16",
             task.spawn().map_err(super::Error::TaskMpscToMsgBus),
         );
 

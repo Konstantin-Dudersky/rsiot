@@ -65,7 +65,7 @@ where
         fn_input: config.fn_input,
         buffer_data: buffer_data.clone(),
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_esp_uart_slave", task.spawn());
 
     // Задача коммуникации по протоклу UART
     let task = tasks::UartComm {
@@ -73,7 +73,7 @@ where
         fn_uart_comm: config.fn_uart_comm,
         buffer_data: buffer_data.clone(),
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_esp_uart_slave", task.spawn());
 
     // Задача генерирования исходящих сообщений
     let task = tasks::Output {
@@ -82,7 +82,7 @@ where
         fn_output: config.fn_output,
         fn_output_period: config.fn_output_period,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_esp_uart_slave", task.spawn());
 
     // Задача фильтрации исходящих сообщений
     let task = filter_identical_data::FilterIdenticalData {
@@ -91,6 +91,7 @@ where
     };
     join_set_spawn(
         &mut task_set,
+        "cmp_esp_uart_slave",
         task.spawn().map_err(super::Error::TaskFilterIdenticalData),
     );
 
@@ -101,6 +102,7 @@ where
     };
     join_set_spawn(
         &mut task_set,
+        "cmp_esp_uart_slave",
         task.spawn().map_err(super::Error::TaskMpscToMsgbus),
     );
 

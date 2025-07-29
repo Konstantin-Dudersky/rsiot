@@ -3,7 +3,7 @@ use std::time::Duration;
 use slint::ComponentHandle;
 use tokio::sync::mpsc;
 
-use crate::message::{Message, MsgDataBound};
+use crate::message::MsgDataBound;
 
 pub type FnInput<TMsg, TMainWindow> = fn(TMsg, TMainWindow);
 pub type FnOutput<TMsg, TMainWindow> = fn(TMainWindow, mpsc::Sender<TMsg>);

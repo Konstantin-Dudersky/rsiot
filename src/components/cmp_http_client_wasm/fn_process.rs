@@ -32,7 +32,7 @@ where
         output: ch_tx_reponse,
         base_url: config.base_url,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_http_client_wasm", task.spawn());
 
     while let Some(res) = task_set.join_next().await {
         res??;

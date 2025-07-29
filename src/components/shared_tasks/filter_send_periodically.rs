@@ -39,14 +39,14 @@ where
             input: self.input,
             cache: cache.clone(),
         };
-        join_set_spawn(&mut task_set, task.spawn());
+        join_set_spawn(&mut task_set, "filter_send_periodically", task.spawn());
 
         let task = TaskOutput {
             output: self.output,
             cache: cache.clone(),
             period: self.period,
         };
-        join_set_spawn(&mut task_set, task.spawn());
+        join_set_spawn(&mut task_set, "filter_send_periodically", task.spawn());
 
         while let Some(res) = task_set.join_next().await {
             res??;

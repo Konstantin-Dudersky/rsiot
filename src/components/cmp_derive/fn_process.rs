@@ -14,6 +14,7 @@ where
     for item in config.derive_items {
         join_set_spawn(
             &mut task_set,
+            "cmp_derive",
             task_process_derive_item(in_out.clone(), item),
         );
     }

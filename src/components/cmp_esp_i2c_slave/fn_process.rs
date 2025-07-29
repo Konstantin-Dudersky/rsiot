@@ -74,7 +74,7 @@ where
         fn_input: config.fn_input,
         buffer_data: buffer_data.clone(),
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_esp_i2c_slave", task.spawn());
 
     // Задача создания исходящих сообщений
     let task = tasks::Output {
@@ -83,7 +83,7 @@ where
         fn_output_period: config.fn_output_period,
         buffer_data: buffer_data.clone(),
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_esp_i2c_slave", task.spawn());
 
     // Фильтрация исходящих сообщений
     let task = shared_tasks::filter_identical_data::FilterIdenticalData {
@@ -92,6 +92,7 @@ where
     };
     join_set_spawn(
         &mut task_set,
+        "cmp_esp_i2c_slave",
         task.spawn().map_err(Error::TaskFilterIdenticalData),
     );
 
@@ -100,7 +101,11 @@ where
         input: channel_filter_to_output_recv,
         msg_bus: msg_bus.clone(),
     };
-    join_set_spawn(&mut task_set, task.spawn().map_err(Error::TaskToMsgBus));
+    join_set_spawn(
+        &mut task_set,
+        "cmp_esp_i2c_slave",
+        task.spawn().map_err(Error::TaskToMsgBus),
+    );
 
     while let Some(res) = task_set.join_next().await {
         res.unwrap()?;

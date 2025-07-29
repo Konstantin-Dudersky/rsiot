@@ -56,6 +56,7 @@ where
         };
         join_set_spawn(
             &mut task_set,
+            "pm_rq8",
             task.spawn().map_err(super::Error::TaskMsgBusToMpsc),
         );
 
@@ -66,7 +67,7 @@ where
             fn_input: self.config.fn_input,
             buffer: buffer.clone(),
         };
-        join_set_spawn(&mut task_set, task.spawn());
+        join_set_spawn(&mut task_set, "pm_rq8", task.spawn());
 
         // Периодическая отправка, для надежности
         let task = tasks::InputPeriodic {
@@ -74,7 +75,7 @@ where
             buffer,
             period: Duration::from_millis(1000),
         };
-        join_set_spawn(&mut task_set, task.spawn());
+        join_set_spawn(&mut task_set, "pm_rq8", task.spawn());
 
         // Коммуникация I2C
         let task = tasks::I2cComm {
@@ -83,14 +84,14 @@ where
             i2c_driver: self.driver.clone(),
             address: self.config.address,
         };
-        join_set_spawn(&mut task_set, task.spawn());
+        join_set_spawn(&mut task_set, "pm_rq8", task.spawn());
 
         // Обработка ответа
         let task = tasks::Output {
             input: ch_2_recv,
             output: self.msg_bus,
         };
-        join_set_spawn(&mut task_set, task.spawn());
+        join_set_spawn(&mut task_set, "pm_rq8", task.spawn());
 
         while let Some(res) = task_set.join_next().await {
             res.unwrap().unwrap();

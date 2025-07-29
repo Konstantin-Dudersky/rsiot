@@ -16,8 +16,7 @@ async fn main() {
 
     use rsiot::{
         components::{
-            cmp_esp_gpio, cmp_esp_http_server, cmp_esp_mqtt_client, cmp_esp_wifi,
-            cmp_inject_periodic, cmp_logger,
+            cmp_esp_gpio, cmp_esp_http_server, cmp_esp_wifi, cmp_inject_periodic, cmp_logger,
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
         logging::configure_logging,
@@ -119,17 +118,17 @@ async fn main() {
     // };
 
     // MQTT
-    let _config_esp_mqtt_client = cmp_esp_mqtt_client::Config::<Custom> {
-        client_id: "cmp_esp_example".into(),
-        host: "195.43.142.106".into(),
-        port: 1883,
-        fn_input: |msg| Ok(Some(msg.serialize()?.into_bytes())),
-        fn_output: |payload: &[u8]| {
-            let payload = String::from_utf8_lossy(payload);
-            let msg = Message::deserialize(&payload)?;
-            Ok(Some(msg))
-        },
-    };
+    // let _config_esp_mqtt_client = cmp_esp_mqtt_client::Config::<Custom> {
+    //     client_id: "cmp_esp_example".into(),
+    //     host: "195.43.142.106".into(),
+    //     port: 1883,
+    //     fn_input: |msg| Ok(Some(msg.serialize()?.into_bytes())),
+    //     fn_output: |payload: &[u8]| {
+    //         let payload = String::from_utf8_lossy(payload);
+    //         let msg = Message::deserialize(&payload)?;
+    //         Ok(Some(msg))
+    //     },
+    // };
 
     // executor ------------------------------------------------------------------------------------
 

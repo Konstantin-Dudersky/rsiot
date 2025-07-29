@@ -36,14 +36,18 @@ where
         msg_bus: msg_bus.clone(),
         output: ch_tx_msgbus_to_input,
     };
-    join_set_spawn(&mut task_set, task.spawn().map_err(Error::TaskMsgBusToMpsc));
+    join_set_spawn(
+        &mut task_set,
+        "cmp_math",
+        task.spawn().map_err(Error::TaskMsgBusToMpsc),
+    );
 
     let task = TaskInput {
         input: ch_rx_msgbus_to_input,
         output: ch_tx_input_to_alg.clone(),
         fn_input: config.fn_input,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_math", task.spawn());
 
     let task = shared_tasks::mpsc_to_broadcast::Task {
         input: ch_rx_input_to_alg,
@@ -51,6 +55,7 @@ where
     };
     join_set_spawn(
         &mut task_set,
+        "cmp_math",
         task.spawn().map_err(Error::TaskMpscToBroadcast),
     );
 
@@ -68,7 +73,7 @@ where
                     fn_output,
                     fn_input_window,
                 };
-                join_set_spawn(&mut task_set, task.spawn());
+                join_set_spawn(&mut task_set, "cmp_math", task.spawn());
             }
             Algs::SimpleMovingAverage {
                 fn_input_value,
@@ -82,7 +87,7 @@ where
                     fn_input_count,
                     fn_output,
                 };
-                join_set_spawn(&mut task_set, task.spawn());
+                join_set_spawn(&mut task_set, "cmp_math", task.spawn());
             }
         };
     }
@@ -93,13 +98,17 @@ where
         output_to_msgbus: ch_tx_output_to_msgbus,
         fn_output: config.fn_output,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_math", task.spawn());
 
     let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
         input: ch_rx_output_to_msgbus,
         msg_bus: msg_bus.clone(),
     };
-    join_set_spawn(&mut task_set, task.spawn().map_err(Error::TaskMpscToMsgbus));
+    join_set_spawn(
+        &mut task_set,
+        "cmp_math",
+        task.spawn().map_err(Error::TaskMpscToMsgbus),
+    );
 
     while let Some(res) = task_set.join_next().await {
         res??;

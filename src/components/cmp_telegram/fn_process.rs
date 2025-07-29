@@ -21,7 +21,7 @@ where
         bot,
         fn_input: config.fn_input,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_telegram", task.spawn());
 
     while let Some(res) = task_set.join_next().await {
         res.unwrap().unwrap();

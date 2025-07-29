@@ -162,7 +162,7 @@ pub mod env_vars;
 #[cfg(feature = "executor")]
 pub mod executor;
 
-#[cfg(feature = "logging")]
+// #[cfg(feature = "logging")]
 pub mod logging;
 
 #[cfg(feature = "rustdoc")]

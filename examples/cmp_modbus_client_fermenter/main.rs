@@ -1,10 +1,10 @@
 //! Пример для работы с ферментером UST.
-#[cfg(feature = "cmp_modbus_client")]
+#[cfg(feature = "cmp_modbus_client1")]
 mod config;
-#[cfg(feature = "cmp_modbus_client")]
+#[cfg(feature = "cmp_modbus_client1")]
 mod message;
 
-#[cfg(feature = "cmp_modbus_client")]
+#[cfg(feature = "cmp_modbus_client1")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     use std::time::Duration;
@@ -39,5 +39,5 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[cfg(not(feature = "cmp_modbus_client"))]
+// #[cfg(not(feature = "cmp_modbus_client"))]
 fn main() {}

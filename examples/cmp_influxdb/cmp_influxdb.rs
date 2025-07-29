@@ -6,13 +6,10 @@ async fn main() {
     use tracing::level_filters::LevelFilter;
 
     use rsiot::{
-        components::{cmp_influxdb, cmp_inject_periodic},
+        components::{cmp_influxdb3, cmp_inject_periodic},
         executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{example_message::*, *},
     };
-
-    const TOKEN: &str =
-        "6ux3LH1s0wOf4z2vIec6cmYYk03GgTksvxD3OnaM71xfOfyj9NQTvKq8TZRb5iInEl_PpoVFHFQB43CyaoJMhg==";
 
     tracing_subscriber::fmt()
         .with_max_level(LevelFilter::INFO)
@@ -28,20 +25,17 @@ async fn main() {
         },
     };
 
-    let influxdb_config = cmp_influxdb::Config {
+    let influxdb_config = cmp_influxdb3::Config {
         host: "localhost".into(),
         port: 8086,
-        org: "test".into(),
-        bucket: "test1".into(),
-        token: TOKEN.into(),
+        database: "test1".into(),
+        send_period: Duration::from_secs(1),
         fn_input: |msg: &Message<Custom>| {
             let value = match &msg.data {
-                MsgData::Custom(Custom::ValueInstantF64(data)) => {
-                    cmp_influxdb::ValueType::f64(*data)
-                }
+                MsgData::Custom(Custom::ValueInstantF64(data)) => *data,
                 _ => return None,
             };
-            let line = cmp_influxdb::LineProtocolItem::new(&msg.key, value, &msg.ts);
+            let line = cmp_influxdb3::LineProtocolItem::new_simple(&msg.key, value);
             Some(vec![line])
         },
     };
@@ -54,7 +48,7 @@ async fn main() {
 
     ComponentExecutor::new(executor_config)
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
-        .add_cmp(cmp_influxdb::Cmp::new(influxdb_config))
+        .add_cmp(cmp_influxdb3::Cmp::new(influxdb_config))
         .wait_result()
         .await
         .unwrap();

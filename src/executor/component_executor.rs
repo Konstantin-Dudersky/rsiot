@@ -13,7 +13,7 @@ use super::{
     CmpInOut,
 };
 
-const UPDATE_TTL_PERIOD: Duration = Duration::from_millis(200);
+const UPDATE_TTL_PERIOD: Duration = Duration::from_millis(1000);
 
 /// Запуск коллекции компонентов в работу
 pub struct ComponentExecutor<TMsg>
@@ -77,11 +77,15 @@ where
             id,
             config.delay_publish,
         );
-        join_set_spawn(&mut task_set, task_internal_handle);
+        join_set_spawn(&mut task_set, "internal_task", task_internal_handle);
 
         // Запускаем задачу обновления TTL сообщений
         let task_update_ttl_in_cache_handle = task_update_ttl_in_cache(cache.clone());
-        join_set_spawn(&mut task_set, task_update_ttl_in_cache_handle);
+        join_set_spawn(
+            &mut task_set,
+            "update_ttl_in_cache",
+            task_update_ttl_in_cache_handle,
+        );
 
         let cmp_in_out = CmpInOut::new(
             component_input,
@@ -184,12 +188,13 @@ where
         sleep(UPDATE_TTL_PERIOD).await;
         let mut cache = cache.write().await;
         let mut keys_for_delete = vec![];
-        for (key, msg) in cache.iter_mut() {
+
+        cache.iter_mut().for_each(|(key, msg)| {
             msg.update_time_to_live(UPDATE_TTL_PERIOD);
             if !msg.is_alive() {
                 keys_for_delete.push(key.clone());
             }
-        }
+        });
         for key in keys_for_delete {
             let remove_result = cache.remove(&key);
             if remove_result.is_none() {

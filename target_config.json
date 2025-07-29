@@ -54,7 +54,6 @@
         "cmp_mqtt_client",
         "cmp_os_process",
         "cmp_plc",
-        "cmp_raspberrypi",
         "cmp_redis_client",
         "cmp_slint",
         "cmp_surrealdb",

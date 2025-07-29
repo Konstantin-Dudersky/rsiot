@@ -1,23 +1,30 @@
 use std::future::Future;
 
 use tokio::task::JoinSet;
+use tracing::error;
 
 #[cfg(feature = "single-thread")]
 /// Добавить задачу в множество задач (однопоточная версия)
-pub fn join_set_spawn<F, T>(join_set: &mut JoinSet<T>, task: F)
+pub fn join_set_spawn<F, T>(join_set: &mut JoinSet<T>, name: &str, task: F)
 where
     F: Future<Output = T> + 'static,
     T: Send + 'static,
 {
-    join_set.spawn_local(task);
+    let res = join_set.build_task().name(name).spawn_local(task);
+    if let Err(e) = res {
+        error!("Error spawning task: {}", e);
+    }
 }
 
 #[cfg(not(feature = "single-thread"))]
 /// Добавить задачу в множество задач (многопоточная версия)
-pub fn join_set_spawn<F, T>(join_set: &mut JoinSet<T>, task: F)
+pub fn join_set_spawn<F, T>(join_set: &mut JoinSet<T>, name: &str, task: F)
 where
     F: Future<Output = T> + Send + 'static,
     T: Send + 'static,
 {
-    join_set.spawn(task);
+    let res = join_set.build_task().name(name).spawn(task);
+    if let Err(e) = res {
+        error!("Error spawning task: {}", e);
+    }
 }

@@ -33,7 +33,7 @@ where
         base_url: config.base_url,
         timeout: config.timeout,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_http_client", task.spawn());
 
     while let Some(res) = task_set.join_next().await {
         res??;

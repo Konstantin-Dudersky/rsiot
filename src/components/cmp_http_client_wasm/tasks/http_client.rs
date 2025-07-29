@@ -39,7 +39,7 @@ impl HttpClient {
                 base_url: base_url.clone(),
                 request,
             };
-            join_set_spawn(&mut task_set, task.spawn());
+            join_set_spawn(&mut task_set, "cmp_http_client_wasm", task.spawn());
         }
 
         Err(Error::TaskEndHttpClient("".into()))

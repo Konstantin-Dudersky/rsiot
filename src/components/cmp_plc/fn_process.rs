@@ -43,7 +43,7 @@ where
         in_out: in_out.clone(),
         input_msg_cache: input_msg_cache.clone(),
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_plc", task.spawn());
 
     // Ожидаем данные для восстановления памяти
     let fb_main = tasks::Retention {
@@ -62,7 +62,7 @@ where
         config: config.clone(),
         fb_main: fb_main.clone(),
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_plc", task.spawn());
 
     // Фильтрация исходящих сообщений
     let task = shared_tasks::filter_identical_data::FilterIdenticalData {
@@ -71,6 +71,7 @@ where
     };
     join_set_spawn(
         &mut task_set,
+        "cmp_plc",
         task.spawn().map_err(Error::FilterMsgsWithSameData),
     );
 
@@ -79,7 +80,11 @@ where
         input: channel_filter_to_output_recv,
         msg_bus: in_out.clone(),
     };
-    join_set_spawn(&mut task_set, task.spawn().map_err(Error::ToCmpOutput));
+    join_set_spawn(
+        &mut task_set,
+        "cmp_plc",
+        task.spawn().map_err(Error::ToCmpOutput),
+    );
 
     // Периодический экспорт состояния
     let task = tasks::ExportCurrentState {
@@ -87,7 +92,7 @@ where
         config_retention: config.retention,
         fb_main: fb_main.clone(),
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_plc", task.spawn());
 
     while let Some(res) = task_set.join_next().await {
         res??

@@ -38,7 +38,7 @@ where
                 mqtt_msg_gen: mqtt_msg_gen.clone(),
                 client: client.clone(),
             };
-            join_set_spawn(&mut task_set, task.spawn());
+            join_set_spawn(&mut task_set, "cmp_mqtt_client", task.spawn());
         }
 
         // Получение сообщения от MQTT-брокера
@@ -49,7 +49,7 @@ where
             mqtt_msg_gen: mqtt_msg_gen.clone(),
             subscribe: config.subscribe.clone(),
         };
-        join_set_spawn(&mut task_set, task.spawn());
+        join_set_spawn(&mut task_set, "cmp_mqtt_client", task.spawn());
 
         while let Some(res) = task_set.join_next().await {
             res??

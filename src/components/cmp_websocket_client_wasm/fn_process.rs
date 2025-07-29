@@ -36,7 +36,7 @@ where
         output: input.clone(),
         fn_connection_state: config.fn_connection_state,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_websocket_client_wasm", task.spawn());
 
     loop {
         let result = task_main(
@@ -89,14 +89,14 @@ where
         input: ch_rx_input_to_send,
         websocket_write,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_websocket_client_wasm", task.spawn());
 
     // Задача получения текста из сервера
     let task = tasks::Receive {
         websocket_read,
         output: ch_tx_receive_to_output,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_websocket_client_wasm", task.spawn());
 
     while let Some(task_result) = task_set.join_next().await {
         warn!("Task completed with result: {:?}", task_result);

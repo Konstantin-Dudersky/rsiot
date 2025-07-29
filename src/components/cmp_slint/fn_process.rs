@@ -31,7 +31,11 @@ where
         msg_bus: msg_bus.clone(),
         output: ch_tx_msgbus_to_input,
     };
-    join_set_spawn(&mut task_set, task.spawn().map_err(Error::TaskMsgBusToMpsc));
+    join_set_spawn(
+        &mut task_set,
+        "cmp_slint",
+        task.spawn().map_err(Error::TaskMsgBusToMpsc),
+    );
 
     // Обработка входящих сообщений и изменение данных в приложении Slint
     let task = tasks::Input {
@@ -39,7 +43,7 @@ where
         slint_window: config.slint_window.clone(),
         fn_input: config.fn_input,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_slint", task.spawn());
 
     // Создание сообщений на основе взаимодествия с приложением Slint
     let task = tasks::Output {
@@ -47,7 +51,7 @@ where
         slint_window: config.slint_window.clone(),
         fn_output: config.fn_output,
     };
-    join_set_spawn(&mut task_set, task.spawn());
+    join_set_spawn(&mut task_set, "cmp_slint", task.spawn());
 
     // Фильтрация сообещений
     let task = shared_tasks::filter_send_periodically::FilterSendPeriodically {
@@ -57,6 +61,7 @@ where
     };
     join_set_spawn(
         &mut task_set,
+        "cmp_slint",
         task.spawn().map_err(Error::TaskFilterSendPeriodically),
     );
 
@@ -65,7 +70,11 @@ where
         input: ch_rx_filter_to_msgbus,
         msg_bus: msg_bus.clone(),
     };
-    join_set_spawn(&mut task_set, task.spawn().map_err(Error::TaskMpscToMsgBus));
+    join_set_spawn(
+        &mut task_set,
+        "cmp_slint",
+        task.spawn().map_err(Error::TaskMpscToMsgBus),
+    );
 
     while let Some(res) = task_set.join_next().await {
         res??;
