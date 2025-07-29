@@ -4,7 +4,7 @@
 
 mod shared;
 
-#[cfg(feature = "cmp_esp")]
+#[cfg(all(feature = "cmp_esp", feature = "log_esp"))]
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
     use std::time::Duration;
@@ -17,7 +17,7 @@ async fn main() {
         components::{cmp_esp_http_server, cmp_esp_wifi, cmp_inject_periodic, cmp_logger},
         components_config::http_server::{GetEndpointConfig, PutEndpointConfig},
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        logging::configure_logging,
+        logging::LogConfig,
         message::*,
         serde_utils::SerdeAlgKind,
     };
@@ -27,7 +27,11 @@ async fn main() {
     use shared::{ClientToServer, ServerToClient};
 
     link_patches();
-    configure_logging(LevelFilter::INFO).unwrap();
+    LogConfig {
+        esp_filter_level: LevelFilter::INFO,
+    }
+    .run()
+    .unwrap();
 
     // message -------------------------------------------------------------------------------------
     #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
@@ -141,5 +145,7 @@ async fn main() {
     local_set.await;
 }
 
-#[cfg(not(feature = "cmp_esp"))]
-fn main() {}
+#[cfg(not(all(feature = "cmp_esp", feature = "log_esp")))]
+fn main() {
+    unimplemented!()
+}

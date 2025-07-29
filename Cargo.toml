@@ -193,7 +193,7 @@ serde_postcard = ["dep:postcard"]
 serde_toml = ["dep:toml"]
 
 log_console = ["dep:tracing-subscriber"]
-log_esp = ["dep:log"]
+log_esp = ["dep:log", "dep:tracing-subscriber"]
 log_loki = [
     "dep:tokio",
     "dep:tracing-loki",

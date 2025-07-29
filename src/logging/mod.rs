@@ -80,12 +80,13 @@ pub use error::Error;
 // pub use target_esp::configure_logging;
 
 use tracing::info;
-use tracing_subscriber::{
-    fmt::Layer, layer::SubscriberExt, registry, util::SubscriberInitExt, EnvFilter,
-};
+
+use tracing_subscriber::{fmt::Layer, layer::SubscriberExt, registry, util::SubscriberInitExt};
 
 type Result<T> = std::result::Result<T, Error>;
 
+/// Получить настройку фильтрации - из переменной окружения или строки
+#[allow(dead_code)]
 fn filter_value(filter: &LogConfigFilter) -> Result<String> {
     let filter = match filter {
         LogConfigFilter::FromEnv => env::var("RUST_LOG")?,
@@ -122,28 +123,66 @@ pub struct LogConfig {
     #[cfg(feature = "log_tokio")]
     pub tokio_console_addr: std::net::SocketAddrV4,
 
+    /// Уровень логгирования в ESP
+    ///
+    /// Также необходимо настроить переменную CONFIG_LOG_DEFAULT_LEVEL_ в sdkconfig.defaults.
+    /// Возможные значения:
+    /// - No output (CONFIG_LOG_DEFAULT_LEVEL_NONE)
+    /// - Error (CONFIG_LOG_DEFAULT_LEVEL_ERROR)
+    /// - Warning (CONFIG_LOG_DEFAULT_LEVEL_WARN)
+    /// - Info (CONFIG_LOG_DEFAULT_LEVEL_INFO)
+    /// - Debug (CONFIG_LOG_DEFAULT_LEVEL_DEBUG)
+    /// - Verbose (CONFIG_LOG_DEFAULT_LEVEL_VERBOSE)
+    ///
+    /// В консоль будут попадать логи, которые являются минимумом двух значений:
+    /// - заданного в файле `sdkconfig.defaults` при компиляции
+    /// - значения аргумента `level` данной функции в рантайме
     #[cfg(feature = "log_esp")]
-    pub esp_filter_level: String,
+    pub esp_filter_level: tracing::level_filters::LevelFilter,
 }
 impl LogConfig {
     /// Запуск логгирования
     pub fn run(self) -> Result<()> {
-        // log_console ---------------------------------------------------------------------------------
+        // log_esp ---------------------------------------------------------------------------------
+        #[cfg(feature = "log_esp")]
+        {
+            use esp_idf_svc::log::{set_target_level, EspLogger};
+            use log::LevelFilter as LogLevelFilter;
+            use tracing::level_filters::LevelFilter as TracingLevelFilter;
+
+            EspLogger::initialize_default();
+
+            let level = match self.esp_filter_level {
+                TracingLevelFilter::TRACE => LogLevelFilter::Trace,
+                TracingLevelFilter::DEBUG => LogLevelFilter::Debug,
+                TracingLevelFilter::INFO => LogLevelFilter::Info,
+                TracingLevelFilter::WARN => LogLevelFilter::Warn,
+                TracingLevelFilter::ERROR => LogLevelFilter::Error,
+                TracingLevelFilter::OFF => LogLevelFilter::Off,
+            };
+            set_target_level("*", level)?;
+
+            info!("Logging in ESP started with level: {}", level);
+            return Ok(());
+        }
+
+        // log_console -----------------------------------------------------------------------------
         #[cfg(feature = "log_console")]
         let layer_console = {
-            use tracing_subscriber::{fmt, Layer};
+            use tracing_subscriber::{fmt, EnvFilter, Layer};
 
             let global_filter = EnvFilter::new(filter_value(&self.filter)?);
             let layer = fmt::Layer::new().pretty().with_filter(global_filter);
             Some(layer)
         };
         #[cfg(not(feature = "log_console"))]
+        #[allow(unreachable_code)]
         let layer_console: Option<Layer<_>> = None;
 
-        // log_loki ------------------------------------------------------------------------------------
+        // log_loki --------------------------------------------------------------------------------
         #[cfg(feature = "log_loki")]
         let layer_loki = {
-            use tracing_subscriber::Layer;
+            use tracing_subscriber::{EnvFilter, Layer};
 
             let global_filter = EnvFilter::new(filter_value(&self.filter)?);
 
@@ -158,10 +197,10 @@ impl LogConfig {
         #[cfg(not(feature = "log_loki"))]
         let layer_loki: Option<Layer<_>> = None;
 
-        // log_tokio -----------------------------------------------------------------------------------
+        // log_tokio -------------------------------------------------------------------------------
         #[cfg(feature = "log_tokio")]
         let layer_tokio = {
-            use tracing_subscriber::Layer;
+            use tracing_subscriber::{EnvFilter, Layer};
 
             let filter = EnvFilter::new("tokio=trace,runtime=trace");
             let layer = console_subscriber::ConsoleLayer::builder()
@@ -175,11 +214,11 @@ impl LogConfig {
         #[cfg(not(feature = "log_tokio"))]
         let layer_tokio: Option<Layer<_>> = None;
 
-        // log_webconsole ------------------------------------------------------------------------------
+        // log_webconsole --------------------------------------------------------------------------
         #[cfg(feature = "log_webconsole")]
         let layer_webconsole = {
             console_error_panic_hook::set_once();
-            use tracing_subscriber::{fmt::time::ChronoLocal, Layer};
+            use tracing_subscriber::{fmt::time::ChronoLocal, EnvFilter, Layer};
             use tracing_web::MakeWebConsoleWriter;
 
             let global_filter = EnvFilter::new(filter_value(&self.filter)?);
@@ -194,7 +233,7 @@ impl LogConfig {
         #[cfg(not(feature = "log_webconsole"))]
         let layer_webconsole: Option<Layer<_>> = None;
 
-        // log_webconsole_perf -------------------------------------------------------------------------
+        // log_webconsole_perf ---------------------------------------------------------------------
         #[cfg(feature = "log_webconsole")]
         let layer_webconsole_perf = {
             use tracing_subscriber::fmt::format::Pretty;
@@ -206,7 +245,7 @@ impl LogConfig {
         #[cfg(not(feature = "log_webconsole"))]
         let layer_webconsole_perf: Option<Layer<_>> = None;
 
-        // registry ------------------------------------------------------------------------------------
+        // registry --------------------------------------------------------------------------------
         registry()
             .with(layer_console)
             .with(layer_loki)
