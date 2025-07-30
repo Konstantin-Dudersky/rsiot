@@ -145,7 +145,6 @@
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 #![warn(rustdoc::bare_urls)]
 #![warn(missing_docs)]
-// #![feature(iterator_try_collect)]
 
 pub mod components_config;
 pub mod message;

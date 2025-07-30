@@ -14,6 +14,7 @@ mod component_executor;
 mod error;
 mod join_set_spawn;
 mod sleep;
+mod tokio_runtime_metrics;
 mod types;
 
 #[cfg(test)]
@@ -27,4 +28,5 @@ pub use component_executor::{ComponentExecutor, ComponentExecutorConfig};
 pub use error::ComponentError;
 pub use join_set_spawn::join_set_spawn;
 pub use sleep::sleep;
+pub use tokio_runtime_metrics::TokioRuntimeMetrics;
 pub use types::CmpResult;

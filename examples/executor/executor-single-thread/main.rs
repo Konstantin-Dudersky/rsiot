@@ -29,6 +29,7 @@ async fn main() {
         buffer_size: 100,
         fn_auth: |_, _| None,
         delay_publish: Duration::from_secs(0),
+        fn_tokio_metrics: |_| None,
     };
 
     local_set.spawn_local(async {

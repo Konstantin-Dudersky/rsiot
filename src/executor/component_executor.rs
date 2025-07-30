@@ -10,10 +10,12 @@ use crate::message::{system_messages::*, *};
 
 use super::{
     component::IComponent, error::ComponentError, join_set_spawn, sleep, types::FnAuth, Cache,
-    CmpInOut,
+    CmpInOut, TokioRuntimeMetrics,
 };
 
 const UPDATE_TTL_PERIOD: Duration = Duration::from_millis(1000);
+
+pub type FnTokioMetrics<TMsg> = fn(TokioRuntimeMetrics) -> Option<TMsg>;
 
 /// Запуск коллекции компонентов в работу
 pub struct ComponentExecutor<TMsg>
@@ -52,6 +54,11 @@ pub struct ComponentExecutorConfig<TMsg> {
     /// получают только новые сообщения. Эта задержка нужна для того, чтобы компоненты успели
     /// запуститься.
     pub delay_publish: Duration,
+
+    /// Функция создания сообщения с метриками `tokio`
+    ///
+    /// Заглушка: `|_| None`
+    pub fn_tokio_metrics: FnTokioMetrics<TMsg>,
 }
 
 impl<TMsg> ComponentExecutor<TMsg>
@@ -86,6 +93,17 @@ where
             "update_ttl_in_cache",
             task_update_ttl_in_cache_handle,
         );
+
+        // Запускаем задачу сбора метрик tokio
+        #[cfg(feature = "log_tokio")]
+        {
+            let task = TaskRuntimeMetrics::<TMsg> {
+                output: component_input_send,
+                period: Duration::from_millis(1000),
+                fn_tokio_metrics: config.fn_tokio_metrics,
+            };
+            join_set_spawn(&mut task_set, "tokio_metrics", task.spawn());
+        }
 
         let cmp_in_out = CmpInOut::new(
             component_input,
@@ -177,6 +195,39 @@ where
     }
     warn!("Internal task: stop");
     Ok(())
+}
+
+#[cfg(feature = "log_tokio")]
+struct TaskRuntimeMetrics<TMsg>
+where
+    TMsg: MsgDataBound,
+{
+    pub output: broadcast::Sender<Message<TMsg>>,
+    pub period: Duration,
+    pub fn_tokio_metrics: FnTokioMetrics<TMsg>,
+}
+#[cfg(feature = "log_tokio")]
+impl<TMsg> TaskRuntimeMetrics<TMsg>
+where
+    TMsg: MsgDataBound,
+{
+    pub async fn spawn(self) -> Result<(), ComponentError> {
+        let handle = tokio::runtime::Handle::current();
+        let runtime_monitor = tokio_metrics::RuntimeMonitor::new(&handle);
+        for metrics in runtime_monitor.intervals() {
+            tokio::time::sleep(self.period).await;
+            let metrics: TokioRuntimeMetrics = metrics.into();
+            let msg = (self.fn_tokio_metrics)(metrics);
+            let Some(msg) = msg else { continue };
+            let msg = Message::new_custom(msg);
+            self.output.send(msg).map_err(|err| {
+                let err =
+                    format!("Internal task of ComponentExecutor: send to channel error, {err:?}");
+                ComponentError::Initialization(err)
+            })?;
+        }
+        Ok(())
+    }
 }
 
 /// Обновить значения времени жизни сообщений. Удаляет сообщения, время которых истекло

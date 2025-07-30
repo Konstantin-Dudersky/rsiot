@@ -1,4 +1,6 @@
 #[cfg(feature = "cmp_timescaledb")]
+mod config_timescaledb;
+#[cfg(feature = "cmp_timescaledb")]
 mod message;
 
 #[cfg(feature = "cmp_timescaledb")]
@@ -11,35 +13,19 @@ async fn main() -> anyhow::Result<()> {
     use tokio::time::Duration;
 
     use rsiot::{
-        components::{
-            cmp_inject_periodic,
-            cmp_timescaledb::{self, Row},
-        },
+        components::cmp_inject_periodic,
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::Message,
     };
 
-    use message::Custom;
+    use message::Msg;
 
     let mut counter = 0;
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_millis(10),
         fn_periodic: move || {
-            let msg = Message::new_custom(Custom::Counter(counter));
+            let msg = Msg::Counter(counter);
             counter += 1;
             vec![msg]
-        },
-    };
-
-    let config_timescaledb = cmp_timescaledb::Config {
-        connection_string: "postgres://postgres:postgres@localhost:5432/db_data".into(),
-        max_connections: 5,
-        send_period: Duration::from_secs(2),
-        fn_input: |msg| {
-            let row = match msg {
-                Custom::Counter(v) => Row::new_simple("counter", "value", *v as f64),
-            };
-            Some(vec![row])
         },
     };
 
@@ -47,11 +33,12 @@ async fn main() -> anyhow::Result<()> {
         buffer_size: 1000,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
+        fn_tokio_metrics: |_| None,
     };
 
     ComponentExecutor::new(executor_config)
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
-        .add_cmp(cmp_timescaledb::Cmp::new(config_timescaledb))
+        .add_cmp(config_timescaledb::cmp())
         .wait_result()
         .await?;
 

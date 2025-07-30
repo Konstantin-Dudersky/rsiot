@@ -14,7 +14,7 @@ async fn main() -> anyhow::Result<()> {
     use rsiot::{
         components::{cmp_inject_periodic, cmp_logger},
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_message::*, Message},
+        message::example_message::*,
     };
 
     tracing_subscriber::fmt()
@@ -25,6 +25,7 @@ async fn main() -> anyhow::Result<()> {
         buffer_size: 100,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_secs(0),
+        fn_tokio_metrics: |_| None,
     };
 
     let logger_config = cmp_logger::Config {
@@ -37,7 +38,7 @@ async fn main() -> anyhow::Result<()> {
         period: Duration::from_secs(2),
         fn_periodic: move || {
             let msg = Custom::ValueInstantF64(counter);
-            let msg = Message::new_custom(msg);
+            let msg = msg;
             counter += 1.0;
             vec![msg]
         },

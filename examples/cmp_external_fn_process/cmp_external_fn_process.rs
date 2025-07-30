@@ -62,6 +62,7 @@ async fn main() {
         buffer_size: 100,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_secs(0),
+        fn_tokio_metrics: |_| None,
     };
 
     let task_set = LocalSet::new();

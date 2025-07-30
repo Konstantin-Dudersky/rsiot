@@ -254,8 +254,14 @@ impl LogConfig {
             .with(layer_webconsole_perf)
             .init();
 
+        #[cfg(feature = "log_console")]
+        info!("Logging in console started with filter: {:?}", self.filter);
+
         #[cfg(feature = "log_loki")]
-        info!("Logging in Loki started: {}", self.loki_url);
+        info!(
+            "Logging in Loki started. Loki url: {}; filter: {:?}",
+            self.loki_url, self.filter
+        );
 
         #[cfg(feature = "log_tokio")]
         info!(
@@ -263,11 +269,18 @@ impl LogConfig {
             self.tokio_console_addr
         );
 
+        #[cfg(feature = "log_webconsole")]
+        info!(
+            "Logging in webconsole started with filter: {:?}",
+            self.filter
+        );
+
         Ok(())
     }
 }
 
 /// Откуда брать строку с фильтрацией логов
+#[derive(Debug)]
 pub enum LogConfigFilter {
     /// Из переменной окружения `RUST_LOG`
     FromEnv,

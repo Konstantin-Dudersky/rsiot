@@ -34,6 +34,7 @@ fn main() -> anyhow::Result<()> {
     LogConfig {
         filter: LogConfigFilter::String("info"),
         tokio_console_addr: SocketAddrV4::new(Ipv4Addr::UNSPECIFIED, 6669),
+        loki_url: String::from("http://service_loki:3100"),
     }
     .run()
     .unwrap();
@@ -73,8 +74,8 @@ fn main() -> anyhow::Result<()> {
     let inject_periodic_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg1 = Message::new_custom(Custom::ValueInstantF64(counter));
-            let msg2 = Message::new_custom(Custom::ValueInstantBool(true));
+            let msg1 = Custom::ValueInstantF64(counter);
+            let msg2 = Custom::ValueInstantBool(true);
             counter += 1.0;
             vec![msg1, msg2]
         },
@@ -84,6 +85,7 @@ fn main() -> anyhow::Result<()> {
         buffer_size: 100,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_secs(0),
+        fn_tokio_metrics: |_| None,
     };
 
     #[cfg(not(feature = "single-thread"))]

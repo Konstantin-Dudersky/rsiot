@@ -90,6 +90,7 @@ tokio = { version = "^1.37.0", features = [
     "time",
     "tracing",
 ], optional = true }
+tokio-metrics = { version = "0.4.3", optional = true }
 tokio-modbus = { version = "0.11.0", default-features = false, features = [
     "tcp",
 ], optional = true }
@@ -174,16 +175,16 @@ env_vars = ["dep:clap", "dep:dotenvy", "dep:envy", "dep:toml", "dep:url"]
 executor = ["dep:async-trait", "dep:futures", "dep:tokio", "dep:tokio-util"]
 
 ## Настройка логгирования сообщений
-logging = [
-    "dep:console_error_panic_hook",
-    "dep:log",
-    "dep:openssl",
-    "dep:tokio",
-    "dep:tracing-loki",
-    "dep:tracing-subscriber",
-    "dep:tracing-web",
-    "dep:url",
-]
+# logging = [
+#     "dep:console_error_panic_hook",
+#     "dep:log",
+#     "dep:openssl",
+#     "dep:tokio",
+#     "dep:tracing-loki",
+#     "dep:tracing-subscriber",
+#     "dep:tracing-web",
+#     "dep:url",
+# ]
 
 ## Работа в однопоточном режиме
 single-thread = []
@@ -200,7 +201,11 @@ log_loki = [
     "dep:tracing-subscriber",
     "dep:url",
 ]
-log_tokio = ["dep:console-subscriber", "dep:tracing-subscriber"]
+log_tokio = [
+    "dep:console-subscriber",
+    "dep:tokio-metrics",
+    "dep:tracing-subscriber",
+]
 log_webconsole = [
     "dep:console_error_panic_hook",
     "dep:tracing-subscriber",
