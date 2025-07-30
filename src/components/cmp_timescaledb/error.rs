@@ -1,5 +1,3 @@
-use crate::components::shared_tasks;
-
 #[allow(missing_docs)]
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -11,9 +9,6 @@ pub enum Error {
 
     #[error("cmp_timescaledb | TaskInputEnd")]
     TaskInputEnd,
-
-    #[error("cmp_timescaledb | {0}")]
-    TaskMsgBusToMpsc(shared_tasks::msgbus_to_mpsc::Error),
 
     #[error("cmp_timescaledb | TaskSendToDatabase")]
     TaskSendToDatabase,

@@ -9,6 +9,7 @@ pub mod mpsc_to_broadcast;
 pub mod mpsc_to_msgbus;
 pub mod msgbus_to_broadcast;
 pub mod msgbus_to_mpsc;
+pub mod msgbus_to_mpsc_unbounded;
 
 #[cfg(any(
     feature = "cmp_websocket_client",

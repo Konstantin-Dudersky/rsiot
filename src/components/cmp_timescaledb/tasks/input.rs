@@ -1,6 +1,6 @@
 use tokio::sync::mpsc;
 
-use crate::message::{Message, MsgDataBound};
+use crate::{executor::CmpInOut, message::MsgDataBound};
 
 use super::{
     super::config::FnInput, send_to_database_message::SendToDatabaseMessage, Error, Result,
@@ -10,7 +10,7 @@ pub struct Input<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    pub input: mpsc::Receiver<Message<TMsg>>,
+    pub input: CmpInOut<TMsg>,
     pub output: mpsc::Sender<SendToDatabaseMessage>,
     pub fn_input: FnInput<TMsg>,
 }
@@ -20,7 +20,7 @@ where
     TMsg: MsgDataBound,
 {
     pub async fn spawn(mut self) -> Result<()> {
-        while let Some(msg) = self.input.recv().await {
+        while let Ok(msg) = self.input.recv_input().await {
             let Some(msg) = msg.get_custom_data() else {
                 continue;
             };
