@@ -1,16 +1,16 @@
 services:
-  timescaledb:
+  service_timescaledb:
     command: postgres
       -c config_file=/etc/postgresql/postgresql.conf
       -c hba_file=/etc/postgresql/pg_hba.conf
-    container_name: timescaledb
+    container_name: service_timescaledb
     healthcheck:
       test: pg_isready -d db_prod
       interval: 30s
       timeout: 60s
       retries: 5
       start_period: 80s
-    hostname: timescaledb
+    hostname: service_timescaledb
     image: timescale/timescaledb:2.21.1-pg17 # https://hub.docker.com/r/timescale/timescaledb/tags
     networks:
       - network_internal

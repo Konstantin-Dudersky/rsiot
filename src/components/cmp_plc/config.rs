@@ -8,6 +8,8 @@ use super::plc::{FunctionBlockBase, IFunctionBlock};
 
 type TFnExport<TMsg, I, Q, S> = fn(&I, &Q, &S) -> Option<Vec<Message<TMsg>>>;
 
+// ANCHOR: config_1
+
 /// Конфигурация компонента ПЛК
 #[derive(Clone)]
 pub struct Config<TMsg, I, Q, S>
@@ -35,6 +37,8 @@ where
     /// ```
     pub fn_input: fn(&mut I, &Message<TMsg>) -> (),
 
+    // ANCHOR: config_1
+    // ANCHOR: config_2
     /// Функция преобразования выходной структуры ПЛК в исходящие сообщения.
     ///
     /// **Примеры**
@@ -65,6 +69,7 @@ where
     /// Настройки сохранения состояния и восстановления при запуске
     pub retention: Option<ConfigRetention<TMsg, I, Q, S>>,
 }
+// ANCHOR: config_2
 
 impl<TMsg, I, Q, S> Default for Config<TMsg, I, Q, S>
 where

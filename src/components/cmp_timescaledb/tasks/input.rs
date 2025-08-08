@@ -2,16 +2,14 @@ use tokio::sync::mpsc;
 
 use crate::{executor::CmpInOut, message::MsgDataBound};
 
-use super::{
-    super::config::FnInput, send_to_database_message::SendToDatabaseMessage, Error, Result,
-};
+use super::{super::config::FnInput, Error, InnerMessage, Result};
 
 pub struct Input<TMsg>
 where
     TMsg: MsgDataBound,
 {
     pub input: CmpInOut<TMsg>,
-    pub output: mpsc::Sender<SendToDatabaseMessage>,
+    pub output: mpsc::Sender<InnerMessage>,
     pub fn_input: FnInput<TMsg>,
 }
 
@@ -27,7 +25,7 @@ where
             let items = (self.fn_input)(&msg);
             let Some(items) = items else { continue };
             self.output
-                .send(SendToDatabaseMessage::Rows(items))
+                .send(InnerMessage::Rows(items))
                 .await
                 .map_err(|_| Error::TokioMpsc)?;
         }

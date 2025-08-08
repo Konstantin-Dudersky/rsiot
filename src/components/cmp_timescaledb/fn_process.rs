@@ -40,6 +40,7 @@ where
     let connection_string = Url::parse(&config.connection_string)?;
 
     let (ch_tx_input_to_database, ch_rx_input_to_database) = mpsc::channel(1000);
+    let (ch_tx_database_to_results, ch_rx_database_to_results) = mpsc::channel(10);
 
     let mut task_set = JoinSet::new();
 
@@ -58,12 +59,22 @@ where
 
     let task = tasks::SendToDatabase {
         input: ch_rx_input_to_database,
+        output: ch_tx_database_to_results,
         connection_string,
         max_connections: config.max_connections,
     };
     join_set_spawn(
         &mut task_set,
         "cmp_timescaledb | send_to_database",
+        task.spawn(),
+    );
+
+    let task = tasks::CollectResults {
+        input: ch_rx_database_to_results,
+    };
+    join_set_spawn(
+        &mut task_set,
+        "cmp_timescaledb | collect_results",
         task.spawn(),
     );
 

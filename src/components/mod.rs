@@ -69,7 +69,11 @@ pub mod cmp_esp_wifi;
 pub mod cmp_external_fn_process;
 
 #[cfg(feature = "cmp_filesystem")]
-#[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
 pub mod cmp_filesystem;
 
 #[cfg(feature = "cmp_http_client")]

@@ -4,6 +4,7 @@ use crate::message::MsgDataBound;
 
 use super::Algs;
 
+// ANCHOR: Config
 /// Конфигурация компонента cmp_math
 pub struct Config<TMsg, TIntMsg>
 where
@@ -27,6 +28,9 @@ where
     /// Алгоритмы математической обработки
     pub algs: Vec<Algs<TIntMsg>>,
 }
+// ANCHOR: Config
 
+// ANCHOR: IntMsgBound
 /// Типаж для внутренних сообщений
 pub trait IntMsgBound: Clone + Copy + Debug + Send + Sync {}
+// ANCHOR: IntMsgBound

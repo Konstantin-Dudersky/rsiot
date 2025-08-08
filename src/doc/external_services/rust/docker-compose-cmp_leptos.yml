@@ -1,12 +1,12 @@
 services:
   frontend:
-    container_name: frontend
-    hostname: frontend
-    image: nginx
+    container_name: service_frontend
+    hostname: service_frontend
+    image: nginx:1.28
     networks:
       - network_internal
     ports:
-      - "8000:80"
+      - "80:80"
     profiles:
       - target
     volumes:
@@ -15,4 +15,3 @@ services:
 
 networks:
   network_internal:
-# TODO - healtcheck

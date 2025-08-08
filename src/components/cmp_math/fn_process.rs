@@ -73,7 +73,11 @@ where
                     fn_output,
                     fn_input_window,
                 };
-                join_set_spawn(&mut task_set, "cmp_math", task.spawn());
+                join_set_spawn(
+                    &mut task_set,
+                    "cmp_math | last_over_time_window",
+                    task.spawn(),
+                );
             }
             Algs::SimpleMovingAverage {
                 fn_input_value,
@@ -87,7 +91,11 @@ where
                     fn_input_count,
                     fn_output,
                 };
-                join_set_spawn(&mut task_set, "cmp_math", task.spawn());
+                join_set_spawn(
+                    &mut task_set,
+                    "cmp_math | simple_moving_average",
+                    task.spawn(),
+                );
             }
         };
     }

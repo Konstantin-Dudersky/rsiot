@@ -10,6 +10,7 @@ pub enum Algs<TIntMsg>
 where
     TIntMsg: IntMsgBound,
 {
+    // ANCHOR: LastOverTimeWindow
     /// Выборка последних значений в каждом периоде времени
     LastOverTimeWindow {
         /// Входящие сообщения
@@ -22,6 +23,8 @@ where
         /// Исходящие сообщения
         fn_output: fn(f64) -> TIntMsg,
     },
+    // ANCHOR: LastOverTimeWindow
+    // ANCHOR: SimpleMovingAverage
     /// Простое скользящее среднее
     SimpleMovingAverage {
         /// Входящие сообщения
@@ -33,4 +36,5 @@ where
         /// Исходящие сообщения
         fn_output: fn(f64) -> TIntMsg,
     },
+    // ANCHOR: SimpleMovingAverage
 }

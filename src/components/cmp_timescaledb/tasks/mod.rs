@@ -1,8 +1,15 @@
+mod collect_results;
+mod inner_message;
 mod input;
 mod periodic;
 mod send_to_database;
-mod send_to_database_message;
 
-use super::{Error, Result, Row};
+use {
+    super::{Error, Result, Row},
+    inner_message::InnerMessage,
+};
 
-pub use {input::Input, periodic::Periodic, send_to_database::SendToDatabase};
+pub use {
+    collect_results::CollectResults, input::Input, periodic::Periodic,
+    send_to_database::SendToDatabase,
+};

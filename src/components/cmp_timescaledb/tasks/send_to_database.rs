@@ -1,14 +1,18 @@
+use std::time::Duration;
+
 use sqlx::{postgres::PgPoolOptions, query, Pool, Postgres};
 use time::format_description::well_known::Iso8601;
-use tokio::sync::mpsc;
-use tokio_util::task::TaskTracker;
+use tokio::{sync::mpsc, task::JoinHandle};
 use tracing::{trace, warn};
 use url::Url;
 
-use super::{send_to_database_message::SendToDatabaseMessage, Error, Result, Row};
+use crate::executor::CheckCapacity;
+
+use super::{Error, InnerMessage, Result, Row};
 
 pub struct SendToDatabase {
-    pub input: mpsc::Receiver<SendToDatabaseMessage>,
+    pub input: mpsc::Receiver<InnerMessage>,
+    pub output: mpsc::Sender<JoinHandle<Result<()>>>,
     pub connection_string: Url,
     pub max_connections: u32,
 }
@@ -22,16 +26,22 @@ impl SendToDatabase {
             .connect(self.connection_string.as_str())
             .await?;
 
-        let task_tracker = TaskTracker::new();
-
         while let Some(msg) = self.input.recv().await {
             match msg {
-                SendToDatabaseMessage::Rows(rows) => cache.extend(rows),
-                SendToDatabaseMessage::SendByTimer => {
+                InnerMessage::Rows(rows) => cache.extend(rows),
+                InnerMessage::SendByTimer => {
                     let sql = prepare_sql_statement(&cache)?;
                     let task = execute_sql(sql, pool.clone());
-                    task_tracker.spawn(task);
                     cache.clear();
+                    let task = tokio::task::Builder::new()
+                        .name("cmp_timescaledb | execute_sql")
+                        .spawn(task)
+                        .map_err(Error::Spawn)?;
+                    self.output
+                        .check_capacity(0.2, "ch_tx_database_to_results")
+                        .send_timeout(task, Duration::from_secs(5))
+                        .await
+                        .map_err(|_| Error::TokioMpsc)?;
                 }
             }
         }
@@ -84,7 +94,7 @@ mod tests {
     use super::{super::super::AggType, *};
 
     #[test]
-    fn test1() {
+    fn test1() -> anyhow::Result<()> {
         let time1 = datetime!(2025-07-23 10:00:00 +3);
         let time2 = datetime!(2025-07-23 10:00:01 +3);
         let rows = vec![
@@ -108,7 +118,7 @@ mod tests {
             },
         ];
 
-        let test_sql = prepare_sql_statement(&rows).unwrap();
+        let test_sql = prepare_sql_statement(&rows)?;
         let test_sql = test_sql
             .split('\n')
             .map(|line| line.trim())
@@ -118,5 +128,6 @@ mod tests {
         let correct_sql = "INSERT INTO raw VALUES ('2025-07-23T10:00:00.000000000+03:00', 'test_entity', 'test_attr', 1.23, 'Curr', NULL, ARRAY[]::AggType[]), ('2025-07-23T10:00:01.000000000+03:00', 'test_entity', 'test_attr', 4.56, 'Curr', NULL, ARRAY[]::AggType[]) ON CONFLICT (time, entity, attr, agg) DO UPDATE SET value = excluded.value, aggts = excluded.aggts, aggnext = excluded.aggnext;";
 
         assert_eq!(test_sql, correct_sql);
+        Ok(())
     }
 }

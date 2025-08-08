@@ -45,7 +45,9 @@ where
         Ok(buffer) => buffer,
         Err(err) => {
             warn!("Read file error: {:?}, maybe buffer struct changed", err);
-            TBuffer::default()
+            let buffer = TBuffer::default();
+            write_to_file(&config.filename, &serde_alg, &buffer).await?;
+            buffer
         }
     };
 

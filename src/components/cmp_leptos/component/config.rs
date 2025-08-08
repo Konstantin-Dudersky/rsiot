@@ -6,6 +6,7 @@ use crate::message::{Message, MsgDataBound};
 
 use super::StoreBound;
 
+// ANCHOR: Config
 /// Конфигурация компонента cmp_leptos
 pub struct Config<TMsg, TInputStore, TOutputStore>
 where
@@ -34,3 +35,4 @@ where
     /// Функция проверяет изменения в хранилищe Store и отправляет исходящие сообщения
     pub fn_output: fn(Store<TOutputStore>, mpsc::Sender<TMsg>),
 }
+// ANCHOR: Config

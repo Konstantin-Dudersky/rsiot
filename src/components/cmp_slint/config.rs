@@ -8,6 +8,7 @@ use crate::message::MsgDataBound;
 pub type FnInput<TMsg, TMainWindow> = fn(TMsg, TMainWindow);
 pub type FnOutput<TMsg, TMainWindow> = fn(TMainWindow, mpsc::Sender<TMsg>);
 
+// ANCHOR: Config
 /// Настройки компонента cmp_slint
 pub struct Config<TMsg, TMainWindow>
 where
@@ -56,6 +57,7 @@ where
     /// Период фильтрации исходящих сообщений
     pub output_period: Duration,
 }
+// ANCHOR: Config
 
 impl<TMsg, TMainWindow> Clone for Config<TMsg, TMainWindow>
 where

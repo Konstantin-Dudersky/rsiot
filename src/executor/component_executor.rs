@@ -14,6 +14,7 @@ use super::{
 };
 
 const UPDATE_TTL_PERIOD: Duration = Duration::from_millis(1000);
+const RUNTIME_METRICS_PERIOD: Duration = Duration::from_millis(100);
 
 pub type FnTokioMetrics<TMsg> = fn(TokioRuntimeMetrics) -> Option<TMsg>;
 
@@ -99,7 +100,7 @@ where
         {
             let task = TaskRuntimeMetrics::<TMsg> {
                 output: component_input_send,
-                period: Duration::from_millis(1000),
+                period: RUNTIME_METRICS_PERIOD,
                 fn_tokio_metrics: config.fn_tokio_metrics,
             };
             join_set_spawn(&mut task_set, "tokio_metrics", task.spawn());

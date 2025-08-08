@@ -33,9 +33,13 @@ where
     TMsg: MsgDataBound,
 {
     while let Ok(msg) = in_out.recv_input().await {
+        let Some(msg) = msg.get_custom_data() else {
+            continue;
+        };
         let msgs = derive_item.process(&msg);
         let Some(msgs) = msgs else { continue };
         for msg in msgs {
+            let msg = Message::new_custom(msg);
             in_out
                 .send_output(msg)
                 .await

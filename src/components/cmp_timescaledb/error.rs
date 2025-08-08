@@ -19,6 +19,9 @@ pub enum Error {
     #[error("cmp_timescaledb | TokioMpsc")]
     TokioMpsc,
 
+    #[error("cmp_timescaledb | Error spawning task")]
+    Spawn(std::io::Error),
+
     #[error(transparent)]
     Format(#[from] time::error::Format),
 }

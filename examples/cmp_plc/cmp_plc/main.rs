@@ -35,13 +35,12 @@ async fn main() -> anyhow::Result<()> {
     let config_inject_periodic = cmp_inject_periodic::Config {
         period: Duration::from_secs(10),
         fn_periodic: move || {
-            let msg = Message::new_custom(Data::InjectPeriodic(true));
+            let msg = Data::InjectPeriodic(true);
             vec![msg]
         },
     };
 
     // cmp_plc -------------------------------------------------------------------------------------
-
     let plc_config = cmp_plc::Config {
         fn_cycle_init: |_input: &mut fb2_example::I| {},
         fn_input: |input: &mut fb2_example::I, msg: &Message<Data>| {
@@ -68,6 +67,7 @@ async fn main() -> anyhow::Result<()> {
         buffer_size: 100,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
+        fn_tokio_metrics: |_| None,
     };
 
     ComponentExecutor::<message::Data>::new(executor_config)

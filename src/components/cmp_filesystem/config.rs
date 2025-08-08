@@ -14,6 +14,7 @@ pub type FnInput<TMsg, TBuffer> = fn(&TMsg, &TBuffer) -> Option<TBuffer>;
 /// Функция преобразования текстовых файлов в сообщения
 pub type FnOutput<TMsg, TBuffer> = fn(&TBuffer) -> Vec<TMsg>;
 
+// ANCHOR: Config
 /// Конфигурация cmp_filesystem
 #[derive(Clone)]
 pub struct Config<TMsg, TBuffer>
@@ -24,7 +25,7 @@ where
     /// Алгоритм сериализации/десериализации
     pub serde_alg: SerdeAlgKind,
 
-    /// Папка, в которой хранятся файлы
+    /// Название файла
     pub filename: String,
 
     /// Частота вызова функции создания исходящих сообщений
@@ -36,7 +37,9 @@ where
     /// Функция преобразования текстовых файлов в сообщения
     pub fn_output: FnOutput<TMsg, TBuffer>,
 }
+// ANCHOR: Config
 
+// ANCHOR: CallFnOutputKind
 /// Частота вызова функции создания исходящих сообщений
 #[derive(Clone, Debug)]
 pub enum CallFnOutputKind {
@@ -45,15 +48,18 @@ pub enum CallFnOutputKind {
     /// Каждый раз при изменении буфера
     Always,
 }
+// ANCHOR: CallFnOutputKind
 
+// ANCHOR: BufferBound
 /// Ограничения на структуру буфера
 ///
 /// На структуре необходимо релизовать:
 ///
 /// ```no_run
-/// #[derive(Clone, Debug, Default, Deserialize, Serialize)]
+/// #[derive(Clone, Debug, Default, Deserialize,PartialEq, Serialize)]
 /// ```
 pub trait BufferBound:
-    Clone + Debug + Default + DeserializeOwned + Send + Serialize + Sync
+    Clone + Debug + Default + DeserializeOwned + PartialEq + Send + Serialize + Sync
 {
 }
+// ANCHOR: BufferBound

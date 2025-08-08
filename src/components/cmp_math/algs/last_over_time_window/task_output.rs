@@ -27,7 +27,7 @@ where
 
             let int_msg = (self.fn_output)(last_value);
             self.output.send(int_msg).await.map_err(|_| {
-                Error::AlgTaskUnexpectedEnd("AlgLastOverTimeWindow - TaskInput".into())
+                Error::AlgTaskUnexpectedEnd("AlgLastOverTimeWindow - TaskOutput".into())
             })?;
 
             sleep(window).await;

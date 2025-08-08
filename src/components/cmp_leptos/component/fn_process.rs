@@ -65,7 +65,7 @@ where
     while let Ok(msg) = msg_bus.recv_input().await {
         (fn_input)(&msg, &input_store);
     }
-    Ok(())
+    Ok(()) // TODO - генерация ошибок
 }
 
 async fn task_output<TMsg, TOutputStore>(
@@ -86,7 +86,7 @@ where
         msg_bus.send_output(msg).await.map_err(Error::CmpOutput)?;
     }
 
-    Ok(())
+    Ok(()) // TODO - генерация ошибок
 }
 
 /// Пробуем найти токен в LocalStorage.

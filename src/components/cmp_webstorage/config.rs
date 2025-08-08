@@ -1,10 +1,11 @@
 use crate::message::*;
 
+// ANCHOR: Config
 pub type FnInput<TMsg> = fn(Message<TMsg>) -> Option<Message<TMsg>>;
 
 pub type FnOutput<TMsg> = fn(Message<TMsg>) -> Option<Message<TMsg>>;
 
-/// Конфигуреция cmp_webstorage
+/// Конфигурация cmp_webstorage
 pub struct Config<TMsg>
 where
     TMsg: MsgDataBound,
@@ -39,6 +40,7 @@ where
     /// ```
     pub default_messages: Vec<Message<TMsg>>,
 }
+// ANCHOR: Config
 
 impl<TMsg> Default for Config<TMsg>
 where
@@ -54,6 +56,7 @@ where
     }
 }
 
+// ANCHOR: ConfigStorageKind
 /// Вид хранилища - localstorage или sessionStorage
 #[derive(Clone, Copy, Debug)]
 pub enum ConfigStorageKind {
@@ -62,3 +65,4 @@ pub enum ConfigStorageKind {
     /// Сохраняет данные. При перезапуске браузера данные теряются
     SessionStorage,
 }
+// ANCHOR: ConfigStorageKind

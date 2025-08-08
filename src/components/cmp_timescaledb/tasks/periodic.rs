@@ -4,10 +4,10 @@ use tokio::sync::mpsc;
 
 use crate::executor::sleep;
 
-use super::{send_to_database_message::SendToDatabaseMessage, Error, Result};
+use super::{Error, InnerMessage, Result};
 
 pub struct Periodic {
-    pub output: mpsc::Sender<SendToDatabaseMessage>,
+    pub output: mpsc::Sender<InnerMessage>,
     pub period: Duration,
 }
 
@@ -17,7 +17,7 @@ impl Periodic {
             sleep(self.period).await;
 
             self.output
-                .send(SendToDatabaseMessage::SendByTimer)
+                .send(InnerMessage::SendByTimer)
                 .await
                 .map_err(|_| Error::TokioMpsc)?;
         }

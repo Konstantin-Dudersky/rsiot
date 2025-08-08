@@ -69,7 +69,13 @@
     {
       "name": "armv7-unknown-linux-gnueabihf",
       "toolchain": "+stable",
-      "features": ["executor", "logging", "cmp_linux_spi_master", "cmp_timescaledb"],
+      "features": [
+        "executor",
+        "logging",
+        "cmp_filesystem",
+        "cmp_linux_spi_master",
+        "cmp_timescaledb"
+      ],
       "add_feat": ["", "single-thread"]
     },
     {

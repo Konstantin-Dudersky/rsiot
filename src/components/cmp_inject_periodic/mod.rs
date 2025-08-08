@@ -21,7 +21,7 @@ where
 
     /// Функция для генерирования сообщений
     ///
-    /// Тип данных - `FnMut() -> Vec<Message<TMsg>>`
+    /// Тип данных - `FnMut() -> Vec<TMsg>`
     pub fn_periodic: TFnPeriodic,
 }
 

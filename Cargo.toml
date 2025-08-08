@@ -449,8 +449,8 @@ name = "cmp_plc"
 path = "examples/cmp_plc/cmp_plc/main.rs"
 
 [[example]]
-name = "example_doc"
-path = "examples/cmp_plc/example_doc/main.rs"
+name = "cmp_plc_minimal"
+path = "examples/cmp_plc/minimal/main.rs"
 
 [[example]]
 name = "config_plc_template"
