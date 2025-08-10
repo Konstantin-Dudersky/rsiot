@@ -96,7 +96,10 @@ where
     {
         let mut lock = input_msg_cache.write().await;
         for msg in lock.values() {
-            (config.fn_input)(fb_main_input, msg);
+            let Some(msg) = msg.get_custom_data() else {
+                continue;
+            };
+            (config.fn_input)(fb_main_input, &msg);
         }
         lock.clear();
     }
@@ -108,5 +111,6 @@ where
         fb_main.call(fb_main_input);
         msgs = (config.fn_output)(&fb_main.q);
     }
+    let msgs = msgs.into_iter().map(Message::new_custom).collect();
     Ok(msgs)
 }

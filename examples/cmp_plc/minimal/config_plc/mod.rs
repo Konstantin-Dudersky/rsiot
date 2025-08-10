@@ -7,4 +7,5 @@ mod retention;
 
 use super::messages;
 
+pub use cmp::cmp;
 pub use logic::fb_main;

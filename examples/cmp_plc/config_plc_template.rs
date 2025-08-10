@@ -50,7 +50,7 @@ fn main() {
 
     use std::time::Duration;
 
-    use rsiot::{components::cmp_plc, message::Message};
+    use rsiot::components::cmp_plc;
 
     pub fn config() -> cmp_plc::Config<Custom, fb_main::I, fb_main::Q, fb_main::S> {
         cmp_plc::Config {
@@ -65,14 +65,12 @@ fn main() {
 
     fn fn_cycle_init(input: &mut fb_main::I) {}
 
-    fn fn_input(input: &mut fb_main::I, msg: &Message<Custom>) {}
+    fn fn_input(input: &mut fb_main::I, msg: &Custom) {}
 
-    fn fn_output(output: &fb_main::Q) -> Vec<Message<Custom>> {
+    fn fn_output(output: &fb_main::Q) -> Vec<Custom> {
         let msgs = vec![];
 
-        msgs.into_iter()
-            .map(|m| Message::new_custom(Custom::ExampleGroup(m)))
-            .collect()
+        msgs.into_iter().map(Custom::ExampleGroup).collect()
     }
 
     // ANCHOR_END: config_plc_template

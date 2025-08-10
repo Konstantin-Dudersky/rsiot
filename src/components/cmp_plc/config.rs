@@ -35,7 +35,7 @@ where
     /// ```rust
     #[doc = include_str!("./tests/config_fn_input.rs")]
     /// ```
-    pub fn_input: fn(&mut I, &Message<TMsg>) -> (),
+    pub fn_input: fn(&mut I, &TMsg) -> (),
 
     // ANCHOR: config_1
     // ANCHOR: config_2
@@ -46,7 +46,7 @@ where
     /// ```rust
     /// fn_output: |output: &fb_main::Q| vec![]
     /// ```
-    pub fn_output: fn(&Q) -> Vec<Message<TMsg>>,
+    pub fn_output: fn(&Q) -> Vec<TMsg>,
 
     /// Главный функциональный блок ПЛК
     ///

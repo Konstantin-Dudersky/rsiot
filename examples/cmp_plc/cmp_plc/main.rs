@@ -43,14 +43,9 @@ async fn main() -> anyhow::Result<()> {
     // cmp_plc -------------------------------------------------------------------------------------
     let plc_config = cmp_plc::Config {
         fn_cycle_init: |_input: &mut fb2_example::I| {},
-        fn_input: |input: &mut fb2_example::I, msg: &Message<Data>| {
-            let Some(msg) = msg.get_custom_data() else {
-                return;
-            };
-            match msg {
-                Data::OutputValue(_) => (),
-                Data::InjectPeriodic(_value) => input.resettable = Resettable::new(true),
-            }
+        fn_input: |input: &mut fb2_example::I, msg: &Data| match msg {
+            Data::OutputValue(_) => (),
+            Data::InjectPeriodic(_value) => input.resettable = Resettable::new(true),
         },
         fn_output: |_data: &fb2_example::Q| vec![],
         fb_main: fb2_example::FB::new(),
