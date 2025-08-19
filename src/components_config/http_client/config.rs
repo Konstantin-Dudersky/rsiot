@@ -4,6 +4,7 @@ use crate::{message::MsgDataBound, serde_utils::SerdeAlgKind};
 
 use super::{request_input::RequestInput, request_periodic::RequestPeriodic};
 
+// ANCHOR: Config
 /// Параметры компонента http-client
 #[derive(Clone, Debug)]
 pub struct Config<TMessage>
@@ -28,6 +29,7 @@ where
     /// Периодические запросы
     pub requests_periodic: Vec<Box<dyn RequestPeriodic<TMessage>>>,
 }
+// ANCHOR: Config
 
 #[cfg(test)]
 mod tests {

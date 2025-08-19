@@ -3,10 +3,10 @@ use tracing::trace;
 
 use super::{Buffer, BufferBound, Error, RequestResponseBound};
 
-pub struct InitRequest<TFieldbusRequest, TBuffer> {
+pub struct InitRequest<TRequest, TBuffer> {
     pub buffer: Buffer<TBuffer>,
-    pub fn_init_requests: fn(&TBuffer) -> Vec<TFieldbusRequest>,
-    pub ch_tx_device_to_fieldbus: mpsc::Sender<TFieldbusRequest>,
+    pub fn_init_requests: fn(&TBuffer) -> Vec<TRequest>,
+    pub ch_tx_request: mpsc::Sender<TRequest>,
 }
 
 impl<TFieldbusRequest, TBuffer> InitRequest<TFieldbusRequest, TBuffer>
@@ -22,7 +22,7 @@ where
 
         for request in requests {
             trace!("Request: {:?}", request);
-            self.ch_tx_device_to_fieldbus
+            self.ch_tx_request
                 .send(request)
                 .await
                 .map_err(|_| Error::TokioSyncMpsc)?;

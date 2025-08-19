@@ -30,6 +30,9 @@ impl SendToDatabase {
             match msg {
                 InnerMessage::Rows(rows) => cache.extend(rows),
                 InnerMessage::SendByTimer => {
+                    if cache.is_empty() {
+                        continue;
+                    }
                     let sql = prepare_sql_statement(&cache)?;
                     let task = execute_sql(sql, pool.clone());
                     cache.clear();

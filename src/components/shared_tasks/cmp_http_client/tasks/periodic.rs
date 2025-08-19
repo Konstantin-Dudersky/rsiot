@@ -10,7 +10,7 @@ use crate::{
 
 use super::{Error, Result};
 
-pub struct PeriodicRequest<TMsg>
+pub struct Periodic<TMsg>
 where
     TMsg: MsgDataBound,
 {
@@ -18,7 +18,7 @@ where
     pub request_periodic: Box<dyn RequestPeriodic<TMsg>>,
 }
 
-impl<TMsg> PeriodicRequest<TMsg>
+impl<TMsg> Periodic<TMsg>
 where
     TMsg: MsgDataBound,
 {

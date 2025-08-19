@@ -25,7 +25,7 @@ impl HttpClient {
         // Парсим url
         let base_url = Url::parse(&self.base_url).map_err(|err| {
             let err = err.to_string();
-            let err = format!("Cannot parse url: {}", err);
+            let err = format!("Cannot parse url: {err}");
             Error::TaskEndHttpClient(err)
         })?;
 

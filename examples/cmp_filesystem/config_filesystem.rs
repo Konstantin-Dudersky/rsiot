@@ -25,7 +25,7 @@ pub fn new() -> rsiot::executor::Component<Config<Msg, Buffer>, Msg> {
     Cmp::new(config_filesystem)
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct Buffer {
     pub counter: u64,
     pub internal_struct: InternalStruct,
@@ -33,7 +33,7 @@ pub struct Buffer {
 
 impl BufferBound for Buffer {}
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct InternalStruct {
     pub field: f64,
 }

@@ -2,6 +2,7 @@
 
 use serde::{de::DeserializeOwned, Serialize};
 
+// ANCHOR: WebsocketMessage
 /// Типаж для сообщение, пересылаемых по вебсокету
 ///
 /// Необходимо реализовать на типе перечисления. Можно реализовать автоматически:
@@ -13,3 +14,4 @@ pub trait WebsocketMessage:
     Clone + std::fmt::Debug + DeserializeOwned + Into<&'static str> + Send + Serialize + Sync
 {
 }
+// ANCHOR: WebsocketMessage

@@ -9,7 +9,7 @@ pub struct PeriodicRequest<TRequest, TBuffer> {
     pub buffer: Buffer<TBuffer>,
     pub period: Duration,
     pub fn_request: fn(&TBuffer) -> anyhow::Result<Vec<TRequest>>,
-    pub ch_tx_device_to_fieldbus: mpsc::Sender<TRequest>,
+    pub ch_tx_request: mpsc::Sender<TRequest>,
 }
 
 impl<TRequest, TBuffer> PeriodicRequest<TRequest, TBuffer>
@@ -33,7 +33,7 @@ where
 
             for request in requests {
                 trace!("Request: {:?}", request);
-                self.ch_tx_device_to_fieldbus
+                self.ch_tx_request
                     .send(request)
                     .await
                     .map_err(|_| Error::TokioSyncMpsc)?;

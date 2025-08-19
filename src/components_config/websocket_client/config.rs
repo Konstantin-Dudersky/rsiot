@@ -11,6 +11,7 @@ pub type FnClientToServer<TMsg, TClientToServer> = fn(&TMsg) -> Option<TClientTo
 /// Преобразование полученного от сервера текста в исходящие сообщения
 pub type FnServerToClient<TMsg, TServerToClient> = fn(TServerToClient) -> Vec<TMsg>;
 
+// ANCHOR: Config
 /// Настройки Websocket-клиента
 #[derive(Clone, Debug)]
 pub struct Config<TMsg, TServerToClient, TClientToServer>
@@ -40,6 +41,7 @@ where
     /// Примеры см. в тестах
     pub fn_connection_state: fn(bool) -> Option<Message<TMsg>>,
 }
+// ANCHOR: Config
 
 impl<TMsg, TServerToClient, TClientToServer> Default
     for Config<TMsg, TServerToClient, TClientToServer>

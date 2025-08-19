@@ -13,6 +13,7 @@ use super::{
     RequestKind,
 };
 
+// ANCHOR: RequestInputConfig
 /// Параметры запроса на основе входящего потока сообщений
 #[derive(Clone, Debug)]
 pub struct RequestInputConfig<TMsg, TServerToClient, TClientToServer> {
@@ -29,6 +30,7 @@ pub struct RequestInputConfig<TMsg, TServerToClient, TClientToServer> {
     /// Функция обработки ошибки ответа
     pub fn_process_response_error: FnProcessResponseError<TMsg>,
 }
+// ANCHOR: RequestInputConfig
 
 /// Трейт для реализации запросов на основе входящего потока сообщений
 pub trait RequestInput<TMsg>

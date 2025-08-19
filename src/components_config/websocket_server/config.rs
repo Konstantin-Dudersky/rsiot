@@ -2,6 +2,7 @@ use crate::{message::Message, serde_utils::SerdeAlgKind};
 
 use super::WebsocketMessage;
 
+// ANCHOR: Config
 /// Конфигурация Websocket-сервера
 #[derive(Clone, Debug)]
 pub struct Config<TMsg, TServerToClient, TClientToServer>
@@ -21,6 +22,7 @@ where
     /// Функция перечисления, пересылаемых по вебсокету, в исходящий поток сообщений
     pub fn_client_to_server: FnOutput<TMsg, TClientToServer>,
 }
+// ANCHOR: Config
 
 /// Функция преобразования входящих сообщений в перечисление, пересылаемое по вебсокету
 pub type FnInput<TMsg, TServerToClient> = fn(&Message<TMsg>) -> Option<TServerToClient>;

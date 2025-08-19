@@ -10,6 +10,7 @@ use crate::{
     message::{AuthPermissions, Message, MsgDataBound},
 };
 
+// ANCHOR: Config
 /// Настройки компонента логгирования
 #[derive(Clone, Debug)]
 pub struct Config<TMsg> {
@@ -39,6 +40,7 @@ pub struct Config<TMsg> {
     /// ```
     pub fn_input: fn(Message<TMsg>) -> anyhow::Result<Option<String>>,
 }
+// ANCHOR: Config
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]

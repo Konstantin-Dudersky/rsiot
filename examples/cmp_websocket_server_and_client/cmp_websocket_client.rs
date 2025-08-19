@@ -41,10 +41,10 @@ async fn main() -> anyhow::Result<()> {
             };
             let text = match msg {
                 ClientMessages::ServerCounter(counter) => {
-                    format!("Counter from server: {}", counter)
+                    format!("Counter from server: {counter}")
                 }
                 ClientMessages::ConnectionState(state) => {
-                    format!("Connection state: {:?}", state)
+                    format!("Connection state: {state:?}")
                 }
                 _ => return Ok(None),
             };
@@ -56,7 +56,7 @@ async fn main() -> anyhow::Result<()> {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg = Message::new_custom(ClientMessages::CounterFromClient(counter));
+            let msg = ClientMessages::CounterFromClient(counter);
             counter = counter.wrapping_add(1);
             vec![msg]
         },
@@ -89,6 +89,7 @@ async fn main() -> anyhow::Result<()> {
         buffer_size: 100,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
+        fn_tokio_metrics: |_| None,
     };
 
     ComponentExecutor::<ClientMessages>::new(executor_config)

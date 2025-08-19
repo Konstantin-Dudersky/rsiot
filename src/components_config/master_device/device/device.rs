@@ -1,6 +1,6 @@
 #![allow(clippy::module_inception)]
 
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
 
 use futures::TryFutureExt;
 use tokio::{
@@ -37,11 +37,22 @@ where
     /// ```
     pub fn_msgs_to_buffer: fn(&TMsg, &mut TBuffer),
 
+    /// Периодическое формирование запросов на основе fn_buffer_to_request
+    pub buffer_to_request_period: Duration,
+
     /// Преобразование данных из буфера в массив запросов на шине
+    ///
+    /// Вызывается несколькими способами:
+    ///
+    /// - при обновлении буфера на основе входящих сообщений функцией fn_msgs_to_buffer
+    ///
+    /// - при расшифровке ответа от устройства, при возвращении true из функции fn_response_to_buffer
+    ///
+    /// - периодически с периодом buffer_to_request_period
     pub fn_buffer_to_request: fn(&TBuffer) -> anyhow::Result<Vec<TFieldbusRequest>>,
 
     /// Обновление буфера на основе данных, полученных с устройства
-    pub fn_response_to_buffer: fn(TFieldbusResponse, &mut TBuffer) -> anyhow::Result<()>,
+    pub fn_response_to_buffer: fn(TFieldbusResponse, &mut TBuffer) -> anyhow::Result<bool>,
 
     /// Функция создания сообщений на основе буфера
     ///
@@ -76,7 +87,9 @@ where
         let buffer = self.buffer_default;
         let buffer = Arc::new(Mutex::new(buffer));
 
-        let (ch_tx_output_to_filter, ch_rx_output_to_filter) = mpsc::channel(100);
+        let (ch_tx_buffer, ch_rx_buffer) = mpsc::channel::<()>(100);
+        let (ch_tx_request, ch_rx_request) = mpsc::channel::<TRequest>(100);
+        let (ch_tx_output_to_filter, ch_rx_output_to_filter) = mpsc::channel::<Message<TMsg>>(100);
 
         let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
 
@@ -86,19 +99,9 @@ where
         let task = tasks::InitRequest {
             buffer: buffer.clone(),
             fn_init_requests: self.fn_init_requests,
-            ch_tx_device_to_fieldbus: ch_tx_device_to_fieldbus.clone(),
+            ch_tx_request: ch_tx_request.clone(),
         };
         task.spawn().await.unwrap();
-
-        // Задача создания запросов на основе входящих сообщений
-        let task = tasks::InputRequest {
-            buffer: buffer.clone(),
-            ch_rx_msgbus_to_device,
-            ch_tx_device_to_fieldbus: ch_tx_device_to_fieldbus.clone(),
-            fn_msgs_to_buffer: self.fn_msgs_to_buffer,
-            fn_buffer_to_request: self.fn_buffer_to_request,
-        };
-        join_set_spawn(&mut task_set, "master_device", task.spawn());
 
         // Задача создания периодических запросов
         for periodic_request in self.periodic_requests {
@@ -106,20 +109,65 @@ where
                 buffer: buffer.clone(),
                 period: periodic_request.period,
                 fn_request: periodic_request.fn_requests,
-                ch_tx_device_to_fieldbus: ch_tx_device_to_fieldbus.clone(),
+                ch_tx_request: ch_tx_request.clone(),
             };
-            join_set_spawn(&mut task_set, "master_device", task.spawn());
+            join_set_spawn(
+                &mut task_set,
+                "master_device | periodic_request",
+                task.spawn(),
+            );
         }
+
+        // Задача создания запросов на основе входящих сообщений
+        let task = tasks::InputRequest {
+            buffer: buffer.clone(),
+            ch_rx_msgbus_to_device,
+            ch_tx_buffer: ch_tx_buffer.clone(),
+            fn_msgs_to_buffer: self.fn_msgs_to_buffer,
+        };
+        join_set_spawn(&mut task_set, "master_device | input_request", task.spawn());
+
+        // Задача периодического формирования запросов на основе буфера
+        let task = tasks::BufferPeriodic {
+            ch_tx_buffer: ch_tx_buffer.clone(),
+            period: self.buffer_to_request_period,
+        };
+        join_set_spawn(
+            &mut task_set,
+            "master_device | buffer_periodic",
+            task.spawn(),
+        );
+
+        // Задача формирования запросов на основе буфера
+        let task = tasks::BufferToRequests {
+            buffer: buffer.clone(),
+            ch_rx_buffer,
+            ch_tx_request: ch_tx_request.clone(),
+            fn_buffer_to_request: self.fn_buffer_to_request,
+        };
+        join_set_spawn(
+            &mut task_set,
+            "master_device | buffer_to_requests",
+            task.spawn(),
+        );
+
+        // Задача отправки запросов
+        let task = tasks::Request {
+            ch_rx_request,
+            ch_tx_device_to_fieldbus,
+        };
+        join_set_spawn(&mut task_set, "master_device | request", task.spawn());
 
         // Задача обработки ответа
         let task = tasks::Response {
             buffer: buffer.clone(),
             ch_rx_fieldbus_to_device,
             ch_tx_output_to_filter,
+            ch_tx_buffer: ch_tx_buffer.clone(),
             fn_response_to_buffer: self.fn_response_to_buffer,
             fn_buffer_to_msgs: self.fn_buffer_to_msgs,
         };
-        join_set_spawn(&mut task_set, "master_device", task.spawn());
+        join_set_spawn(&mut task_set, "master_device | response", task.spawn());
 
         // Задачи фильтрации одинаковых сообщений
         let task = shared_tasks::filter_identical_data::FilterIdenticalData {
@@ -128,7 +176,7 @@ where
         };
         join_set_spawn(
             &mut task_set,
-            "master_device",
+            "master_device | filter_identical_data",
             task.spawn().map_err(super::Error::TaskFilterIdenticalData),
         );
 
@@ -150,8 +198,9 @@ where
             fn_init_requests: |_| vec![],
             periodic_requests: vec![],
             fn_msgs_to_buffer: |_, _| (),
+            buffer_to_request_period: Duration::from_millis(1000),
             fn_buffer_to_request: |_| Ok(vec![]),
-            fn_response_to_buffer: |_, _| Ok(()),
+            fn_response_to_buffer: |_, _| Ok(false),
             fn_buffer_to_msgs: |_| vec![],
             buffer_default: Default::default(),
         }

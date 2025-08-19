@@ -14,6 +14,7 @@ use super::{
     RequestKind,
 };
 
+// ANCHOR: RequestPeriodicConfig
 /// Параметры периодического запроса
 #[derive(Clone, Debug)]
 pub struct RequestPeriodicConfig<TMsg, TServerToClient, TClientToServer> {
@@ -32,6 +33,7 @@ pub struct RequestPeriodicConfig<TMsg, TServerToClient, TClientToServer> {
     /// Функция обработки ошибки ответа
     pub fn_process_response_error: FnProcessResponseError<TMsg>,
 }
+// ANCHOR: RequestPeriodicConfig
 
 /// Трейт для реализации периодических запросов
 pub trait RequestPeriodic<TMsg>

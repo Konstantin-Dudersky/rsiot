@@ -18,7 +18,7 @@ async fn main() -> anyhow::Result<()> {
     use rsiot::{
         components::{cmp_http_client, cmp_inject_periodic, cmp_logger},
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{Message, MsgDataBound, MsgKey},
+        message::{MsgDataBound, MsgKey},
         serde_utils::SerdeAlgKind,
     };
 
@@ -41,7 +41,7 @@ async fn main() -> anyhow::Result<()> {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_millis(1000),
         fn_periodic: move || {
-            let msg = Message::new_custom(Data::CounterFromClient(counter));
+            let msg = Data::CounterFromClient(counter);
             counter = counter.wrapping_add(1);
             vec![msg]
         },
@@ -54,7 +54,7 @@ async fn main() -> anyhow::Result<()> {
                 return Ok(None);
             };
             let text = match msg {
-                Data::CounterFromServer(data) => format!("Counter from server: {}", data),
+                Data::CounterFromServer(data) => format!("Counter from server: {data}"),
                 _ => return Ok(None),
             };
             Ok(Some(text))
@@ -103,6 +103,7 @@ async fn main() -> anyhow::Result<()> {
         buffer_size: 100,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
+        fn_tokio_metrics: |_| None,
     };
 
     ComponentExecutor::new(executor_config)

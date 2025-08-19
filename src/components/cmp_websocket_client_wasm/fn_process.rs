@@ -36,7 +36,11 @@ where
         output: input.clone(),
         fn_connection_state: config.fn_connection_state,
     };
-    join_set_spawn(&mut task_set, "cmp_websocket_client_wasm", task.spawn());
+    join_set_spawn(
+        &mut task_set,
+        "cmp_websocket_client_wasm | connection_state",
+        task.spawn(),
+    );
 
     loop {
         let result = task_main(

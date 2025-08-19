@@ -28,6 +28,7 @@ async fn main() {
         buffer_size: 100,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
+        fn_tokio_metrics: |_| None,
     };
     ComponentExecutor::new(config_executor)
         .add_cmp(config_inject_periodic::new())

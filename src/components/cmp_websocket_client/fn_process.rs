@@ -41,7 +41,11 @@ where
         output: input.clone(),
         fn_connection_state: config.fn_connection_state,
     };
-    join_set_spawn(&mut task_set, "cmp_websocket_client", task.spawn());
+    join_set_spawn(
+        &mut task_set,
+        "cmp_websocket_client | connection_state",
+        task.spawn(),
+    );
 
     loop {
         let res = task_connect(

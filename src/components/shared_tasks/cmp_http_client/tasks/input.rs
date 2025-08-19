@@ -9,13 +9,13 @@ use crate::{
 
 use super::{Error, Result};
 
-pub struct InputRequest<TMsg> {
+pub struct Input<TMsg> {
     pub input: mpsc::Receiver<Message<TMsg>>,
     pub output: mpsc::Sender<MsgRequest>,
     pub request_input_config: Vec<Box<dyn RequestInput<TMsg>>>,
 }
 
-impl<TMsg> InputRequest<TMsg>
+impl<TMsg> Input<TMsg>
 where
     TMsg: MsgDataBound,
 {

@@ -35,7 +35,7 @@ async fn main() -> anyhow::Result<()> {
                 return Ok(None);
             };
             let text = if let ServerMessages::CounterFromClient(msg) = msg {
-                format!("Counter from client: {}", msg)
+                format!("Counter from client: {msg}")
             } else {
                 return Ok(None);
             };
@@ -68,7 +68,7 @@ async fn main() -> anyhow::Result<()> {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_millis(1000),
         fn_periodic: move || {
-            let msg = Message::new_custom(ServerMessages::ServerCounter(counter));
+            let msg = ServerMessages::ServerCounter(counter);
             counter += 1;
             vec![msg]
         },
@@ -78,6 +78,7 @@ async fn main() -> anyhow::Result<()> {
         buffer_size: 100,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
+        fn_tokio_metrics: |_| None,
     };
 
     ComponentExecutor::new(executor_config)

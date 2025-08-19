@@ -1,9 +1,9 @@
-mod input_request;
-mod periodic_request;
-mod process_response;
+mod input;
+mod periodic;
+mod response;
 
-pub use input_request::InputRequest;
-pub use periodic_request::PeriodicRequest;
-pub use process_response::ProcessResponse;
+pub use input::Input;
+pub use periodic::Periodic;
+pub use response::Response;
 
 use super::{Error, Result};

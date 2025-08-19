@@ -57,30 +57,30 @@ where
         );
 
         // Создание HTTP-запросов на основе входящих сообщений
-        let task = tasks::InputRequest {
+        let task = tasks::Input {
             input: ch_rx_msgbus_to_input,
             output: ch_tx_requests.clone(),
             request_input_config: self.requests_input.clone(),
         };
-        join_set_spawn(self.task_set, "cmp_http_client", task.spawn());
+        join_set_spawn(self.task_set, "cmp_http_client | input", task.spawn());
 
         // Создание периодических HTTP-запросов
         for pr in self.requests_periodic.iter() {
-            let task = tasks::PeriodicRequest {
+            let task = tasks::Periodic {
                 output: ch_tx_requests.clone(),
                 request_periodic: pr.clone(),
             };
-            join_set_spawn(self.task_set, "cmp_http_client", task.spawn());
+            join_set_spawn(self.task_set, "cmp_http_client | periodic", task.spawn());
         }
 
         // Обработка ответов от сервера
-        let task = tasks::ProcessResponse {
+        let task = tasks::Response {
             input: ch_rx_response,
             output: ch_tx_output_to_msgbus,
             requests_input: self.requests_input,
             requests_periodic: self.requests_periodic,
         };
-        join_set_spawn(self.task_set, "cmp_http_client", task.spawn());
+        join_set_spawn(self.task_set, "cmp_http_client | response", task.spawn());
 
         // Отправка исходящих сообщений
         let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {

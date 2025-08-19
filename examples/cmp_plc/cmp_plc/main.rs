@@ -24,7 +24,6 @@ async fn main() -> anyhow::Result<()> {
             cmp_plc::{self, plc::types::Resettable},
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::Message,
     };
 
     use message::Data;

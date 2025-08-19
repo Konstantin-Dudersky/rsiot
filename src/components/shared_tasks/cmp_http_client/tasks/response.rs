@@ -7,7 +7,7 @@ use crate::{
 
 use super::{Error, Result};
 
-pub struct ProcessResponse<TMsg>
+pub struct Response<TMsg>
 where
     TMsg: MsgDataBound,
 {
@@ -19,7 +19,7 @@ where
     pub requests_periodic: Vec<Box<dyn RequestPeriodic<TMsg>>>,
 }
 
-impl<TMsg> ProcessResponse<TMsg>
+impl<TMsg> Response<TMsg>
 where
     TMsg: MsgDataBound,
 {

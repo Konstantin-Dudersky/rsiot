@@ -77,7 +77,7 @@ where
         };
         join_set_spawn(
             self.task_set,
-            "websocket_client_general_tasks",
+            "websocket_client | client_to_server",
             task.spawn(),
         );
 
@@ -91,7 +91,7 @@ where
         };
         join_set_spawn(
             self.task_set,
-            "websocket_client_general_tasks",
+            "websocket_client | server_to_client",
             task.spawn(),
         );
 
