@@ -100,6 +100,7 @@ pub struct LogConfig {
     /// Строка с настройкой фильтрации логов
     #[cfg(any(
         feature = "log_console",
+        feature = "log_file",
         feature = "log_loki",
         feature = "log_webconsole"
     ))]
@@ -179,6 +180,25 @@ impl LogConfig {
         #[allow(unreachable_code)]
         let layer_console: Option<Layer<_>> = None;
 
+        // log_file --------------------------------------------------------------------------------
+        #[cfg(feature = "log_file")]
+        let layer_file = {
+            use tracing_appender::rolling;
+            use tracing_subscriber::{fmt, EnvFilter, Layer};
+
+            let file_appender = rolling::hourly("./logs", "log");
+            // let (non_blocking, _guard) = non_blocking(file_appender);
+            let global_filter = EnvFilter::new(filter_value(&self.filter)?);
+            let layer = fmt::layer()
+                .with_ansi(false)
+                .with_writer(file_appender)
+                .with_filter(global_filter);
+            Some(layer)
+        };
+        #[cfg(not(feature = "log_file"))]
+        #[allow(unreachable_code)]
+        let layer_file: Option<Layer<_>> = None;
+
         // log_loki --------------------------------------------------------------------------------
         #[cfg(feature = "log_loki")]
         let layer_loki = {
@@ -248,6 +268,7 @@ impl LogConfig {
         // registry --------------------------------------------------------------------------------
         registry()
             .with(layer_console)
+            .with(layer_file)
             .with(layer_loki)
             .with(layer_tokio)
             .with(layer_webconsole)
@@ -256,6 +277,9 @@ impl LogConfig {
 
         #[cfg(feature = "log_console")]
         info!("Logging in console started with filter: {:?}", self.filter);
+
+        #[cfg(feature = "log_file")]
+        info!("Logging to file started with filter: {:?}", self.filter);
 
         #[cfg(feature = "log_loki")]
         info!(

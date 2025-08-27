@@ -97,6 +97,7 @@ tokio-modbus = { version = "0.11.0", default-features = false, features = [
 tokio-tungstenite = { version = "0.21.0", optional = true }
 tokio-util = { version = "0.7.15", features = ["rt"], optional = true }
 toml = { version = "0.8.9", optional = true }
+tracing-appender = { version = "0.2.3", optional = true }
 tracing-subscriber = { version = "0.3.18", features = [
     "env-filter",
     "chrono",
@@ -195,6 +196,7 @@ serde_toml = ["dep:toml"]
 
 log_console = ["dep:tracing-subscriber"]
 log_esp = ["dep:log", "dep:tracing-subscriber"]
+log_file = ["dep:tracing-appender", "dep:tracing-subscriber"]
 log_loki = [
     "dep:tokio",
     "dep:tracing-loki",
