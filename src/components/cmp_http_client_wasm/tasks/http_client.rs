@@ -1,8 +1,8 @@
 // TODO - Implement timeout
 
 use gloo::net::{
-    http::{Request, Response},
     Error as GlooError,
+    http::{Request, Response},
 };
 use http::StatusCode;
 use tokio::{sync::mpsc, task::JoinSet};
@@ -80,7 +80,10 @@ impl SingleRequest {
 
         let msg_response = process_response(endpoint.to_string(), response).await;
 
-        self.output.send(msg_response).await.unwrap();
+        self.output
+            .send(msg_response)
+            .await
+            .map_err(|_| Error::TokioSyncMpscSend)?;
 
         Ok(())
     }
@@ -96,7 +99,7 @@ async fn process_response(
             return MsgResponse::Error {
                 endpoint,
                 error: e.to_string(),
-            }
+            };
         }
     };
 
