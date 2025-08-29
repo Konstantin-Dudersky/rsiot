@@ -1,30 +1,32 @@
 use crate::{components::shared_tasks, executor::ComponentError};
 
+const COMPONENT_NAME: &str = "cmp_http_client";
+
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error("TaskInputRequest")]
+    #[error("{COMPONENT_NAME} | TaskInputRequest")]
     TaskInputRequest,
 
-    #[error("TaskPeriodicRequest")]
+    #[error("{COMPONENT_NAME} | TaskPeriodicRequest")]
     TaskPeriodicRequest,
 
-    #[error("TaskProcessResponse")]
+    #[error("{COMPONENT_NAME} | TaskProcessResponse")]
     TaskProcessResponse,
 
-    #[error("TokioSyncMpscSend")]
+    #[error("{COMPONENT_NAME} | TokioSyncMpscSend")]
     TokioSyncMpscSend,
 
-    #[error("TokioJoin")]
+    #[error("{COMPONENT_NAME} | TokioJoin")]
     TokioJoin(#[from] tokio::task::JoinError),
 
-    #[error(transparent)]
+    #[error("{COMPONENT_NAME} | TaskMsgBusToMpsc: {0}")]
     TaskMsgBusToMpsc(shared_tasks::msgbus_to_mpsc::Error),
 
-    #[error(transparent)]
+    #[error("{COMPONENT_NAME} | TaskMpscToMsgBus: {0}")]
     TaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus::Error),
 
-    #[error("End execution of HTTP client: {0}")]
+    #[error("{COMPONENT_NAME} | End execution of HTTP client: {0}")]
     TaskEndHttpClient(String),
 }
 
