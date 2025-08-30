@@ -1,5 +1,7 @@
 use crate::{components::shared_tasks, components_config::master_device, executor::ComponentError};
 
+use super::COMPONENT_NAME;
+
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -30,14 +32,23 @@ pub enum Error {
     #[error(transparent)]
     DeviceError(#[from] master_device::Error),
 
-    #[error("CS number {cs} not availbalve; amount of configured CS: {max_cs}")]
+    #[error("{COMPONENT_NAME} | CS number {cs} not availbalve; amount of configured CS: {max_cs}")]
     CsNotAvailable { cs: u8, max_cs: u8 },
 
-    #[error("GpioSetup: {0}")]
-    GpioSetup(String),
+    #[error("{COMPONENT_NAME} | GpioSetup: {0}")]
+    GpioSetup(linux_embedded_hal::gpio_cdev::Error),
 
-    #[error("GpioPinSet: {0}")]
-    GpioPinSet(String),
+    #[error("{COMPONENT_NAME} | GpioPinSet: {0}")]
+    GpioPinSet(linux_embedded_hal::gpio_cdev::Error),
+
+    #[error("{COMPONENT_NAME} | SpidevConfigure: {0}")]
+    SpidevConfigure(std::io::Error),
+
+    #[error("{COMPONENT_NAME} | SpidevOpen: {0}")]
+    SpidevOpen(std::io::Error),
+
+    #[error("{COMPONENT_NAME} | SpidevTransfer: {0}")]
+    SpidevTransfer(std::io::Error),
 }
 
 impl From<Error> for ComponentError {

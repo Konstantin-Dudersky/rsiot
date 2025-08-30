@@ -8,6 +8,7 @@ use crate::{
     message::MsgDataBound,
 };
 
+// ANCHOR: Config
 /// Конфигурация cmp_linux_spi_master
 pub struct Config<TMsg>
 where
@@ -22,7 +23,9 @@ where
     pub devices:
         Vec<Box<dyn DeviceTrait<TMsg, spi_master::FieldbusRequest, spi_master::FieldbusResponse>>>,
 }
+// ANCHOR: Config
 
+// ANCHOR: ConfigDevicesCommSettings
 /// Настройки коммуникации с устройствами
 pub struct ConfigDevicesCommSettings {
     /// Конфигурация устройства Linux
@@ -34,7 +37,9 @@ pub struct ConfigDevicesCommSettings {
     /// Режим работы SPI
     pub spi_mode: ConfigDeviceSpiMode,
 }
+// ANCHOR: ConfigDevicesCommSettings
 
+// ANCHOR: LinuxDevice
 /// Конфигурация устройства Linux
 pub enum LinuxDevice {
     /// Только SPI
@@ -52,6 +57,7 @@ pub enum LinuxDevice {
         gpio_line: u8,
     },
 }
+// ANCHOR: LinuxDevice
 
 impl From<ConfigDeviceSpiMode> for SpiModeFlags {
     fn from(value: ConfigDeviceSpiMode) -> Self {

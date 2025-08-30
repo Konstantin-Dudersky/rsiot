@@ -6,7 +6,7 @@ mod error;
 mod fn_process;
 
 pub use crate::components_config::spi_master::ConfigDeviceSpiMode;
-pub use component::Cmp;
+pub use component::{COMPONENT_NAME, Cmp};
 pub use config::{Config, ConfigDevicesCommSettings, LinuxDevice};
 pub use error::Error;
 

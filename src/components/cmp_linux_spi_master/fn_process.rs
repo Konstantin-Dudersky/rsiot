@@ -12,13 +12,13 @@ use crate::{
         master_device::{FieldbusRequestWithIndex, FieldbusResponseWithIndex},
         spi_master,
     },
-    executor::{join_set_spawn, CmpInOut},
+    executor::{CmpInOut, join_set_spawn},
     message::MsgDataBound,
 };
 
 use super::{
-    config::{ConfigDevicesCommSettings, LinuxDevice},
     Config, Error,
+    config::{ConfigDevicesCommSettings, LinuxDevice},
 };
 
 pub async fn fn_process<TMsg>(config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> super::Result<()>
@@ -71,49 +71,7 @@ struct SpidevWithCS {
 
 impl SpiComm {
     pub async fn spawn(mut self) -> super::Result<()> {
-        let mut spi_devices: Vec<SpidevWithCS> = self
-            .devices_comm_settings
-            .into_iter()
-            .enumerate()
-            .map(|(index, dvc)| {
-                let spidev = match &dvc.linux_device {
-                    LinuxDevice::Spi { dev_spi } => dev_spi,
-                    LinuxDevice::SpiWithCs { dev_spi, .. } => dev_spi,
-                };
-                let mut spidev = Spidev::open(spidev).unwrap();
-                let spi_options = SpidevOptions::new()
-                    .max_speed_hz(dvc.baudrate)
-                    .mode(dvc.spi_mode.into())
-                    .build();
-                spidev.configure(&spi_options).unwrap();
-
-                let cs = match dvc.linux_device {
-                    LinuxDevice::SpiWithCs {
-                        dev_spi,
-                        dev_gpio,
-                        gpio_line,
-                        ..
-                    } => {
-                        let mut chip = Chip::new(dev_gpio)
-                            .map_err(|e| Error::GpioSetup(e.to_string()))
-                            .unwrap();
-                        let cs = chip
-                            .get_line(gpio_line as u32)
-                            .map_err(|e| Error::GpioSetup(e.to_string()))
-                            .unwrap();
-                        let consumer = format!("CS{index} for {dev_spi}");
-                        let cs = cs
-                            .request(LineRequestFlags::OUTPUT, 1, &consumer)
-                            .map_err(|e| Error::GpioSetup(e.to_string()))
-                            .unwrap();
-                        Some(cs)
-                    }
-                    LinuxDevice::Spi { .. } => None,
-                };
-
-                SpidevWithCS { spidev, cs }
-            })
-            .collect();
+        let mut spi_devices = configure_spi_devices(&self.devices_comm_settings)?;
 
         while let Some(fieldbus_request) = self.input.recv().await {
             trace!("New spi request: {:?}", fieldbus_request);
@@ -142,17 +100,17 @@ impl SpiComm {
             for operation in request.operations {
                 // Устанавливаем CS
                 if let Some(pin_cs) = &selected_device.cs {
-                    pin_cs.set_value(0).unwrap();
+                    pin_cs.set_value(0).map_err(Error::GpioPinSet)?;
                 }
 
-                let response = make_spi_operation(&mut selected_device.spidev, &operation).await;
+                let response = make_spi_operation(&mut selected_device.spidev, &operation).await?;
                 if let Some(response) = response {
                     response_payload.push(response);
                 }
 
                 // Сбрасываем CS
                 if let Some(pin_cs) = &selected_device.cs {
-                    pin_cs.set_value(1).unwrap();
+                    pin_cs.set_value(1).map_err(Error::GpioPinSet)?;
                 }
             }
 
@@ -176,17 +134,66 @@ impl SpiComm {
     }
 }
 
+fn configure_spi_devices(dcs: &[ConfigDevicesCommSettings]) -> Result<Vec<SpidevWithCS>, Error> {
+    dcs.iter()
+        .enumerate()
+        .map(|(index, dvc)| {
+            let spidev = match &dvc.linux_device {
+                LinuxDevice::Spi { dev_spi } => dev_spi,
+                LinuxDevice::SpiWithCs { dev_spi, .. } => dev_spi,
+            };
+            let mut spidev = Spidev::open(spidev).map_err(Error::SpidevOpen)?;
+            let spi_options = SpidevOptions::new()
+                .max_speed_hz(dvc.baudrate)
+                .mode(dvc.spi_mode.into())
+                .build();
+            spidev
+                .configure(&spi_options)
+                .map_err(Error::SpidevConfigure)?;
+
+            let cs = match &dvc.linux_device {
+                LinuxDevice::SpiWithCs {
+                    dev_spi,
+                    dev_gpio,
+                    gpio_line,
+                    ..
+                } => {
+                    let mut chip = Chip::new(dev_gpio).map_err(Error::GpioSetup)?;
+                    let cs = chip.get_line(*gpio_line as u32).map_err(Error::GpioSetup)?;
+                    let consumer = format!("CS{index} for {dev_spi}");
+                    let cs = cs
+                        .request(LineRequestFlags::OUTPUT, 1, &consumer)
+                        .map_err(Error::GpioSetup)?;
+                    Some(cs)
+                }
+                LinuxDevice::Spi { .. } => None,
+            };
+
+            Ok(SpidevWithCS { spidev, cs })
+        })
+        .collect::<Result<Vec<SpidevWithCS>, Error>>()
+}
+
 /// Выполняем обмен данными
 ///
 /// Если присутствует операция чтения, то возвращаем данные
 async fn make_spi_operation(
     device: &mut Spidev,
     operation: &spi_master::Operation,
-) -> Option<Vec<u8>> {
+) -> Result<Option<Vec<u8>>, Error> {
     match operation {
         spi_master::Operation::Delay(duration) => {
             sleep(*duration).await;
-            None
+            Ok(None)
+        }
+        spi_master::Operation::Read { read_size } => {
+            let mut read_data = vec![0; *read_size as usize];
+            let mut transaction = [SpidevTransfer::read(&mut read_data)];
+            device
+                .transfer_multiple(&mut transaction)
+                .map_err(Error::SpidevTransfer)?;
+            trace!("Read data: {:x?}", read_data);
+            Ok(Some(read_data))
         }
         spi_master::Operation::WriteRead(write_data, read_len) => {
             let mut read_data = vec![0; *read_len as usize];
@@ -194,14 +201,18 @@ async fn make_spi_operation(
                 SpidevTransfer::write(write_data),
                 SpidevTransfer::read(&mut read_data),
             ];
-            device.transfer_multiple(&mut transaction).unwrap();
+            device
+                .transfer_multiple(&mut transaction)
+                .map_err(Error::SpidevTransfer)?;
             trace!("Read data: {:x?}", read_data);
-            Some(read_data)
+            Ok(Some(read_data))
         }
         spi_master::Operation::Write(write_data) => {
             let mut transaction = [SpidevTransfer::write(write_data)];
-            device.transfer_multiple(&mut transaction).unwrap();
-            None
+            device
+                .transfer_multiple(&mut transaction)
+                .map_err(Error::SpidevTransfer)?;
+            Ok(None)
         }
     }
 }
