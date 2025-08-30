@@ -10,6 +10,7 @@ use crate::message::*;
 
 use super::LineProtocolItem;
 
+/// Функция преобразования входящих сообщений
 pub type FnInput<TMsg> = fn(&Message<TMsg>) -> Option<Vec<LineProtocolItem>>;
 
 /// Конфигурация cmp_influxdb
@@ -33,44 +34,4 @@ pub struct Config<TMsg> {
 
     /// Функция преобразования сообщения в строки протокола InfluxDB
     pub fn_input: FnInput<TMsg>,
-}
-
-#[cfg(test)]
-mod test {
-    use super::super::super::influxdb_v2 as cmp_influxdb;
-
-    #[test]
-    fn stub() {
-        use crate::message::example_message::*;
-        let _ = cmp_influxdb::Config::<Custom> {
-            host: String::from("influxdb"),
-            port: 8086,
-            org: String::from("org"),
-            bucket: String::from("bucket"),
-            token: String::from("token"),
-            fn_input: |_| None,
-        };
-    }
-
-    #[test]
-    fn fn_input() {
-        use crate::message::{example_message::*, *};
-        let _ = cmp_influxdb::Config::<Custom> {
-            host: String::from("influxdb"),
-            port: 8086,
-            org: String::from("org"),
-            bucket: String::from("bucket"),
-            token: String::from("token"),
-            fn_input: |msg: &Message<Custom>| {
-                let value = match &msg.data {
-                    MsgData::Custom(Custom::ValueInstantF64(data)) => {
-                        cmp_influxdb::ValueType::f64(*data)
-                    }
-                    _ => return None,
-                };
-                let line = cmp_influxdb::LineProtocolItem::new(&msg.key, value, &msg.ts);
-                Some(vec![line])
-            },
-        };
-    }
 }

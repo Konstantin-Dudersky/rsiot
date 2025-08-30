@@ -61,7 +61,7 @@ impl LineProtocolItem {
         if let Some(ts) = &self.ts {
             let ts = ts
                 .timestamp_nanos_opt()
-                .ok_or(super::Error::WrongTimestamp(ts.clone()))?;
+                .ok_or(super::Error::WrongTimestamp(*ts))?;
             line.push(' ');
             line.push_str(&ts.to_string());
         }
@@ -78,7 +78,7 @@ mod tests {
 
     /// cargo test --features cmp_influxdb -- components_config::influxdb3::line_protocol_item::tests::test1 --exact --show-output
     #[test]
-    fn test1() {
+    fn test1() -> anyhow::Result<()> {
         let lpi = LineProtocolItem {
             table: "cpu".to_string(),
             tags: HashMap::from([
@@ -94,7 +94,7 @@ mod tests {
             ts: None,
         };
 
-        let lpi: String = lpi.to_string().unwrap();
+        let lpi: String = lpi.to_string()?;
 
         println!("line protocol: {}", lpi);
 
@@ -105,5 +105,7 @@ mod tests {
             lpi.chars().sorted().rev().collect::<String>(),
             from_manual.chars().sorted().rev().collect::<String>()
         );
+
+        Ok(())
     }
 }
