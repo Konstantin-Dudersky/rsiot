@@ -6,7 +6,7 @@ use leptos::task::{spawn_local, Executor};
 use rsiot::{
     components::{cmp_http_client_wasm, cmp_inject_periodic, cmp_logger},
     executor::{ComponentExecutor, ComponentExecutorConfig},
-    logging::configure_logging,
+    logging::{LogConfig, LogConfigFilter},
     message::*,
     serde_utils::SerdeAlgKind,
 };
@@ -15,8 +15,11 @@ use tracing::Level;
 
 use shared::{ClientToServer, ServerToClient};
 
-fn main() {
-    configure_logging("debug").unwrap();
+fn main() -> anyhow::Result<()> {
+    LogConfig {
+        filter: LogConfigFilter::String("debug"),
+    }
+    .run()?;
 
     // Message -------------------------------------------------------------------------------------
     #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
@@ -47,7 +50,7 @@ fn main() {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_millis(1000),
         fn_periodic: move || {
-            let msg = Message::new_custom(Data::CounterFromClient(counter));
+            let msg = Data::CounterFromClient(counter);
             counter = counter.wrapping_add(1);
             vec![msg]
         },
@@ -97,6 +100,7 @@ fn main() {
         buffer_size: 1000,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(200),
+        fn_tokio_metrics: |_| None,
     };
 
     Executor::init_wasm_bindgen().expect("executor should only be initialized once");
@@ -111,8 +115,10 @@ fn main() {
             .add_cmp(cmp_logger::Cmp::new(logger_config))
             .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
             .wait_result()
-            .await
-            .unwrap();
+            .await?;
+        Ok(()) as anyhow::Result<()>
     });
     spawn_local(context);
+
+    Err(anyhow::Error::msg("Program end"))
 }

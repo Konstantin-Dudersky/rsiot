@@ -86,8 +86,8 @@ fn main() -> anyhow::Result<()> {
     let inject_periodic_config = cmp_inject_periodic::Config {
         period: Duration::from_millis(100),
         fn_periodic: move || {
-            let msg1 = Message::new_custom(Data::Counter(counter));
-            let msg2 = Message::new_custom(Data::Msg1(counter * 2.0));
+            let msg1 = Data::Counter(counter);
+            let msg2 = Data::Msg1(counter * 2.0);
             counter += 1.0;
             vec![msg1, msg2]
         },
@@ -97,6 +97,7 @@ fn main() -> anyhow::Result<()> {
         buffer_size: 100,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
+        fn_tokio_metrics: |_| None,
     };
 
     #[cfg(not(feature = "single-thread"))]
