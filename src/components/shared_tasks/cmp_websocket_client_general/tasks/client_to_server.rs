@@ -42,7 +42,7 @@ where
             self.output
                 .send(bytes)
                 .await
-                .map_err(|_| super::Error::TokioSyncMpsc)?;
+                .map_err(|_| super::Error::TokioSyncMpscSend)?;
         }
 
         Err(super::Error::TaskInput)

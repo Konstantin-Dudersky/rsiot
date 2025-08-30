@@ -47,5 +47,5 @@ where
     output
         .send_output(msg)
         .await
-        .map_err(|_| super::Error::TokioSyncMpsc)
+        .map_err(|_| super::Error::TokioSyncMpscSend)
 }

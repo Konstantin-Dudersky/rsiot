@@ -40,7 +40,7 @@ where
                 self.output_connection_state
                     .send(true)
                     .await
-                    .map_err(|_| super::Error::TokioSyncMpsc)?;
+                    .map_err(|_| super::Error::TokioSyncMpscSend)?;
             }
 
             for msg in msgs {
@@ -48,7 +48,7 @@ where
                 self.output
                     .send(msg)
                     .await
-                    .map_err(|_| super::Error::TokioSyncMpsc)?;
+                    .map_err(|_| super::Error::TokioSyncMpscSend)?;
             }
         }
 

@@ -1,4 +1,6 @@
-use crate::components::shared_tasks;
+use crate::{components::shared_tasks, executor::ComponentError};
+
+const COMPONENT_NAME: &str = "cmp_websocket_client";
 
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
@@ -36,12 +38,15 @@ pub enum Error {
     #[error("TaskReceive: {0}")]
     TaskReceive(String),
 
-    #[error("JoinError: {source}")]
-    TokioTaskJoin {
-        #[from]
-        source: tokio::task::JoinError,
-    },
+    #[error("{COMPONENT_NAME} | TokioTaskJoin: {0}")]
+    TokioTaskJoin(#[from] tokio::task::JoinError),
 
-    #[error("TokioSyncMpsc")]
-    TokioSyncMpsc,
+    #[error("{COMPONENT_NAME} | TokioSyncMpscSend")]
+    TokioSyncMpscSend,
+}
+
+impl From<Error> for ComponentError {
+    fn from(value: Error) -> Self {
+        ComponentError::Execution(value.to_string())
+    }
 }

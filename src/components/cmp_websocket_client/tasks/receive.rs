@@ -1,4 +1,4 @@
-use futures::{stream::SplitStream, StreamExt};
+use futures::{StreamExt, stream::SplitStream};
 use tokio::{net::TcpStream, sync::mpsc};
 use tokio_tungstenite::{MaybeTlsStream, WebSocketStream};
 
@@ -17,7 +17,7 @@ impl Receive {
             self.output
                 .send(data)
                 .await
-                .map_err(|_| super::Error::TokioSyncMpsc)?;
+                .map_err(|_| super::Error::TokioSyncMpscSend)?;
         }
         Err(super::Error::TaskReceive("Task end".to_string()))
     }

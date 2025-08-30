@@ -2,7 +2,7 @@ use futures::StreamExt;
 use tokio::{
     sync::mpsc,
     task::JoinSet,
-    time::{sleep, Duration},
+    time::{Duration, sleep},
 };
 use tokio_tungstenite::connect_async;
 use tracing::{error, info, warn};
@@ -10,21 +10,22 @@ use url::Url;
 
 use crate::{
     components_config::websocket_general::WebsocketMessage,
-    executor::{join_set_spawn, CmpInOut, ComponentError},
+    executor::{CmpInOut, join_set_spawn},
     message::MsgDataBound,
     serde_utils::SerdeAlg,
 };
 
 use super::{
+    Error,
     cmp_websocket_client_general::{ConnectionState, WebsocketClientGeneralTasks},
     config::Config,
-    tasks, Error,
+    tasks,
 };
 
 pub async fn fn_process<TMessage, TServerToClient, TClientToServer>(
     input: CmpInOut<TMessage>,
     config: Config<TMessage, TServerToClient, TClientToServer>,
-) -> Result<(), ComponentError>
+) -> Result<(), Error>
 where
     TMessage: MsgDataBound + 'static,
     TServerToClient: 'static + WebsocketMessage,
@@ -60,7 +61,10 @@ where
             Err(err) => error!("{:?}", err),
         }
         warn!("Restaring...");
-        ch_tx_connection_state.send(false).await.unwrap();
+        ch_tx_connection_state
+            .send(false)
+            .await
+            .map_err(|_| Error::TokioSyncMpscSend)?;
         sleep(Duration::from_millis(2000)).await;
     }
 }
