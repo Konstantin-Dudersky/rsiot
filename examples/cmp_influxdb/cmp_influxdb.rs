@@ -1,6 +1,6 @@
 #[cfg(feature = "cmp_influxdb")]
 #[tokio::main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     use std::time::Duration;
 
     use tracing::level_filters::LevelFilter;
@@ -19,7 +19,7 @@ async fn main() {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg = Message::new_custom(Custom::ValueInstantF64(counter as f64));
+            let msg = Custom::ValueInstantF64(counter as f64);
             counter += 1;
             vec![msg]
         },
@@ -44,14 +44,16 @@ async fn main() {
         buffer_size: 100,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
+        fn_tokio_metrics: |_| None,
     };
 
     ComponentExecutor::new(executor_config)
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
         .add_cmp(cmp_influxdb3::Cmp::new(influxdb_config))
         .wait_result()
-        .await
-        .unwrap();
+        .await?;
+
+    Err(anyhow::Error::msg("Program end"))
 }
 
 #[cfg(not(feature = "cmp_influxdb"))]

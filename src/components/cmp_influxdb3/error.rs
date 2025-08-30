@@ -19,7 +19,7 @@ pub enum Error {
     WrongTimestamp(crate::message::Timestamp),
 
     #[error("cmp_influxdb | {0}")]
-    Config(#[from] crate::components_config::influxdb_v2::Error),
+    Config(#[from] crate::components_config::influxdb3::Error),
 
     #[error("cmp_influxdb | {0}")]
     TaskMsgBusToMpsc(shared_tasks::msgbus_to_mpsc::Error),
