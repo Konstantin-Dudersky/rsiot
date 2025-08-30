@@ -9,6 +9,7 @@ use crate::{
     serde_utils::{self, SerdeAlg, SerdeAlgKind},
 };
 
+// ANCHOR: GetEndpointConfig
 /// Конфигурация отдельной точки GET
 #[derive(Clone, Debug)]
 pub struct GetEndpointConfig<TMsg, TServerToClient> {
@@ -36,6 +37,7 @@ pub struct GetEndpointConfig<TMsg, TServerToClient> {
     /// Функция обновления данных на основе входящих сообщений
     pub fn_input: fn(&TMsg, &mut TServerToClient),
 }
+// ANCHOR: GetEndpointConfig
 
 impl<TMsg, TServerToClient> GetEndpoint<TMsg> for GetEndpointConfig<TMsg, TServerToClient>
 where

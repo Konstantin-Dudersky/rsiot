@@ -2,6 +2,7 @@ use crate::message::MsgDataBound;
 
 use super::{GetEndpoint, PutEndpoint};
 
+// ANCHOR: Config
 /// Конфигурация компонента http-server
 #[derive(Clone, Debug)]
 pub struct Config<TMsg>
@@ -17,6 +18,7 @@ where
     /// Конфигурация точек PUT
     pub put_endpoints: Vec<Box<dyn PutEndpoint<TMsg>>>,
 }
+// ANCHOR: Config
 
 #[cfg(test)]
 mod tests {

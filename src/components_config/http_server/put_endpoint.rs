@@ -7,6 +7,7 @@ use crate::{
     serde_utils::{self, SerdeAlg, SerdeAlgKind},
 };
 
+// ANCHOR: PutEndpointConfig
 /// Конфигурация отдельной точки PUT
 #[derive(Clone, Debug)]
 pub struct PutEndpointConfig<TMsg, TData>
@@ -28,6 +29,7 @@ where
     /// Функция создания исходящих сообщений на основе входящих данных
     pub fn_output: fn(data: TData) -> Option<Message<TMsg>>,
 }
+// ANCHOR: PutEndpointConfig
 
 impl<TMsg, TData> PutEndpoint<TMsg> for PutEndpointConfig<TMsg, TData>
 where

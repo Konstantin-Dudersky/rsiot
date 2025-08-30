@@ -1,6 +1,7 @@
 use axum::extract;
-use axum::http::Uri;
-use axum::http::{header, HeaderMap};
+use axum::http::{HeaderMap, header};
+use axum::http::{HeaderValue, Uri};
+use tracing::warn;
 
 use crate::message::*;
 
@@ -17,10 +18,16 @@ where
     let path = uri.path();
 
     let mut headers = HeaderMap::new();
-    headers.insert(
-        header::CONTENT_TYPE,
-        "text/plain; charset=utf-8".parse().unwrap(),
-    );
+
+    let header_content_type = "text/plain; charset=utf-8".parse::<HeaderValue>();
+    let header_content_type = match header_content_type {
+        Ok(v) => v,
+        Err(e) => {
+            warn!("Error parsing header: {e}");
+            return (headers, Err(super::Error::InvalidHeaderValue(e)));
+        }
+    };
+    headers.insert(header::CONTENT_TYPE, header_content_type);
 
     let data = {
         let get_endpoints = shared_state.get_endpoints.lock().await;
