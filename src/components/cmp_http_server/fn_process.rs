@@ -3,25 +3,22 @@ use std::sync::Arc;
 use axum::routing;
 use tokio::{sync::Mutex, task::JoinSet};
 use tower_http::{
+    LatencyUnit,
     cors::CorsLayer,
     trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
-    LatencyUnit,
 };
-use tracing::{info, Level};
+use tracing::{Level, info};
 
 use crate::{
     components_config::http_server::{GetEndpointsCollection, PutEndpointsCollection},
-    executor::{join_set_spawn, CmpInOut, ComponentError},
+    executor::{CmpInOut, join_set_spawn},
     message::MsgDataBound,
 };
 
 use super::{config::Config, routes, shared_state::SharedState, tasks};
 
 /// Компонент для получения и ввода сообщений через HTTP Server
-pub async fn fn_process<TMsg>(
-    msg_bus: CmpInOut<TMsg>,
-    config: Config<TMsg>,
-) -> Result<(), ComponentError>
+pub async fn fn_process<TMsg>(msg_bus: CmpInOut<TMsg>, config: Config<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
@@ -49,7 +46,11 @@ where
         input: msg_bus.clone(),
         get_endpoints: get_endpoints.clone(),
     };
-    join_set_spawn(&mut task_set, "cmp_http_server", task.spawn());
+    join_set_spawn(
+        &mut task_set,
+        "cmp_http_server | update_get_endpoints",
+        task.spawn(),
+    );
 
     // Задача работы сервера Axum ------------------------------------------------------------------
     let layer_cors = CorsLayer::permissive();
@@ -85,11 +86,11 @@ where
         port: config.port,
         router,
     };
-    join_set_spawn(&mut task_set, "cmp_http_server", task.spawn());
+    join_set_spawn(&mut task_set, "cmp_http_server | axum_serve", task.spawn());
 
     // Ждем выполнения всех задач ------------------------------------------------------------------
     while let Some(res) = task_set.join_next().await {
-        res.unwrap().unwrap()
+        res??
     }
     Ok(())
 }
