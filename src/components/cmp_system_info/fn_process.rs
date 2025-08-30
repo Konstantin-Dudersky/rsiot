@@ -14,17 +14,15 @@ where
     TMsg: MsgDataBound,
 {
     let mut sys = System::new_all();
-    let mut system_info = SystemInfo::default();
-
-    system_info.os_version = match System::long_os_version() {
-        Some(value) => value.to_string(),
-        None => return raise_error("os_version"),
+    let mut system_info = SystemInfo {
+        ..Default::default()
     };
 
-    system_info.host_name = match System::host_name() {
-        Some(value) => value.to_string(),
-        None => return raise_error("host_name"),
-    };
+    system_info.os_version =
+        System::long_os_version().ok_or(Error::CannotDefine("os_version".to_string()))?;
+
+    system_info.host_name =
+        System::host_name().ok_or(Error::CannotDefine("host_name".to_string()))?;
 
     let networks = Networks::new_with_refreshed_list();
     for (interface_name, data) in &networks {
@@ -57,7 +55,11 @@ where
         for disk in Disks::new_with_refreshed_list().iter() {
             let used_space_gb = (disk.total_space() - disk.available_space()) as f32 / B_IN_GB;
             let total_space_gb = disk.total_space() as f32 / B_IN_GB;
-            let name = disk.name().to_str().unwrap().to_string();
+            let name = disk
+                .name()
+                .to_str()
+                .ok_or(Error::CannotDefine("disk.name".to_string()))?
+                .to_string();
             system_info.disks.insert(
                 name.clone(),
                 SystemInfoDisk {
@@ -76,16 +78,12 @@ where
 
         let msgs = (config.fn_output)(&system_info);
         for msg in msgs {
-            in_out.send_output(msg).await.unwrap();
+            in_out
+                .send_output(msg)
+                .await
+                .map_err(|_| Error::TokioSyncMpscSend)?;
         }
 
         sleep(config.period).await;
     }
-}
-
-fn raise_error(field: &str) -> super::Result<()> {
-    let err = Error::CannotDefine {
-        field: field.into(),
-    };
-    Err(err)
 }

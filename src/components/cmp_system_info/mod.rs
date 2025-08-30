@@ -6,7 +6,7 @@ mod error;
 mod fn_process;
 mod system_info;
 
-pub use component::Cmp;
+pub use component::{COMPONENT_NAME, Cmp};
 pub use config::Config;
 pub use error::Error;
 pub use system_info::{SystemInfo, SystemInfoDisk, SystemInfoMemory, SystemInfoNetwork};

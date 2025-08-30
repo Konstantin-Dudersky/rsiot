@@ -5,7 +5,10 @@ use crate::{
     message::{AuthPermissions, MsgDataBound},
 };
 
-use super::{fn_process::fn_process, Config};
+use super::{Config, fn_process::fn_process};
+
+/// Название компонента
+pub const COMPONENT_NAME: &str = "CMP_TEMPLATE";
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
