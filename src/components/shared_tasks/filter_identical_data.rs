@@ -5,6 +5,8 @@ use tokio::sync::mpsc;
 
 use crate::message::{Message, MsgDataBound};
 
+const COMPONENT_NAME: &str = "filter_identical_data";
+
 /// Фильтрация сообщений с одинаковым полем data.
 ///
 /// Функция fn_output генерирует сообщения со скоростью цикла ПЛК. Большинство сообщений с
@@ -40,7 +42,10 @@ where
                 Some(val) => val,
                 None => {
                     cache.insert(key.to_string(), msg.clone());
-                    self.output.send(msg).await.unwrap();
+                    self.output
+                        .send(msg)
+                        .await
+                        .map_err(|_| Error::TokioSyncMpscSend)?;
                     continue;
                 }
             };
@@ -51,15 +56,23 @@ where
             }
 
             // Сообщение новое, сохраняем в кеш и отдаем на выход
-            // info!("Pass message from filter: {key}");
-            cache.insert(key.to_string(), msg.clone()).unwrap();
-            self.output.send(msg).await.unwrap();
+            cache.insert(key.to_string(), msg.clone());
+            self.output
+                .send(msg)
+                .await
+                .map_err(|_| Error::TokioSyncMpscSend)?;
         }
 
-        Ok(())
+        Err(Error::TaskEnd)
     }
 }
 
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
-pub enum Error {}
+pub enum Error {
+    #[error("{COMPONENT_NAME} | TokioSyncMpscSend")]
+    TokioSyncMpscSend,
+
+    #[error("{COMPONENT_NAME} | TaskEnd")]
+    TaskEnd,
+}
