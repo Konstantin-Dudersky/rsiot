@@ -36,4 +36,17 @@ impl Row {
             aggnext: vec![],
         }
     }
+
+    /// Создать строку в таблице с указанным временем
+    pub fn new_with_ts(entity: &str, attr: &str, value: f64, ts: OffsetDateTime) -> Self {
+        Self {
+            time: ts,
+            entity: entity.to_string(),
+            attr: attr.to_string(),
+            value,
+            agg: AggType::Curr,
+            aggts: None,
+            aggnext: vec![],
+        }
+    }
 }

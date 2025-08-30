@@ -3,7 +3,7 @@ use std::time::Duration;
 use sqlx::{postgres::PgPoolOptions, query, Pool, Postgres};
 use time::format_description::well_known::Iso8601;
 use tokio::{sync::mpsc, task::JoinHandle};
-use tracing::{trace, warn};
+use tracing::{info, trace, warn};
 use url::Url;
 
 use crate::executor::CheckCapacity;
@@ -15,6 +15,8 @@ pub struct SendToDatabase {
     pub output: mpsc::Sender<JoinHandle<Result<()>>>,
     pub connection_string: Url,
     pub max_connections: u32,
+    pub table_name: &'static str,
+    pub delete_before_write: bool,
 }
 
 impl SendToDatabase {
@@ -26,6 +28,21 @@ impl SendToDatabase {
             .connect(self.connection_string.as_str())
             .await?;
 
+        if self.delete_before_write {
+            warn!("Deleting table {}", self.table_name);
+            let sql = format!("DROP TABLE IF EXISTS {}", self.table_name);
+            query(&sql).execute(&pool).await?;
+        }
+
+        if self.table_name != "raw" {
+            info!("Creating table {}", self.table_name);
+            let sql = format!(
+                "CREATE TABLE IF NOT EXISTS {} (LIKE raw INCLUDING ALL)",
+                self.table_name
+            );
+            query(&sql).execute(&pool).await?;
+        }
+
         while let Some(msg) = self.input.recv().await {
             match msg {
                 InnerMessage::Rows(rows) => cache.extend(rows),
@@ -33,7 +50,7 @@ impl SendToDatabase {
                     if cache.is_empty() {
                         continue;
                     }
-                    let sql = prepare_sql_statement(&cache)?;
+                    let sql = prepare_sql_statement(self.table_name, &cache)?;
                     let task = execute_sql(sql, pool.clone());
                     cache.clear();
                     let task = tokio::task::Builder::new()
@@ -52,7 +69,7 @@ impl SendToDatabase {
     }
 }
 
-fn prepare_sql_statement(rows: &[Row]) -> Result<String> {
+fn prepare_sql_statement(table_name: &str, rows: &[Row]) -> Result<String> {
     let values: Result<Vec<String>> = rows
         .iter()
         .map(|row| {
@@ -71,7 +88,7 @@ fn prepare_sql_statement(rows: &[Row]) -> Result<String> {
     let values = values?.join(", ");
 
     let sql = format!(
-        r#"INSERT INTO raw
+        r#"INSERT INTO {table_name}
     VALUES {values}
     ON CONFLICT (time, entity, attr, agg) DO UPDATE
         SET value = excluded.value,
@@ -121,7 +138,7 @@ mod tests {
             },
         ];
 
-        let test_sql = prepare_sql_statement(&rows)?;
+        let test_sql = prepare_sql_statement("raw", &rows)?;
         let test_sql = test_sql
             .split('\n')
             .map(|line| line.trim())

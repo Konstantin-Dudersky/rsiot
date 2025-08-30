@@ -61,7 +61,9 @@ where
         input: ch_rx_input_to_database,
         output: ch_tx_database_to_results,
         connection_string,
+        table_name: config.table_name,
         max_connections: config.max_connections,
+        delete_before_write: config.delete_before_write,
     };
     join_set_spawn(
         &mut task_set,
