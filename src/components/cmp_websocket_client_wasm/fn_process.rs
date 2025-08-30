@@ -8,14 +8,15 @@ use url::Url;
 
 use crate::{
     components_config::websocket_general::WebsocketMessage,
-    executor::{join_set_spawn, CmpInOut},
+    executor::{CmpInOut, join_set_spawn},
     message::MsgDataBound,
     serde_utils::SerdeAlg,
 };
 
 use super::{
+    Config, Error,
     cmp_websocket_client_general::{ConnectionState, WebsocketClientGeneralTasks},
-    tasks, Config, Error,
+    tasks,
 };
 
 pub async fn fn_process<TMessage, TServerToClient, TClientToServer>(
@@ -51,7 +52,10 @@ where
         .await;
         warn!("End with resilt: {:?}", result);
         info!("Restarting...");
-        ch_tx_connection_state.send(false).await.unwrap();
+        ch_tx_connection_state
+            .send(false)
+            .await
+            .map_err(|_| super::Error::TokioSyncMpscSend)?;
         sleep(Duration::from_secs(2)).await;
     }
 }

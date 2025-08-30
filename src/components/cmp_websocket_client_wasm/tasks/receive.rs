@@ -1,5 +1,5 @@
-use futures::{stream::SplitStream, StreamExt};
-use gloo::net::websocket::{futures::WebSocket, Message};
+use futures::{StreamExt, stream::SplitStream};
+use gloo::net::websocket::{Message, futures::WebSocket};
 use tokio::sync::mpsc;
 use tracing::trace;
 
@@ -23,7 +23,7 @@ impl Receive {
             self.output
                 .send(bytes)
                 .await
-                .map_err(|_| super::Error::TokioSyncMpsc)?;
+                .map_err(|_| super::Error::TokioSyncMpscSend)?;
         }
         Err(super::Error::TaskReceive("Task end".to_string()))
     }

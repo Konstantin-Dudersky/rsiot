@@ -4,12 +4,13 @@ version = "0.0.0"
 edition = "2021"
 
 [dependencies]
+anyhow = "*"
 serde = { version = "1", features = ["derive"] }
 strum = { version = "*", features = ["derive"] }
 rsiot = { path = "../../../", features = [
     "cmp_leptos",
     "cmp_websocket_client_wasm",
-    "logging",
+    "log_webconsole",
     "single-thread",
 ] }
 tokio = { version = "1.37.0", features = ["rt"] }
