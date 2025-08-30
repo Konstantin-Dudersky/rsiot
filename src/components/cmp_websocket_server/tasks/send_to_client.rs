@@ -1,6 +1,6 @@
-use futures::{stream::SplitSink, SinkExt};
+use futures::{SinkExt, stream::SplitSink};
 use tokio::{net::TcpStream, sync::broadcast};
-use tokio_tungstenite::{tungstenite::Message as TungsteniteMessage, WebSocketStream};
+use tokio_tungstenite::{WebSocketStream, tungstenite::Message as TungsteniteMessage};
 use tracing::{debug, trace};
 
 use crate::{
@@ -33,7 +33,7 @@ where
             let text = create_text_from_msg(&s2c, &self.serde_alg)?;
             self.websocket_write.send(text).await?;
         }
-        self.websocket_write.close().await.unwrap();
+        self.websocket_write.close().await?;
         debug!("Internal channel for sending to client closed");
         Ok(())
     }
