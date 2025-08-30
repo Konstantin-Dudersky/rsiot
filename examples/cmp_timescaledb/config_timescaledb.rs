@@ -8,6 +8,7 @@ pub fn cmp() -> Component<Config<Msg>, Msg> {
     let config = Config {
         connection_string: "postgres://postgres:postgres@localhost:5432/db_data".into(),
         max_connections: 5,
+        table_name: "raw",
         send_period: Duration::from_secs(2),
         fn_input: |msg| {
             let row = match msg {
@@ -15,6 +16,7 @@ pub fn cmp() -> Component<Config<Msg>, Msg> {
             };
             Some(vec![row])
         },
+        delete_before_write: false,
     };
 
     Cmp::new(config)
