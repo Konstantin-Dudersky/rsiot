@@ -9,11 +9,12 @@ use tokio::{
 };
 
 use crate::{
+    components::cmp_derive::Error,
     components_config::master_device::{
         self, DeviceTrait, FieldbusRequestWithIndex, FieldbusResponseWithIndex,
         RequestResponseBound,
     },
-    executor::{join_set_spawn, CmpInOut},
+    executor::{CmpInOut, join_set_spawn},
     message::{Message, MsgDataBound},
 };
 
@@ -120,7 +121,7 @@ where
         };
         join_set_spawn(
             self.task_set,
-            "fn_process_master",
+            "fn_process_master | msgbus_to_broadcast",
             task.spawn().map_err(self.error_msgbus_to_broadcast),
         );
 
@@ -128,7 +129,9 @@ where
         for (index, device) in self.devices.into_iter().enumerate() {
             let ch_rx_msgbus_to_devices = ch_rx_msgbus_to_devices.resubscribe();
             let ch_tx_device_to_addindex = ch_tx_device_to_addindex[index].clone();
-            let ch_rx_fieldbus_to_device = ch_rx_split_to_devices[index].take().unwrap();
+            let Some(ch_rx_fieldbus_to_device) = ch_rx_split_to_devices[index].take() else {
+                panic!("Error configuration in fn_process_master");
+            };
             let ch_tx_devices_to_filter = ch_tx_devices_to_filter.clone();
             let task = device.spawn(
                 ch_rx_msgbus_to_devices,
@@ -138,7 +141,7 @@ where
             );
             join_set_spawn(
                 self.task_set,
-                "fn_process_master",
+                "fn_process_master | device",
                 task.map_err(self.error_master_device),
             );
         }
@@ -151,7 +154,7 @@ where
                 device_index,
                 error_tokiompscsend: self.error_tokiompscsend,
             };
-            join_set_spawn(self.task_set, "fn_process_master", task.spawn());
+            join_set_spawn(self.task_set, "fn_process_master | add_index", task.spawn());
         }
 
         // Задача разделения ответов
@@ -160,7 +163,11 @@ where
             output: ch_tx_split_to_devices,
             error_tokiompscsend: self.error_tokiompscsend,
         };
-        join_set_spawn(self.task_set, "fn_process_master", task.spawn());
+        join_set_spawn(
+            self.task_set,
+            "fn_process_master | split_responses",
+            task.spawn(),
+        );
 
         // Фильтрация одинаковых сообщений ---------------------------------------------------------
         let task = filter_identical_data::FilterIdenticalData {
@@ -169,7 +176,7 @@ where
         };
         join_set_spawn(
             self.task_set,
-            "fn_process_master",
+            "fn_process_master | filter_identical_data",
             task.spawn().map_err(self.error_filter),
         );
 
@@ -180,7 +187,7 @@ where
         };
         join_set_spawn(
             self.task_set,
-            "fn_process_master",
+            "fn_process_master | mpsc_to_msgbus",
             task.spawn().map_err(self.error_mpsc_to_msgbus),
         );
 

@@ -3,7 +3,10 @@
 use std::collections::HashMap;
 use tokio::sync::mpsc;
 
-use crate::message::{Message, MsgDataBound};
+use crate::{
+    executor::CheckCapacity,
+    message::{Message, MsgDataBound},
+};
 
 const COMPONENT_NAME: &str = "filter_identical_data";
 
@@ -43,6 +46,7 @@ where
                 None => {
                     cache.insert(key.to_string(), msg.clone());
                     self.output
+                        .check_capacity(0.2, "filter_identical_data")
                         .send(msg)
                         .await
                         .map_err(|_| Error::TokioSyncMpscSend)?;
@@ -58,6 +62,7 @@ where
             // Сообщение новое, сохраняем в кеш и отдаем на выход
             cache.insert(key.to_string(), msg.clone());
             self.output
+                .check_capacity(0.2, "filter_identical_data")
                 .send(msg)
                 .await
                 .map_err(|_| Error::TokioSyncMpscSend)?;
