@@ -6,6 +6,7 @@ use crate::components_config::master_device::DeviceTrait;
 use crate::components_config::spi_master::{self, ConfigDeviceSpiMode};
 use crate::message::MsgDataBound;
 
+// ANCHOR: Config
 /// Конфигурация компонента cmp_esp_spi_master
 pub struct Config<TMsg, TSpi, TPeripheral>
 where
@@ -34,6 +35,7 @@ where
     pub devices:
         Vec<Box<dyn DeviceTrait<TMsg, spi_master::FieldbusRequest, spi_master::FieldbusResponse>>>,
 }
+// ANCHOR: Config
 
 /// Настройки коммуникации с устройствами
 pub struct ConfigDevicesCommSettings {
