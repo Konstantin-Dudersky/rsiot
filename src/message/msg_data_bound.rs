@@ -19,11 +19,6 @@ pub trait MsgDataBound:
     // Перечисление, содержащее названия всех сервисов
     // type TService: ServiceBound;
 
-    // Разрешенные маршруты сообщения
-    // fn define_enabled_routes(&self) -> MsgRoute<Self::TService> {
-    //     MsgRoute::default()
-    // }
-
     /// Задать ограничение времени жизни сообщения
     ///
     /// # Примеры

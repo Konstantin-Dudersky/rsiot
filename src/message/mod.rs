@@ -17,6 +17,7 @@ mod phy_quantity;
 pub mod system_messages;
 mod time_to_live;
 mod timestamp;
+mod value_time;
 
 pub use auth_roles::AuthPermissions;
 pub use error::Error;
@@ -31,5 +32,6 @@ pub use phy_quantity::PhyQuantity;
 pub use strum::EnumString;
 pub use time_to_live::TimeToLiveValue;
 pub use timestamp::Timestamp;
+pub use value_time::ValueTime;
 
 pub use serde::{Deserialize, Serialize};

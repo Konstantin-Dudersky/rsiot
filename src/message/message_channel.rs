@@ -1,6 +1,7 @@
 use std::fmt::Debug;
 
 /// Трейт для канала сообщений
+#[deprecated]
 pub trait IMessageChannel
 where
     Self: Clone + Debug + Send,

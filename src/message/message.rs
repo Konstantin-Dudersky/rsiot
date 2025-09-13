@@ -7,6 +7,7 @@ use uuid::Uuid;
 
 use super::{MsgData, MsgDataBound, MsgTrace, TimeToLiveValue, Timestamp};
 
+// ANCHOR: Message
 /// Сообщение
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Message<TCustom> {
@@ -21,6 +22,7 @@ pub struct Message<TCustom> {
     /// Время жизни сообщения
     ttl: TimeToLiveValue,
 }
+// ANCHOR: Message
 
 impl<TCustom> Message<TCustom>
 where
