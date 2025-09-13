@@ -1,6 +1,8 @@
 use tokio::sync::mpsc;
 use tracing::trace;
 
+use crate::executor::CheckCapacity;
+
 use super::{Error, RequestResponseBound};
 
 pub struct Request<TRequest> {
@@ -16,9 +18,10 @@ where
         while let Some(request) = self.ch_rx_request.recv().await {
             trace!("Request: {:?}", request);
             self.ch_tx_device_to_fieldbus
+                .check_capacity(0.2, "master_device | Request")
                 .send(request)
                 .await
-                .map_err(|_| Error::TokioSyncMpsc)?;
+                .map_err(|_| Error::TokioSyncMpscSend)?;
         }
         Ok(())
     }

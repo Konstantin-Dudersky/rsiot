@@ -3,12 +3,19 @@ use crate::components::shared_tasks;
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error(transparent)]
+    #[error("master_device | TaskFilterIdenticalData: {0}")]
     TaskFilterIdenticalData(shared_tasks::filter_identical_data::Error),
 
-    #[error("TokioTaskJoin: {0}")]
-    TokioTaskJoin(#[from] tokio::task::JoinError),
+    #[error("master_device | TokioTaskJoin: \nsource: {source}")]
+    TokioTaskJoin {
+        #[from]
+        source: tokio::task::JoinError,
+    },
 
-    #[error("TokioSyncMpsc")]
-    TokioSyncMpsc,
+    #[error("master_device | TokioSyncMpsc")]
+    TokioSyncMpscSend,
+
+    /// Закончилось выполнение
+    #[error("master_device | EndExecution")]
+    EndExecution,
 }

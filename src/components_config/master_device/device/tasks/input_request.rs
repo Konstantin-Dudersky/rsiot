@@ -1,6 +1,9 @@
 use tokio::sync::{broadcast, mpsc};
 
-use crate::message::{Message, MsgDataBound};
+use crate::{
+    executor::CheckCapacity,
+    message::{Message, MsgDataBound},
+};
 
 use super::{Buffer, BufferBound, Error};
 
@@ -32,9 +35,10 @@ where
 
             if changed {
                 self.ch_tx_buffer
+                    .check_capacity(0.2, "master_device | InputRequest")
                     .send(())
                     .await
-                    .map_err(|_| Error::TokioSyncMpsc)?;
+                    .map_err(|_| Error::TokioSyncMpscSend)?;
             }
         }
 

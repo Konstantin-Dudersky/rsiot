@@ -2,6 +2,8 @@ use std::time::Duration;
 
 use tokio::{sync::mpsc, time::sleep};
 
+use crate::executor::CheckCapacity;
+
 use super::Error;
 
 pub struct BufferPeriodic {
@@ -14,9 +16,10 @@ impl BufferPeriodic {
         loop {
             sleep(self.period).await;
             self.ch_tx_buffer
+                .check_capacity(0.2, "master_device | BufferPeriodic")
                 .send(())
                 .await
-                .map_err(|_| Error::TokioSyncMpsc)?;
+                .map_err(|_| Error::TokioSyncMpscSend)?;
         }
     }
 }

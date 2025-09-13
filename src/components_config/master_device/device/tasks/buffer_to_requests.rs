@@ -1,6 +1,8 @@
 use tokio::sync::mpsc;
 use tracing::{trace, warn};
 
+use crate::executor::CheckCapacity;
+
 use super::{Buffer, BufferBound, Error, RequestResponseBound};
 
 pub struct BufferToRequests<TRequest, TBuffer> {
@@ -33,9 +35,10 @@ where
             for request in requests {
                 trace!("Request: {:?}", request);
                 self.ch_tx_request
+                    .check_capacity(0.2, "master_device | BufferToRequests")
                     .send(request)
                     .await
-                    .map_err(|_| Error::TokioSyncMpsc)?;
+                    .map_err(|_| Error::TokioSyncMpscSend)?;
             }
         }
         Ok(())

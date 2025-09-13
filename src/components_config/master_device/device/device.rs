@@ -4,14 +4,14 @@ use std::{sync::Arc, time::Duration};
 
 use futures::TryFutureExt;
 use tokio::{
-    sync::{broadcast, mpsc, Mutex},
+    sync::{Mutex, broadcast, mpsc},
     task::JoinSet,
 };
 
 use crate::{components::shared_tasks, message::Message};
 use crate::{executor::join_set_spawn, message::MsgDataBound};
 
-use super::{config::*, tasks, BufferBound, RequestResponseBound};
+use super::{BufferBound, RequestResponseBound, config::*, tasks};
 
 /// Базовое устройство для опроса по шине
 pub struct DeviceBase<TMsg, TFieldbusRequest, TFieldbusResponse, TBuffer>
@@ -79,6 +79,7 @@ where
     /// Запустить работу
     pub async fn spawn(
         self,
+        id: String,
         ch_rx_msgbus_to_device: broadcast::Receiver<Message<TMsg>>,
         ch_tx_device_to_fieldbus: mpsc::Sender<TRequest>,
         ch_rx_fieldbus_to_device: mpsc::Receiver<TResponse>,
@@ -89,7 +90,7 @@ where
 
         let (ch_tx_buffer, ch_rx_buffer) = mpsc::channel::<()>(100);
         let (ch_tx_request, ch_rx_request) = mpsc::channel::<TRequest>(100);
-        let (ch_tx_output_to_filter, ch_rx_output_to_filter) = mpsc::channel::<Message<TMsg>>(100);
+        let (ch_tx_output_to_filter, ch_rx_output_to_filter) = mpsc::channel::<Message<TMsg>>(500);
 
         let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
 
@@ -101,7 +102,7 @@ where
             fn_init_requests: self.fn_init_requests,
             ch_tx_request: ch_tx_request.clone(),
         };
-        task.spawn().await.unwrap();
+        task.spawn().await?;
 
         // Задача создания периодических запросов
         for periodic_request in self.periodic_requests {
@@ -113,7 +114,7 @@ where
             };
             join_set_spawn(
                 &mut task_set,
-                "master_device | periodic_request",
+                &format!("master_device | periodic_request | {id}"),
                 task.spawn(),
             );
         }
@@ -125,7 +126,11 @@ where
             ch_tx_buffer: ch_tx_buffer.clone(),
             fn_msgs_to_buffer: self.fn_msgs_to_buffer,
         };
-        join_set_spawn(&mut task_set, "master_device | input_request", task.spawn());
+        join_set_spawn(
+            &mut task_set,
+            &format!("master_device | input_request | {id}"),
+            task.spawn(),
+        );
 
         // Задача периодического формирования запросов на основе буфера
         let task = tasks::BufferPeriodic {
@@ -134,7 +139,7 @@ where
         };
         join_set_spawn(
             &mut task_set,
-            "master_device | buffer_periodic",
+            &format!("master_device | buffer_periodic | {id}"),
             task.spawn(),
         );
 
@@ -147,7 +152,7 @@ where
         };
         join_set_spawn(
             &mut task_set,
-            "master_device | buffer_to_requests",
+            &format!("master_device | buffer_to_requests | {id}"),
             task.spawn(),
         );
 
@@ -156,7 +161,11 @@ where
             ch_rx_request,
             ch_tx_device_to_fieldbus,
         };
-        join_set_spawn(&mut task_set, "master_device | request", task.spawn());
+        join_set_spawn(
+            &mut task_set,
+            &format!("master_device | request | {id}"),
+            task.spawn(),
+        );
 
         // Задача обработки ответа
         let task = tasks::Response {
@@ -167,7 +176,11 @@ where
             fn_response_to_buffer: self.fn_response_to_buffer,
             fn_buffer_to_msgs: self.fn_buffer_to_msgs,
         };
-        join_set_spawn(&mut task_set, "master_device | response", task.spawn());
+        join_set_spawn(
+            &mut task_set,
+            &format!("master_device | response | {id}"),
+            task.spawn(),
+        );
 
         // Задачи фильтрации одинаковых сообщений
         let task = shared_tasks::filter_identical_data::FilterIdenticalData {
@@ -176,7 +189,7 @@ where
         };
         join_set_spawn(
             &mut task_set,
-            "master_device | filter_identical_data",
+            &format!("master_device | filter_identical_data | {id}"),
             task.spawn().map_err(super::Error::TaskFilterIdenticalData),
         );
 

@@ -3,6 +3,8 @@ use std::time::Duration;
 use tokio::{sync::mpsc, time::sleep};
 use tracing::{trace, warn};
 
+use crate::executor::CheckCapacity;
+
 use super::{Buffer, Error, RequestResponseBound};
 
 pub struct PeriodicRequest<TRequest, TBuffer> {
@@ -34,9 +36,10 @@ where
             for request in requests {
                 trace!("Request: {:?}", request);
                 self.ch_tx_request
+                    .check_capacity(0.2, "master_device | PeriodicRequest")
                     .send(request)
                     .await
-                    .map_err(|_| Error::TokioSyncMpsc)?;
+                    .map_err(|_| Error::TokioSyncMpscSend)?;
             }
 
             sleep(self.period).await

@@ -1,7 +1,10 @@
 use tokio::sync::mpsc;
 use tracing::{trace, warn};
 
-use crate::message::{Message, MsgDataBound};
+use crate::{
+    executor::CheckCapacity,
+    message::{Message, MsgDataBound},
+};
 
 use super::{Buffer, Error, RequestResponseBound};
 
@@ -33,18 +36,20 @@ where
             for msg in msgs {
                 let msg = Message::new_custom(msg);
                 self.ch_tx_output_to_filter
+                    .check_capacity(0.2, "master_device | Response | ch_tx_output_to_filter")
                     .send(msg)
                     .await
-                    .map_err(|_| Error::TokioSyncMpsc)?;
+                    .map_err(|_| Error::TokioSyncMpscSend)?;
             }
 
             match buffer_changed {
                 Ok(buffer_changed) => {
                     if buffer_changed {
                         self.ch_tx_buffer
+                            .check_capacity(0.2, "master_device | Response | ch_tx_buffer")
                             .send(())
                             .await
-                            .map_err(|_| Error::TokioSyncMpsc)?;
+                            .map_err(|_| Error::TokioSyncMpscSend)?;
                     }
                 }
                 Err(e) => {
