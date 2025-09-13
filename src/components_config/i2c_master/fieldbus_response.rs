@@ -2,6 +2,7 @@ use std::time::Instant;
 
 use crate::components_config::master_device::RequestResponseBound;
 
+// ANCHOR: FieldbusResponse
 /// Структура отдельного ответа при коммуникации по шине SPI
 #[derive(Clone, Debug)]
 pub struct FieldbusResponse {
@@ -18,5 +19,6 @@ pub struct FieldbusResponse {
     /// Данные, содержащие ответы
     pub payload: Result<Vec<Vec<u8>>, String>,
 }
+// ANCHOR: FieldbusResponse
 
 impl RequestResponseBound for FieldbusResponse {}

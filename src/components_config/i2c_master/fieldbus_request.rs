@@ -1,8 +1,11 @@
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 use crate::components_config::master_device::RequestResponseBound;
 
-/// Структура отдельного запроса на коммуникацию по шине SPI
+use super::Operation;
+
+// ANCHOR: FieldbusRequest
+/// Структура отдельного запроса на коммуникацию по шине I2C
 #[derive(Clone, Debug)]
 pub struct FieldbusRequest {
     /// Время создания запроса.
@@ -21,6 +24,7 @@ pub struct FieldbusRequest {
     /// Массив операций
     pub operations: Vec<Operation>,
 }
+// ANCHOR: FieldbusRequest
 
 impl FieldbusRequest {
     /// Создание запроса. Адрес задается позже
@@ -32,36 +36,6 @@ impl FieldbusRequest {
             operations,
         }
     }
-}
-
-/// Виды операций
-#[derive(Clone, Debug)]
-pub enum Operation {
-    /// Задержка между операциями
-    Delay {
-        /// Значение задержки
-        delay: Duration,
-    },
-
-    /// Запрос записи и  чтения. Вложенные данные - количество байт для чтения
-    WriteRead {
-        /// Данные для записи
-        write_data: Vec<u8>,
-        /// Количество байт для чтения
-        read_size: u8,
-    },
-
-    /// Запрос записи
-    Write {
-        /// Данные для записи
-        write_data: Vec<u8>,
-    },
-
-    /// Запрос чтения
-    Read {
-        /// Количество байт для чтения
-        read_size: u8,
-    },
 }
 
 impl RequestResponseBound for FieldbusRequest {}

@@ -3,34 +3,34 @@ use crate::{components::shared_tasks, components_config::master_device, executor
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error("CmpOutput: {0}")]
+    #[error("cmp_linux_i2c_master | CmpOutput: {0}")]
     CmpOutput(ComponentError),
 
-    #[error("FnOutput: {0}")]
+    #[error("cmp_linux_i2c_master | FnInput: {0}")]
     FnInput(anyhow::Error),
 
-    #[error("FnOutput: {0}")]
+    #[error("cmp_linux_i2c_master | FnOutput: {0}")]
     FnOutput(anyhow::Error),
 
-    #[error(transparent)]
+    #[error("cmp_linux_i2c_master | DeviceError: {0}")]
     DeviceError(#[from] master_device::Error),
 
-    #[error(transparent)]
+    #[error("cmp_linux_i2c_master | TaskMpscToMsgBus: {0}")]
     TaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus::Error),
 
-    #[error(transparent)]
+    #[error("cmp_linux_i2c_master | TaskFilter: {0}")]
     TaskFilter(shared_tasks::filter_identical_data::Error),
 
-    #[error(transparent)]
+    #[error("cmp_linux_i2c_master | TaskMsgbusToBroadcast: {0}")]
     TaskMsgbusToBroadcast(shared_tasks::msgbus_to_broadcast::Error),
 
-    #[error("TokioSyncMpsc")]
+    #[error("cmp_linux_i2c_master | TokioSyncMpsc")]
     TokioSyncMpsc,
 
-    #[error("TokioTaskJoin: {0}")]
+    #[error("cmp_linux_i2c_master | TokioTaskJoin: {0}")]
     TokioTaskJoin(#[from] tokio::task::JoinError),
 
-    #[error(transparent)]
+    #[error("cmp_linux_i2c_master | LinuxI2CBusError: {0}")]
     LinuxI2CBusError(#[from] linux_embedded_hal::i2cdev::linux::LinuxI2CError),
 }
 

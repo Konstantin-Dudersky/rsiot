@@ -3,6 +3,7 @@ use crate::{
     message::MsgDataBound,
 };
 
+// ANCHOR: Config
 /// Конфигурация компонента cmp_linux_i2c_master.
 pub struct Config<TMsg>
 where
@@ -15,3 +16,4 @@ where
     pub devices:
         Vec<Box<dyn DeviceTrait<TMsg, i2c_master::FieldbusRequest, i2c_master::FieldbusResponse>>>,
 }
+// ANCHOR: Config

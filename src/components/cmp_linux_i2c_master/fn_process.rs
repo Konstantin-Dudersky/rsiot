@@ -3,7 +3,7 @@ use linux_embedded_hal::i2cdev::{
     linux::{LinuxI2CBus, LinuxI2CError, LinuxI2CMessage},
 };
 use tokio::{sync::mpsc, task::JoinSet, time::sleep};
-use tracing::trace;
+use tracing::{trace, warn};
 
 use crate::{
     components::shared_tasks::fn_process_master::FnProcessMaster,
@@ -11,7 +11,7 @@ use crate::{
         i2c_master,
         master_device::{FieldbusRequestWithIndex, FieldbusResponseWithIndex},
     },
-    executor::{join_set_spawn, CmpInOut},
+    executor::{CmpInOut, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -43,8 +43,11 @@ where
         output: ch_tx_fieldbus_to_devices,
         dev_i2c: config.dev_i2c,
     };
-
-    join_set_spawn(&mut task_set, "cmp_linux_i2c_master", task.spawn());
+    join_set_spawn(
+        &mut task_set,
+        "cmp_linux_i2c_master | i2c_comm",
+        task.spawn(),
+    );
 
     while let Some(res) = task_set.join_next().await {
         res??
@@ -79,7 +82,7 @@ impl I2cComm {
                     let response = match response {
                         Ok(response) => response,
                         Err(err) => {
-                            trace!("Error during i2c operation: {:?}", err);
+                            warn!("Error during i2c operation: {:?}", err);
                             error = err.to_string();
                             break;
                         }

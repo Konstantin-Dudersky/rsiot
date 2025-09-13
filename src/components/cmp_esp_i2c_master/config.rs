@@ -4,6 +4,7 @@ use esp_idf_svc::hal::{gpio::AnyIOPin, i2c::I2c, peripheral::Peripheral};
 
 use crate::{drivers_i2c::I2cDevices, message::MsgDataBound};
 
+// ANCHOR: Config
 /// Конфигурация cmp_esp_i2c_master
 pub struct Config<TMsg, TI2c, TPeripheral>
 where
@@ -32,6 +33,7 @@ where
     /// Конфигурация устройств по шине
     pub devices: Vec<I2cDevices<TMsg>>,
 }
+// ANCHOR: Config
 
 /// Скорость шины
 #[derive(Clone)]
