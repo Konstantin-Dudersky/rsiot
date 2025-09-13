@@ -5,6 +5,8 @@ pub mod go2rtc;
 pub mod grafana;
 pub mod influxdb_v2;
 pub mod loki;
+pub mod nanomq;
+pub mod pgadmin;
 pub mod portainer;
 pub mod redis;
 pub mod rust;

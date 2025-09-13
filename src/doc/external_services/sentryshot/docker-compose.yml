@@ -1,13 +1,18 @@
 services:
-  sentryshot:
+  service_sentryshot:
+    container_name: service_sentryshot
+    hostname: service_sentryshot
+    image: codeberg.org/sentryshot/sentryshot:v0.3.0
     shm_size: 500m
-    image: codeberg.org/sentryshot/sentryshot:v0.2.17
-    ports:
-      - 2020:2020
+    network_mode: host
     environment:
       - TZ=Europe/Minsk
-    profiles:
-      - target
     volumes:
-      - ./config_services/sentryshot/configs:/app/configs
-      - ./config_services/sentryshot/storage:/app/storage
+      - ./service_sentryshot/configs:/app/configs
+      - sentryshot_volume:/app/storage
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
+volumes:
+  sentryshot_volume:
+    name: sentryshot_volume

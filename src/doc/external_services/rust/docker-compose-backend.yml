@@ -3,9 +3,6 @@ services:
     command: ./backend
     container_name: backend
     depends_on:
-      redis:
-        condition: service_healthy
-        restart: true
       loki:
         condition: service_healthy
         restart: true

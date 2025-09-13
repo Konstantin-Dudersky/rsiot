@@ -1,0 +1,18 @@
+services:
+  service_nanomq:
+    container_name: service_nanomq
+    hostname: service_nanomq
+    image: emqx/nanomq:latest
+    networks:
+      - network_internal
+    ports:
+      - "1883:1883" # mqtt
+      - "8083:8083" # mqtt over websocket
+      - "8883:8883" # mqtt over tls
+    profiles:
+      - dev
+      - target
+    restart: always
+
+networks:
+  network_internal:

@@ -1,0 +1,22 @@
+services:
+  service_pgadmin:
+    container_name: service_pgadmin
+    hostname: service_pgadmin
+    image: "dpage/pgadmin4:9.4.0"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=123
+      - PGADMIN_LISTEN_ADDRESS=0.0.0.0
+    networks:
+      - network_internal
+    ports:
+      - "8006:80"
+    volumes:
+      - pgadmin_volume:/var/lib/pgadmin
+
+networks:
+  network_internal:
+
+volumes:
+  pgadmin_volume:
+    name: pgadmin_volume
