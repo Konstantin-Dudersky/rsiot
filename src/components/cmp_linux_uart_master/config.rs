@@ -8,6 +8,7 @@ use crate::components_config::uart_general::{
 };
 use crate::message::MsgDataBound;
 
+// ANCHOR: Config
 /// Конфигурация cmp_linux_uart_master
 #[derive(Debug)]
 pub struct Config<TMsg>
@@ -64,6 +65,7 @@ where
     /// Массив устройств
     pub devices: Vec<Box<dyn DeviceTrait<TMsg, FieldbusRequest, FieldbusResponse>>>,
 }
+// ANCHOR: Config
 
 impl<TMsg> Default for Config<TMsg>
 where

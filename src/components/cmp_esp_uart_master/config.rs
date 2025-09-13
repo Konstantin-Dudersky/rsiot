@@ -8,6 +8,7 @@ use crate::components_config::uart_general::{
 };
 use crate::message::MsgDataBound;
 
+// ANCHOR: Config
 /// Конфигурация cmp_linux_uart_master
 pub struct Config<TMsg, TUart, TPeripheral>
 where
@@ -64,3 +65,4 @@ where
     // pub devices: Vec<TestDevice<TMsg>>,
     pub devices: Vec<Box<dyn DeviceTrait<TMsg, UartRequest, UartResponse, u8>>>,
 }
+// ANCHOR: Config
