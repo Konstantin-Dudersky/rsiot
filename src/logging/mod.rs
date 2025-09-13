@@ -147,7 +147,7 @@ impl LogConfig {
         // log_esp ---------------------------------------------------------------------------------
         #[cfg(feature = "log_esp")]
         {
-            use esp_idf_svc::log::{set_target_level, EspLogger};
+            use esp_idf_svc::log::{EspLogger, set_target_level};
             use log::LevelFilter as LogLevelFilter;
             use tracing::level_filters::LevelFilter as TracingLevelFilter;
 
@@ -170,7 +170,7 @@ impl LogConfig {
         // log_console -----------------------------------------------------------------------------
         #[cfg(feature = "log_console")]
         let layer_console = {
-            use tracing_subscriber::{fmt, EnvFilter, Layer};
+            use tracing_subscriber::{EnvFilter, Layer, fmt};
 
             let global_filter = EnvFilter::new(filter_value(&self.filter)?);
             let layer = fmt::Layer::new().pretty().with_filter(global_filter);
@@ -184,9 +184,10 @@ impl LogConfig {
         #[cfg(feature = "log_file")]
         let layer_file = {
             use tracing_appender::rolling;
-            use tracing_subscriber::{fmt, EnvFilter, Layer};
+            use tracing_subscriber::{EnvFilter, Layer, fmt};
 
             let file_appender = rolling::hourly("./logs", "log");
+            // TODO - не работает неблокирующий
             // let (non_blocking, _guard) = non_blocking(file_appender);
             let global_filter = EnvFilter::new(filter_value(&self.filter)?);
             let layer = fmt::layer()
@@ -206,7 +207,9 @@ impl LogConfig {
 
             let global_filter = EnvFilter::new(filter_value(&self.filter)?);
 
-            let service = "TODO";
+            let service = env::args().collect::<Vec<String>>()[0].clone();
+            let service = service_cleanup(&service)?;
+
             let loki_url = url::Url::parse(&self.loki_url)?;
             let (layer_loki, task_loki) = tracing_loki::builder()
                 .label("service", service)?
@@ -238,7 +241,7 @@ impl LogConfig {
         #[cfg(feature = "log_webconsole")]
         let layer_webconsole = {
             console_error_panic_hook::set_once();
-            use tracing_subscriber::{fmt::time::ChronoLocal, EnvFilter, Layer};
+            use tracing_subscriber::{EnvFilter, Layer, fmt::time::ChronoLocal};
             use tracing_web::MakeWebConsoleWriter;
 
             let global_filter = EnvFilter::new(filter_value(&self.filter)?);
@@ -310,4 +313,23 @@ pub enum LogConfigFilter {
     FromEnv,
     /// Задать значение в строке
     String(&'static str),
+}
+
+/// Удалить путь из названия файла
+fn service_cleanup(input: &str) -> Result<&str> {
+    input.split('/').next_back().ok_or(Error::ServiceName)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_service_cleanup() -> anyhow::Result<()> {
+        assert_eq!("service", service_cleanup("./service")?);
+        assert_eq!("service", service_cleanup("../dir/service")?);
+        assert_eq!("service", service_cleanup("service")?);
+        assert_eq!("", service_cleanup("")?);
+        Ok(())
+    }
 }

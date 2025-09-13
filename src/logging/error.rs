@@ -18,4 +18,7 @@ pub enum Error {
 
     #[error("Failed to read RUST_LOG environment variable: {0}")]
     Env(#[from] std::env::VarError),
+
+    #[error("Failed to parse service name")]
+    ServiceName,
 }
