@@ -16,7 +16,7 @@ mod messages;
 
 #[cfg(feature = "cmp_filesystem")]
 #[tokio::main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     use std::time::Duration;
 
     use rsiot::executor::*;
@@ -35,8 +35,9 @@ async fn main() {
         .add_cmp(config_filesystem::new())
         .add_cmp(config_logger::new())
         .wait_result()
-        .await
-        .unwrap();
+        .await?;
+
+    Err(anyhow::Error::msg("Program end"))
 }
 
 #[cfg(not(feature = "cmp_filesystem"))]

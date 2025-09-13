@@ -13,7 +13,7 @@ mod message;
 
 #[cfg(all(feature = "single-thread", feature = "executor"))]
 #[tokio::main(flavor = "current_thread")]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     use std::time::Duration;
 
     use message::Message;
@@ -37,10 +37,13 @@ async fn main() {
             .add_cmp(example_component1::Cmp::new(example_component1::Config {}))
             .add_cmp(example_component2::Cmp::new(example_component2::Config {}));
 
-        cmps.wait_result().await.unwrap();
+        cmps.wait_result().await?;
+        Ok(()) as anyhow::Result<()>
     });
 
     local_set.await;
+
+    Err(anyhow::Error::msg("Program end"))
 }
 
 #[cfg(not(all(feature = "single-thread", feature = "executor")))]

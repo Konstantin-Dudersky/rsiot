@@ -13,7 +13,7 @@ mod message;
 
 #[cfg(all(not(feature = "single-thread"), feature = "executor"))]
 #[tokio::main(flavor = "multi_thread")]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     use std::time::Duration;
 
     use rsiot::executor::{ComponentExecutor, ComponentExecutorConfig};
@@ -33,8 +33,9 @@ async fn main() {
         .add_cmp(example_component1::Cmp::new(example_component1::Config {}))
         .add_cmp(example_component2::Cmp::new(example_component2::Config {}))
         .wait_result()
-        .await
-        .unwrap();
+        .await?;
+
+    Err(anyhow::Error::msg("Program end"))
 }
 
 #[cfg(not(all(not(feature = "single-thread"), feature = "executor")))]

@@ -9,12 +9,9 @@
 //! cargo run --package rsiot-extra-components --example cmp_derive --features single-thread
 //! ```
 
-#[cfg(all(feature = "executor", feature = "log_console", feature = "log_tokio"))]
+#[cfg(feature = "executor")]
 fn main() -> anyhow::Result<()> {
-    use std::{
-        net::{Ipv4Addr, SocketAddrV4},
-        time::Duration,
-    };
+    use std::time::Duration;
 
     use tokio::runtime;
     #[cfg(feature = "single-thread")]
@@ -27,17 +24,10 @@ fn main() -> anyhow::Result<()> {
             cmp_inject_periodic, cmp_logger,
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        logging::{LogConfig, LogConfigFilter},
-        message::{example_message::*, *},
+        message::example_message::*,
     };
 
-    LogConfig {
-        filter: LogConfigFilter::String("info"),
-        tokio_console_addr: SocketAddrV4::new(Ipv4Addr::UNSPECIFIED, 6669),
-        loki_url: String::from("http://service_loki:3100"),
-    }
-    .run()
-    .unwrap();
+    tracing_subscriber::fmt().init();
 
     #[derive(Clone, Default, PartialEq)]
     struct ValueInstantString {
@@ -45,21 +35,18 @@ fn main() -> anyhow::Result<()> {
         pub bool: Option<bool>,
     }
 
-    let derive_config = cmp_derive::Config {
+    let derive_config = cmp_derive::Config::<Custom> {
         derive_items: vec![Box::new(DeriveItem {
             store: ValueInstantString::default(),
-            fn_input: |msg, store| match &msg.data {
-                MsgData::Custom(data) => match data {
-                    Custom::ValueInstantF64(content) => store.f64 = Some(*content),
-                    Custom::ValueInstantBool(content) => store.bool = Some(*content),
-                    _ => (),
-                },
-                MsgData::System(_) => (),
+            fn_input: |msg: &Custom, store| match msg {
+                Custom::ValueInstantF64(content) => store.f64 = Some(*content),
+                Custom::ValueInstantBool(content) => store.bool = Some(*content),
+                _ => (),
             },
             fn_output: |store| {
                 let msg_content =
                     format!("New Message: bool: {}, f64: {}", store.bool?, store.f64?);
-                let msg = Message::new(MsgData::Custom(Custom::ValueInstantString(msg_content)));
+                let msg = Custom::ValueInstantString(msg_content);
                 Some(vec![msg])
             },
         })],
@@ -124,10 +111,10 @@ fn main() -> anyhow::Result<()> {
             Ok(()) as anyhow::Result<()>
         })?;
 
-    Ok(())
+    Err(anyhow::Error::msg("Stop execution"))
 }
 
-#[cfg(not(all(feature = "executor", feature = "log_console", feature = "log_tokio")))]
+#[cfg(not(feature = "executor"))]
 fn main() {
     unimplemented!()
 }

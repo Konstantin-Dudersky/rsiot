@@ -9,7 +9,7 @@
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> anyhow::Result<()> {
     use tokio::{task::LocalSet, time::Duration};
-    use tracing::{level_filters::LevelFilter, Level};
+    use tracing::{Level, level_filters::LevelFilter};
 
     use rsiot::{
         components::{cmp_inject_periodic, cmp_logger},
@@ -50,8 +50,8 @@ async fn main() -> anyhow::Result<()> {
             .add_cmp(cmp_logger::Cmp::new(logger_config))
             .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
             .wait_result()
-            .await
-            .unwrap();
+            .await?;
+        Ok(()) as anyhow::Result<()>
     });
 
     local_set.await;

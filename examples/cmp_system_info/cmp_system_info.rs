@@ -6,7 +6,7 @@
 
 #[cfg(feature = "cmp_system_info")]
 #[tokio::main()]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     use std::time::Duration;
 
     use rsiot::{
@@ -22,6 +22,7 @@ async fn main() {
         buffer_size: 100,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
+        fn_tokio_metrics: |_| None,
     };
 
     let system_info_config = cmp_system_info::Config {
@@ -35,8 +36,9 @@ async fn main() {
     ComponentExecutor::<Custom>::new(executor_config)
         .add_cmp(cmp_system_info::Cmp::new(system_info_config))
         .wait_result()
-        .await
-        .unwrap();
+        .await?;
+
+    Err(anyhow::Error::msg("Program end"))
 }
 
 #[cfg(not(feature = "cmp_system_info"))]
