@@ -1,0 +1,48 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 0
+  }
+}
+
+MsgBusIn: MsgBus {
+    shape: oval
+}
+
+Input
+
+Buffer {
+    style.stroke-dash: 5
+}
+
+Periodic
+
+SendToCan
+
+CAN {
+    style.stroke-dash: 5
+}
+
+RcvFromCan
+
+Output
+
+MsgBusOut: MsgBus {
+    shape: oval
+}
+
+MsgBusIn -> Input
+
+Input -> SendToCan: mpsc::<CanFrame>
+Input -> Buffer
+
+Periodic -> SendToCan: mpsc::<CanFrame>
+Periodic -> Buffer
+
+SendToCan -> CAN
+
+CAN -> RcvFromCan
+
+RcvFromCan -> Output: mpsc::<CanFrame>
+
+Output -> MsgBusOut
