@@ -3,12 +3,8 @@
 //! Конфигурация описывается в элементах языка Rust, не зависит от конкретных коммуникационных
 //! библиотек. Конкретные реализации компонентов импортируют этот крейт.
 
-// #[cfg(any(
-//     feature = "cmp_esp",
-//     feature = "cmp_http_client",
-//     feature = "cmp_http_client_wasm",
-// ))]
-// pub mod http_client_old;
+#[cfg(feature = "cmp_linux_can")]
+pub mod can_general;
 
 pub mod http_client;
 
@@ -19,9 +15,6 @@ pub mod http_server;
 
 #[cfg(feature = "executor")]
 pub mod i2c_master;
-
-#[cfg(feature = "cmp_influxdb")]
-pub mod influxdb_v2;
 
 #[cfg(feature = "cmp_influxdb")]
 pub mod influxdb3;

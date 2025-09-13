@@ -11,6 +11,7 @@
           // "target": "aarch64-unknown-linux-gnu",
           // "features": [
           //   "rustdoc",
+          // "cmp_linux_gpio",
           // "cmp_math"
           //   "cmp_plc",
           // "cmp_raspberrypi"
@@ -23,6 +24,7 @@
           //   "rustdoc",
           //   "single-thread",
           //   "cmp_influxdb",
+          // "cmp_linux_gpio",
           //   "cmp_linux_i2c_master",
           //   "cmp_linux_spi_master",
           //   "cmp_linux_uart_master",
@@ -34,7 +36,7 @@
           // "target": "riscv32imc-esp-espidf",
           // "features": [
           //   "executor",
-          //   // "log_esp",
+          //    "log_esp",
           //   "cmp_esp",
           //   "cmp_plc",
           //   "serde_postcard"
@@ -42,7 +44,7 @@
           // ---- x86_64-unknown-linux-gnu ---------------------------------------------------------
           "target": "x86_64-unknown-linux-gnu",
           "features": [
-            // "rustdoc",
+            "rustdoc",
             // "executor",
             // "single-thread",
             //   "env_vars",
@@ -52,10 +54,12 @@
             // "cmp_http_server",
             // "cmp_filesystem",
             // "cmp_influxdb",
-            "cmp_linux_i2c_master",
-            "cmp_linux_spi_master",
+            "cmp_linux_can",
+            // "cmp_linux_gpio",
+            // "cmp_linux_i2c_master",
+            // "cmp_linux_spi_master",
             // "cmp_linux_uart_master",
-            // "cmp_math",
+            "cmp_math"
             // "cmp_modbus_client",
             // "cmp_mqtt_client",
             // "cmp_plc",
@@ -71,22 +75,22 @@
             //   "serde_json",
             //   "serde_postcard",
             //   "serde_toml",
-            //   "log_console",
-            "log_file",
-            "log_loki",
-            "log_tokio"
+            // "log_console",
+            // "log_file",
+            // "log_loki",
+            // "log_tokio"
           ]
           // ---- wasm32-unknown-unknown -----------------------------------------------------------
           // "target": "wasm32-unknown-unknown",
           // "features": [
           // "single-thread", // Активировать обязательно !
-          //   "rustdoc",
+          // "rustdoc",
           // "executor",
           // "logging",
-          //   "cmp_http_client_wasm",
+          // "cmp_http_client_wasm"
           //   "cmp_leptos",
           //   "cmp_plc",
-          //   "cmp_websocket_client_wasm",
+          // "cmp_websocket_client_wasm"
           //   "cmp_webstorage",
           //   "serde_json",
           //   "serde_toml"

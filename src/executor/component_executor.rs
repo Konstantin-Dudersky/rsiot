@@ -9,8 +9,8 @@ use uuid::Uuid;
 use crate::message::{system_messages::*, *};
 
 use super::{
-    component::IComponent, error::ComponentError, join_set_spawn, sleep, types::FnAuth, Cache,
-    CmpInOut, TokioRuntimeMetrics,
+    Cache, CmpInOut, TokioRuntimeMetrics, component::IComponent, error::ComponentError,
+    join_set_spawn, sleep, types::FnAuth,
 };
 
 const UPDATE_TTL_PERIOD: Duration = Duration::from_millis(1000);

@@ -18,7 +18,7 @@ fn test_wasm() {
         #[component]
         fn App() -> impl IntoView {}
 
-        configure_logging("info").unwrap();
+        configure_logging("info")?;
 
         #[derive(Default, Clone, Store)]
         struct GlobalStore {}

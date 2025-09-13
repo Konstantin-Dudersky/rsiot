@@ -145,6 +145,7 @@
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 #![warn(rustdoc::bare_urls)]
 #![warn(missing_docs)]
+#![warn(clippy::unwrap_used)]
 
 pub mod components_config;
 pub mod message;

@@ -110,6 +110,22 @@ pub mod cmp_inject_periodic;
 #[cfg(wasm32_unknown_unknown)]
 pub mod cmp_leptos;
 
+#[cfg(feature = "cmp_linux_can")]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
+pub mod cmp_linux_can;
+
+#[cfg(feature = "cmp_linux_gpio")]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
+pub mod cmp_linux_gpio;
+
 #[cfg(feature = "cmp_linux_i2c_master")]
 #[cfg(any(
     aarch64_unknown_linux_gnu,
@@ -198,6 +214,14 @@ pub mod cmp_telegram;
     x8664_unknown_linux_gnu
 ))]
 pub mod cmp_timescaledb;
+
+#[cfg(feature = "cmp_timescaledb")]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
+pub mod cmp_timescaledb_reader;
 
 #[cfg(feature = "cmp_websocket_client")]
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]

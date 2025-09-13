@@ -18,6 +18,7 @@ pub type FnPublish<TMsg> = fn(&TMsg, &MqttMsgGen) -> anyhow::Result<Option<MqttM
 pub type FnSubscribe<TMsg> =
     fn(&MqttMsg, &MqttMsgGen) -> anyhow::Result<Option<Vec<Message<TMsg>>>>;
 
+// ANCHOR: Config
 /// Конфигурация cmp_mqtt_client
 #[derive(Clone)]
 pub struct Config<TMsg>
@@ -52,7 +53,9 @@ where
     /// Настройка подписки на данные из брокера
     pub subscribe: ConfigSubscribe<TMsg>,
 }
+// ANCHOR: Config
 
+// ANCHOR: ConfigPublish
 /// Конфигурация настроек публикации на брокере
 #[derive(Clone)]
 pub enum ConfigPublish<TMsg>
@@ -61,6 +64,7 @@ where
 {
     /// Не публиковать
     NoPublish,
+
     /// Публиковать
     Publish {
         /// Функция принимает входящие сообщения и возвращает возможную структуру для публикации в
@@ -68,7 +72,9 @@ where
         fn_publish: FnPublish<TMsg>,
     },
 }
+// ANCHOR: ConfigPublish
 
+// ANCHOR: ConfigSubscribe
 /// Конфигурация настроек подписки на сообщения из брокера
 #[derive(Clone)]
 pub enum ConfigSubscribe<TMsg>
@@ -77,11 +83,14 @@ where
 {
     /// Не подписываться
     NoSubscribe,
+
     /// Подписаться
     Subscribe {
         /// Токен
         token: String,
+
         /// Функция принимает сообщения из брокера и формирует возможный массив исходящих сообщений
         fn_subscribe: FnSubscribe<TMsg>,
     },
 }
+// ANCHOR: ConfigSubscribe

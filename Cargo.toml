@@ -1,13 +1,13 @@
 [package]
 categories = ["api-bindings", "gui", "network-programming"]
 description = "Метакрейт, импортирующий все другие крейты через флаги feature"
-edition = "2021"
+edition = "2024"
 keywords = ["iot", "scada"]
 license = "MIT OR Apache-2.0"
 name = "rsiot"
 readme = "README.md"
 repository = "https://github.com/Konstantin-Dudersky/rsiot"
-rust-version = "1.75.0"
+rust-version = "1.89.0"
 version = "0.0.83"
 
 
@@ -73,6 +73,7 @@ palette = { version = "0.7.4", features = ["named"], optional = true }
 serde_json = { version = "1.0.113", optional = true }
 sha2 = { version = "0.10.8", optional = true }
 slint = { version = "1.4.1", optional = true }
+socketcan = { version = "3.5.0", features = ["tokio"], optional = true }
 sqlx = { version = "0.8.6", features = [
     "macros",
     "postgres",
@@ -264,6 +265,12 @@ cmp_leptos = [
     "dep:wasm-bindgen",
     "dep:web-sys",
 ]
+
+## Компонент для коммуникации через интерфейс CAN на системе Linux
+cmp_linux_can = ["executor", "dep:socketcan"]
+
+## Комонент для взаимодействия с GPIO на системе Linux
+cmp_linux_gpio = ["executor", "dep:linux-embedded-hal"]
 
 ## Комонент для коммуникации через порт I2C
 cmp_linux_i2c_master = ["executor", "dep:linux-embedded-hal"]
