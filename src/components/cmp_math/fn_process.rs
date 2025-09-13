@@ -6,11 +6,11 @@ use tokio::{
 
 use crate::{
     components::shared_tasks,
-    executor::{join_set_spawn, CmpInOut},
+    executor::{CmpInOut, join_set_spawn},
     message::{Message, MsgDataBound},
 };
 
-use super::{algs, Algs, Config, Error, IntMsgBound, Result};
+use super::{Algs, Config, Error, IntMsgBound, Result, algs};
 
 const BUFFER_SIZE: usize = 1000;
 
@@ -97,6 +97,57 @@ where
                     task.spawn(),
                 );
             }
+
+            Algs::SMA {
+                fn_input_value,
+                fn_input_time_window,
+                fn_output,
+            } => {
+                let task = algs::sma::Task {
+                    input: ch_rx_into_alg.resubscribe(),
+                    output: ch_tx_from_alg.clone(),
+                    fn_input_value,
+                    fn_input_time_window,
+                    fn_output,
+                };
+                join_set_spawn(&mut task_set, "cmp_math | sma", task.spawn());
+            }
+
+            Algs::EMA {
+                kind,
+                fn_input_value,
+                fn_input_time_window,
+                fn_output,
+            } => {
+                let task = algs::ema::Task {
+                    input: ch_rx_into_alg.resubscribe(),
+                    output: ch_tx_from_alg.clone(),
+                    fn_input_value,
+                    fn_input_time_window,
+                    fn_output,
+                    kind,
+                };
+                join_set_spawn(&mut task_set, "cmp_math | sma", task.spawn());
+            }
+
+            Algs::Derivative {
+                fn_input_value,
+                fn_input_time_window,
+                normalization_time,
+                gamma,
+                fn_output,
+            } => {
+                let task = algs::derivative::Task {
+                    input: ch_rx_into_alg.resubscribe(),
+                    output: ch_tx_from_alg.clone(),
+                    fn_input_value,
+                    fn_input_time_window,
+                    normalization_time,
+                    gamma,
+                    fn_output,
+                };
+                join_set_spawn(&mut task_set, "cmp_math | derivative", task.spawn());
+            }
         };
     }
 
@@ -106,7 +157,7 @@ where
         output_to_msgbus: ch_tx_output_to_msgbus,
         fn_output: config.fn_output,
     };
-    join_set_spawn(&mut task_set, "cmp_math", task.spawn());
+    join_set_spawn(&mut task_set, "cmp_math | output", task.spawn());
 
     let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
         input: ch_rx_output_to_msgbus,
@@ -114,7 +165,7 @@ where
     };
     join_set_spawn(
         &mut task_set,
-        "cmp_math",
+        "cmp_math | mpsc_to_msgbus",
         task.spawn().map_err(Error::TaskMpscToMsgbus),
     );
 

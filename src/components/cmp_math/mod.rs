@@ -6,7 +6,7 @@ mod config;
 mod error;
 mod fn_process;
 
-pub use algs::Algs;
+pub use algs::{Algs, EmaKind, Gamma};
 pub use component::Cmp;
 pub use config::{Config, IntMsgBound};
 pub use error::Error;

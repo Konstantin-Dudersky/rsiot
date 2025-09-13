@@ -36,12 +36,12 @@ where
                 let avg = buffer.iter().sum::<f64>() / buffer.len() as f64;
                 let output_int_msg = (self.fn_output)(avg);
                 self.output.send(output_int_msg).await.map_err(|_| {
-                    Error::AlgTaskUnexpectedEnd(String::from("AlgLastOverTimeWindow"))
+                    Error::AlgTaskUnexpectedEnd(String::from("AlgSimpleMovingAverage"))
                 })?;
             };
         }
 
-        let err = String::from("AlgLastOverTimeWindow");
+        let err = String::from("AlgSimpleMovingAverage");
         Err(Error::AlgTaskUnexpectedEnd(err))
     }
 }
