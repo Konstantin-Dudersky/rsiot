@@ -12,6 +12,9 @@ use super::{
     plc::{FunctionBlockBase, IFunctionBlock},
 };
 
+/// Название компонента
+pub const COMPONENT_NAME: &str = "cmp_plc";
+
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(? Send))]
 impl<TMsg, I, Q, S> IComponentProcess<Config<TMsg, I, Q, S>, TMsg>
@@ -29,7 +32,7 @@ where
         in_out: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
         fn_process(
-            in_out.clone_with_new_id("cmp_plc", AuthPermissions::FullAccess),
+            in_out.clone_with_new_id(COMPONENT_NAME, AuthPermissions::FullAccess),
             config,
         )
         .await

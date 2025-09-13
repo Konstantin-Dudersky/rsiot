@@ -2,17 +2,17 @@ use std::{sync::Arc, time::Duration};
 
 use instant::Instant;
 use serde::Serialize;
-use tokio::sync::{mpsc, Mutex};
+use tokio::sync::{Mutex, mpsc};
 use tracing::{info, trace};
 
 use crate::{
-    executor::{sleep, Cache},
+    executor::{Cache, sleep},
     message::{Message, MsgDataBound},
 };
 
 use super::super::{
-    plc::{FunctionBlockBase, IFunctionBlock},
     Config,
+    plc::{FunctionBlockBase, IFunctionBlock},
 };
 
 /// Задача выполнения цикла ПЛК
@@ -60,7 +60,7 @@ where
                 self.output
                     .send(msg)
                     .await
-                    .map_err(|e| super::Error::TokioSyncMpsc(e.to_string()))?;
+                    .map_err(|_| super::Error::TokioSyncMpscSend)?;
             }
 
             let elapsed = begin.elapsed();

@@ -4,13 +4,13 @@ use serde::Serialize;
 use tokio::sync::Mutex;
 
 use crate::{
-    executor::{sleep, CmpInOut},
+    executor::{CmpInOut, sleep},
     message::MsgDataBound,
 };
 
 use super::super::{
-    plc::{FunctionBlockBase, IFunctionBlock},
     ConfigRetention,
+    plc::{FunctionBlockBase, IFunctionBlock},
 };
 
 pub struct ExportCurrentState<TMsg, I, Q, S>
@@ -52,7 +52,10 @@ where
             let msgs = (config_retention.fn_export)(&input, &output, &stat);
             let Some(msgs) = msgs else { continue };
             for msg in msgs {
-                self.in_out.send_output(msg).await.unwrap();
+                self.in_out
+                    .send_output(msg)
+                    .await
+                    .map_err(|_| super::Error::TokioSyncMpscSend)?;
             }
         }
     }

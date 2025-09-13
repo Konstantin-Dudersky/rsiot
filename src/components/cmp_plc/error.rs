@@ -1,5 +1,7 @@
 use crate::{components::shared_tasks, executor::ComponentError};
 
+use super::COMPONENT_NAME;
+
 /// Ошибки cmp_plc
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
@@ -11,8 +13,11 @@ pub enum Error {
     #[error(transparent)]
     FilterMsgsWithSameData(#[from] shared_tasks::filter_identical_data::Error),
 
-    #[error("Internal channel error: {0}")]
-    TokioSyncMpsc(String),
+    #[error("{COMPONENT_NAME} | TaskSaveInputInCacheEnd")]
+    TaskSaveInputInCacheEnd,
+
+    #[error("{COMPONENT_NAME} | TokioSyncMpscSend")]
+    TokioSyncMpscSend,
 
     #[error("TokioTaskJoin: {0}")]
     TokioTaskJoin(#[from] tokio::task::JoinError),

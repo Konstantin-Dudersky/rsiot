@@ -33,10 +33,7 @@ mod fb_template;
 #[allow(dead_code, unused_imports)]
 mod fb_template_full;
 
-#[cfg(test)]
-mod tests;
-
-pub use component::Cmp;
+pub use component::{COMPONENT_NAME, Cmp};
 pub use config::{Config, ConfigRetention};
 pub use error::Error;
 

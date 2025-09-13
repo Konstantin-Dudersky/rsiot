@@ -30,11 +30,6 @@ where
     pub fn_cycle_init: fn(&mut I) -> (),
 
     /// Функция преобразования входящих сообщений во входную структуру ПЛК.
-    ///
-    /// **Примеры**
-    /// ```rust
-    #[doc = include_str!("./tests/config_fn_input.rs")]
-    /// ```
     pub fn_input: fn(&mut I, &TMsg) -> (),
 
     // ANCHOR: config_1

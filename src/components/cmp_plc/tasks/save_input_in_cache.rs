@@ -19,6 +19,6 @@ where
         while let Ok(msg) = self.in_out.recv_input().await {
             self.input_msg_cache.insert(msg).await
         }
-        Ok(())
+        Err(super::Error::TaskSaveInputInCacheEnd)
     }
 }

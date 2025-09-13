@@ -1,4 +1,6 @@
+#[cfg(feature = "cmp_plc")]
 mod config_plc;
+#[cfg(feature = "cmp_plc")]
 mod messages;
 
 #[cfg(feature = "cmp_plc")]
