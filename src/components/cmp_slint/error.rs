@@ -4,28 +4,28 @@ use crate::{components::shared_tasks, executor::ComponentError};
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error(transparent)]
+    #[error("cmp_slint | SlintEventLoopError: {0}")]
     SlintEventLoopError(#[from] slint::EventLoopError),
 
-    #[error(transparent)]
+    #[error("cmp_slint | TaskFilterSendPeriodically: {0}")]
     TaskFilterSendPeriodically(shared_tasks::filter_send_periodically::Error),
 
-    #[error("TaskInput")]
+    #[error("cmp_slint | TaskInput")]
     TaskInput,
 
-    #[error(transparent)]
+    #[error("cmp_slint | TaskMpscToMsgBus: {0}")]
     TaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus::Error),
 
-    #[error(transparent)]
+    #[error("cmp_slint | TaskMsgBusToMpsc: {0}")]
     TaskMsgBusToMpsc(shared_tasks::msgbus_to_mpsc::Error),
 
-    #[error("TaskOutput")]
+    #[error("cmp_slint | TaskOutput")]
     TaskOutput,
 
-    #[error(transparent)]
+    #[error("cmp_slint | TokioJoin: {0}")]
     TokioJoin(#[from] tokio::task::JoinError),
 
-    #[error("TokioSyncMpsc")]
+    #[error("cmp_slint | TokioSyncMpsc")]
     TokioSyncMpsc,
 }
 

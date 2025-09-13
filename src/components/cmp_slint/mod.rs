@@ -57,7 +57,7 @@ mod fn_process;
 mod tasks;
 
 pub use component::Cmp;
-pub use config::Config;
+pub use config::{Config, OutputSender};
 pub use error::Error;
 
 type Result<TMsg> = std::result::Result<TMsg, Error>;

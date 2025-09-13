@@ -3,7 +3,7 @@ use tokio::sync::mpsc;
 
 use crate::message::{Message, MsgDataBound};
 
-use super::super::{config::FnOutput, Error, Result, SlintWindow};
+use super::super::{Error, OutputSender, Result, SlintWindow, config::FnOutput};
 
 pub struct Output<TMsg, TMainWindow>
 where
@@ -24,8 +24,10 @@ where
     pub async fn spawn(self) -> Result<()> {
         let (ch_tx, mut ch_rx) = mpsc::channel(1000);
 
+        let output_sender = OutputSender::new(&ch_tx);
+
         self.slint_window
-            .upgrade_in_event_loop(move |h| (self.fn_output)(h, ch_tx))?;
+            .upgrade_in_event_loop(move |h| (self.fn_output)(h, output_sender))?;
 
         while let Some(msg) = ch_rx.recv().await {
             let msg = Message::new_custom(msg);

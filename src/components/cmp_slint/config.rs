@@ -2,11 +2,12 @@ use std::time::Duration;
 
 use slint::ComponentHandle;
 use tokio::sync::mpsc;
+use tracing::warn;
 
 use crate::message::MsgDataBound;
 
 pub type FnInput<TMsg, TMainWindow> = fn(TMsg, TMainWindow);
-pub type FnOutput<TMsg, TMainWindow> = fn(TMainWindow, mpsc::Sender<TMsg>);
+pub type FnOutput<TMsg, TMainWindow> = fn(TMainWindow, OutputSender<TMsg>);
 
 // ANCHOR: Config
 /// Настройки компонента cmp_slint
@@ -40,18 +41,6 @@ where
     pub fn_input: FnInput<TMsg, TMainWindow>,
 
     /// Функция генерирования исходящих сообщений
-    ///
-    /// *Пример:*
-    ///
-    /// ```rust
-    /// fn_output: |w, tx| {
-    ///     let output_data = w.global::<Output>();
-    ///     output_data.on_slider(move |value| {
-    ///         let msg = Message::new_custom(Custom::Slint(Slint::Slider(value as f64)));
-    ///         tx.blocking_send(msg).unwrap();
-    ///     })
-    /// },
-    /// ```
     pub fn_output: FnOutput<TMsg, TMainWindow>,
 
     /// Период фильтрации исходящих сообщений
@@ -70,6 +59,30 @@ where
             fn_input: self.fn_input,
             fn_output: self.fn_output,
             output_period: Duration::from_millis(100),
+        }
+    }
+}
+
+#[derive(Clone)]
+pub struct OutputSender<TMsg>
+where
+    TMsg: MsgDataBound,
+{
+    tx: mpsc::Sender<TMsg>,
+}
+impl<TMsg> OutputSender<TMsg>
+where
+    TMsg: MsgDataBound,
+{
+    pub fn new(tx: &mpsc::Sender<TMsg>) -> Self {
+        Self { tx: tx.clone() }
+    }
+
+    pub fn send(&self, msg: TMsg) {
+        let res = self.tx.blocking_send(msg);
+
+        if let Err(e) = res {
+            warn!("Error sending from slint callback: {e:?}");
         }
     }
 }
