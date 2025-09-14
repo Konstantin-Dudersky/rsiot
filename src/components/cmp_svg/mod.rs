@@ -1,4 +1,4 @@
-//! Шаблон компонента
+//! Компонент cmp_svg
 
 mod component;
 mod config;
@@ -7,7 +7,7 @@ mod fn_process;
 
 pub use {
     component::{COMPONENT_NAME, Cmp},
-    config::Config,
+    config::{Config, SvgChange, SvgChangeType},
     error::Error,
 };
 

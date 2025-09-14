@@ -1,0 +1,24 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 0
+  }
+}
+
+FindId
+
+ChangeText
+
+FindChildId
+
+ChangeChildText
+
+FindId -> ChangeText
+FindId -> FindChildId
+
+ChangeText -> FindId
+
+FindChildId -> FindId
+FindChildId -> ChangeChildText
+
+ChangeChildText -> FindChildId

@@ -8,7 +8,7 @@ use crate::{
 use super::{config::Config, fn_process::fn_process};
 
 /// Название компонента
-pub const COMPONENT_NAME: &str = "CMP_TEMPLATE";
+pub const COMPONENT_NAME: &str = "cmp_svg";
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
@@ -23,5 +23,5 @@ where
     }
 }
 
-/// Компонент CMP_TEMPLATE
+/// Компонент cmp_svg
 pub type Cmp<TMsg> = Component<Config<TMsg>, TMsg>;
