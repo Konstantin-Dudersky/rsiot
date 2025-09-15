@@ -8,9 +8,10 @@ pub fn cmp() -> rsiot::executor::Component<Config<Msg>, Msg> {
         fn_input: |msg| match msg {
             Msg::Counter(v) => {
                 vec![SvgChange {
-                    id: "text",
-                    change: vec![SvgChangeType::ChangeText {
-                        text: "2".to_string(),
+                    id: "rect1",
+                    change: vec![SvgChangeType::ChangeAttr {
+                        attr_name: "width",
+                        new_value: "50".to_string(),
                     }],
                     change_childs: None,
                 }]

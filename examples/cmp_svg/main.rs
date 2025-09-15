@@ -7,9 +7,12 @@ use std::time::Duration;
 
 use rsiot::executor::{ComponentExecutor, ComponentExecutorConfig};
 use tokio::main;
+use tracing::{Level, info};
 
 #[main]
 async fn main() {
+    tracing_subscriber::fmt().with_max_level(Level::INFO).init();
+
     let config_executor = ComponentExecutorConfig {
         buffer_size: 1000,
         fn_auth: |msg, _| Some(msg),

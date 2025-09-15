@@ -32,7 +32,7 @@ pub struct SvgChange {
 #[derive(Clone, Debug)]
 pub enum SvgChangeType {
     ChangeAttr {
-        attr_name: String,
+        attr_name: &'static str,
         new_value: String,
     },
     ChangeAttrStyle,
