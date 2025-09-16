@@ -31,19 +31,12 @@
      id="defs1" /><g
      inkscape:label="Слой 1"
      inkscape:groupmode="layer"
-     id="layer1"><rect style="fill:#000000;stroke-width:0.3;stroke-dasharray:0.3, 0.3" id="rect1" width="50" height="13.254572" x="31.970518" y="6.2591038"/><text
-       xml:space="preserve"
-       style="font-size:3.52777px;font-family:'PT Sans';-inkscape-font-specification:'PT Sans, Normal';text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.3;stroke-dasharray:0.3, 0.3"
-       x="30.736675"
-       y="29.565493"
-       id="text1"
-       inkscape:label="label-text1"
-       onclick="on_click">3</text><text
+     id="layer1"><rect style="stroke-width:0.3;fill:#FF0000;stroke-dasharray:0.3, 0.3" id="rect1" width="13.561" height="13.254572" x="0" y="0"/><text xml:space="preserve" style="font-size:3.52777px;font-family:'PT Sans';-inkscape-font-specification:'PT Sans, Normal';text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.3;stroke-dasharray:0.3, 0.3" x="2" y="29.565493" id="text1" inkscape:label="label-text1" onclick="on_click">3</text><text
        xml:space="preserve"
        style="font-size:3.52777px;font-family:'PT Sans';-inkscape-font-specification:'PT Sans, Normal';text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.3;stroke-dasharray:0.3, 0.3"
        x="41.195625"
        y="30.293022"
-       id="text3">3</text><rect
+       id="text3">1</text><rect
        style="fill:#000000;stroke-width:0.3;stroke-dasharray:0.3, 0.3"
        id="rect1-0"
        width="13.561"

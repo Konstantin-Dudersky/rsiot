@@ -5,7 +5,6 @@ use quick_xml::{
     events::{BytesStart, BytesText, Event, attributes::Attributes},
     reader::Reader,
 };
-use tracing::info;
 
 use crate::{
     executor::CmpInOut,
@@ -57,61 +56,7 @@ where
 
                     state = res.0;
                     writer.write_event(res.1).is_ok();
-                } // Ok(Event::Eof) => break,
-
-                  // Ok(Event::Start(event_start)) => {
-                  //     let name = event_start.name().as_ref().to_owned();
-                  //     let name = String::from_utf8_lossy(&name);
-                  //     println!("{:?}", name);
-
-                  //     let test = b"sdfsdf";
-
-                  //     println!(
-                  //         "attributes values: {:?}",
-                  //         event_start
-                  //             .attributes()
-                  //             .map(|a| {
-                  //                 let a = a.unwrap();
-
-                  //                 let key = a.key.as_ref().to_vec();
-                  //                 let key = String::from_utf8(key).unwrap();
-
-                  //                 let value = a.value.to_owned();
-                  //                 let value = String::from_utf8(value.into()).unwrap();
-                  //                 (key, value)
-                  //             })
-                  //             .collect::<Vec<_>>()
-                  //     );
-                  //     println!("\n");
-
-                  //     match event_start.name().as_ref() {
-                  //         b"tag1" => println!(
-                  //             "attributes values: {:?}",
-                  //             event_start
-                  //                 .attributes()
-                  //                 .map(|a| a.unwrap().value)
-                  //                 .collect::<Vec<_>>()
-                  //         ),
-                  //         _ => (),
-                  //     }
-                  //     writer.write_event(Event::Start(event_start)).is_ok();
-                  // }
-                  // Ok(Event::Text(event_text)) => {
-                  //     println!("txt: {:?}", event_text.decode().unwrap().into_owned());
-
-                  //     let text = BytesText::new("2");
-                  //     writer.write_event(Event::Text(text)).is_ok();
-                  // }
-
-                  // Ok(Event::End(event_end)) => {
-                  //     println!("end: {:?}", event_end.name());
-                  //     writer.write_event(Event::End(event_end)).is_ok();
-                  // }
-
-                  // // There are several other `Event`s we do not consider here
-                  // Ok(event) => {
-                  //     writer.write_event(event).is_ok();
-                  // }
+                }
             }
         }
         let result = writer.into_inner().into_inner();
@@ -131,7 +76,8 @@ enum States<'a> {
         all: &'a HashMap<Vec<u8>, SvgChange>,
     },
     ChangeText {
-        id: String,
+        all: &'a HashMap<Vec<u8>, SvgChange>,
+        id: Vec<u8>,
         text: String,
     },
     FindChildId {
@@ -147,9 +93,9 @@ enum States<'a> {
 impl<'a> States<'a> {
     pub fn process_event(self, event: Event) -> (States<'a>, Event) {
         match &event {
-            Event::Start(e) => match self {
+            Event::Start(e_start) => match self {
                 States::FindId { all } => {
-                    let id = find_id(e.attributes());
+                    let id = find_id(e_start.attributes());
                     let Some(id) = id else { return (self, event) };
 
                     let svg_change = all.get(&id);
@@ -157,37 +103,66 @@ impl<'a> States<'a> {
                         return (self, event);
                     };
 
+                    let name = String::from_utf8(e_start.name().as_ref().to_vec()).unwrap();
+                    let mut e_start = e_start.clone();
+                    let mut state = self;
+
                     for change in &svg_change.change {
                         match change {
                             SvgChangeType::ChangeAttr {
                                 attr_name,
                                 new_value,
                             } => {
-                                let name = String::from_utf8(e.name().as_ref().to_vec()).unwrap();
-                                let event = change_attr(name, e.attributes(), attr_name, new_value);
-                                return (self, Event::Start(event));
+                                e_start = change_attr(
+                                    name.clone(),
+                                    e_start.attributes(),
+                                    attr_name,
+                                    new_value,
+                                );
                             }
-                            SvgChangeType::ChangeAttrStyle => todo!(),
-                            SvgChangeType::ChangeText { text } => todo!(),
+                            SvgChangeType::ChangeAttrStyle {
+                                attr_style_name,
+                                new_value,
+                            } => {
+                                e_start = change_attr_style(
+                                    name.clone(),
+                                    e_start.attributes(),
+                                    attr_style_name,
+                                    new_value,
+                                )
+                            }
+                            SvgChangeType::ChangeText { text } => {
+                                state = Self::ChangeText {
+                                    all,
+                                    id: id.clone(),
+                                    text: text.clone(),
+                                }
+                            }
                         }
                     }
 
-                    (self, event)
+                    (state, Event::Start(e_start))
                 }
-                States::ChangeText { id, text } => todo!(),
+                States::ChangeText { all, id, text } => todo!(),
                 States::FindChildId { id, change_childs } => todo!(),
                 States::ChangeChildText { id, text } => todo!(),
             },
 
-            Event::Text(bytes_text) => {
-                let text = BytesText::new("3");
-                let event1 = Event::Text(text);
-                (self, event1)
-            }
+            Event::Text(e_text) => match self {
+                States::FindId { all } => (self, event),
+                States::ChangeText { all, id, text } => {
+                    let e = Event::Text(BytesText::new(&text).into_owned());
 
-            Event::Empty(e) => match self {
+                    let state = States::FindId { all };
+                    (state, e)
+                }
+                States::FindChildId { id, change_childs } => todo!(),
+                States::ChangeChildText { id, text } => todo!(),
+            },
+
+            Event::Empty(e_empty) => match self {
                 States::FindId { all } => {
-                    let id = find_id(e.attributes());
+                    let id = find_id(e_empty.attributes());
                     let Some(id) = id else { return (self, event) };
 
                     let svg_change = all.get(&id);
@@ -195,24 +170,40 @@ impl<'a> States<'a> {
                         return (self, event);
                     };
 
+                    let name = String::from_utf8(e_empty.name().as_ref().to_vec()).unwrap();
+                    let mut e_empty = e_empty.clone();
+
                     for change in &svg_change.change {
                         match change {
                             SvgChangeType::ChangeAttr {
                                 attr_name,
                                 new_value,
                             } => {
-                                let name = String::from_utf8(e.name().as_ref().to_vec()).unwrap();
-                                let event = change_attr(name, e.attributes(), attr_name, new_value);
-                                return (self, Event::Empty(event));
+                                e_empty = change_attr(
+                                    name.clone(),
+                                    e_empty.attributes(),
+                                    attr_name,
+                                    new_value,
+                                );
                             }
-                            SvgChangeType::ChangeAttrStyle => todo!(),
+                            SvgChangeType::ChangeAttrStyle {
+                                attr_style_name,
+                                new_value,
+                            } => {
+                                e_empty = change_attr_style(
+                                    name.clone(),
+                                    e_empty.attributes(),
+                                    attr_style_name,
+                                    new_value,
+                                )
+                            }
                             SvgChangeType::ChangeText { text } => todo!(),
                         }
                     }
 
-                    (self, event)
+                    (self, Event::Empty(e_empty))
                 }
-                States::ChangeText { id, text } => todo!(),
+                States::ChangeText { all, id, text } => todo!(),
                 States::FindChildId { id, change_childs } => todo!(),
                 States::ChangeChildText { id, text } => todo!(),
             },
@@ -249,6 +240,46 @@ fn change_attr<'a>(
         let key = attr.key.as_ref();
         if key == attr_name.as_bytes() {
             elem.push_attribute((key, new_value.as_bytes()));
+        } else {
+            elem.push_attribute((key, attr.value.as_ref()));
+        }
+    }
+    elem
+}
+
+fn change_attr_style<'a>(
+    name: String,
+    attributes: Attributes,
+    attr_style_name: &str,
+    new_value: &str,
+) -> BytesStart<'a> {
+    let mut elem = BytesStart::new(name);
+
+    for attr in attributes {
+        let attr = attr.unwrap();
+        let key = attr.key.as_ref();
+        if key == b"style" {
+            let style = String::from_utf8(attr.value.as_ref().to_vec()).unwrap();
+
+            let mut style: HashMap<&str, &str> = style
+                .split(";")
+                .map(|e| {
+                    let mut split = e.split(":");
+                    let key = split.next().unwrap_or_default();
+                    let value = split.next().unwrap_or_default();
+                    (key.trim(), value.trim())
+                })
+                .collect();
+
+            style.entry(attr_style_name).and_modify(|e| *e = new_value);
+
+            let style = style
+                .into_iter()
+                .map(|(k, v)| format!("{}:{}", k, v))
+                .collect::<Vec<String>>()
+                .join(";");
+
+            elem.push_attribute((key, style.as_bytes()));
         } else {
             elem.push_attribute((key, attr.value.as_ref()));
         }

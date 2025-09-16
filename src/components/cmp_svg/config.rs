@@ -35,7 +35,10 @@ pub enum SvgChangeType {
         attr_name: &'static str,
         new_value: String,
     },
-    ChangeAttrStyle,
+    ChangeAttrStyle {
+        attr_style_name: &'static str,
+        new_value: String,
+    },
     ChangeText {
         text: String,
     },
