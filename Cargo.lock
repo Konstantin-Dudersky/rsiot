@@ -7885,6 +7885,7 @@ dependencies = [
  "sqlx",
  "ssd1306",
  "strum 0.27.2",
+ "sudo",
  "surrealdb",
  "sysinfo 0.37.0",
  "teloxide",
@@ -9316,6 +9317,16 @@ name = "subtle"
 version = "2.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "13c2bddecc57b384dee18652358fb23172facb8a2c51ccc10d74c157bdea3292"
+
+[[package]]
+name = "sudo"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2a88e74edf206f281aff2820aa2066c781331044c770626dcafe19491f214e05"
+dependencies = [
+ "libc",
+ "log",
+]
 
 [[package]]
 name = "surrealdb"

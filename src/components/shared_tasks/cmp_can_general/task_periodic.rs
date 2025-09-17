@@ -7,16 +7,16 @@ use tokio::{
 };
 use tracing::warn;
 
-use crate::components_config::can_general::{BufferBound, Frame};
+use crate::components_config::can_general::{BufferBound, CanFrame};
 
 pub struct Periodic<TBuffer, TError>
 where
     TBuffer: BufferBound,
 {
-    pub output: mpsc::Sender<Frame>,
+    pub output: mpsc::Sender<CanFrame>,
     pub buffer: Arc<Mutex<TBuffer>>,
     pub period: Duration,
-    pub fn_periodic: fn(&TBuffer) -> anyhow::Result<Option<Vec<Frame>>>,
+    pub fn_periodic: fn(&TBuffer) -> anyhow::Result<Option<Vec<CanFrame>>>,
     pub error_tokio_mpsc_send: fn() -> TError,
 }
 

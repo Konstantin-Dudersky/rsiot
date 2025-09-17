@@ -82,6 +82,7 @@ sqlx = { version = "0.8.6", features = [
     "time",
 ], optional = true }
 ssd1306 = { version = "0.10.0", optional = true }
+sudo = { version = "0.5", optional = true }
 surrealdb = { version = "2.3.8", optional = true }
 sysinfo = { version = "0.37.0", optional = true }
 teloxide = { version = "0.17.0", optional = true, features = ["macros"] }
@@ -268,7 +269,7 @@ cmp_leptos = [
 ]
 
 ## Компонент для коммуникации через интерфейс CAN на системе Linux
-cmp_linux_can = ["executor", "dep:socketcan"]
+cmp_linux_can = ["executor", "dep:socketcan", "dep:sudo"]
 
 ## Комонент для взаимодействия с GPIO на системе Linux
 cmp_linux_gpio = ["executor", "dep:linux-embedded-hal"]

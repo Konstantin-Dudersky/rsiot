@@ -1,7 +1,7 @@
 use tokio::sync::mpsc;
 
 use crate::{
-    components_config::can_general::Frame,
+    components_config::can_general::CanFrame,
     executor::CmpInOut,
     message::{Message, MsgDataBound},
 };
@@ -10,9 +10,9 @@ pub struct Output<TMsg, TError>
 where
     TMsg: MsgDataBound,
 {
-    pub input: mpsc::Receiver<Frame>,
+    pub input: mpsc::Receiver<CanFrame>,
     pub output: CmpInOut<TMsg>,
-    pub fn_output: fn(Frame) -> Option<Vec<TMsg>>,
+    pub fn_output: fn(CanFrame) -> Option<Vec<TMsg>>,
     pub error_task_end: fn() -> TError,
     pub error_tokio_mpsc_send: fn() -> TError,
 }

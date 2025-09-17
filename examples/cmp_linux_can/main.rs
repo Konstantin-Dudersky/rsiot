@@ -1,12 +1,8 @@
-//! ```sh
-//! sudo ip link add dev vcan0 type vcan
-//! sudo ip link set up vcan0
-//! ```
-//!
-//!
-
 #[cfg(feature = "cmp_linux_can")]
 mod config_linux_can;
+
+#[cfg(feature = "cmp_linux_can")]
+mod config_inject_periodic;
 
 #[cfg(feature = "cmp_linux_can")]
 mod messages;
@@ -29,6 +25,7 @@ async fn main() -> anyhow::Result<()> {
 
     ComponentExecutor::new(executor_config)
         .add_cmp(config_linux_can::cmp())
+        .add_cmp(config_inject_periodic::cmp())
         .wait_result()
         .await?;
 

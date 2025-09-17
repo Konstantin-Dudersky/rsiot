@@ -7,14 +7,14 @@ use tokio::{
 };
 
 use crate::{
-    components_config::can_general::{BufferBound, Frame},
+    components_config::can_general::{BufferBound, CanFrame},
     executor::{CmpInOut, join_set_spawn},
     message::MsgDataBound,
 };
 
 use super::{task_input::Input, task_output::Output, task_periodic::Periodic};
 
-pub struct CanGeneralTasks<'a, TMsg, TBuffer, TError>
+pub(crate) struct CanGeneralTasks<'a, TMsg, TBuffer, TError>
 where
     TMsg: MsgDataBound,
     TBuffer: BufferBound,
@@ -22,6 +22,11 @@ where
     /// Шина сообщений
     pub msg_bus: CmpInOut<TMsg>,
 
+    /// Значение в буфере по умолчанию.
+    ///
+    /// Буфер используется для отправки периодических сообщений.
+    ///
+    /// Если буфер не используется, можно задать значение `()`.
     pub buffer_default: TBuffer,
 
     /// Ёмкость очередей сообщений между задачами
@@ -30,13 +35,13 @@ where
     /// Ссылка на коллекцию задач tokio
     pub task_set: &'a mut JoinSet<Result<(), TError>>,
 
-    pub fn_input: fn(&TMsg, &mut TBuffer) -> anyhow::Result<Option<Vec<Frame>>>,
+    pub fn_input: fn(&TMsg, &mut TBuffer) -> anyhow::Result<Option<Vec<CanFrame>>>,
 
     pub period: Duration,
 
-    pub fn_periodic: fn(&TBuffer) -> anyhow::Result<Option<Vec<Frame>>>,
+    pub fn_periodic: fn(&TBuffer) -> anyhow::Result<Option<Vec<CanFrame>>>,
 
-    pub fn_output: fn(Frame) -> Option<Vec<TMsg>>,
+    pub fn_output: fn(CanFrame) -> Option<Vec<TMsg>>,
 
     pub error_task_end_input: fn() -> TError,
 
@@ -51,11 +56,11 @@ where
     TBuffer: 'static + BufferBound,
     TError: 'static + Send,
 {
-    pub fn spawn(self) -> (mpsc::Receiver<Frame>, mpsc::Sender<Frame>) {
+    pub fn spawn(self) -> (mpsc::Receiver<CanFrame>, mpsc::Sender<CanFrame>) {
         let buffer = Arc::new(Mutex::new(self.buffer_default));
 
-        let (ch_tx_send_to_can, ch_rx_send_to_can) = mpsc::channel::<Frame>(self.buffer_size);
-        let (ch_tx_recv_from_can, ch_rx_recv_from_can) = mpsc::channel::<Frame>(self.buffer_size);
+        let (ch_tx_send_to_can, ch_rx_send_to_can) = mpsc::channel::<CanFrame>(self.buffer_size);
+        let (ch_tx_recv_from_can, ch_rx_recv_from_can) = mpsc::channel::<CanFrame>(self.buffer_size);
 
         // Получение сообщений из шины
         let task = Input {
