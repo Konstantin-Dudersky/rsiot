@@ -7,7 +7,7 @@ use std::time::Duration;
 
 use rsiot::executor::{ComponentExecutor, ComponentExecutorConfig};
 use tokio::main;
-use tracing::{Level, info};
+use tracing::Level;
 
 #[main]
 async fn main() {

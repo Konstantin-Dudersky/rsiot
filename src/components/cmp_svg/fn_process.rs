@@ -11,7 +11,7 @@ use crate::{
     message::{Message, MsgDataBound},
 };
 
-use super::{Config, SvgChange, SvgChangeType};
+use super::{Config, Error, SvgChange, SvgChangeType};
 
 pub async fn fn_process<TMsg>(
     config: Config<TMsg>,
@@ -21,6 +21,12 @@ where
     TMsg: MsgDataBound,
 {
     let mut svg_file = config.file.to_string();
+    let msg = (config.fn_output)(svg_file.as_bytes());
+    let msg = Message::new_custom(msg);
+    msg_bus
+        .send_output(msg)
+        .await
+        .map_err(|_| Error::TokioSyncMpscSend)?;
 
     while let Ok(msg) = msg_bus.recv_input().await {
         let Some(msg) = msg.get_custom_data() else {
@@ -52,10 +58,10 @@ where
                         break;
                     }
 
-                    let res = state.process_event(e);
+                    let res = state.process_event(e)?;
 
                     state = res.0;
-                    writer.write_event(res.1).is_ok();
+                    writer.write_event(res.1).map_err(Error::WriteEvent)?;
                 }
             }
         }
@@ -63,14 +69,18 @@ where
 
         let msg = (config.fn_output)(&result);
         let msg = Message::new_custom(msg);
-        msg_bus.send_output(msg).await.unwrap();
+        msg_bus
+            .send_output(msg)
+            .await
+            .map_err(|_| Error::TokioSyncMpscSend)?;
 
-        svg_file = String::from_utf8(result).unwrap();
+        svg_file = String::from_utf8(result)?;
     }
 
     Ok(())
 }
 
+#[allow(dead_code)]
 enum States<'a> {
     FindId {
         all: &'a HashMap<Vec<u8>, SvgChange>,
@@ -91,19 +101,21 @@ enum States<'a> {
 }
 
 impl<'a> States<'a> {
-    pub fn process_event(self, event: Event) -> (States<'a>, Event) {
+    pub fn process_event(self, event: Event) -> Result<(States<'a>, Event), Error> {
         match &event {
             Event::Start(e_start) => match self {
                 States::FindId { all } => {
-                    let id = find_id(e_start.attributes());
-                    let Some(id) = id else { return (self, event) };
+                    let id = find_id(e_start.attributes())?;
+                    let Some(id) = id else {
+                        return Ok((self, event));
+                    };
 
                     let svg_change = all.get(&id);
                     let Some(svg_change) = svg_change else {
-                        return (self, event);
+                        return Ok((self, event));
                     };
 
-                    let name = String::from_utf8(e_start.name().as_ref().to_vec()).unwrap();
+                    let name = String::from_utf8(e_start.name().as_ref().to_vec())?;
                     let mut e_start = e_start.clone();
                     let mut state = self;
 
@@ -118,7 +130,7 @@ impl<'a> States<'a> {
                                     e_start.attributes(),
                                     attr_name,
                                     new_value,
-                                );
+                                )?;
                             }
                             SvgChangeType::ChangeAttrStyle {
                                 attr_style_name,
@@ -129,7 +141,7 @@ impl<'a> States<'a> {
                                     e_start.attributes(),
                                     attr_style_name,
                                     new_value,
-                                )
+                                )?
                             }
                             SvgChangeType::ChangeText { text } => {
                                 state = Self::ChangeText {
@@ -141,36 +153,48 @@ impl<'a> States<'a> {
                         }
                     }
 
-                    (state, Event::Start(e_start))
+                    Ok((state, Event::Start(e_start)))
                 }
-                States::ChangeText { all, id, text } => todo!(),
-                States::FindChildId { id, change_childs } => todo!(),
-                States::ChangeChildText { id, text } => todo!(),
+                States::ChangeText {
+                    all: _,
+                    id: _,
+                    text: _,
+                } => todo!(),
+                States::FindChildId {
+                    id: _,
+                    change_childs: _,
+                } => todo!(),
+                States::ChangeChildText { id: _, text: _ } => todo!(),
             },
 
-            Event::Text(e_text) => match self {
-                States::FindId { all } => (self, event),
-                States::ChangeText { all, id, text } => {
+            Event::Text(_e_text) => match self {
+                States::FindId { all: _ } => Ok((self, event)),
+                States::ChangeText { all, id: _, text } => {
                     let e = Event::Text(BytesText::new(&text).into_owned());
 
                     let state = States::FindId { all };
-                    (state, e)
+                    Ok((state, e))
                 }
-                States::FindChildId { id, change_childs } => todo!(),
-                States::ChangeChildText { id, text } => todo!(),
+                States::FindChildId {
+                    id: _,
+                    change_childs: _,
+                } => todo!(),
+                States::ChangeChildText { id: _, text: _ } => todo!(),
             },
 
             Event::Empty(e_empty) => match self {
                 States::FindId { all } => {
-                    let id = find_id(e_empty.attributes());
-                    let Some(id) = id else { return (self, event) };
+                    let id = find_id(e_empty.attributes())?;
+                    let Some(id) = id else {
+                        return Ok((self, event));
+                    };
 
                     let svg_change = all.get(&id);
                     let Some(svg_change) = svg_change else {
-                        return (self, event);
+                        return Ok((self, event));
                     };
 
-                    let name = String::from_utf8(e_empty.name().as_ref().to_vec()).unwrap();
+                    let name = String::from_utf8(e_empty.name().as_ref().to_vec())?;
                     let mut e_empty = e_empty.clone();
 
                     for change in &svg_change.change {
@@ -184,7 +208,7 @@ impl<'a> States<'a> {
                                     e_empty.attributes(),
                                     attr_name,
                                     new_value,
-                                );
+                                )?;
                             }
                             SvgChangeType::ChangeAttrStyle {
                                 attr_style_name,
@@ -195,36 +219,43 @@ impl<'a> States<'a> {
                                     e_empty.attributes(),
                                     attr_style_name,
                                     new_value,
-                                )
+                                )?
                             }
-                            SvgChangeType::ChangeText { text } => todo!(),
+                            SvgChangeType::ChangeText { text: _ } => todo!(),
                         }
                     }
 
-                    (self, Event::Empty(e_empty))
+                    Ok((self, Event::Empty(e_empty)))
                 }
-                States::ChangeText { all, id, text } => todo!(),
-                States::FindChildId { id, change_childs } => todo!(),
-                States::ChangeChildText { id, text } => todo!(),
+                States::ChangeText {
+                    all: _,
+                    id: _,
+                    text: _,
+                } => todo!(),
+                States::FindChildId {
+                    id: _,
+                    change_childs: _,
+                } => todo!(),
+                States::ChangeChildText { id: _, text: _ } => todo!(),
             },
 
-            _ => (self, event),
+            _ => Ok((self, event)),
         }
     }
 }
 
-fn find_id(attributes: Attributes) -> Option<Vec<u8>> {
+fn find_id(attributes: Attributes) -> Result<Option<Vec<u8>>, Error> {
     for attr in attributes {
-        let attr = attr.unwrap();
+        let attr = attr?;
         let key = attr.key.as_ref();
 
         if key == b"id" {
             let value: Vec<u8> = attr.value.as_ref().into();
-            return Some(value);
+            return Ok(Some(value));
         }
     }
 
-    None
+    Ok(None)
 }
 
 fn change_attr<'a>(
@@ -232,11 +263,11 @@ fn change_attr<'a>(
     attributes: Attributes,
     attr_name: &str,
     new_value: &str,
-) -> BytesStart<'a> {
+) -> Result<BytesStart<'a>, Error> {
     let mut elem = BytesStart::new(name);
 
     for attr in attributes {
-        let attr = attr.unwrap();
+        let attr = attr?;
         let key = attr.key.as_ref();
         if key == attr_name.as_bytes() {
             elem.push_attribute((key, new_value.as_bytes()));
@@ -244,7 +275,7 @@ fn change_attr<'a>(
             elem.push_attribute((key, attr.value.as_ref()));
         }
     }
-    elem
+    Ok(elem)
 }
 
 fn change_attr_style<'a>(
@@ -252,14 +283,14 @@ fn change_attr_style<'a>(
     attributes: Attributes,
     attr_style_name: &str,
     new_value: &str,
-) -> BytesStart<'a> {
+) -> Result<BytesStart<'a>, Error> {
     let mut elem = BytesStart::new(name);
 
     for attr in attributes {
-        let attr = attr.unwrap();
+        let attr = attr?;
         let key = attr.key.as_ref();
         if key == b"style" {
-            let style = String::from_utf8(attr.value.as_ref().to_vec()).unwrap();
+            let style = String::from_utf8(attr.value.as_ref().to_vec())?;
 
             let mut style: HashMap<&str, &str> = style
                 .split(";")
@@ -284,5 +315,5 @@ fn change_attr_style<'a>(
             elem.push_attribute((key, attr.value.as_ref()));
         }
     }
-    elem
+    Ok(elem)
 }

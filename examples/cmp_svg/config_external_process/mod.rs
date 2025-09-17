@@ -21,6 +21,7 @@ async fn fn_process(mut input: CmpInOut<Msg>) -> CmpResult {
             continue;
         };
 
+        #[allow(clippy::single_match)]
         match msg {
             Msg::OutputSvg(svg) => {
                 write("./examples/cmp_svg/files/output.svg", &svg).unwrap();
