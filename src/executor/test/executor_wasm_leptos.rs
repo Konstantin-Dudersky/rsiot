@@ -8,7 +8,7 @@ use tokio::task::LocalSet;
 use crate::{
     components::cmp_leptos,
     executor::{ComponentExecutor, ComponentExecutorConfig},
-    logging::configure_logging,
+    logging::{LogConfig, LogConfigFilter},
     message::example_message::*,
 };
 
@@ -18,7 +18,10 @@ fn test_wasm() {
         #[component]
         fn App() -> impl IntoView {}
 
-        configure_logging("info")?;
+        LogConfig {
+            filter: LogConfigFilter::String("info"),
+        }
+        .run()?;
 
         #[derive(Default, Clone, Store)]
         struct GlobalStore {}
@@ -39,6 +42,7 @@ fn test_wasm() {
             buffer_size: 100,
             fn_auth: |msg, _| Some(msg),
             delay_publish: Duration::from_millis(100),
+            fn_tokio_metrics: |_| None,
         };
 
         // executor --------------------------------------------------------------------------------

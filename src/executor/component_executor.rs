@@ -14,6 +14,7 @@ use super::{
 };
 
 const UPDATE_TTL_PERIOD: Duration = Duration::from_millis(1000);
+#[cfg(feature = "log_tokio")]
 const RUNTIME_METRICS_PERIOD: Duration = Duration::from_millis(100);
 
 pub type FnTokioMetrics<TMsg> = fn(TokioRuntimeMetrics) -> Option<TMsg>;
@@ -110,7 +111,6 @@ where
             component_input,
             component_output,
             cache.clone(),
-            "Trace name (maybe delete?)",
             id,
             AuthPermissions::default(),
             config.fn_auth,

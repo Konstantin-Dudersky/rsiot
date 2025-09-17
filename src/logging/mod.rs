@@ -316,14 +316,17 @@ pub enum LogConfigFilter {
 }
 
 /// Удалить путь из названия файла
+#[cfg(feature = "log_loki")]
 fn service_cleanup(input: &str) -> Result<&str> {
     input.split('/').next_back().ok_or(Error::ServiceName)
 }
 
 #[cfg(test)]
 mod tests {
+    #[allow(unused)]
     use super::*;
 
+    #[cfg(feature = "log_loki")]
     #[test]
     fn test_service_cleanup() -> anyhow::Result<()> {
         assert_eq!("service", service_cleanup("./service")?);

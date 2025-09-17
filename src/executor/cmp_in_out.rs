@@ -6,8 +6,8 @@ use uuid::Uuid;
 use crate::message::{system_messages::*, *};
 
 use super::{
-    types::{CmpInput, CmpOutput, FnAuth},
     Cache, ComponentError,
+    types::{CmpInput, CmpOutput, FnAuth},
 };
 
 /// Подключение компонента к внутренней шине сообщений исполнителя
@@ -36,18 +36,17 @@ where
         input: CmpInput<TMsg>,
         output: CmpOutput<TMsg>,
         cache: Cache<TMsg>,
-        name: &str,
         id: Uuid,
         auth_perm: AuthPermissions,
         fn_auth: FnAuth<TMsg>,
     ) -> Self {
-        info!("Start: {}, id: {}, auth_perm: {:?}", name, id, auth_perm);
+        info!("Start, id: {}, auth_perm: {:?}", id, auth_perm);
         Self {
             input,
             output,
             cache,
             id,
-            name: name.into(),
+            name: "".to_string(),
             auth_perm,
             fn_auth,
         }
@@ -89,10 +88,10 @@ where
                 }
                 self.auth_perm = max(self.auth_perm, value.perm);
             }
-            if let MsgData::System(System::AuthResponseErr(value)) = &msg.data {
-                if !value.trace_ids.contains(&self.id) {
-                    continue;
-                }
+            if let MsgData::System(System::AuthResponseErr(value)) = &msg.data
+                && !value.trace_ids.contains(&self.id)
+            {
+                continue;
             }
 
             // Если данное сообщение было сгенерировано данным сервисом, пропускаем
