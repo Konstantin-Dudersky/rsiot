@@ -4,7 +4,7 @@ use tokio::sync::{Mutex, mpsc};
 use tracing::warn;
 
 use crate::{
-    components_config::can_general::{BufferBound, Frame},
+    components_config::can_general::{BufferBound, CanFrame},
     executor::CmpInOut,
     message::MsgDataBound,
 };
@@ -15,9 +15,9 @@ where
     TBuffer: BufferBound,
 {
     pub input: CmpInOut<TMsg>,
-    pub output: mpsc::Sender<Frame>,
+    pub output: mpsc::Sender<CanFrame>,
     pub buffer: Arc<Mutex<TBuffer>>,
-    pub fn_input: fn(&TMsg, &mut TBuffer) -> anyhow::Result<Option<Vec<Frame>>>,
+    pub fn_input: fn(&TMsg, &mut TBuffer) -> anyhow::Result<Option<Vec<CanFrame>>>,
     pub error_task_end: fn() -> TError,
     pub error_tokio_mpsc_send: fn() -> TError,
 }
