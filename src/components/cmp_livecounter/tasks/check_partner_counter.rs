@@ -1,7 +1,7 @@
 use std::{
     sync::{
-        atomic::{AtomicU8, Ordering},
         Arc,
+        atomic::{AtomicU8, Ordering},
     },
     time::Duration,
 };
@@ -10,7 +10,7 @@ use tokio::{sync::mpsc, time::sleep};
 
 use crate::message::Message;
 
-use super::super::config::FnCheckPartnerCounter;
+use super::{super::config::FnCheckPartnerCounter, Error};
 
 pub struct CheckPartnerPeriod<TMsg> {
     pub output: mpsc::Sender<Message<TMsg>>,
@@ -31,7 +31,10 @@ impl<TMsg> CheckPartnerPeriod<TMsg> {
             let msg = (self.fn_check_partner_counter)(live_counter != prev_live_counter);
             prev_live_counter = live_counter;
 
-            self.output.send(msg).await.unwrap();
+            self.output
+                .send(msg)
+                .await
+                .map_err(|_| Error::TokioSyncMpscSend)?;
         }
     }
 }

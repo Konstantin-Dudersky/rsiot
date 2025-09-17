@@ -4,7 +4,7 @@ use tokio::{sync::mpsc, time::sleep};
 
 use crate::message::Message;
 
-use super::super::config::FnGenerateSelfCounter;
+use super::{super::config::FnGenerateSelfCounter, Error};
 
 pub struct GenerateSelfCounter<TMsg> {
     pub output: mpsc::Sender<Message<TMsg>>,
@@ -21,7 +21,10 @@ impl<TMsg> GenerateSelfCounter<TMsg> {
             self_counter = self_counter.wrapping_add(1);
             let msg = (self.fn_generate_self_counter)(self_counter);
             let Some(msg) = msg else { continue };
-            self.output.send(msg).await.unwrap();
+            self.output
+                .send(msg)
+                .await
+                .map_err(|_| Error::TokioSyncMpscSend)?;
         }
     }
 }
