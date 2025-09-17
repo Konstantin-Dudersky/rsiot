@@ -63,6 +63,7 @@ postcard = { version = "1.1.3", features = [
     "use-std",
     "use-crc",
 ], optional = true }
+quick-xml = { version = "0.38.3", optional = true }
 reactive_stores = { version = "0.2.5", optional = true }
 redis = { version = "1.0.0-alpha.1", features = [
     "tokio-comp",
@@ -177,18 +178,6 @@ env_vars = ["dep:clap", "dep:dotenvy", "dep:envy", "dep:toml", "dep:url"]
 
 ## Базовые компоненты
 executor = ["dep:async-trait", "dep:futures", "dep:tokio", "dep:tokio-util"]
-
-## Настройка логгирования сообщений
-# logging = [
-#     "dep:console_error_panic_hook",
-#     "dep:log",
-#     "dep:openssl",
-#     "dep:tokio",
-#     "dep:tracing-loki",
-#     "dep:tracing-subscriber",
-#     "dep:tracing-web",
-#     "dep:url",
-# ]
 
 ## Работа в однопоточном режиме
 single-thread = []
@@ -309,6 +298,9 @@ cmp_slint = ["executor", "dep:slint"]
 
 ## Компонент доступа к БД SurrealDB
 cmp_surrealdb = ["executor", "dep:surrealdb"]
+
+## Изменения SVG-файла
+cmp_svg = ["executor", "dep:quick-xml"]
 
 ## Компонент получает системную информацию
 cmp_system_info = ["executor", "dep:sysinfo"]

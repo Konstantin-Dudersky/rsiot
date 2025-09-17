@@ -199,6 +199,14 @@ pub mod cmp_slint;
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
 pub mod cmp_surrealdb;
 
+#[cfg(feature = "cmp_svg")]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
+pub mod cmp_svg;
+
 #[cfg(feature = "cmp_system_info")]
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
 pub mod cmp_system_info;
