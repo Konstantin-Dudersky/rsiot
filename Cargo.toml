@@ -1,6 +1,6 @@
 [package]
 categories = ["api-bindings", "gui", "network-programming"]
-description = "Метакрейт, импортирующий все другие крейты через флаги feature"
+description = "Компоненты для построения системы сбора, обработки и визуализации данных"
 edition = "2024"
 keywords = ["iot", "scada"]
 license = "MIT OR Apache-2.0"
@@ -8,7 +8,7 @@ name = "rsiot"
 readme = "README.md"
 repository = "https://github.com/Konstantin-Dudersky/rsiot"
 rust-version = "1.89.0"
-version = "0.0.83"
+version = "0.0.84"
 
 
 [dependencies]
