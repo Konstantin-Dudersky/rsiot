@@ -5,7 +5,10 @@
       "toolchain": "+stable",
       "features": [
         "executor",
-        "logging",
+        "log_console",
+        "log_file",
+        "log_loki",
+        "log_tokio",
         "cmp_auth",
         "cmp_filesystem",
         "cmp_http_client",
@@ -34,7 +37,7 @@
     {
       "name": "aarch64-linux-android",
       "toolchain": "+stable",
-      "features": ["executor", "logging", "cmp_http_client", "cmp_mqtt_client", "cmp_slint"],
+      "features": ["executor", "log_console", "cmp_http_client", "cmp_mqtt_client", "cmp_slint"],
       "add_feat": ["", "single-thread"]
     },
     {
@@ -42,7 +45,10 @@
       "toolchain": "+stable",
       "features": [
         "executor",
-        "logging",
+        "log_console",
+        "log_file",
+        "log_loki",
+        "log_tokio",
         "cmp_auth",
         "cmp_filesystem",
         "cmp_http_client",
@@ -73,7 +79,10 @@
       "toolchain": "+stable",
       "features": [
         "executor",
-        "logging",
+        "log_console",
+        "log_file",
+        "log_loki",
+        "log_tokio",
         "cmp_filesystem",
         "cmp_linux_gpio",
         "cmp_linux_spi_master",
@@ -84,7 +93,7 @@
     {
       "name": "riscv32imc-esp-espidf",
       "toolchain": "+nightly",
-      "features": ["cmp_esp", "cmp_plc", "executor"],
+      "features": ["cmp_esp", "cmp_plc", "executor", "log_esp"],
       "add_feat": ["single-thread"]
     },
     {
@@ -92,7 +101,7 @@
       "toolchain": "+stable",
       "features": [
         "executor",
-        "logging",
+        "log_webconsole",
         "cmp_http_client_wasm",
         "cmp_leptos",
         "cmp_plc",
