@@ -1,0 +1,29 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 0
+  }
+}
+
+MsgBusIn: MsgBus {
+    shape: oval
+}
+
+GpioOutput
+
+Gpio {
+    style.stroke-dash: 5
+}
+
+GpioInput
+
+MsgBusOut: MsgBus {
+    shape: oval
+}
+
+MsgBusIn -> GpioOutput
+
+GpioOutput -> Gpio
+Gpio -> GpioInput
+
+GpioInput -> MsgBusOut

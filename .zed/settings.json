@@ -44,61 +44,61 @@
           //   "serde_postcard"
           // ]
           // ---- x86_64-unknown-linux-gnu ---------------------------------------------------------
-          // "target": "x86_64-unknown-linux-gnu",
-          // "features": [
-          // "rustdoc",
-          // "executor",
-          // "single-thread",
-          //   "env_vars",
-          // "cmp_auth",
-          // "cmp_filesystem",
-          // "cmp_http_client",
-          // "cmp_http_server",
-          // "cmp_filesystem",
-          // "cmp_influxdb",
-          // "cmp_linux_can",
-          // "cmp_linux_gpio",
-          // "cmp_linux_i2c_master",
-          // "cmp_linux_spi_master",
-          // "cmp_linux_uart_master",
-          // "cmp_math"
-          // "cmp_modbus_client",
-          // "cmp_mqtt_client",
-          // "cmp_plc",
-          // "cmp_redis_client",
-          // "cmp_os_process",
-          // "cmp_slint"
-          // "cmp_surrealdb",
-          // "cmp_svg"
-          // "cmp_system_info",
-          // "cmp_telegram",
-          // "cmp_timescaledb",
-          // "cmp_websocket_client",
-          // "cmp_websocket_server",
-          //   "serde_json",
-          //   "serde_postcard",
-          //   "serde_toml",
-          // "log_console",
-          // "log_file",
-          // "log_loki",
-          // "log_tokio"
-          // ]
-          // ---- wasm32-unknown-unknown -----------------------------------------------------------
-          "target": "wasm32-unknown-unknown",
+          "target": "x86_64-unknown-linux-gnu",
           "features": [
-            "single-thread", // Активировать обязательно !
             // "rustdoc",
             // "executor",
-            // "logging",
-            // "cmp_http_client_wasm"
-            // "cmp_leptos",
+            // "single-thread",
+            //   "env_vars",
+            // "cmp_auth",
+            // "cmp_filesystem",
+            // "cmp_http_client",
+            // "cmp_http_server",
+            // "cmp_filesystem",
+            // "cmp_influxdb",
+            // "cmp_linux_can",
+            "cmp_linux_gpio"
+            // "cmp_linux_i2c_master",
+            // "cmp_linux_spi_master",
+            // "cmp_linux_uart_master",
+            // "cmp_math"
+            // "cmp_modbus_client",
+            // "cmp_mqtt_client",
             // "cmp_plc",
-            "cmp_websocket_client_wasm"
-            //   "cmp_webstorage",
+            // "cmp_redis_client",
+            // "cmp_os_process",
+            // "cmp_slint"
+            // "cmp_surrealdb",
+            // "cmp_svg"
+            // "cmp_system_info",
+            // "cmp_telegram",
+            // "cmp_timescaledb",
+            // "cmp_websocket_client",
+            // "cmp_websocket_server",
             //   "serde_json",
-            //   "serde_toml"
-            // "log_webconsole"
+            //   "serde_postcard",
+            //   "serde_toml",
+            // "log_console",
+            // "log_file",
+            // "log_loki",
+            // "log_tokio"
           ]
+          // ---- wasm32-unknown-unknown -----------------------------------------------------------
+          // "target": "wasm32-unknown-unknown",
+          // "features": [
+          // "single-thread", // Активировать обязательно !
+          // "rustdoc",
+          // "executor",
+          // "logging",
+          // "cmp_http_client_wasm"
+          // "cmp_leptos",
+          // "cmp_plc",
+          // "cmp_websocket_client_wasm"
+          //   "cmp_webstorage",
+          //   "serde_json",
+          //   "serde_toml"
+          // "log_webconsole"
+          // ]
         }
       }
     },

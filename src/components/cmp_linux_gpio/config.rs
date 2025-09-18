@@ -7,34 +7,43 @@ where
     TMsg: MsgDataBound,
 {
     /// Конфигурация чтения состояния GPIO
-    pub read: Vec<ConfigRead<TMsg>>,
+    pub gpio_input: Vec<ConfigGpioInput<TMsg>>,
 
     /// Конфигурация записи состояния GPIO
-    pub write: Vec<ConfigWrite<TMsg>>,
+    pub gpio_output: Vec<ConfigGpioOutput<TMsg>>,
 }
 
 /// Обработка одного выхода
 #[derive(Clone)]
-pub struct ConfigRead<TMsg> {
+pub struct ConfigGpioInput<TMsg> {
     /// Устройство GPIO, например  "/dev/gpiochip0"
-    pub dev_gpio: String,
+    pub dev_gpio: &'static str,
 
     /// Номер линии GPIO. 0 .. 31
     pub gpio_line: u8,
+
+    /// Описание пина. Выводится командой gpioinfo
+    pub description: &'static str,
 
     /// Преобразование состояния пина в сообщение
-    pub fn_read: fn(bool) -> Option<TMsg>,
+    pub fn_gpio_input: fn(bool) -> TMsg,
 }
 
 /// Обработка одного выхода
 #[derive(Clone)]
-pub struct ConfigWrite<TMsg> {
+pub struct ConfigGpioOutput<TMsg> {
     /// Устройство GPIO, например  "/dev/gpiochip0"
-    pub dev_gpio: String,
+    pub dev_gpio: &'static str,
 
     /// Номер линии GPIO. 0 .. 31
     pub gpio_line: u8,
 
+    /// Описание пина. Выводится командой gpioinfo
+    pub description: &'static str,
+
     /// Преобразование входящего сообщения в состояние пина
-    pub fn_write: fn(TMsg) -> Option<bool>,
+    pub fn_gpio_output: fn(TMsg) -> Option<bool>,
+
+    /// Состояние пина при запуске программы
+    pub default_state: bool,
 }
