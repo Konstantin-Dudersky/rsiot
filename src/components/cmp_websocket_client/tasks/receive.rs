@@ -15,7 +15,7 @@ impl Receive {
                 .into_data();
 
             self.output
-                .send(data)
+                .send(data.into())
                 .await
                 .map_err(|_| super::Error::TokioSyncMpscSend)?;
         }

@@ -4,9 +4,8 @@ use tokio::{
     task::JoinSet,
     time::{Duration, sleep},
 };
-use tokio_tungstenite::connect_async;
+use tokio_tungstenite::{connect_async, tungstenite::client::IntoClientRequest};
 use tracing::{error, info, warn};
-use url::Url;
 
 use crate::{
     components_config::websocket_general::WebsocketMessage,
@@ -81,9 +80,12 @@ where
     TServerToClient: 'static + WebsocketMessage,
     TClientToServer: 'static + WebsocketMessage,
 {
-    let url = Url::parse(&config.url)?;
+    let request = config
+        .url
+        .into_client_request()
+        .map_err(|e| Error::SetupConnection(e.to_string()))?;
 
-    let (ws_stream, _) = connect_async(url)
+    let (ws_stream, _) = connect_async(request)
         .await
         .map_err(|e| Error::SetupConnection(e.to_string()))?;
 

@@ -8,17 +8,18 @@
           // "target": "aarch64-linux-android",
           // "features": ["cmp_slint", "rustdoc"]
           // ---- aarch64-unknown-linux-gnu --------------------------------------------------------
-          "target": "aarch64-unknown-linux-gnu",
-          "features": [
-            //   "rustdoc",
-            // "cmp_linux_gpio",
-            // "cmp_math"
-            //   "cmp_plc",
-            "cmp_raspberrypi",
-            //   "cmp_slint",
-            //   "cmp_telegram"
-            "cmp_websocket_server"
-          ]
+          // "target": "aarch64-unknown-linux-gnu",
+          // "features": [
+          //   "rustdoc",
+          // "cmp_linux_gpio",
+          // "cmp_math"
+          //   "cmp_plc",
+          // "cmp_raspberrypi",
+          //   "cmp_slint",
+          //   "cmp_telegram"
+          // "cmp_websocket_client",
+          // "cmp_websocket_server"
+          // ]
           // ---- armv7-unknown-linux-gnueabihf ----------------------------------------------------
           // "target": "armv7-unknown-linux-gnueabihf",
           // "features": [
@@ -83,22 +84,39 @@
           // "log_tokio"
           // ]
           // ---- wasm32-unknown-unknown -----------------------------------------------------------
-          // "target": "wasm32-unknown-unknown",
-          // "features": [
-          // "single-thread", // Активировать обязательно !
-          // "rustdoc",
-          // "executor",
-          // "logging",
-          // "cmp_http_client_wasm"
-          // "cmp_leptos",
-          // "cmp_plc",
-          // "cmp_websocket_client_wasm"
-          //   "cmp_webstorage",
-          //   "serde_json",
-          //   "serde_toml"
-          // "log_webconsole"
-          // ]
+          "target": "wasm32-unknown-unknown",
+          "features": [
+            "single-thread", // Активировать обязательно !
+            // "rustdoc",
+            // "executor",
+            // "logging",
+            // "cmp_http_client_wasm"
+            // "cmp_leptos",
+            // "cmp_plc",
+            "cmp_websocket_client_wasm"
+            //   "cmp_webstorage",
+            //   "serde_json",
+            //   "serde_toml"
+            // "log_webconsole"
+          ]
         }
+      }
+    },
+    "cargo-tom": {
+      "initialization_options": {
+        /// Search
+        // "per_page": 25,
+        /// What features should be displayed on hover
+        /// All, UnusedOpt, Features,
+        // "feature_display_mode": "UnusedOpt",
+        "hide_docs_info_message": true
+        /// Sort toml on format
+        // "sort_format": false,
+        /// Use stable versions in completions
+        // "stable_version": true,
+        /// Offline mode uses https://github.com/frederik-uni/crates.io-dump-minfied for search
+        /// The order is non existent feel free to contribute
+        // "offline": false
       }
     }
   }
