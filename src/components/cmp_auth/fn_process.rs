@@ -12,7 +12,7 @@ use crate::{
     message::{system_messages::*, *},
 };
 
-use super::{token_payload::TokenPayload, Config, ConfigStore, ConfigStoreLocalItem, Error};
+use super::{Config, ConfigStore, ConfigStoreLocalItem, Error, token_payload::TokenPayload};
 
 pub async fn fn_process<TMsg>(config: Config, in_out: CmpInOut<TMsg>) -> super::Result<()>
 where
