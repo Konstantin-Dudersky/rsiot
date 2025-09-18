@@ -1,9 +1,9 @@
 use std::{net::SocketAddr, sync::Arc};
 
 use tokio::{
-    sync::{mpsc, Semaphore},
+    sync::{Semaphore, mpsc},
     task::JoinSet,
-    time::{sleep, timeout, Duration},
+    time::{Duration, sleep, timeout},
 };
 use tokio_modbus::prelude::*;
 use tokio_util::task::TaskTracker;
@@ -12,14 +12,14 @@ use tracing::{debug, warn};
 use crate::{
     components::shared_tasks::fn_process_master::FnProcessMaster,
     components_config::master_device::{FieldbusRequestWithIndex, FieldbusResponseWithIndex},
-    executor::{join_set_spawn, CmpInOut},
+    executor::{CmpInOut, join_set_spawn},
     message::MsgDataBound,
 };
 
 use super::{
+    ClientType, FieldbusRequest, FieldbusResponse,
     config::{Config, ConfigDevicesCommSettings, RequestContent, ResponseContent},
     error::Error,
-    ClientType, FieldbusRequest, FieldbusResponse,
 };
 
 const MAX_TASKS_PER_DEVICE: usize = 10;
@@ -121,7 +121,7 @@ struct ModbusCommSingleRequest {
 }
 impl ModbusCommSingleRequest {
     pub async fn spawn(self) -> super::Result<()> {
-        let _permit = self.available_connections.acquire().await.unwrap();
+        let _permit = self.available_connections.acquire().await?;
 
         let fieldbus_response_with_index = self.internal().await;
 
@@ -153,7 +153,7 @@ impl ModbusCommSingleRequest {
                 let task = tcp::connect_slave(socket_addr, slave);
                 let ctx = timeout(self.comm_settings.timeout, task).await??;
 
-                debug!("Connection established: {:?}", ctx);
+                debug!("Connection established: {:?}", socket_addr);
                 ctx
             }
             ClientType::Rtu => {
@@ -167,7 +167,7 @@ impl ModbusCommSingleRequest {
                 count,
             } => {
                 let task = ctx.read_coils(start_address, count);
-                let response = timeout(self.comm_settings.timeout, task).await??;
+                let response = timeout(self.comm_settings.timeout, task).await???;
                 ResponseContent::BitVector(response)
             }
             RequestContent::ReadHoldingRegisters {
@@ -175,7 +175,7 @@ impl ModbusCommSingleRequest {
                 count,
             } => {
                 let task = ctx.read_holding_registers(start_address, count);
-                let response = timeout(self.comm_settings.timeout, task).await??;
+                let response = timeout(self.comm_settings.timeout, task).await???;
                 ResponseContent::WordVector(response)
             }
             RequestContent::ReadInputRegisters {
@@ -183,7 +183,7 @@ impl ModbusCommSingleRequest {
                 count,
             } => {
                 let task = ctx.read_input_registers(start_address, count);
-                let response = timeout(self.comm_settings.timeout, task).await??;
+                let response = timeout(self.comm_settings.timeout, task).await???;
                 ResponseContent::WordVector(response)
             }
             RequestContent::WriteSingleRegister {
@@ -191,7 +191,7 @@ impl ModbusCommSingleRequest {
                 value,
             } => {
                 let task = ctx.write_single_register(start_address, value);
-                timeout(self.comm_settings.timeout, task).await??;
+                timeout(self.comm_settings.timeout, task).await???;
                 ResponseContent::Unit
             }
         };

@@ -7,6 +7,9 @@ use crate::{
 
 use super::{config::Config, fn_process::fn_process};
 
+/// Название компонента
+pub const COMPONENT_NAME: &str = "cmp_modbus_client";
+
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
 impl<TMessage> IComponentProcess<Config<TMessage>, TMessage>
@@ -21,7 +24,7 @@ where
     ) -> Result<(), ComponentError> {
         fn_process(
             config,
-            in_out.clone_with_new_id("cmp_modbus_client", AuthPermissions::FullAccess),
+            in_out.clone_with_new_id(COMPONENT_NAME, AuthPermissions::FullAccess),
         )
         .await?;
         Ok(())
