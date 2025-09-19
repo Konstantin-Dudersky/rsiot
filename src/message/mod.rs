@@ -5,9 +5,7 @@
 mod auth_roles;
 mod error;
 pub mod example_message;
-mod example_message_channel;
 mod message;
-mod message_channel;
 mod msg_data;
 mod msg_data_bound;
 mod msg_key;
@@ -21,9 +19,7 @@ mod value_time;
 
 pub use auth_roles::AuthPermissions;
 pub use error::Error;
-pub use example_message_channel::ExampleMessageChannel;
 pub use message::Message;
-pub use message_channel::IMessageChannel;
 pub use msg_data::MsgData;
 pub use msg_data_bound::{MsgDataBound, MsgRoute};
 pub use msg_key::MsgKey;

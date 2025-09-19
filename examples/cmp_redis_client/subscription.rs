@@ -20,7 +20,7 @@
 //!
 //! - корректный перезапуск. При отключении Redis, или передачи неправильного сообщения в Pub/Sub
 
-#[cfg(feature = "cmp_redis_client")]
+#[cfg(feature = "deprecated")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     use std::time::Duration;
@@ -76,5 +76,5 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[cfg(not(feature = "cmp_redis_client"))]
+#[cfg(not(feature = "deprecated"))]
 fn main() {}

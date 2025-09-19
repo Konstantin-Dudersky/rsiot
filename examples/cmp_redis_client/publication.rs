@@ -4,7 +4,7 @@
 //! cargo run --example cmp_redis_client_publication --features "cmp_redis_client" --target="x86_64-unknown-linux-gnu"
 //! ```
 
-#[cfg(feature = "cmp_redis_client")]
+#[cfg(feature = "deprecated")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     use tokio::time::Duration;
@@ -71,5 +71,5 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[cfg(not(feature = "cmp_redis_client"))]
+#[cfg(not(feature = "deprecated"))]
 fn main() {}

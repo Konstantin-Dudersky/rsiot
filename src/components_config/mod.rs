@@ -25,9 +25,6 @@ pub mod modbus_client;
 #[cfg(any(feature = "cmp_mqtt_client", feature = "cmp_esp"))]
 pub mod mqtt_client;
 
-#[cfg(feature = "cmp_redis_client")]
-pub mod redis_client;
-
 #[cfg(feature = "executor")]
 pub mod uart_general;
 

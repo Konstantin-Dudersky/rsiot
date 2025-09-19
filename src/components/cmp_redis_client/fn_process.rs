@@ -1,11 +1,11 @@
 use futures::StreamExt;
 use redis::{
-    aio::{MultiplexedConnection, PubSub},
     AsyncCommands,
+    aio::{MultiplexedConnection, PubSub},
 };
 use tokio::{
     task::JoinSet,
-    time::{sleep, Duration},
+    time::{Duration, sleep},
 };
 use tracing::{error, info, trace, warn};
 
@@ -26,7 +26,7 @@ where
     TMessage: MsgDataBound + 'static,
     TMessageChannel: IMessageChannel + 'static,
 {
-    info!("Initialization. Config: {:?}", config,);
+    info!("Initialization. Config: {:?}", config);
 
     loop {
         info!("Starting");

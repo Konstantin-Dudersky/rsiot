@@ -182,10 +182,6 @@ pub mod cmp_raspberrypi_gpio;
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
 pub mod cmp_raspberrypi_i2c_master;
 
-#[cfg(feature = "cmp_redis_client")]
-#[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
-pub mod cmp_redis_client;
-
 #[cfg(feature = "cmp_slint")]
 #[cfg(any(
     aarch64_linux_android,
