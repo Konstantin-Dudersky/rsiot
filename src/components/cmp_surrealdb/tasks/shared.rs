@@ -6,7 +6,7 @@ use crate::{
     message::MsgDataBound,
 };
 
-use super::super::DbClient;
+use super::{super::DbClient, Error};
 
 pub async fn execute_db_query<TMsg>(
     in_out: CmpInOut<TMsg>,
@@ -42,7 +42,10 @@ where
         }
     };
     for msg in msgs {
-        in_out.send_output(msg).await.unwrap();
+        in_out
+            .send_output(msg)
+            .await
+            .map_err(|_| Error::TokioSyncMpscSend)?;
     }
     Ok(())
 }

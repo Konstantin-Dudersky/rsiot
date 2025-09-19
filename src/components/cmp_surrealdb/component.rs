@@ -7,6 +7,9 @@ use crate::{
 
 use super::fn_process::fn_process;
 
+/// Название компонента
+pub const COMPONENT_NAME: &str = "cmp_surrealdb";
+
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 impl<TMsg> IComponentProcess<super::Config<TMsg>, TMsg> for Component<super::Config<TMsg>, TMsg>
@@ -19,7 +22,7 @@ where
         input: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
         fn_process(
-            input.clone_with_new_id("cmp_surrealdb", AuthPermissions::FullAccess),
+            input.clone_with_new_id(COMPONENT_NAME, AuthPermissions::FullAccess),
             config.clone(),
         )
         .await?;

@@ -67,7 +67,7 @@
             // "cmp_plc",
             // "cmp_os_process",
             // "cmp_slint"
-            // "cmp_surrealdb",
+            "cmp_surrealdb"
             // "cmp_svg"
             // "cmp_system_info",
             // "cmp_telegram",
