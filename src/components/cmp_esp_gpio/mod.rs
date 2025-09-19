@@ -4,11 +4,13 @@ mod component;
 mod config;
 mod error;
 mod fn_process;
+mod task_gpio_input;
+mod task_gpio_output;
 
 #[cfg(test)]
 mod test;
 
-pub use component::Cmp;
+pub use component::{COMPONENT_NAME, Cmp};
 pub use config::{Config, ConfigGpioInput, ConfigGpioOutput};
 pub use error::Error;
 pub use esp_idf_svc::hal::gpio::Pull;
