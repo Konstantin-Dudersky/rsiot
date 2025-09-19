@@ -302,7 +302,7 @@ cmp_svg = ["executor", "dep:quick-xml"]
 cmp_system_info = ["executor", "dep:sysinfo"]
 
 ## Компонент бота telegram
-cmp_telegram = ["executor", "dep:teloxide"]
+cmp_telegram = ["executor", "dep:openssl", "dep:teloxide"]
 
 ## Компонент сохранения в БД TimescaleDB
 cmp_timescaledb = ["executor", "dep:sqlx", "dep:url"]
