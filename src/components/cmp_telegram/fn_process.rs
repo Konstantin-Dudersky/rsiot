@@ -1,11 +1,11 @@
 use tokio::task::JoinSet;
 
 use crate::{
-    executor::{join_set_spawn, CmpInOut},
+    executor::{CmpInOut, join_set_spawn},
     message::MsgDataBound,
 };
 
-use super::{tasks, Config, TelegramBot};
+use super::{Config, TelegramBot, tasks};
 
 pub async fn fn_process<TMsg>(config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> super::Result<()>
 where
@@ -24,7 +24,7 @@ where
     join_set_spawn(&mut task_set, "cmp_telegram", task.spawn());
 
     while let Some(res) = task_set.join_next().await {
-        res.unwrap().unwrap();
+        res??;
     }
 
     Ok(())

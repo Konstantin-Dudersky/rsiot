@@ -12,7 +12,7 @@ async fn main() -> anyhow::Result<()> {
     use rsiot::{
         components::{cmp_inject_periodic, cmp_telegram},
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{example_message::*, *},
+        message::example_message::*,
     };
 
     tracing_subscriber::fmt().init();
@@ -21,7 +21,7 @@ async fn main() -> anyhow::Result<()> {
     let inject_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(2),
         fn_periodic: move || {
-            let msg = Message::new_custom(Custom::ValueInstantF64(counter));
+            let msg = Custom::ValueInstantF64(counter);
             counter += 1.0;
             vec![msg]
         },
@@ -31,6 +31,7 @@ async fn main() -> anyhow::Result<()> {
         buffer_size: 100,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
+        fn_tokio_metrics: |_| None,
     };
 
     let config_telegram = cmp_telegram::Config {

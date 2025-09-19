@@ -69,8 +69,8 @@
             // "cmp_slint"
             // "cmp_surrealdb"
             // "cmp_svg"
-            "cmp_system_info"
-            // "cmp_telegram",
+            // "cmp_system_info"
+            "cmp_telegram"
             // "cmp_timescaledb",
             // "cmp_websocket_client",
             // "cmp_websocket_server",
