@@ -1,4 +1,5 @@
 [target.aarch64-linux-android]
+linker = "/home/konstantin/Android/Sdk/ndk/28.0.12674087/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang"
 rustflags = [
     # для tokio-console
     "--cfg",
@@ -66,7 +67,9 @@ ESP_IDF_VERSION = "v5.3.2"
 
 ANDROID_HOME = "/home/konstantin/Android/Sdk"
 JAVA_HOME = "/snap/android-studio/current/jbr/"
+ANDROID_NDK_HOME="/home/konstantin/Android/Sdk/ndk/28.0.12674087"
+ANDROID_NDK_ROOT="/home/konstantin/Android/Sdk/ndk/28.0.12674087"
 CC_aarch64-linux-android = "/home/konstantin/Android/Sdk/ndk/28.0.12674087/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang"
-CCX_aarch64-linux-android = "/home/konstantin/Android/Sdk/ndk/28.0.12674087/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang"
+CCX_aarch64-linux-android = "/home/konstantin/Android/Sdk/ndk/28.0.12674087/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android34-clang++"
 AR_aarch64-linux-android = "/home/konstantin/Android/Sdk/ndk/28.0.12674087/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
 RANLIB_aarch64-linux-android = "/home/konstantin/Android/Sdk/ndk/28.0.12674087/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ranlib"
