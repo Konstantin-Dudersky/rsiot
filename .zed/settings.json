@@ -5,12 +5,12 @@
         "check": { "command": "clippy" },
         "cargo": {
           // ---- aarch64_linux_android ------------------------------------------------------------
-          "target": "aarch64-linux-android",
-          "features": [
-            "rustdoc",
-            // "cmp_slint",
-            "cmp_mqtt_client"
-          ]
+          // "target": "aarch64-linux-android",
+          // "features": [
+          // "rustdoc",
+          // "cmp_slint",
+          // "cmp_mqtt_client"
+          // ]
           // ---- aarch64-unknown-linux-gnu --------------------------------------------------------
           // "target": "aarch64-unknown-linux-gnu",
           // "features": [
@@ -40,14 +40,14 @@
           //   "cmp_timescaledb"
           // ]
           // ---- riscv32imc-esp-espidf ------------------------------------------------------------
-          // "target": "riscv32imc-esp-espidf",
-          // "features": [
-          //   "executor",
-          //    "log_esp",
-          //   "cmp_esp",
-          //   "cmp_plc",
-          //   "serde_postcard"
-          // ]
+          "target": "riscv32imc-esp-espidf",
+          "features": [
+            "executor",
+            // "log_esp",
+            "cmp_esp"
+            //   "cmp_plc",
+            //   "serde_postcard"
+          ]
           // ---- x86_64-unknown-linux-gnu ---------------------------------------------------------
           // "target": "x86_64-unknown-linux-gnu",
           // "features": [

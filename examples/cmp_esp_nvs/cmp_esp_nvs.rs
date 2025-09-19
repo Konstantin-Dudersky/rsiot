@@ -22,6 +22,7 @@ async fn main() {
         buffer_size: 10,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
+        fn_tokio_metrics: |_| None,
     };
 
     // cmp_inject_periodic -------------------------------------------------------------------------
@@ -29,7 +30,7 @@ async fn main() {
     let inject_periodic_config = cmp_inject_periodic::Config {
         period: std::time::Duration::from_secs(2),
         fn_periodic: move || {
-            let msg = Message::new_custom(Custom::ValueInstantF64(counter));
+            let msg = Custom::ValueInstantF64(counter);
             counter += 1.0;
             vec![msg]
         },

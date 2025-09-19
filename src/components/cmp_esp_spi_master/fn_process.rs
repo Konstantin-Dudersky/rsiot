@@ -1,7 +1,7 @@
 use esp_idf_svc::hal::{
     gpio::AnyIOPin,
     peripheral::Peripheral,
-    spi::{config, Operation, Spi, SpiAnyPins, SpiDeviceDriver, SpiDriver, SpiDriverConfig},
+    spi::{Operation, Spi, SpiAnyPins, SpiDeviceDriver, SpiDriver, SpiDriverConfig, config},
     units::FromValueType,
 };
 use tokio::{sync::mpsc, task::JoinSet, time::sleep};
@@ -13,11 +13,11 @@ use crate::{
         master_device::{FieldbusRequestWithIndex, FieldbusResponseWithIndex},
         spi_master,
     },
-    executor::{join_set_spawn, CmpInOut},
+    executor::{CmpInOut, join_set_spawn},
     message::MsgDataBound,
 };
 
-use super::{config::ConfigDevicesCommSettings, Config};
+use super::{Config, config::ConfigDevicesCommSettings};
 
 pub async fn fn_process<TMsg, TSpi, TPeripheral>(
     config: Config<TMsg, TSpi, TPeripheral>,
@@ -178,6 +178,13 @@ async fn make_spi_operation<'a>(
             let mut transaction = [Operation::Write(write_data)];
             device.transaction(&mut transaction).unwrap();
             None
+        }
+        spi_master::Operation::Read { read_size } => {
+            let mut read_data = vec![0; *read_size as usize];
+            let mut transaction = [Operation::Read(&mut read_data)];
+            device.transaction(&mut transaction).unwrap();
+            trace!("Read SPI data: {:x?}", read_data);
+            Some(read_data)
         }
     }
 }

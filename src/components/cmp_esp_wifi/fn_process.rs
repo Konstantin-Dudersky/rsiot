@@ -11,7 +11,7 @@ use tracing::{info, warn};
 
 use crate::{
     executor::CmpInOut,
-    message::{system_messages, Message, MsgData, MsgDataBound},
+    message::{Message, MsgData, MsgDataBound, system_messages},
 };
 
 use super::Config;
@@ -39,67 +39,15 @@ where
     }
 }
 
-// pub fn wifi_setup(
-//     wifi: &mut EspWifi<'static>,
-//     sys_loop: EspEventLoop<System>,
-//     configuration: Configuration,
-// ) {
-//     let mut wifi = BlockingWifi::wrap(wifi, sys_loop).unwrap();
-//     wifi.set_configuration(&configuration).unwrap();
-//     wifi.start().unwrap();
-//     info!("is wifi started: {:?}", wifi.is_started());
-//     info!("{:?}", wifi.get_capabilities());
-
-//     // Подключаемся к внешней точке Wi-Fi
-//     if matches!(configuration, Configuration::Client(_))
-//         || matches!(configuration, Configuration::Mixed(_, _))
-//     {
-//         wifi.connect().unwrap();
-
-//         info!("Wifi connected to external AP");
-
-//         wifi.wait_netif_up().unwrap();
-//         info!("Wifi netif up");
-//         let ip_info = wifi.wifi().sta_netif().get_ip_info().unwrap();
-//         info!("Wifi DHCP info: {:?}", ip_info);
-//     }
-// }
-
-// async fn start_wifi<TMsg>(config: Config, in_out: CmpInOut<TMsg>)
-// where
-//     TMsg: MsgDataBound,
-// {
-//     let wifi_config = prepare_wifi_config(&config);
-
-//     let driver = EspWifi::new(config.peripherals, config.event_loop.clone(), None).unwrap();
-
-//     let mut wifi = AsyncWifi::wrap(driver, config.event_loop, config.timer_service).unwrap();
-
-//     let mut state = ConnectionState::PreLaunch;
-
-//     loop {
-//         state = match state {
-//             ConnectionState::PreLaunch => state_prelaunch(&mut wifi, &wifi_config).await,
-//             ConnectionState::Connect => state_connect(&mut wifi, &in_out).await,
-//             ConnectionState::Check => state_check(&mut wifi).await,
-//             ConnectionState::Disconnect => state_disconnect(&mut wifi).await,
-//             // ConnectionState::OnlyAP => state_onlyap(&in_out).await,
-//             ConnectionState::OnlyAP => break,
-//         };
-//     }
-
-//     wifi_connected(&in_out).await.unwrap();
-// }
-
 fn prepare_wifi_config(config: &Config) -> Configuration {
-    let access_point_config =
-        config
-            .access_point
-            .as_ref()
-            .map(|ap| esp_idf_svc::wifi::AccessPointConfiguration {
-                ssid: heapless::String::try_from(ap.ssid.as_str()).unwrap(),
-                ..Default::default()
-            });
+    let access_point_config = config.access_point.as_ref().map(|ap| {
+        let ssid = heapless::String::try_from(ap.ssid.as_str()).unwrap();
+
+        esp_idf_svc::wifi::AccessPointConfiguration {
+            ssid,
+            ..Default::default()
+        }
+    });
 
     let client_config: Option<ClientConfiguration> =
         config.client.as_ref().map(|cl| ClientConfiguration {

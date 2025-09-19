@@ -12,6 +12,7 @@
 //! sudo ./cmp_raspberry
 //! ```
 
+#[cfg(feature = "cmp_raspberrypi")]
 mod message;
 
 #[cfg(feature = "cmp_raspberrypi")]
