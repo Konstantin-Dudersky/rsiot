@@ -62,8 +62,8 @@
             // "cmp_linux_spi_master",
             // "cmp_linux_uart_master",
             // "cmp_math"
-            "cmp_modbus_client"
-            // "cmp_mqtt_client",
+            // "cmp_modbus_client"
+            "cmp_mqtt_client"
             // "cmp_plc",
             // "cmp_redis_client",
             // "cmp_os_process",

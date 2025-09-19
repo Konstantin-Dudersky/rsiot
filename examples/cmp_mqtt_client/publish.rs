@@ -3,7 +3,6 @@ use std::time::Duration;
 use rsiot::{
     components::cmp_inject_periodic,
     executor::{ComponentExecutor, ComponentExecutorConfig},
-    message::Message,
 };
 
 use crate::{config_mqtt_server_publish, message::Custom};
@@ -13,13 +12,14 @@ pub async fn publish() {
         buffer_size: 100,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
+        fn_tokio_metrics: |_| None,
     };
 
     let mut counter = 0;
     let config_inject_periodic = cmp_inject_periodic::Config {
         period: Duration::from_millis(100),
         fn_periodic: move || {
-            let msg = Message::new_custom(Custom::Counter(counter));
+            let msg = Custom::Counter(counter);
             counter += 1;
             vec![msg]
         },
