@@ -188,6 +188,7 @@ log_console = ["dep:tracing-subscriber"]
 log_esp = ["dep:log", "dep:tracing-subscriber"]
 log_file = ["dep:tracing-appender", "dep:tracing-subscriber"]
 log_loki = [
+    "dep:openssl",
     "dep:tokio",
     "dep:tracing-loki",
     "dep:tracing-subscriber",
