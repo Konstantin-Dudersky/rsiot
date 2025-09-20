@@ -5,6 +5,7 @@
 //! cargo run --example cmp_http_server --target x86_64-unknown-linux-gnu --features cmp_http_server, single-thread
 //!
 
+#[cfg(feature = "cmp_http_server")]
 mod shared;
 
 #[cfg(feature = "cmp_http_server")]

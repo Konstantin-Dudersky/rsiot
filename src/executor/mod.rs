@@ -3,7 +3,7 @@
 //! # Пример с WASM и cmp_leptos
 //!
 //! ```rust
-#![doc = include_str!("./examples/executor_wasm_leptos.rs")]
+#![doc = include_str!("../../examples/executor_wasm_leptos/main.rs")]
 //! ```
 
 mod cache;
@@ -16,8 +16,6 @@ mod join_set_spawn;
 mod sleep;
 mod tokio_runtime_metrics;
 mod types;
-
-mod examples;
 
 pub use cache::Cache;
 pub use check_capacity::CheckCapacity;
