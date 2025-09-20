@@ -38,6 +38,7 @@ async fn main() {
     enum Custom {
         Counter(f64),
         CounterFromClient(u8),
+        WiFiConnected(bool),
     }
 
     impl MsgDataBound for Custom {}
@@ -120,6 +121,7 @@ async fn main() {
             ssid: "test_esp".into(),
         }),
         client: None,
+        fn_wifi_connected: |v| Custom::WiFiConnected(v),
     };
 
     // executor ------------------------------------------------------------------------------------

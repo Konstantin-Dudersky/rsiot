@@ -5,10 +5,8 @@
 //! **toolchain**
 //!
 //! ```bash
-//! rustup toolchain install nightly-2024-02-01-x86_64-unknown-linux-gnu --component rust-src
+//! rustup toolchain install nightly-unknown-linux-gnu --component rust-src
 //! ```
-//!
-//! TODO - обновить когда пофиксят
 //!
 //! **ESP-IDF**
 //!

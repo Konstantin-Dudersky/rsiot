@@ -208,6 +208,7 @@ log_webconsole = [
 ## Компонент аутентификации
 cmp_auth = ["executor", "dep:jwt", "dep:hmac", "dep:sha2"]
 
+## Компонент для работы с микроконтроллером ESP
 cmp_esp = [
     "executor",
     "single-thread",
@@ -223,7 +224,7 @@ cmp_esp = [
     "dep:ws2812-esp32-rmt-driver",
     "dep:url",
     "tokio?/time",
-] ## Компоненты для работы с микроконтроллером ESP
+]
 
 ## Компонент http-клиент
 cmp_http_client = [
@@ -351,11 +352,6 @@ path = "examples/cmp_external_fn_process/cmp_external_fn_process.rs"
 [[example]]
 name = "cmp_esp"
 path = "examples/cmp_esp/cmp_esp.rs"
-doc-scrape-examples = true
-
-[[example]]
-name = "cmp_esp_wifi"
-path = "examples/cmp_esp/cmp_esp_wifi.rs"
 doc-scrape-examples = true
 
 [[example]]

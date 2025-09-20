@@ -88,6 +88,7 @@ async fn main() {
             password: "Admin123!".into(),
             auth_method: cmp_esp_wifi::ConfigAuthMethod::WPA2Personal,
         }),
+        fn_wifi_connected: |_v| Custom::WiFiConnected,
     };
 
     // GPIO
