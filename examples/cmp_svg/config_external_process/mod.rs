@@ -33,6 +33,18 @@ async fn fn_process(mut input: CmpInOut<Msg>) -> CmpResult {
     Ok(())
 }
 
+#[cfg(not(feature = "single-thread"))]
+use futures::future::BoxFuture;
+
+#[cfg(not(feature = "single-thread"))]
 fn fn_process_wrapper(input: CmpInOut<Msg>) -> BoxFuture<'static, CmpResult> {
+    Box::pin(async { fn_process(input).await })
+}
+
+#[cfg(feature = "single-thread")]
+use futures::future::LocalBoxFuture;
+
+#[cfg(feature = "single-thread")]
+fn fn_process_wrapper(input: CmpInOut<Msg>) -> LocalBoxFuture<'static, CmpResult> {
     Box::pin(async { fn_process(input).await })
 }

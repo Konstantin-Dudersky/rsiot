@@ -6,6 +6,7 @@
 //! cargo run --example cmp_websocket_server --features "cmp_websocket_server, serde_json"
 //! ```
 
+#[cfg(feature = "cmp_websocket_server")]
 mod shared;
 
 #[cfg(feature = "cmp_websocket_server")]

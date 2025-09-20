@@ -8,12 +8,11 @@ mod config_svg;
 mod message;
 
 #[cfg(feature = "cmp_svg")]
-#[main]
+#[tokio::main]
 async fn main() {
     use std::time::Duration;
 
     use rsiot::executor::{ComponentExecutor, ComponentExecutorConfig};
-    use tokio::main;
     use tracing::Level;
 
     tracing_subscriber::fmt().with_max_level(Level::INFO).init();

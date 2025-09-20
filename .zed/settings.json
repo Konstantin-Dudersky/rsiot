@@ -42,7 +42,7 @@
           // ---- riscv32imc-esp-espidf ------------------------------------------------------------
           "target": "riscv32imc-esp-espidf",
           "features": [
-            "executor",
+            // "executor",
             // "log_esp",
             "cmp_esp"
             //   "cmp_plc",
@@ -54,7 +54,7 @@
           // "rustdoc",
           // "executor",
           // "single-thread",
-          //   "env_vars",
+          // "env_vars",
           // "cmp_auth",
           // "cmp_filesystem",
           // "cmp_http_client",

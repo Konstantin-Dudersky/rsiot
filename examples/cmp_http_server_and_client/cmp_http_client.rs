@@ -4,6 +4,7 @@
 //! cargo run --example cmp_http_client --features="cmp_http_client, serde_json"
 //! ```
 
+#[cfg(feature = "cmp_http_client")]
 mod shared;
 
 #[cfg(feature = "cmp_http_client")]
@@ -11,7 +12,7 @@ mod shared;
 async fn main() -> anyhow::Result<()> {
     use serde::{Deserialize, Serialize};
     use tokio::time::Duration;
-    use tracing::{level_filters::LevelFilter, Level};
+    use tracing::{Level, level_filters::LevelFilter};
 
     use shared::{ClientToServer, ServerToClient};
 

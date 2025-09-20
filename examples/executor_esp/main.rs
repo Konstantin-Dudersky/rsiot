@@ -1,14 +1,16 @@
-use std::time::Duration;
+#[cfg(feature = "cmp_esp")]
+mod message;
 
-use crate::executor::{ComponentExecutor, ComponentExecutorConfig};
-use tokio::task::LocalSet;
-
-use super::messages::*;
-
+#[cfg(feature = "cmp_esp")]
 #[allow(dead_code)]
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> anyhow::Result<()> {
-    // executor ------------------------------------------------------------------------------------
+    use std::time::Duration;
+
+    use rsiot::executor::{ComponentExecutor, ComponentExecutorConfig};
+    use tokio::task::LocalSet;
+
+    use message::*;
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 10,

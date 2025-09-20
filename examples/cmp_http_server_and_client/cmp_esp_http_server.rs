@@ -2,6 +2,7 @@
 //!
 //! cargo run --example cmp_esp_http_server --target="riscv32imc-esp-espidf" --features="cmp_esp, logging" --release
 
+#[cfg(all(feature = "cmp_esp", feature = "log_esp"))]
 mod shared;
 
 #[cfg(all(feature = "cmp_esp", feature = "log_esp"))]
