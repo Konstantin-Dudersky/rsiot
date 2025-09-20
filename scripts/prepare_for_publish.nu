@@ -1,6 +1,6 @@
 # Подготовка к публикации
 
-use scripts/shared.nu print_header
+use shared.nu print_header
 
 let RSIOT_DOCS = "../rsiot-docs/src"
 let RSIOT_DOCS_RUSTDOC = $"($RSIOT_DOCS)/rustdoc"
@@ -52,10 +52,6 @@ do {
     print_header "readme"
     cargo rdme --force
 }
-
-
-
-
 
 # cargo test ---------------------------------------------------------------------------------------
 

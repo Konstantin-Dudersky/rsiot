@@ -2,7 +2,7 @@ pub use esp_idf_svc::wifi::AuthMethod as ConfigAuthMethod;
 use esp_idf_svc::{eventloop::EspSystemEventLoop, hal::modem::Modem, timer::EspTaskTimerService};
 
 /// Конфигурация cmp_esp_wifi
-pub struct Config {
+pub struct Config<TMsg> {
     /// Модем для подключения
     pub peripherals: Modem,
 
@@ -21,6 +21,9 @@ pub struct Config {
     ///
     /// None - подключение к внешней точке доступа не настраивается
     pub client: Option<ConfigClient>,
+
+    /// Функция, создающее исходящее сообщение с состоянием подключения к WiFi
+    pub fn_wifi_connected: fn(bool) -> TMsg,
 }
 
 /// Настройка WiFi как точки доступа

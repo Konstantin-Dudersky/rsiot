@@ -9,7 +9,7 @@ async fn main() {
 
     use esp_idf_svc::{hal::peripherals::Peripherals, sys::link_patches};
     use tokio::task::LocalSet;
-    use tracing::{level_filters::LevelFilter, Level};
+    use tracing::{Level, level_filters::LevelFilter};
 
     use rsiot::{
         components::{cmp_esp_i2c_master, cmp_logger},
@@ -96,6 +96,7 @@ async fn main() {
         buffer_size: 10,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
+        fn_tokio_metrics: |_| None,
     };
 
     let local_set = LocalSet::new();

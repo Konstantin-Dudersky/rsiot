@@ -22,7 +22,7 @@ async fn main() {
         serde_utils::SerdeAlgKind,
     };
     use tokio::task::LocalSet;
-    use tracing::{level_filters::LevelFilter, Level};
+    use tracing::{Level, level_filters::LevelFilter};
 
     use shared::{ClientToServer, ServerToClient};
 
@@ -38,6 +38,7 @@ async fn main() {
     enum Custom {
         Counter(f64),
         CounterFromClient(u8),
+        WiFiConnected(bool),
     }
 
     impl MsgDataBound for Custom {}
@@ -100,7 +101,7 @@ async fn main() {
     let config_inject_periodic = cmp_inject_periodic::Config {
         period: Duration::from_millis(100),
         fn_periodic: move || {
-            let msg = Message::new_custom(Custom::Counter(value));
+            let msg = Custom::Counter(value);
             value += 1.0;
             vec![msg]
         },
@@ -120,6 +121,7 @@ async fn main() {
             ssid: "test_esp".into(),
         }),
         client: None,
+        fn_wifi_connected: |v| Custom::WiFiConnected(v),
     };
 
     // executor ------------------------------------------------------------------------------------
@@ -128,6 +130,7 @@ async fn main() {
         buffer_size: 10,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
+        fn_tokio_metrics: |_| None,
     };
 
     let local_set = LocalSet::new();

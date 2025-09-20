@@ -7,6 +7,9 @@ use crate::{
 
 use super::{config::Config, fn_process::fn_process};
 
+/// Название компонента
+pub const COMPONENT_NAME: &str = "cmp_esp_gpio";
+
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
 impl<TMsg> IComponentProcess<Config<TMsg>, TMsg> for Component<Config<TMsg>, TMsg>
@@ -18,7 +21,7 @@ where
         config: Config<TMsg>,
         in_out: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
-        let in_out = in_out.clone_with_new_id("cmp_esp_gpio_input", AuthPermissions::FullAccess);
+        let in_out = in_out.clone_with_new_id(COMPONENT_NAME, AuthPermissions::FullAccess);
         fn_process(config, in_out).await?;
         Ok(())
     }
