@@ -7,10 +7,24 @@ mod message;
 async fn main() -> anyhow::Result<()> {
     use std::time::Duration;
 
-    use rsiot::executor::{ComponentExecutor, ComponentExecutorConfig};
+    use esp_idf_svc::sys::link_patches;
+    use rsiot::{
+        executor::{ComponentExecutor, ComponentExecutorConfig},
+        logging::LogConfig,
+    };
     use tokio::task::LocalSet;
 
     use message::*;
+    use tracing::level_filters::LevelFilter;
+
+    // ESP
+    link_patches();
+
+    LogConfig {
+        esp_filter_level: LevelFilter::INFO,
+    }
+    .run()
+    .unwrap();
 
     let executor_config = ComponentExecutorConfig {
         buffer_size: 10,

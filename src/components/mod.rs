@@ -42,9 +42,9 @@ pub mod cmp_esp_led;
 #[cfg(riscv32imc_esp_espidf)]
 pub mod cmp_esp_i2c_master;
 
-// #[cfg(feature = "cmp_esp")]
-// #[cfg(riscv32imc_esp_espidf)]
-// pub mod cmp_esp_mqtt_client;
+#[cfg(feature = "cmp_esp")]
+#[cfg(riscv32imc_esp_espidf)]
+pub mod cmp_esp_mqtt_client;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]

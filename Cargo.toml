@@ -445,6 +445,22 @@ name = "cmp_inject_periodic"
 path = "examples/cmp_inject_periodic/cmp_inject_periodic.rs"
 
 [[example]]
+name = "esp_mqtt_client_publisher"
+path = "./examples/cmp_mqtt_client/main_esp_mqtt_client_publisher.rs"
+
+[[example]]
+name = "esp_mqtt_client_subscriber"
+path = "./examples/cmp_mqtt_client/main_esp_mqtt_client_subscriber.rs"
+
+[[example]]
+name = "mqtt_client_publisher"
+path = "./examples/cmp_mqtt_client/main_mqtt_client_publisher.rs"
+
+[[example]]
+name = "mqtt_client_subscriber"
+path = "./examples/cmp_mqtt_client/main_mqtt_client_subscriber.rs"
+
+[[example]]
 name = "cmp_plc"
 path = "examples/cmp_plc/cmp_plc/main.rs"
 

@@ -1,33 +1,32 @@
-//! Example based on developer board ESP32-C3
-//!
-//! cargo run --example cmp_esp_wifi --target="riscv32imc-esp-espidf" --features="cmp_esp, logging" --release
-
 #[cfg(feature = "cmp_esp")]
 mod config_esp_wifi;
 #[cfg(feature = "cmp_esp")]
-mod config_logger;
+mod config_inject_periodic;
 #[cfg(feature = "cmp_esp")]
-mod messages;
+mod config_mqtt_client;
+#[cfg(feature = "cmp_esp")]
+mod message;
 
 #[cfg(feature = "cmp_esp")]
+#[allow(dead_code)]
 #[tokio::main(flavor = "current_thread")]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     use std::time::Duration;
 
     use esp_idf_svc::{
-        eventloop::EspSystemEventLoop, hal::peripherals::Peripherals, sys::link_patches,
+        eventloop::EspSystemEventLoop, hal::prelude::Peripherals, sys::link_patches,
         timer::EspTaskTimerService,
     };
-    use tokio::task::LocalSet;
-    use tracing::level_filters::LevelFilter;
-
     use rsiot::{
         executor::{ComponentExecutor, ComponentExecutorConfig},
         logging::LogConfig,
     };
+    use tokio::task::LocalSet;
 
-    use messages::*;
+    use message::*;
+    use tracing::level_filters::LevelFilter;
 
+    // ESP -----------------------------------------------------------------------------------------
     link_patches();
 
     LogConfig {
@@ -36,16 +35,13 @@ async fn main() {
     .run()
     .unwrap();
 
-    // ESP -----------------------------------------------------------------------------------------
-    let peripherals = Peripherals::take().unwrap();
-    let event_loop = EspSystemEventLoop::take().unwrap();
-    let timer_service = EspTaskTimerService::new().unwrap();
+    let peripherals = Peripherals::take()?;
+    let event_loop = EspSystemEventLoop::take()?;
+    let timer_service = EspTaskTimerService::new()?;
     let modem = peripherals.modem;
 
-    // executor ------------------------------------------------------------------------------------
-
     let executor_config = ComponentExecutorConfig {
-        buffer_size: 10,
+        buffer_size: 100,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
         fn_tokio_metrics: |_| None,
@@ -55,13 +51,17 @@ async fn main() {
 
     local_set.spawn_local(async {
         ComponentExecutor::<Msg>::new(executor_config)
-            .add_cmp(config_logger::cmp())
+            .add_cmp(config_mqtt_client::publisher::cmp())
             .add_cmp(config_esp_wifi::cmp(modem, event_loop, timer_service))
+            .add_cmp(config_inject_periodic::cmp())
             .wait_result()
-            .await
-            .unwrap()
+            .await?;
+
+        Ok(()) as anyhow::Result<()>
     });
-    local_set.await
+    local_set.await;
+
+    Ok(())
 }
 
 #[cfg(not(feature = "cmp_esp"))]
