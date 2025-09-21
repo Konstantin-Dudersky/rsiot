@@ -273,7 +273,6 @@ where
             System::AuthRequestByToken(_) => return Some(msg),
             System::AuthResponseErr(_) => return Some(msg),
             System::AuthResponseOk(_) => return Some(msg),
-            System::EspWifiConnected => return Some(msg),
             System::Ping(_) => return None,
             System::Pong(_) => return None,
         }

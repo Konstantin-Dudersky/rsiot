@@ -64,8 +64,10 @@ async fn main() -> anyhow::Result<()> {
 
     let http_config = cmp_http_client::Config::<Data> {
         serde_alg: SerdeAlgKind::Json,
-        // base_url: "http://192.168.71.1:8010",
-        base_url: "http://localhost:8010".into(),
+        // Подключиться к cmp_esp_http_server
+        base_url: "http://192.168.71.1:8010".into(),
+        // Подключиться к cmp_http_server
+        // base_url: "http://localhost:8010".into(),
         timeout: Duration::from_secs(5),
         requests_input: vec![Box::new(cmp_http_client::RequestInputConfig::<
             Data,

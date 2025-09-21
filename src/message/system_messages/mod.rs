@@ -36,9 +36,6 @@ pub enum System {
 
     /// Проверка связи - ответ от партнера по коммуникации
     Pong(Pong),
-
-    /// Для ESP - wifi подключен
-    EspWifiConnected,
 }
 
 impl System {
@@ -51,7 +48,6 @@ impl System {
             System::AuthResponseOk(_) => todo!(),
             System::Ping(_) => todo!(),
             System::Pong(_) => todo!(),
-            System::EspWifiConnected => false,
         }
     }
 }

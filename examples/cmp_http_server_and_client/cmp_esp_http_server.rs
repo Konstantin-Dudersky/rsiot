@@ -1,11 +1,11 @@
 //! Example based on developer board ESP32-C3
 //!
-//! cargo run --example cmp_esp_http_server --target="riscv32imc-esp-espidf" --features="cmp_esp, logging" --release
+//! cargo run --example cmp_esp_http_server --target="riscv32imc-esp-espidf" --features="cmp_esp, log_esp" --release
 
-#[cfg(all(feature = "cmp_esp", feature = "log_esp"))]
+#[cfg(feature = "cmp_esp")]
 mod shared;
 
-#[cfg(all(feature = "cmp_esp", feature = "log_esp"))]
+#[cfg(feature = "cmp_esp")]
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
     use std::time::Duration;
@@ -47,6 +47,10 @@ async fn main() {
     // cmp_http_server_esp -------------------------------------------------------------------------
     let http_server_esp_config = cmp_esp_http_server::Config {
         port: 8010,
+        fn_start: |msg| match msg {
+            Custom::WiFiConnected(v) => Some(*v),
+            _ => None,
+        },
         get_endpoints: vec![
             Box::new(GetEndpointConfig {
                 serde_alg: SerdeAlgKind::Json,
@@ -149,7 +153,7 @@ async fn main() {
     local_set.await;
 }
 
-#[cfg(not(all(feature = "cmp_esp", feature = "log_esp")))]
+#[cfg(not(feature = "cmp_esp"))]
 fn main() {
     unimplemented!()
 }

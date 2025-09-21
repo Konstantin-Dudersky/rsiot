@@ -49,6 +49,10 @@ async fn main() {
     // cmp_http_server_esp -------------------------------------------------------------------------
     let http_server_esp_config = cmp_esp_http_server::Config {
         port: 8010,
+        fn_start: |msg| match msg {
+            Custom::WiFiConnected => Some(true),
+            _ => None,
+        },
         get_endpoints: vec![],
         put_endpoints: vec![],
     };

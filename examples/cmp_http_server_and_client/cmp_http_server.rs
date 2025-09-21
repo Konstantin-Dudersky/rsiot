@@ -62,6 +62,7 @@ fn main() -> anyhow::Result<()> {
 
     let http_server_config = cmp_http_server::Config {
         port: 8010,
+        fn_start: |_| Some(true),
         get_endpoints: vec![Box::new(GetEndpointConfig {
             serde_alg: SerdeAlgKind::Json,
             path: "/data/test",

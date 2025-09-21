@@ -1,9 +1,7 @@
-#![cfg(feature = "cmp_plc")]
-
 use serde::Serialize;
 
 use rsiot::components::cmp_plc::plc::{
-    types::Resettable, FbSystemData, FunctionBlockBase, IFunctionBlock,
+    FbSystemData, FunctionBlockBase, IFunctionBlock, types::Resettable,
 };
 
 use super::fb1_example;

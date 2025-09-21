@@ -12,11 +12,11 @@ use tracing::{info, trace, warn};
 
 use crate::{
     components_config::http_server::{GetEndpointsCollection, PutEndpointsCollection},
-    executor::{join_set_spawn, CmpInOut},
-    message::{system_messages, MsgData, MsgDataBound},
+    executor::{CmpInOut, join_set_spawn},
+    message::MsgDataBound,
 };
 
-use super::{config::handler_info, tasks, Config};
+use super::{Config, config::handler_info, tasks};
 
 /// Заголовки для разрешения CORS
 const HEADERS: [(&str, &str); 4] = [
@@ -40,9 +40,18 @@ where
 
     // Необходимо подождать, пока поднимется Wi-Fi
     while let Ok(msg) = in_out.recv_input().await {
-        match msg.data {
-            MsgData::System(system_messages::System::EspWifiConnected) => break,
-            _ => continue,
+        let Some(msg) = msg.get_custom_data() else {
+            continue;
+        };
+
+        let start = (config.fn_start)(&msg);
+
+        if let Some(start) = start
+            && start
+        {
+            break;
+        } else {
+            continue;
         }
     }
     info!("Starting cmp_esp_http_server");

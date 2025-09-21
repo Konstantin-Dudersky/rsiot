@@ -1,9 +1,7 @@
-#![cfg(feature = "cmp_plc")]
-
 use serde::Serialize;
 
 use rsiot::components::cmp_plc::plc::{
-    library::timer::ton, types, FbSystemData, FunctionBlockBase, IFunctionBlock,
+    FbSystemData, FunctionBlockBase, IFunctionBlock, library::timer::ton, types,
 };
 
 #[derive(Clone, Default, Serialize)]
