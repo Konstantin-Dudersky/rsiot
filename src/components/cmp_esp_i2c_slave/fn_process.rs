@@ -5,16 +5,16 @@ use esp_idf_svc::hal::{
     peripheral::Peripheral,
 };
 use futures::TryFutureExt;
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 use tokio::{
-    sync::{mpsc, Mutex},
+    sync::{Mutex, mpsc},
     task::JoinSet,
 };
 use tracing::debug;
 
 use crate::{
     components::{cmp_esp_i2c_slave::tasks, shared_tasks},
-    executor::{join_set_spawn, CmpInOut},
+    executor::{CmpInOut, join_set_spawn},
     message::MsgDataBound,
 };
 

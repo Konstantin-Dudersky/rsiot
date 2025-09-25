@@ -161,6 +161,7 @@ tokio = { version = "^1.36.0", features = [
 serde_json = { version = "1.0.145" }
 tracing-subscriber = { version = "0.3.20", features = ["env-filter", "chrono"] }
 itertools = "0.14.0"
+rsiot-devices = { path = "../rsiot-devices" }
 
 [build-dependencies]
 embuild = { version = "0.33.1", features = ["espidf"] }
@@ -353,38 +354,6 @@ path = "examples/cmp_external_fn_process/cmp_external_fn_process.rs"
 name = "cmp_esp"
 path = "examples/cmp_esp/cmp_esp.rs"
 doc-scrape-examples = true
-
-[[example]]
-name = "cmp_esp_i2c_master_ads1115"
-path = "./examples/cmp_esp/cmp_esp_i2c_master_ads1115.rs"
-
-[[example]]
-name = "cmp_esp_i2c_master_bmp180"
-path = "./examples/cmp_esp/cmp_esp_i2c_master_bmp180.rs"
-
-[[example]]
-name = "cmp_esp_i2c_master_ds3231"
-path = "./examples/cmp_esp/cmp_esp_i2c_master_ds3231.rs"
-
-[[example]]
-name = "cmp_esp_i2c_master_general"
-path = "./examples/cmp_esp/cmp_esp_i2c_master_general.rs"
-
-[[example]]
-name = "cmp_esp_i2c_master_pca9555"
-path = "./examples/cmp_esp/cmp_esp_i2c_master_pca9555.rs"
-
-[[example]]
-name = "cmp_esp_i2c_master_pcf8575"
-path = "./examples/cmp_esp/cmp_esp_i2c_master_pcf8575.rs"
-
-[[example]]
-name = "cmp_esp_i2c_master_pm_di16"
-path = "./examples/cmp_esp/cmp_esp_i2c_master_pm_di16.rs"
-
-[[example]]
-name = "cmp_esp_i2c_master_pm_rq8"
-path = "./examples/cmp_esp/cmp_esp_i2c_master_pm_rq8.rs"
 
 [[example]]
 name = "cmp_esp_i2c_slave"

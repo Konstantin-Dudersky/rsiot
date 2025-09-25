@@ -7796,6 +7796,7 @@ dependencies = [
  "reactive_stores",
  "reqwest",
  "rppal",
+ "rsiot-devices",
  "rsiot-macros",
  "rumqttc",
  "serde",
@@ -7830,6 +7831,18 @@ dependencies = [
  "web-sys",
  "web-time",
  "ws2812-esp32-rmt-driver",
+]
+
+[[package]]
+name = "rsiot-devices"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "bitvec",
+ "rsiot",
+ "strum 0.24.1",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
