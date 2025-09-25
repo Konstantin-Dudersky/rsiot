@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use crate::message::MsgDataBound;
 
+// ANCHOR: Config
 /// Конфигурация компонента cmp_svg
 #[derive(Clone)]
 pub struct Config<TMsg>
@@ -25,7 +26,9 @@ where
     /// Файл передаётся как `Vec<u8>`
     pub fn_output: fn(&[u8]) -> TMsg,
 }
+// ANCHOR: Config
 
+// ANCHOR: SvgChange
 /// Изменения элемента SVG
 #[derive(Clone, Debug)]
 pub struct SvgChange {
@@ -38,7 +41,9 @@ pub struct SvgChange {
     /// Изменение вложенных элементов TODO
     pub change_childs: Option<HashMap<String, Vec<SvgChangeType>>>,
 }
+// ANCHOR: SvgChange
 
+// ANCHOR: SvgChangeType
 /// Типы изменений элемента SVG
 #[derive(Clone, Debug)]
 pub enum SvgChangeType {
@@ -64,3 +69,4 @@ pub enum SvgChangeType {
         text: String,
     },
 }
+// ANCHOR: SvgChangeType

@@ -6,6 +6,7 @@ use super::Row;
 
 pub type FnInput<TMsg> = fn(&TMsg) -> Option<Vec<Row>>;
 
+// ANCHOR: Config
 /// Конфигурация компонента cmp_timescaledb
 #[derive(Clone, Debug)]
 pub struct Config<TMsg>
@@ -34,3 +35,4 @@ where
     /// Удалить таблицу перед записью
     pub delete_before_write: bool,
 }
+// ANCHOR: Config

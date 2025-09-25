@@ -1,0 +1,56 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 1
+  }
+}
+
+style {
+    stroke-width: 1
+    stroke: gray
+}
+
+# Состояния
+
+MsgBusIn: MsgBus {
+    shape: oval
+}
+
+Input
+
+Target: "" {
+    style.stroke-width: 0
+
+    # Состояния
+
+    MqttSend
+
+    MQTT: MQTT broker {
+        style.stroke-dash: 5
+    }
+
+    MqttRecv
+
+    # Переходы
+
+    MqttSend -> MQTT
+
+    MQTT -> MqttRecv
+}
+
+Output
+
+MsgBusOut: MsgBus {
+    shape: oval
+}
+
+# Переходы
+
+MsgBusIn -> Input
+
+Input -> Target.MqttSend: mpsc::<MqttMsgSend>
+
+Target.MqttRecv -> Output: mpsc::<MqttMsgRecv>
+
+Output -> Target.MqttSend: mpsc::<MqttMsgRecv>
+Output -> MsgBusOut

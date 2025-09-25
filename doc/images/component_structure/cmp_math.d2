@@ -1,0 +1,41 @@
+vars: {
+  d2-config: {
+    # layout-engine: elk
+    theme-id: 1
+  }
+}
+
+style {
+    stroke-width: 1
+    stroke: gray
+}
+
+MsgBusIn: MsgBus {
+    shape: oval
+}
+MsgBusIn -> Input
+
+Input
+Input -> MpscToBroadcast: "input_to_alg \n mpsc::<IntMsg>"
+
+MpscToBroadcast
+MpscToBroadcast -> Alg_1: "into_alg \n broadcast::<IntMsg>"
+MpscToBroadcast -> Alg_2: "into_alg \n broadcast::<IntMsg>"
+MpscToBroadcast -> Alg_N: "into_alg \n broadcast::<IntMsg>"
+
+Alg_1
+Alg_1 -> Output: "from_alg \n mpsc::<IntMsg>"
+
+Alg_2
+Alg_2 -> Output: "from_alg \n mpsc::<IntMsg>"
+
+Alg_N
+Alg_N -> Output: "from_alg \n mpsc::<IntMsg>"
+
+Output
+Output -> MpscToBroadcast: "input_to_alg \n mpsc::<IntMsg>"
+Output -> MsgBusOut
+
+MsgBusOut: MsgBus {
+    shape: oval
+}

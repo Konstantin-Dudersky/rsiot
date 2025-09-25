@@ -1,0 +1,29 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 1
+  }
+}
+
+style {
+    stroke-width: 1
+    stroke: gray
+}
+
+# Состояния
+
+MsgBusIn: MsgBus {
+    shape: oval
+}
+
+Task
+
+MsgBusOut: MsgBus {
+    shape: oval
+}
+
+# Переходы
+
+MsgBusIn -> Task
+
+Task -> MsgBusOut

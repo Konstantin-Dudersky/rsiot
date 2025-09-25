@@ -110,6 +110,7 @@ where
     }
 }
 
+// ANCHOR: IFunctionBlock
 /// Трейт для логики выполнения блока
 pub trait IFunctionBlock<I, Q, S> {
     /// Основная логика выполнения блока
@@ -118,7 +119,9 @@ pub trait IFunctionBlock<I, Q, S> {
     /// Вызывать самому не нужно, вызывается функцией `call`
     fn logic(input: &mut I, stat: &mut S, fb_system_data: &FbSystemData) -> Q;
 }
+// ANCHOR: IFunctionBlock
 
+// ANCHOR: FbSystemData
 /// Системные данные функционального блока
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct FbSystemData {
@@ -128,6 +131,7 @@ pub struct FbSystemData {
     /// Период вызова блока
     pub period: Duration,
 }
+// ANCHOR: FbSystemData
 
 impl Default for FbSystemData {
     fn default() -> Self {

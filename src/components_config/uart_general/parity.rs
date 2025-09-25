@@ -1,5 +1,6 @@
 //! Добавлять бит четности
 
+// ANCHOR: Parity
 /// Добавлять бит четности
 #[allow(missing_docs)]
 #[derive(Clone, Debug, Default)]
@@ -9,6 +10,7 @@ pub enum Parity {
     Even,
     Odd,
 }
+// ANCHOR: Parity
 
 #[cfg(feature = "cmp_esp")]
 impl From<Parity> for esp_idf_svc::hal::uart::config::Parity {

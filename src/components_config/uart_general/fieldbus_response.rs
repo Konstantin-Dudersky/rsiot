@@ -2,7 +2,8 @@ use std::{fmt::Debug, time::Instant};
 
 use crate::components_config::master_device::RequestResponseBound;
 
-/// Структура отдельного ответа при коммуникации по шине SPI
+// ANCHOR: FieldbusResponse
+/// Структура отдельного ответа при коммуникации по шине UART
 #[derive(Clone, Debug)]
 pub struct FieldbusResponse {
     /// Время создания запроса.
@@ -13,6 +14,7 @@ pub struct FieldbusResponse {
     /// Ответ
     pub packet: Vec<u8>,
 }
+// ANCHOR: FieldbusResponse
 
 impl FieldbusResponse {
     /// Создание ответа

@@ -37,6 +37,7 @@ where
 }
 // ANCHOR: Config
 
+// ANCHOR: ConfigDevicesCommSettings
 /// Настройки коммуникации с устройствами
 pub struct ConfigDevicesCommSettings {
     /// Пин Chip Select
@@ -48,6 +49,7 @@ pub struct ConfigDevicesCommSettings {
     /// Режим работы SPI
     pub spi_mode: ConfigDeviceSpiMode,
 }
+// ANCHOR: ConfigDevicesCommSettings
 
 impl From<ConfigDeviceSpiMode> for esp_idf_svc::hal::spi::config::Mode {
     fn from(value: ConfigDeviceSpiMode) -> Self {

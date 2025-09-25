@@ -5,6 +5,7 @@ use crate::{
     message::MsgDataBound,
 };
 
+// ANCHOR: Config
 /// Конфигурация компонента cmp_linux_can
 #[derive(Clone)]
 pub struct Config<TMsg, TBuffer>
@@ -57,3 +58,4 @@ where
     /// Преобразование полученного CAN-сообщения в исходящие сообщения
     pub fn_output: fn(CanFrame) -> Option<Vec<TMsg>>,
 }
+// ANCHOR: Config

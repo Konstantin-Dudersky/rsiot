@@ -1,3 +1,4 @@
+// ANCHOR: CanFilter
 /// Настройка фильтра для CAN-кадров
 #[derive(Clone, Copy, Debug)]
 pub enum CanFilter {
@@ -30,3 +31,4 @@ pub enum CanFilter {
         mask: u32,
     },
 }
+// ANCHOR: CanFilter

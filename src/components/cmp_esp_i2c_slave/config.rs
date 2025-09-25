@@ -2,7 +2,7 @@ use std::fmt::Debug;
 use std::time::Duration;
 
 use esp_idf_svc::hal::{gpio::AnyIOPin, i2c::I2c, peripheral::Peripheral};
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 
 use crate::message::{Message, MsgDataBound};
 
@@ -18,6 +18,7 @@ pub type FnOutput<TMsg, TBufferData> = fn(&TBufferData) -> Vec<Message<TMsg>>;
 pub type FnI2cComm<TI2cRequest, TI2cResponse, TBufferData> =
     fn(TI2cRequest, &mut TBufferData) -> anyhow::Result<TI2cResponse>;
 
+// ANCHOR: Config
 /// Конфигурация cmp_esp_i2c_slave
 pub struct Config<TMsg, TI2c, TPeripheral, TI2cRequest, TI2cResponse, TBufferData>
 where
@@ -73,3 +74,4 @@ where
     /// других устройств, например по шине SPI
     pub start_i2ccomm_delay: Duration,
 }
+// ANCHOR: Config

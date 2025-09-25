@@ -1,3 +1,4 @@
+// ANCHOR: CanId
 /// Идентификатор CAN-кадра
 #[derive(Clone, Debug)]
 pub enum CanId {
@@ -6,6 +7,7 @@ pub enum CanId {
     /// Расширенный идентификатор 29-битный
     Extended(u32),
 }
+// ANCHOR: CanId
 
 impl CanId {
     /// Возвращает идентификатор в виде 32-битного числа

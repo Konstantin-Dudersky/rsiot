@@ -47,6 +47,7 @@ pub enum LinuxDevice {
         /// Устройство SPI, например "/dev/spidev0.0"
         dev_spi: String,
     },
+
     /// SPI + chip select, который управляется через GPIO
     SpiWithCs {
         /// Устройство SPI, например "/dev/spidev0.0"

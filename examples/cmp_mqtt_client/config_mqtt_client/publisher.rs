@@ -10,7 +10,8 @@ pub fn cmp() -> Component<Config<Msg>, Msg> {
     let config = Config {
         serde_alg: SerdeAlgKind::Json,
         client_id: "pubisher".into(),
-        host: "192.168.101.12".into(),
+        // host: "192.168.101.12".into(),
+        host: "target".into(),
         port: 1883,
         client_capacity: 100,
         publish: ConfigPublish::Publish {

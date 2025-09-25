@@ -1,5 +1,6 @@
 use crate::message::MsgDataBound;
 
+// ANCHOR: Config
 /// Конфигурация компонента cmp_linux_gpio
 #[derive(Clone)]
 pub struct Config<TMsg>
@@ -12,7 +13,9 @@ where
     /// Конфигурация записи состояния GPIO
     pub gpio_output: Vec<ConfigGpioOutput<TMsg>>,
 }
+// ANCHOR: Config
 
+// ANCHOR: ConfigGpioInput
 /// Обработка одного выхода
 #[derive(Clone)]
 pub struct ConfigGpioInput<TMsg> {
@@ -28,7 +31,9 @@ pub struct ConfigGpioInput<TMsg> {
     /// Преобразование состояния пина в сообщение
     pub fn_gpio_input: fn(bool) -> TMsg,
 }
+// ANCHOR: ConfigGpioInput
 
+// ANCHOR: ConfigGpioOutput
 /// Обработка одного выхода
 #[derive(Clone)]
 pub struct ConfigGpioOutput<TMsg> {
@@ -47,3 +52,4 @@ pub struct ConfigGpioOutput<TMsg> {
     /// Состояние пина при запуске программы
     pub default_state: bool,
 }
+// ANCHOR: ConfigGpioOutput

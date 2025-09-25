@@ -1,3 +1,4 @@
+// ANCHOR: CanSettings
 /// Конфигурация CAN-протокола
 #[derive(Clone, Debug)]
 pub struct CanSettings {
@@ -43,7 +44,9 @@ pub struct CanSettings {
     /// becomes greater or equal to 256, so the node is deactivated)
     pub restart_ms: Option<u32>,
 }
+// ANCHOR: CanSettings
 
+// ANCHOR: CanSettingsBitrate
 /// Настройка скорости передачи CAN
 #[derive(Clone, Debug)]
 pub enum CanSettingsBitrate {
@@ -75,6 +78,7 @@ pub enum CanSettingsBitrate {
         sjw: Option<u8>,
     },
 }
+// ANCHOR: CanSettingsBitrate
 
 /// Настройка скорости передачи CAN-FD
 #[derive(Clone, Debug)]

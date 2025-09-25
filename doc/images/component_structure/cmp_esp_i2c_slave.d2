@@ -1,0 +1,37 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 1
+  }
+}
+
+style {
+    stroke-width: 1
+    stroke: gray
+}
+
+MsgBusIn: MsgBus {
+    shape: oval
+}
+MsgBusIn -> Input
+
+Input
+Input -> Buffer
+
+Buffer {
+    style.stroke-dash: 5
+}
+Buffer -> Output
+
+I2cComm
+I2cComm -> Buffer
+I2cComm <- Buffer
+
+Output
+Output -> MsgBusOut
+
+MsgBusOut: MsgBus {
+    shape: oval
+}
+
+# : "input_to_clients\nbroadcast::<TServerToClient>"

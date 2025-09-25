@@ -1,5 +1,6 @@
 //! Кол-во бит данных
 
+// ANCHOR: DataBits
 /// Кол-во бит данных
 #[allow(missing_docs)]
 #[derive(Clone, Debug, Default)]
@@ -10,6 +11,7 @@ pub enum DataBits {
     #[default]
     _8,
 }
+// ANCHOR: DataBits
 
 impl From<DataBits> for f64 {
     fn from(value: DataBits) -> Self {

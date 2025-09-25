@@ -1,0 +1,63 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 1
+  }
+}
+
+style {
+    stroke-width: 1
+    stroke: gray
+}
+
+# Задачи
+
+MsgBusIn: MsgBus {
+    shape: oval
+}
+
+SaveInputInCache
+
+Retention
+
+Cache {
+    style.stroke-dash: 5
+}
+
+fb_main {
+    style.stroke-dash: 5
+}
+
+PlcLoop
+
+FilterIdenticalData
+
+ExportCurrentState
+
+MpscToMsgbus
+
+MsgBusOut: MsgBus {
+    shape: oval
+}
+
+# Переходы
+
+MsgBusIn -> SaveInputInCache
+MsgBusIn -> Retention
+
+SaveInputInCache -> Cache
+
+Retention -> fb_main
+
+Cache -> PlcLoop
+
+fb_main -> PlcLoop
+fb_main -> ExportCurrentState
+
+PlcLoop -> FilterIdenticalData
+
+FilterIdenticalData -> MpscToMsgbus
+
+ExportCurrentState -> MpscToMsgbus
+
+MpscToMsgbus -> MsgBusOut

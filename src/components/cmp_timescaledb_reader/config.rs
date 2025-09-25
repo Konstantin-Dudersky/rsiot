@@ -4,6 +4,7 @@ use time::OffsetDateTime;
 
 use crate::message::{MsgDataBound, ValueTime};
 
+// ANCHOR: Config
 /// Конфигурация cmp_timescaledb_reader
 #[derive(Clone)]
 pub struct Config<TMsg>
@@ -36,7 +37,9 @@ where
     /// Задержка перед окончанием работы
     pub shutdown_delay: Duration,
 }
+// ANCHOR: Config
 
+// ANCHOR: ConfigItem
 /// Конфигурация отдельного параметра
 #[derive(Clone)]
 pub struct ConfigItem<TMsg>
@@ -52,3 +55,4 @@ where
     /// Функция создания исходящих сообщений
     pub fn_output: fn(ValueTime) -> TMsg,
 }
+// ANCHOR: ConfigItem

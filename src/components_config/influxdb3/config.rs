@@ -13,6 +13,7 @@ use super::LineProtocolItem;
 /// Функция преобразования входящих сообщений
 pub type FnInput<TMsg> = fn(&Message<TMsg>) -> Option<Vec<LineProtocolItem>>;
 
+// ANCHOR: Config
 /// Конфигурация cmp_influxdb
 #[derive(Clone, Debug)]
 pub struct Config<TMsg> {
@@ -35,3 +36,4 @@ pub struct Config<TMsg> {
     /// Функция преобразования сообщения в строки протокола InfluxDB
     pub fn_input: FnInput<TMsg>,
 }
+// ANCHOR: Config

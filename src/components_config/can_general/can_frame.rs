@@ -1,5 +1,6 @@
 use super::CanId;
 
+// ANCHOR: CanFrame
 /// CAN-кадр
 #[derive(Clone, Debug)]
 pub enum CanFrame {
@@ -14,3 +15,4 @@ pub enum CanFrame {
     // Error(CanErrorFrame),
     // Fd(CanFdFrame),
 }
+// ANCHOR: CanFrame

@@ -1,0 +1,43 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 1
+  }
+}
+
+style {
+    stroke-width: 1
+    stroke: gray
+}
+
+MsgBusIn: MsgBus {
+    shape: oval
+}
+
+Input
+
+Slint {
+    style.stroke-dash: 5
+}
+
+Output
+
+FilterSendPeriodically
+
+MpscToMsgbus
+
+MsgBusOut: MsgBus {
+    shape: oval
+}
+
+MsgBusIn -> Input
+
+Input -> Slint
+
+Slint -> Output
+
+Output -> FilterSendPeriodically
+
+FilterSendPeriodically -> MpscToMsgbus
+
+MpscToMsgbus -> MsgBusOut

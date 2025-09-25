@@ -27,7 +27,6 @@ where
             }
         }
 
-        // ws2812.write_nocopy(leds)?;
         ws2812.write_nocopy(leds)?;
     }
 

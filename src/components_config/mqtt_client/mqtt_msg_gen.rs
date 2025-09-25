@@ -15,7 +15,7 @@ impl MqttMsgGen {
     /// Сериализация сообщений перед отправкой в MQTT-сервер
     pub fn ser<TPayload>(
         &self,
-        topic: &str,
+        topic: impl Into<String>,
         retain: bool,
         payload: &TPayload,
     ) -> Result<MqttMsgSend, serde_utils::Error>
