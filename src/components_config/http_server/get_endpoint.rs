@@ -2,7 +2,7 @@
 
 use std::fmt::Debug;
 
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 
 use crate::{
     message::MsgDataBound,
@@ -110,13 +110,13 @@ mod tests {
         struct Data2 {}
 
         let end1 = GetEndpointConfig {
-            serde_alg: SerdeAlgKind::Json,
+            serde_alg: SerdeAlgKind::Unspecified,
             path: "/1",
             server_to_client_data: Data1 {},
             fn_input: |_, _| (),
         };
         let end2 = GetEndpointConfig {
-            serde_alg: SerdeAlgKind::Json,
+            serde_alg: SerdeAlgKind::Unspecified,
             path: "/2",
             server_to_client_data: Data2 {},
             fn_input: |_, _| (),

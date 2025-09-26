@@ -3,8 +3,12 @@
 #![allow(unused_imports)]
 #![allow(dead_code)]
 
+#[cfg(feature = "serde_cbor")]
+mod cbor;
 #[cfg(feature = "serde_json")]
 mod json;
+#[cfg(feature = "serde_messagepack")]
+mod messagepack;
 #[cfg(feature = "serde_postcard")]
 mod postcard;
 #[cfg(feature = "serde_toml")]

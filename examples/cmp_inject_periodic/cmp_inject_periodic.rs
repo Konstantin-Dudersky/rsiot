@@ -30,7 +30,18 @@ async fn main() -> anyhow::Result<()> {
 
     let logger_config = cmp_logger::Config {
         level: Level::INFO,
-        fn_input: |msg| Ok(Some(msg.serialize()?)),
+        fn_input: |msg| {
+            let Some(msg) = msg.get_custom_data() else {
+                return Ok(None);
+            };
+
+            let text = match msg {
+                Custom::ValueInstantF64(content) => format!("{content}"),
+                _ => return Ok(None),
+            };
+
+            Ok(Some(text))
+        },
     };
 
     let mut counter = 0.0;

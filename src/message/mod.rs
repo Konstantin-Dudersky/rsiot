@@ -9,7 +9,6 @@ mod message;
 mod msg_data;
 mod msg_data_bound;
 mod msg_key;
-mod msg_serde;
 mod msg_trace;
 mod phy_quantity;
 pub mod system_messages;

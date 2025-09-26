@@ -44,9 +44,10 @@
           "features": [
             // "executor",
             // "log_esp",
-            "cmp_esp"
-            // "cmp_plc"
-            //   "serde_postcard"
+            "cmp_esp",
+            "cmp_plc",
+            "serde_cbor",
+            "serde_json"
           ]
           // ---- x86_64-unknown-linux-gnu ---------------------------------------------------------
           // "target": "x86_64-unknown-linux-gnu",
@@ -68,7 +69,7 @@
           // "cmp_linux_uart_master",
           // "cmp_math"
           // "cmp_modbus_client"
-          // "cmp_mqtt_client"
+          // "cmp_mqtt_client",
           // "cmp_plc",
           // "cmp_os_process",
           // "cmp_slint"
@@ -79,13 +80,15 @@
           // "cmp_timescaledb",
           // "cmp_websocket_client",
           // "cmp_websocket_server",
-          //   "serde_json",
-          //   "serde_postcard",
-          //   "serde_toml",
           // "log_console",
           // "log_file",
           // "log_loki",
           // "log_tokio"
+          //   "serde_json",
+          //   "serde_postcard",
+          //   "serde_toml",
+          // "serde_messagepack",
+          // "serde_cbor"
           // ]
           // ---- wasm32-unknown-unknown -----------------------------------------------------------
           // "target": "wasm32-unknown-unknown",

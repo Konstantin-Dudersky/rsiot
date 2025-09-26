@@ -2,11 +2,11 @@
 
 use std::time::Instant;
 
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 
 use crate::serde_utils::{SerdeAlg, SerdeAlgKind};
 
-use super::{crc_alg::CrcAlg, Error, FieldbusRequest, FieldbusResponse, UartPacket};
+use super::{Error, FieldbusRequest, FieldbusResponse, UartPacket, crc_alg::CrcAlg};
 
 /// Протокол передачи
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
@@ -18,10 +18,10 @@ pub struct Protocol {
 }
 impl Protocol {
     /// Создание протокола
-    pub fn new(address: u8) -> Self {
+    pub fn new(address: u8, serde_alg: SerdeAlgKind) -> Self {
         Self {
             address,
-            serde_alg: SerdeAlg::new(SerdeAlgKind::Postcard),
+            serde_alg: SerdeAlg::new(serde_alg),
         }
     }
 

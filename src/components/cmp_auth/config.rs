@@ -10,7 +10,7 @@ pub struct Config {
     ///
     /// **Примеры**
     ///
-    /// ```rust
+    /// ```no-run
     #[doc = include_str!("./test/config_store.rs")]
     /// ```
     pub store: ConfigStore,

@@ -62,7 +62,18 @@ async fn main() {
     // cmp_logger ----------------------------------------------------------------------------------
     let logger_config = cmp_logger::Config::<Custom> {
         level: Level::INFO,
-        fn_input: |msg| Ok(Some(msg.serialize_data()?)),
+        fn_input: |msg| {
+            let Some(msg) = msg.get_custom_data() else {
+                return Ok(None);
+            };
+
+            let text = match msg {
+                Custom::CounterFromMaster(content) => format!("{content}"),
+                _ => return Ok(None),
+            };
+
+            Ok(Some(text))
+        },
     };
 
     // cmp_inject_periodic -------------------------------------------------------------------------

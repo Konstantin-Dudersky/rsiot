@@ -34,7 +34,10 @@ async fn main() {
     // cmp_logger ----------------------------------------------------------------------------------
     let logger_config = cmp_logger::Config {
         level: Level::INFO,
-        fn_input: |msg| Ok(Some(msg.serialize()?)),
+        fn_input: |msg| {
+                    let text = format!("{msg:?}");
+                    Ok(Some(text))
+                },
     };
 
     // ESP -----------------------------------------------------------------------------------------
