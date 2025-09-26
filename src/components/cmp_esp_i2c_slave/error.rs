@@ -1,6 +1,8 @@
 use crate::serde_utils::postcard_serde;
 use crate::{components::shared_tasks, executor::ComponentError};
 
+use super::COMPONENT_NAME;
+
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -12,6 +14,9 @@ pub enum Error {
 
     #[error("FnOutput: {0}")]
     FnOutput(anyhow::Error),
+
+    #[error("{COMPONENT_NAME} | I2cDriverCreation: {0}")]
+    I2cDriverCreation(esp_idf_svc::sys::EspError),
 
     #[error("TokioTaskJoin: {0}")]
     TokioTaskJoin(#[from] tokio::task::JoinError),

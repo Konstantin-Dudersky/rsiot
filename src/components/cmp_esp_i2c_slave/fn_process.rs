@@ -47,7 +47,7 @@ where
         config.slave_address,
         &i2c_idf_config,
     )
-    .unwrap();
+    .map_err(Error::I2cDriverCreation)?;
 
     let buffer_data = Arc::new(Mutex::new(config.buffer_data_default.clone()));
 
@@ -108,7 +108,7 @@ where
     );
 
     while let Some(res) = task_set.join_next().await {
-        res.unwrap()?;
+        res??;
     }
 
     Ok(())
