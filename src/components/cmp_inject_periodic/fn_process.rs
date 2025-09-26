@@ -1,8 +1,7 @@
-use instant::Instant;
 use tokio::{task::JoinSet, time::Duration};
 
 use crate::{
-    executor::{CmpInOut, join_set_spawn, sleep},
+    executor::{CmpInOut, Instant, join_set_spawn, sleep},
     message::{Message, MsgDataBound},
 };
 

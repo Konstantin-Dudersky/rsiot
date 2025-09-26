@@ -50,6 +50,26 @@
       "add_feat": ["", "single-thread"]
     },
     {
+      "name": "wasm32-unknown-unknown",
+      "toolchain": "+stable",
+      "features": [
+        "executor",
+        "log_webconsole",
+        "cmp_http_client_wasm",
+        "cmp_leptos",
+        "cmp_plc",
+        "cmp_websocket_client_wasm",
+        "cmp_webstorage"
+      ],
+      "add_feat": ["single-thread"]
+    },
+    {
+      "name": "riscv32imc-esp-espidf",
+      "toolchain": "+nightly",
+      "features": ["cmp_esp", "cmp_plc", "executor", "log_esp"],
+      "add_feat": ["single-thread"]
+    },
+    {
       "name": "aarch64-unknown-linux-gnu",
       "toolchain": "+stable",
       "features": [
@@ -116,26 +136,6 @@
         "cmp_websocket_server"
       ],
       "add_feat": ["", "single-thread"]
-    },
-    {
-      "name": "wasm32-unknown-unknown",
-      "toolchain": "+stable",
-      "features": [
-        "executor",
-        "log_webconsole",
-        "cmp_http_client_wasm",
-        "cmp_leptos",
-        "cmp_plc",
-        "cmp_websocket_client_wasm",
-        "cmp_webstorage"
-      ],
-      "add_feat": ["single-thread"]
-    },
-    {
-      "name": "riscv32imc-esp-espidf",
-      "toolchain": "+nightly",
-      "features": ["cmp_esp", "cmp_plc", "executor", "log_esp"],
-      "add_feat": ["single-thread"]
     }
   ]
 }

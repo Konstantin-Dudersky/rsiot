@@ -31,37 +31,6 @@ impl MqttRecv {
 
             let mqtt_msg_recv = match notification {
                 Event::Incoming(packet) => process_mqtt_event(packet),
-
-                // match msg {
-                // Packet::ConnAck(_) => {
-                //     if let ConfigSubscribe::Subscribe { token, .. } = &self.subscribe {
-                //         handle_event_connack(token, &self.client).await?;
-                //     }
-                // }
-                // Packet::Publish(msg) => {
-                //     if let ConfigSubscribe::Subscribe { fn_subscribe, .. } = self.subscribe {
-                //         handle_event_publish(
-                //             msg,
-                //             fn_subscribe,
-                //             &self.mqtt_msg_gen,
-                //             &self.msg_bus,
-                //         )
-                //         .await?
-                //     }
-                // }
-                // Packet::Connect(connect) => todo!(),
-                // Packet::PubAck(pub_ack) => todo!(),
-                // Packet::PubRec(pub_rec) => todo!(),
-                // Packet::PubRel(pub_rel) => todo!(),
-                // Packet::PubComp(pub_comp) => todo!(),
-                // Packet::Subscribe(subscribe) => todo!(),
-                // Packet::SubAck(sub_ack) => todo!(),
-                // Packet::Unsubscribe(unsubscribe) => todo!(),
-                // Packet::UnsubAck(unsub_ack) => todo!(),
-                // Packet::PingReq => todo!(),
-                // Packet::PingResp => todo!(),
-                // Packet::Disconnect => todo!(),
-                // };,
                 Event::Outgoing(_) => continue,
             };
 
