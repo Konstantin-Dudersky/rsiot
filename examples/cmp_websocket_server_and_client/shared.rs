@@ -1,7 +1,4 @@
-use rsiot::{
-    components_config::websocket_general::WebsocketMessage,
-    message::{MsgDataBound, MsgKey},
-};
+use rsiot::components_config::websocket_general::WebsocketMessage;
 use serde::{Deserialize, Serialize};
 use strum::IntoStaticStr;
 
@@ -16,22 +13,3 @@ pub enum ClientToServer {
     ClientCounter(u8),
 }
 impl WebsocketMessage for ClientToServer {}
-
-// ServerMessages ----------------------------------------------------------------------------------
-
-#[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
-pub enum ServerMessages {
-    ServerCounter(u32),
-    CounterFromClient(u8),
-}
-impl MsgDataBound for ServerMessages {}
-
-// ClientMessages ----------------------------------------------------------------------------------
-
-#[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
-pub enum ClientMessages {
-    ServerCounter(u32),
-    CounterFromClient(u8),
-    ConnectionState(bool),
-}
-impl MsgDataBound for ClientMessages {}

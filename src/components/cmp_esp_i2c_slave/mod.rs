@@ -1,5 +1,7 @@
 //! Компонент для подключения контроллера ESP32 как I2C slave.
 
+// TODO: убрать зависимость от postcard
+
 mod buffer_data;
 mod component;
 mod config;

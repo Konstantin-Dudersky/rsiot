@@ -28,19 +28,19 @@ pub mod cmp_esp_gpio;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
-pub mod cmp_esp_i2c_slave;
-
-#[cfg(feature = "cmp_esp")]
-#[cfg(riscv32imc_esp_espidf)]
 pub mod cmp_esp_http_server;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
-pub mod cmp_esp_led;
+pub mod cmp_esp_i2c_master;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
-pub mod cmp_esp_i2c_master;
+pub mod cmp_esp_i2c_slave;
+
+#[cfg(feature = "cmp_esp")]
+#[cfg(riscv32imc_esp_espidf)]
+pub mod cmp_esp_led;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]

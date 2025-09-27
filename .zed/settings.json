@@ -46,14 +46,17 @@
           // "log_esp",
           // "cmp_esp",
           // "cmp_plc",
-          // "serde_cbor",
-          // "serde_json"
+          // "serde_json",
+          // "serde_postcard",
+          //   "serde_toml",
+          // "serde_messagepack"
+          // "serde_cbor"
           // ]
           // ---- x86_64-unknown-linux-gnu ---------------------------------------------------------
           "target": "x86_64-unknown-linux-gnu",
           "features": [
             // "rustdoc",
-            "executor"
+            // "executor",
             // "single-thread",
             // "env_vars",
             // "cmp_auth",
@@ -64,7 +67,7 @@
             // "cmp_influxdb",
             // "cmp_linux_can",
             // "cmp_linux_gpio"
-            // "cmp_linux_i2c_master",
+            // "cmp_linux_i2c_master"
             // "cmp_linux_spi_master",
             // "cmp_linux_uart_master",
             // "cmp_math"
@@ -79,16 +82,16 @@
             // "cmp_telegram"
             // "cmp_timescaledb",
             // "cmp_websocket_client",
-            // "cmp_websocket_server",
+            "cmp_websocket_server",
             // "log_console",
             // "log_file",
             // "log_loki",
             // "log_tokio"
-            //   "serde_json",
-            //   "serde_postcard",
-            //   "serde_toml",
-            // "serde_messagepack",
-            // "serde_cbor"
+            "serde_json",
+            "serde_postcard",
+            "serde_toml",
+            "serde_messagepack",
+            "serde_cbor"
           ]
           // ---- wasm32-unknown-unknown -----------------------------------------------------------
           // "target": "wasm32-unknown-unknown",

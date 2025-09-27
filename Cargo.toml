@@ -226,6 +226,8 @@ cmp_esp = [
     # TODO - удалить
     "serde_postcard",
     # TODO - удалить
+    "deprecated_stend",
+    # TODO - удалить
     "dep:bincode",
     "dep:embedded-graphics",
     "dep:embedded-svc",
@@ -439,10 +441,6 @@ path = "examples/cmp_plc/minimal/main.rs"
 [[example]]
 name = "config_plc_template"
 path = "examples/cmp_plc/config_plc_template.rs"
-
-[[example]]
-name = "cmp_redis_client_publication"
-path = "examples/cmp_redis_client/publication.rs"
 
 [[example]]
 name = "cmp_surrealdb"

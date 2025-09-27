@@ -5,6 +5,8 @@
 //! ```
 
 #[cfg(feature = "cmp_websocket_client")]
+mod messages_client;
+#[cfg(feature = "cmp_websocket_client")]
 mod shared;
 
 #[cfg(feature = "cmp_websocket_client")]
@@ -21,7 +23,8 @@ async fn main() -> anyhow::Result<()> {
         serde_utils::SerdeAlgKind,
     };
 
-    use shared::{ClientMessages, ClientToServer, ServerToClient};
+    use messages_client::ClientMessages;
+    use shared::{ClientToServer, ServerToClient};
 
     #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
     enum Data {

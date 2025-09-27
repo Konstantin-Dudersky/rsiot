@@ -7,6 +7,8 @@
 //! ```
 
 #[cfg(feature = "cmp_websocket_server")]
+mod messages_server;
+#[cfg(feature = "cmp_websocket_server")]
 mod shared;
 
 #[cfg(feature = "cmp_websocket_server")]
@@ -22,7 +24,8 @@ async fn main() -> anyhow::Result<()> {
         serde_utils::SerdeAlgKind,
     };
 
-    use shared::{ClientToServer, ServerMessages, ServerToClient};
+    use messages_server::ServerMessages;
+    use shared::{ClientToServer, ServerToClient};
 
     tracing_subscriber::fmt()
         // .with_env_filter("trace,tokio_tungstenite=debug,tungstenite=debug")

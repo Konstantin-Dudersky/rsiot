@@ -16,7 +16,7 @@ mod toml;
 
 mod error;
 // TODO - удалить
-#[cfg(feature = "serde_postcard")]
+#[cfg(all(feature = "deprecated_stend", feature = "serde_postcard"))]
 pub mod postcard_serde;
 mod serde_alg;
 mod serde_alg_kind;
