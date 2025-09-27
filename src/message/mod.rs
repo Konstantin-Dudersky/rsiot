@@ -23,6 +23,7 @@ pub use msg_data::MsgData;
 pub use msg_data_bound::{MsgDataBound, MsgRoute};
 pub use msg_key::MsgKey;
 pub use msg_trace::MsgTrace;
+#[cfg(feature = "deprecated_stend")]
 pub use phy_quantity::PhyQuantity;
 pub use strum::EnumString;
 pub use time_to_live::TimeToLiveValue;

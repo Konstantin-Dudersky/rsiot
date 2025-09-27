@@ -1,6 +1,6 @@
 use std::{cmp::max, fmt::Debug};
 
-use tracing::{info, trace};
+use tracing::{info, trace, warn};
 use uuid::Uuid;
 
 use crate::message::{system_messages::*, *};
@@ -57,14 +57,13 @@ where
     /// Необходимо вызывать в начале исполнения компонента, чтобы у каждого компонента был
     /// уникальный id
     pub fn clone_with_new_id(&self, name: &str, auth_perm: AuthPermissions) -> Self {
-        let name = format!("{}::{}", self.name, name);
         let id = MsgTrace::generate_uuid();
         info!("Start: {}, id: {}, auth_perm: {:?}", name, id, auth_perm);
         Self {
             input: self.input.resubscribe(),
             output: self.output.clone(),
             cache: self.cache.clone(),
-            name,
+            name: name.into(),
             id,
             auth_perm,
             fn_auth: self.fn_auth,
@@ -74,11 +73,18 @@ where
     /// Получение сообщений со входа
     pub async fn recv_input(&mut self) -> Result<Message<TMsg>, ComponentError> {
         loop {
-            let msg = self
-                .input
-                .recv()
-                .await
-                .map_err(|e| ComponentError::CmpInput(e.to_string()))?;
+            let msg = self.input.recv().await;
+
+            let msg = match msg {
+                Ok(v) => v,
+                Err(err) => {
+                    warn!(
+                        "MsgBus.recv_input() of component {} input error: {}",
+                        self.name, err
+                    );
+                    continue;
+                }
+            };
 
             // Обновляем уровень авторизации при получении системного сообщения. Пропускаем
             // сообщение, если запрос на авторизацию не проходил через данный компонент

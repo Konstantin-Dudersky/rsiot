@@ -9,13 +9,16 @@ use uuid::Uuid;
 use crate::message::{system_messages::*, *};
 
 use super::{
-    Cache, CmpInOut, TokioRuntimeMetrics, component::IComponent, error::ComponentError,
-    join_set_spawn, sleep, types::FnAuth,
+    Cache, CmpInOut, LessInPeriod, TokioRuntimeMetrics, component::IComponent,
+    error::ComponentError, join_set_spawn, sleep, types::FnAuth,
 };
 
 const UPDATE_TTL_PERIOD: Duration = Duration::from_millis(1000);
 #[cfg(feature = "log_tokio")]
 const RUNTIME_METRICS_PERIOD: Duration = Duration::from_millis(100);
+
+/// Уровень переполненности канала. Чем ближе к 1.0, тем раньше появится сообщение переполнения
+const BRAODCAST_LAGGED_THRESHOLD: f64 = 0.2;
 
 pub type FnTokioMetrics<TMsg> = fn(TokioRuntimeMetrics) -> Option<TMsg>;
 
@@ -85,6 +88,7 @@ where
             cache.clone(),
             id,
             config.delay_publish,
+            config.buffer_size,
         );
         join_set_spawn(&mut task_set, "internal_task", task_internal_handle);
 
@@ -141,20 +145,22 @@ where
         self
     }
 
-    /// Запустить на выполнение все компоненты.
-    ///
-    /// Компоненты не должны заканчивать выполнение. Если хоть один остановился (неважно по какой
-    /// причине - по ошибке или нет), это ошибка выполнения.
+    /// Запустить на выполнение все компоненты и ожидать завершения выполнения выполнения какого-то
+    /// компонента.
     pub async fn wait_result(&mut self) -> Result<(), ComponentError> {
         let msg;
         if let Some(result) = self.task_set.join_next().await {
             match result {
-                Ok(result) => match result {
-                    Ok(_) => msg = "Component has finished executing".to_string(),
-                    Err(err) => {
-                        msg = format!("Component has finished executing with error: {err:?}");
-                    }
-                },
+                Ok(Ok(_)) => {
+                    msg = "Component has finished executing with Ok result".to_string();
+                    info!(msg);
+                    return Ok(());
+                }
+
+                Ok(Err(err)) => {
+                    msg = format!("Component has finished executing with error: {err:?}");
+                }
+
                 Err(err) => {
                     msg = format!("Component has finished executing with error: {err:?}");
                 }
@@ -172,6 +178,7 @@ async fn task_internal<TMsg>(
     cache: Cache<TMsg>,
     executor_id: Uuid,
     delay_publish: Duration,
+    buffer_size: usize,
 ) -> Result<(), ComponentError>
 where
     TMsg: MsgDataBound,
@@ -181,18 +188,22 @@ where
     // Задержка, чтобы компоненты успели запуститься и подписаться на получение сообщений
     sleep(delay_publish).await;
 
+    let buffer_size = buffer_size as f64;
+
+    let mut less_in_period = LessInPeriod::new(Duration::from_millis(1_000));
+
     while let Some(mut msg) = input.recv().await {
-        // TODO
         trace!("ComponentExecutor: new message: {:?}", msg);
-        // msg.add_trace_item(&executor_id, &format!("{}::internal_bus", service_name));
         msg.add_trace_item(&executor_id);
         let msg = save_msg_in_cache(msg, &cache).await;
         let Some(msg) = msg else { continue };
-        output.send(msg).map_err(|err| {
-            let err =
-                format!("Internal task of ComponentExecutor: send to channel error, {err:?}",);
-            ComponentError::Initialization(err)
-        })?;
+
+        // Проверяем переполненность канала
+        check_broadcast_lagged(&output, buffer_size, &mut less_in_period)?;
+
+        output
+            .send(msg)
+            .map_err(|_| ComponentError::TaskInternalSend)?;
     }
     warn!("Internal task: stop");
     Ok(())
@@ -269,6 +280,7 @@ where
     // Фильтруем сообщения авторизации
     if let MsgData::System(data) = &msg.data {
         match data {
+            System::Lagged => return Some(msg),
             System::AuthRequestByLogin(_) => return Some(msg),
             System::AuthRequestByToken(_) => return Some(msg),
             System::AuthResponseErr(_) => return Some(msg),
@@ -295,4 +307,30 @@ where
         lock.insert(key, value);
     }
     Some(msg)
+}
+
+/// Функция проверки переполненности канала
+fn check_broadcast_lagged<TMsg>(
+    output: &broadcast::Sender<Message<TMsg>>,
+    buffer_size: f64,
+    less_in_period: &mut LessInPeriod,
+) -> Result<(), ComponentError>
+where
+    TMsg: MsgDataBound,
+{
+    let capacity = output.len() as f64;
+    let percent = 1.0 - capacity / buffer_size;
+
+    if percent <= BRAODCAST_LAGGED_THRESHOLD && less_in_period.check() {
+        warn!(
+            "MsgBus input buffer is full; current free space: {}",
+            percent * 100.0
+        );
+        let msg = Message::new(MsgData::System(System::Lagged));
+        output
+            .send(msg)
+            .map_err(|_| ComponentError::TaskInternalSend)?;
+    }
+
+    Ok(())
 }

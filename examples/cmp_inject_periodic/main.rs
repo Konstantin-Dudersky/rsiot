@@ -1,9 +1,12 @@
 //! Запуск:
 //! ```bash
-//! cargo run -p rsiot-extra-components --example cmp_inject_periodic
+//! cargo run --example cmp_inject_periodic
 //!
-//! cargo run -p rsiot-extra-components --example cmp_inject_periodic --features single-thread
+//! cargo run --example cmp_inject_periodic --features single-thread
 //! ```
+
+#[cfg(feature = "executor")]
+mod config_inject_periodic;
 
 #[cfg(feature = "executor")]
 #[tokio::main(flavor = "current_thread")]
@@ -12,7 +15,7 @@ async fn main() -> anyhow::Result<()> {
     use tracing::{Level, level_filters::LevelFilter};
 
     use rsiot::{
-        components::{cmp_inject_periodic, cmp_logger},
+        components::cmp_logger,
         executor::{ComponentExecutor, ComponentExecutorConfig},
         message::example_message::*,
     };
@@ -44,22 +47,12 @@ async fn main() -> anyhow::Result<()> {
         },
     };
 
-    let mut counter = 0.0;
-    let inject_config = cmp_inject_periodic::Config {
-        period: Duration::from_secs(2),
-        fn_periodic: move || {
-            let msg = Custom::ValueInstantF64(counter);
-            counter += 1.0;
-            vec![msg]
-        },
-    };
-
     let local_set = LocalSet::new();
 
     local_set.spawn_local(async {
         ComponentExecutor::<Custom>::new(executor_config)
             .add_cmp(cmp_logger::Cmp::new(logger_config))
-            .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
+            .add_cmp(config_inject_periodic::cmp())
             .wait_result()
             .await?;
         Ok(()) as anyhow::Result<()>
