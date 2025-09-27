@@ -1,4 +1,5 @@
 /// Ошибки исполненителя компонентов
+#[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum ComponentError {
     /// Component initialization error
@@ -16,4 +17,7 @@ pub enum ComponentError {
     /// Component output error
     #[error("Component output error: {0}")]
     CmpOutput(String),
+
+    #[error("CmpExecutor | TaskInternalSend")]
+    TaskInternalSend,
 }
