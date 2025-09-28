@@ -1,4 +1,4 @@
-use crate::{components::shared_tasks, executor::ComponentError};
+use crate::executor::ComponentError;
 
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
@@ -17,15 +17,6 @@ pub enum Error {
 
     #[error("TaskOutputEnd")]
     TaskOutputEnd,
-
-    #[error(transparent)]
-    TaskMpscToMsgbus(shared_tasks::mpsc_to_msgbus::Error),
-
-    #[error(transparent)]
-    TaskMsgBusToMpsc(shared_tasks::msgbus_to_mpsc::Error),
-
-    #[error(transparent)]
-    TaskMpscToBroadcast(shared_tasks::mpsc_to_broadcast::Error),
 
     #[error("AlgTaskUnexpectedEnd: {0}")]
     AlgTaskUnexpectedEnd(String),
