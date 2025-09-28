@@ -73,29 +73,22 @@ pub type Cmp<TMsg> = Component<Config<TMsg>, TMsg>;
 
 #[cfg(test)]
 mod tests {
+    use std::time::Duration;
+
+    use tracing::info;
+
+    use crate::{
+        components::cmp_external_fn_process,
+        executor::{CmpResult, sleep},
+        message::{example_message::*, *},
+    };
 
     use super::*;
 
     #[cfg(feature = "single-thread")]
-    #[cfg(not(target_arch = "wasm32"))]
     #[test]
     fn single_thread() {
-        use std::time::Duration;
-
         use futures::future::LocalBoxFuture;
-
-        #[cfg(target_arch = "wasm32")]
-        use gloo::timers::future::sleep;
-        #[cfg(not(target_arch = "wasm32"))]
-        use tokio::time::sleep;
-
-        use tracing::info;
-
-        use crate::{
-            components::cmp_external_fn_process,
-            executor::CmpResult,
-            message::{example_message::*, *},
-        };
 
         fn fn_process_wrapper<TMsg>(
             input: MsgBusInput<TMsg>,
@@ -127,17 +120,7 @@ mod tests {
     #[cfg(not(feature = "single-thread"))]
     #[test]
     fn multi_thread() {
-        use std::time::Duration;
-
         use futures::future::BoxFuture;
-        use tokio::time::sleep;
-        use tracing::info;
-
-        use crate::{
-            components::cmp_external_fn_process,
-            executor::CmpResult,
-            message::{example_message::*, *},
-        };
 
         fn fn_process_wrapper<TMsg>(
             input: MsgBusInput<TMsg>,
