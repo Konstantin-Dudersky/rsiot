@@ -33,7 +33,7 @@ async fn main() -> anyhow::Result<()> {
     };
 
     local_set.spawn_local(async {
-        let mut cmps = ComponentExecutor::<Message>::new(executor_config)
+        let cmps = ComponentExecutor::<Message>::new(executor_config)
             .add_cmp(example_component1::Cmp::new(example_component1::Config {}))
             .add_cmp(example_component2::Cmp::new(example_component2::Config {}));
 

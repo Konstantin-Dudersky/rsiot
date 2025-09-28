@@ -6,7 +6,7 @@ use uuid::Uuid;
 use crate::message::{system_messages::*, *};
 
 use super::{
-    Cache, ComponentError,
+    Cache, ComponentError, MsgBusInput, MsgBusOutput,
     types::{CmpInput, CmpOutput, FnAuth},
 };
 
@@ -36,16 +36,14 @@ where
         input: CmpInput<TMsg>,
         output: CmpOutput<TMsg>,
         cache: Cache<TMsg>,
-        id: Uuid,
         auth_perm: AuthPermissions,
         fn_auth: FnAuth<TMsg>,
     ) -> Self {
-        info!("Start, id: {}, auth_perm: {:?}", id, auth_perm);
         Self {
             input,
             output,
             cache,
-            id,
+            id: Uuid::default(),
             name: "".to_string(),
             auth_perm,
             fn_auth,
@@ -56,18 +54,42 @@ where
     ///
     /// Необходимо вызывать в начале исполнения компонента, чтобы у каждого компонента был
     /// уникальный id
-    pub fn clone_with_new_id(&self, name: &str, auth_perm: AuthPermissions) -> Self {
+    pub fn clone_with_new_id(self, name: &str, auth_perm: AuthPermissions) -> Self {
         let id = Uuid::new_v4();
         info!("Start: {}, id: {}, auth_perm: {:?}", name, id, auth_perm);
         Self {
-            input: self.input.resubscribe(),
-            output: self.output.clone(),
-            cache: self.cache.clone(),
+            input: self.input,
+            output: self.output,
+            cache: self.cache,
             name: name.into(),
             id,
             auth_perm,
             fn_auth: self.fn_auth,
         }
+    }
+
+    /// Компонент и получает, и отправляет сообщения
+    pub fn msgbus_input_output(self, name: &str) -> (MsgBusInput<TMsg>, MsgBusOutput<TMsg>) {
+        let id = Uuid::new_v4();
+        info!("Start: {}, id: {}", name, id);
+
+        let input = MsgBusInput::new(self.input, name, id);
+        let output = MsgBusOutput::new(self.output, id);
+        (input, output)
+    }
+
+    /// Компонент только получает входящие сообщения
+    pub fn msgbus_input(self, name: &str) -> MsgBusInput<TMsg> {
+        let id = Uuid::new_v4();
+        info!("Start: {}, id: {}", name, id);
+        MsgBusInput::new(self.input, name, id)
+    }
+
+    /// Компонент только отправляет исходящие сообщения
+    pub fn msgbus_output(self, name: &str) -> MsgBusOutput<TMsg> {
+        let id = Uuid::new_v4();
+        info!("Start: {}, id: {}", name, id);
+        MsgBusOutput::new(self.output, id)
     }
 
     /// Получение сообщений со входа

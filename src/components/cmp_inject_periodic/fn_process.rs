@@ -1,7 +1,7 @@
 use tokio::{task::JoinSet, time::Duration};
 
 use crate::{
-    executor::{CmpInOut, Instant, join_set_spawn, sleep},
+    executor::{Instant, MsgBusOutput, join_set_spawn, sleep},
     message::{Message, MsgDataBound},
 };
 
@@ -9,7 +9,7 @@ use super::{Config, Error};
 
 pub async fn fn_process<TMsg, TFnPeriodic>(
     config: Config<TMsg, TFnPeriodic>,
-    in_out: CmpInOut<TMsg>,
+    msgbus_output: MsgBusOutput<TMsg>,
 ) -> Result<(), Error>
 where
     TMsg: 'static + MsgDataBound,
@@ -17,7 +17,10 @@ where
 {
     let mut task_set = JoinSet::new();
 
-    let task = TaskInjectPeriodic { config, in_out };
+    let task = TaskInjectPeriodic {
+        config,
+        msgbus_output,
+    };
     join_set_spawn(&mut task_set, "cmp_inject_periodic", task.spawn());
 
     while let Some(res) = task_set.join_next().await {
@@ -33,7 +36,7 @@ where
     TFnPeriodic: FnMut() -> Vec<TMsg> + Send + Sync,
 {
     config: Config<TMsg, TFnPeriodic>,
-    in_out: CmpInOut<TMsg>,
+    msgbus_output: MsgBusOutput<TMsg>,
 }
 impl<TMsg, TFnPeriodic> TaskInjectPeriodic<TMsg, TFnPeriodic>
 where
@@ -46,7 +49,7 @@ where
             let msgs = (self.config.fn_periodic)();
             for msg in msgs {
                 let msg = Message::new_custom(msg);
-                self.in_out
+                self.msgbus_output
                     .send_output(msg)
                     .await
                     .map_err(|err| Error::TokioMpscSend(err.to_string()))?;
