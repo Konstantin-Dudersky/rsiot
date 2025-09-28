@@ -12,7 +12,7 @@ use crate::{
         master_device::{FieldbusRequestWithIndex, FieldbusResponseWithIndex},
         spi_master,
     },
-    executor::{CmpInOut, join_set_spawn},
+    executor::{MsgBusInput, MsgBusOutput, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -21,19 +21,20 @@ use super::{
     config::{ConfigDevicesCommSettings, LinuxDevice},
 };
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg>(
+    config: Config<TMsg>,
+    input: MsgBusInput<TMsg>,
+    output: MsgBusOutput<TMsg>,
+) -> super::Result<()>
 where
     TMsg: 'static + MsgDataBound,
 {
-    const BUFFER_SIZE: usize = 500;
-
     let mut task_set = JoinSet::new();
 
     let config_fn_process_master = FnProcessMaster {
-        msg_bus: msg_bus.clone(),
-        buffer_size: BUFFER_SIZE,
+        input,
+        output,
         task_set: &mut task_set,
-        error_msgbus_to_broadcast: Error::TaskMsgbusToBroadcast,
         error_filter: Error::TaskFilter,
         error_mpsc_to_msgbus: Error::TaskMpscToMsgBus,
         error_master_device: Error::DeviceError,

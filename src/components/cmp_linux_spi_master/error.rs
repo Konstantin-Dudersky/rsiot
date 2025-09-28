@@ -21,7 +21,7 @@ pub enum Error {
     TokioSyncMpsc,
 
     #[error(transparent)]
-    TaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus::Error),
+    TaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus_new::Error),
 
     #[error(transparent)]
     TaskFilter(shared_tasks::filter_identical_data::Error),

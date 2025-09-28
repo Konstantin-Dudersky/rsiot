@@ -12,7 +12,7 @@ use tracing::{debug, warn};
 use crate::{
     components::shared_tasks::fn_process_master::FnProcessMaster,
     components_config::master_device::{FieldbusRequestWithIndex, FieldbusResponseWithIndex},
-    executor::{CmpInOut, join_set_spawn},
+    executor::{MsgBusInput, MsgBusOutput, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -24,15 +24,14 @@ use super::{
 
 const MAX_TASKS_PER_DEVICE: usize = 10;
 
-pub async fn fn_process<TMessage>(
-    config: Config<TMessage>,
-    msg_bus: CmpInOut<TMessage>,
+pub async fn fn_process<TMsg>(
+    config: Config<TMsg>,
+    input: MsgBusInput<TMsg>,
+    output: MsgBusOutput<TMsg>,
 ) -> Result<(), Error>
 where
-    TMessage: MsgDataBound + 'static,
+    TMsg: MsgDataBound + 'static,
 {
-    const BUFFER_SIZE: usize = 500;
-
     let mut task_set = JoinSet::new();
 
     if !config.enabled {
@@ -43,10 +42,9 @@ where
     }
 
     let config_fn_process_master = FnProcessMaster {
-        msg_bus: msg_bus.clone(),
-        buffer_size: BUFFER_SIZE,
+        input,
+        output,
         task_set: &mut task_set,
-        error_msgbus_to_broadcast: Error::TaskMsgbusToBroadcast,
         error_filter: Error::TaskFilter,
         error_mpsc_to_msgbus: Error::TaskMpscToMsgBus,
         error_master_device: Error::Device,

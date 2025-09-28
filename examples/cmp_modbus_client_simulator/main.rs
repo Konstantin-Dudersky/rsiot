@@ -19,22 +19,10 @@ mod message;
 #[cfg(feature = "cmp_modbus_client")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    use serde::{Deserialize, Serialize};
     use tokio::time::Duration;
     use tracing_subscriber::fmt;
 
-    use rsiot::{
-        executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{MsgDataBound, MsgKey},
-    };
-
-    #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
-    pub enum Messages {
-        ValueWrite(f64),
-        ValueRead(f64),
-    }
-
-    impl MsgDataBound for Messages {}
+    use rsiot::executor::{ComponentExecutor, ComponentExecutorConfig};
 
     // логгирование
     fmt().init();
