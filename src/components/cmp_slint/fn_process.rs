@@ -6,11 +6,11 @@ use tokio::{sync::mpsc, task::JoinSet};
 
 use crate::{
     components::shared_tasks,
-    executor::{join_set_spawn, CmpInOut},
+    executor::{CmpInOut, join_set_spawn},
     message::MsgDataBound,
 };
 
-use super::{tasks, Config, Error, Result};
+use super::{Config, Error, Result, tasks};
 
 pub async fn fn_process<TMainWindow, TMsg>(
     config: Config<TMsg, TMainWindow>,
@@ -33,7 +33,7 @@ where
     };
     join_set_spawn(
         &mut task_set,
-        "cmp_slint",
+        "cmp_slint | msgbus_to_mpsc",
         task.spawn().map_err(Error::TaskMsgBusToMpsc),
     );
 
@@ -43,7 +43,7 @@ where
         slint_window: config.slint_window.clone(),
         fn_input: config.fn_input,
     };
-    join_set_spawn(&mut task_set, "cmp_slint", task.spawn());
+    join_set_spawn(&mut task_set, "cmp_slint | input", task.spawn());
 
     // Создание сообщений на основе взаимодествия с приложением Slint
     let task = tasks::Output {
@@ -51,7 +51,7 @@ where
         slint_window: config.slint_window.clone(),
         fn_output: config.fn_output,
     };
-    join_set_spawn(&mut task_set, "cmp_slint", task.spawn());
+    join_set_spawn(&mut task_set, "cmp_slint | output", task.spawn());
 
     // Фильтрация сообещений
     let task = shared_tasks::filter_send_periodically::FilterSendPeriodically {
@@ -61,7 +61,7 @@ where
     };
     join_set_spawn(
         &mut task_set,
-        "cmp_slint",
+        "cmp_slint | filter",
         task.spawn().map_err(Error::TaskFilterSendPeriodically),
     );
 
@@ -72,7 +72,7 @@ where
     };
     join_set_spawn(
         &mut task_set,
-        "cmp_slint",
+        "cmp_slint | mpsc_to_msgbus",
         task.spawn().map_err(Error::TaskMpscToMsgBus),
     );
 
