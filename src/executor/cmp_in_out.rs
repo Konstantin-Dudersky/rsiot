@@ -19,8 +19,7 @@ where
     input: CmpInput<TMsg>,
     output: CmpOutput<TMsg>,
     /// Ссылка на кэш
-    /// TODO - проверить, скорее всего можно сделать приватным
-    pub cache: Cache<TMsg>,
+    cache: Cache<TMsg>,
     name: String,
     id: Uuid,
     auth_perm: AuthPermissions,
