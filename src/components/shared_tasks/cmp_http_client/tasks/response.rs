@@ -2,6 +2,7 @@ use tokio::sync::mpsc;
 
 use crate::{
     components_config::http_client::{MsgResponse, RequestInput, RequestPeriodic},
+    executor::MsgBusOutput,
     message::{Message, MsgDataBound},
 };
 
@@ -12,7 +13,7 @@ where
     TMsg: MsgDataBound,
 {
     pub input: mpsc::Receiver<MsgResponse>,
-    pub output: mpsc::Sender<Message<TMsg>>,
+    pub output: MsgBusOutput<TMsg>,
     /// Запросы, которые формируются на основе входящих сообщений
     pub requests_input: Vec<Box<dyn RequestInput<TMsg>>>,
     /// Периодические запросы

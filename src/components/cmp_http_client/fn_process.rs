@@ -3,13 +3,17 @@ use tracing::info;
 
 use crate::{
     components::shared_tasks::cmp_http_client::HttpClientGeneral,
-    executor::{join_set_spawn, CmpInOut},
+    executor::{MsgBusInput, MsgBusOutput, join_set_spawn},
     message::MsgDataBound,
 };
 
-use super::{config, tasks, Result};
+use super::{Result, config, tasks};
 
-pub async fn fn_process<TMsg>(msg_bus: CmpInOut<TMsg>, config: config::Config<TMsg>) -> Result<()>
+pub async fn fn_process<TMsg>(
+    input: MsgBusInput<TMsg>,
+    output: MsgBusOutput<TMsg>,
+    config: config::Config<TMsg>,
+) -> Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
@@ -17,9 +21,12 @@ where
 
     let mut task_set = JoinSet::new();
 
+    let buffer_size = output.max_capacity();
+
     let http_client_general = HttpClientGeneral {
-        msg_bus,
-        buffer_size: 1000,
+        input,
+        output,
+        buffer_size,
         task_set: &mut task_set,
         requests_input: config.requests_input,
         requests_periodic: config.requests_periodic,

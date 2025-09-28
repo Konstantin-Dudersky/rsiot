@@ -95,7 +95,7 @@ async fn main() -> anyhow::Result<()> {
             serde_alg: SerdeAlgKind::Json,
             request_kind: cmp_http_client::RequestKind::Get,
             endpoint: "/data/test".to_string(),
-            period: Duration::from_millis(1000),
+            period: Duration::from_millis(100),
             request_body: (),
             fn_process_response_success: |s2c| vec![Data::CounterFromServer(s2c.counter)],
             fn_process_response_error: Vec::new,
@@ -103,7 +103,7 @@ async fn main() -> anyhow::Result<()> {
     };
 
     let executor_config = ComponentExecutorConfig {
-        buffer_size: 100,
+        buffer_size: 10,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
         fn_tokio_metrics: |_| None,
