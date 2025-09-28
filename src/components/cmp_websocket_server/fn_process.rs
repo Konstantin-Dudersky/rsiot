@@ -16,12 +16,10 @@ use tokio::{
 use tokio_tungstenite::accept_async;
 use tracing::{error, info, warn};
 
+use crate::executor::MsgBusInput;
+use crate::executor::MsgBusOutput;
 use crate::serde_utils::SerdeAlg;
-use crate::{
-    components::shared_tasks,
-    executor::{CmpInOut, ComponentError, join_set_spawn},
-    message::MsgDataBound,
-};
+use crate::{components::shared_tasks, executor::join_set_spawn, message::MsgDataBound};
 
 use super::{
     ServerToClientCache,
@@ -30,12 +28,13 @@ use super::{
     tasks,
 };
 
-pub async fn fn_process<TMessage, TServerToClient, TClientToServer>(
-    input: CmpInOut<TMessage>,
-    config: Config<TMessage, TServerToClient, TClientToServer>,
-) -> Result<(), ComponentError>
+pub async fn fn_process<TMsg, TServerToClient, TClientToServer>(
+    input: MsgBusInput<TMsg>,
+    output: MsgBusOutput<TMsg>,
+    config: Config<TMsg, TServerToClient, TClientToServer>,
+) -> Result<(), Error>
 where
-    TMessage: MsgDataBound + 'static,
+    TMsg: MsgDataBound + 'static,
     TServerToClient: 'static + WebsocketMessage,
     TClientToServer: 'static + WebsocketMessage,
 {
@@ -44,23 +43,23 @@ where
         config
     );
 
-    loop {
-        let result = task_main(input.clone(), config.clone()).await;
-        match result {
-            Ok(_) => (),
-            Err(err) => error!("{:?}", err),
-        }
-        info!("Restarting...");
-        sleep(Duration::from_secs(2)).await;
+    let result = task_main(input, output, config.clone()).await;
+    match result {
+        Ok(_) => (),
+        Err(err) => error!("{:?}", err),
     }
+    sleep(Duration::from_secs(2)).await;
+
+    Err(Error::FnProcessEnd)
 }
 
-async fn task_main<TMessage, TServerToClient, TClientToServer>(
-    in_out: CmpInOut<TMessage>,
-    config: Config<TMessage, TServerToClient, TClientToServer>,
+async fn task_main<TMsg, TServerToClient, TClientToServer>(
+    input: MsgBusInput<TMsg>,
+    output: MsgBusOutput<TMsg>,
+    config: Config<TMsg, TServerToClient, TClientToServer>,
 ) -> super::Result<()>
 where
-    TMessage: MsgDataBound + 'static,
+    TMsg: MsgDataBound + 'static,
     TServerToClient: 'static + WebsocketMessage,
     TClientToServer: 'static + WebsocketMessage,
 {
@@ -80,13 +79,13 @@ where
     let mut task_set = JoinSet::new();
 
     // Пересылка входящих сообщений ----------------------------------------------------------------
-    let task = shared_tasks::msgbus_to_mpsc::MsgBusToMpsc {
-        msg_bus: in_out.clone(),
+    let task = shared_tasks::msgbus_to_mpsc_new::MsgBusToMpsc {
+        input,
         output: ch_tx_msgbus_to_mpsc,
     };
     join_set_spawn(
         &mut task_set,
-        "cmp_websocket_server",
+        "cmp_websocket_server | msgbus_to_mpsc",
         task.spawn().map_err(super::Error::SharedTaskMsgBusToMpsc),
     );
 
@@ -108,13 +107,13 @@ where
     join_set_spawn(&mut task_set, "cmp_websocket_server | output", task.spawn());
 
     // Исходящие сообщения в шину сообщений --------------------------------------------------------
-    let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
+    let task = shared_tasks::mpsc_to_msgbus_new::MpscToMsgBus {
         input: ch_rx_mpsc_to_msgbus,
-        msg_bus: in_out.clone(),
+        output,
     };
     join_set_spawn(
         &mut task_set,
-        "cmp_websocket_server",
+        "cmp_websocket_server | mpsc_to_msgbus",
         task.spawn().map_err(super::Error::SharedTaskMpscToMsgBus),
     );
 
