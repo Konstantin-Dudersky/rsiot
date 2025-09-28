@@ -62,7 +62,7 @@
             // "cmp_auth",
             // "cmp_filesystem",
             // "cmp_http_client",
-            // "cmp_http_server"
+            "cmp_http_server",
             // "cmp_filesystem",
             // "cmp_influxdb",
             // "cmp_linux_can",
@@ -70,7 +70,7 @@
             // "cmp_linux_i2c_master"
             // "cmp_linux_spi_master",
             // "cmp_linux_uart_master",
-            "cmp_math"
+            // "cmp_math"
             // "cmp_modbus_client"
             // "cmp_mqtt_client",
             // "cmp_plc",
@@ -87,11 +87,11 @@
             // "log_file",
             // "log_loki",
             // "log_tokio"
-            // "serde_json",
-            // "serde_postcard",
-            // "serde_toml",
-            // "serde_messagepack",
-            // "serde_cbor"
+            "serde_json",
+            "serde_postcard",
+            "serde_toml",
+            "serde_messagepack",
+            "serde_cbor"
           ]
           // ---- wasm32-unknown-unknown -----------------------------------------------------------
           // "target": "wasm32-unknown-unknown",

@@ -20,6 +20,6 @@ where
         put_endpoints.handler(path, &body, super::Error::UnknownPath, super::Error::Serde)?
     };
     let Some(msg) = msg else { return Ok(()) };
-    shared_state.msg_bus.send_output(msg).await?;
+    shared_state.msgbus_output.send(msg).await?;
     Ok(())
 }

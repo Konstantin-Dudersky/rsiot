@@ -2,7 +2,7 @@ use async_trait::async_trait;
 
 use crate::{
     executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    message::MsgDataBound,
 };
 
 use super::{config::Config, fn_process::fn_process};
@@ -21,8 +21,8 @@ where
         config: Config<TMsg>,
         in_out: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
-        let in_out = in_out.clone_with_new_id(COMPONENT_NAME, AuthPermissions::FullAccess);
-        fn_process(in_out, config).await?;
+        let (input, output) = in_out.msgbus_input_output(COMPONENT_NAME);
+        fn_process(input, output, config).await?;
         Ok(())
     }
 }

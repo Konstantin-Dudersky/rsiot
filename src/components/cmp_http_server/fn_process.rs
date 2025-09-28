@@ -11,14 +11,18 @@ use tracing::{Level, info};
 
 use crate::{
     components_config::http_server::{GetEndpointsCollection, PutEndpointsCollection},
-    executor::{CmpInOut, join_set_spawn},
+    executor::{MsgBusInput, MsgBusOutput, join_set_spawn},
     message::MsgDataBound,
 };
 
 use super::{config::Config, routes, shared_state::SharedState, tasks};
 
 /// Компонент для получения и ввода сообщений через HTTP Server
-pub async fn fn_process<TMsg>(msg_bus: CmpInOut<TMsg>, config: Config<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg>(
+    input: MsgBusInput<TMsg>,
+    output: MsgBusOutput<TMsg>,
+    config: Config<TMsg>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
@@ -34,7 +38,7 @@ where
 
     // Общее состояние
     let shared_state = SharedState {
-        msg_bus: msg_bus.clone(),
+        msgbus_output: output,
         get_endpoints: get_endpoints.clone(),
         put_endpoints: put_endpoints.clone(),
     };
@@ -43,7 +47,7 @@ where
 
     // Задача обновления данных точек GET ----------------------------------------------------------
     let task = tasks::UpdateGetEndpoints {
-        input: msg_bus.clone(),
+        input,
         get_endpoints: get_endpoints.clone(),
     };
     join_set_spawn(
