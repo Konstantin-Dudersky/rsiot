@@ -31,11 +31,7 @@ async fn main() {
         LedColor(Vec<(u8, cmp_esp_led::ConfigRgb)>),
     }
 
-    impl MsgDataBound for Custom {
-        fn define_time_to_live(&self) -> rsiot::message::TimeToLiveValue {
-            TimeToLiveValue::Infinite
-        }
-    }
+    impl MsgDataBound for Custom {}
 
     let peripherals = Peripherals::take().unwrap();
 

@@ -57,7 +57,7 @@ where
     /// Необходимо вызывать в начале исполнения компонента, чтобы у каждого компонента был
     /// уникальный id
     pub fn clone_with_new_id(&self, name: &str, auth_perm: AuthPermissions) -> Self {
-        let id = MsgTrace::generate_uuid();
+        let id = Uuid::new_v4();
         info!("Start: {}, id: {}, auth_perm: {:?}", name, id, auth_perm);
         Self {
             input: self.input.resubscribe(),
@@ -101,16 +101,15 @@ where
             }
 
             // Если данное сообщение было сгенерировано данным сервисом, пропускаем
-            if msg.contains_trace_item(&self.id) {
+            if msg.check_source(&self.id) {
                 continue;
             }
 
             // Если нет авторизации, пропускаем
-            let Some(mut msg) = (self.fn_auth)(msg, &self.auth_perm) else {
+            let Some(msg) = (self.fn_auth)(msg, &self.auth_perm) else {
                 continue;
             };
 
-            msg.add_trace_item(&self.id);
             return Ok(msg);
         }
     }
@@ -139,7 +138,7 @@ where
             return Ok(());
         };
 
-        msg.add_trace_item(&self.id);
+        msg.set_cmp_source(&self.id);
         self.output
             .send(msg)
             .await
@@ -155,7 +154,8 @@ where
             return Ok(());
         };
 
-        msg.add_trace_item(&self.id);
+        msg.set_cmp_source(&self.id);
+
         self.output
             .blocking_send(msg)
             .map_err(|e| ComponentError::CmpOutput(e.to_string()))

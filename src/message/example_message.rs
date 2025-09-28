@@ -1,6 +1,6 @@
 //! Пример реализации сообщения. Можно использовать для тестирования компонентов
 
-use super::{Deserialize, MsgDataBound, MsgKey, Serialize, TimeToLiveValue};
+use super::{Deserialize, MsgDataBound, MsgKey, Serialize};
 
 /// Пример реализации сообщения. Можно использовать для тестирования компонентов
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, MsgKey)]
@@ -57,11 +57,7 @@ pub enum DataGroup {
 // #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
 // pub enum EmptyEnum {}
 
-impl MsgDataBound for Custom {
-    fn define_time_to_live(&self) -> TimeToLiveValue {
-        TimeToLiveValue::Infinite
-    }
-}
+impl MsgDataBound for Custom {}
 
 #[cfg(test)]
 mod tests {

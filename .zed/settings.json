@@ -73,7 +73,7 @@
             // "cmp_math"
             // "cmp_modbus_client"
             // "cmp_mqtt_client",
-            // "cmp_plc",
+            "cmp_plc",
             // "cmp_os_process",
             // "cmp_slint"
             // "cmp_surrealdb"

@@ -40,11 +40,7 @@ async fn main() {
         WiFiConnected,
     }
 
-    impl MsgDataBound for Custom {
-        fn define_time_to_live(&self) -> rsiot::message::TimeToLiveValue {
-            TimeToLiveValue::Infinite
-        }
-    }
+    impl MsgDataBound for Custom {}
 
     // cmp_http_server_esp -------------------------------------------------------------------------
     let http_server_esp_config = cmp_esp_http_server::Config {

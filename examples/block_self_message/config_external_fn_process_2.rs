@@ -1,11 +1,7 @@
-use std::time::Duration;
-
 use rsiot::components::cmp_external_fn_process::*;
 use rsiot::executor::{CmpInOut, CmpResult};
-use rsiot::message::MsgData;
-use rsiot::message::system_messages::System;
-use tokio::time::sleep;
-use tracing::{error, info, warn};
+use tokio::task::JoinSet;
+use tracing::info;
 
 use crate::messages::*;
 
@@ -30,21 +26,20 @@ fn fn_process_wrapper(msg_bus: CmpInOut<Msg>) -> futures::future::BoxFuture<'sta
 }
 
 async fn fn_process(mut msg_bus: CmpInOut<Msg>) -> CmpResult {
-    while let Ok(msg) = msg_bus.recv_input().await {
-        match msg.data {
-            MsgData::System(msg) => match msg {
-                System::Lagged => warn!("Lagged message"),
-                _ => continue,
-            },
-            MsgData::Custom(msg) => match msg {
-                Msg::Counter(v) => info!("Counter: {v}"),
-            },
+    let mut task_set = JoinSet::new();
+
+    task_set.spawn(async move {
+        while let Ok(msg) = msg_bus.recv_input().await {
+            let Some(msg) = msg.get_custom_data() else {
+                continue;
+            };
+            match msg {
+                Msg::GenerateMessage(_) => info!("Received GenerateMessage in 2"),
+            }
         }
+    });
 
-        sleep(Duration::from_millis(90)).await
-    }
-
-    error!("Component stopped");
+    task_set.join_all().await;
 
     Ok(())
 }

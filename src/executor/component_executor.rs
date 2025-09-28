@@ -13,7 +13,6 @@ use super::{
     error::ComponentError, join_set_spawn, sleep, types::FnAuth,
 };
 
-const UPDATE_TTL_PERIOD: Duration = Duration::from_millis(1000);
 #[cfg(feature = "log_tokio")]
 const RUNTIME_METRICS_PERIOD: Duration = Duration::from_millis(100);
 
@@ -73,7 +72,7 @@ where
     /// Создание коллекции компонентов
     pub fn new(config: ComponentExecutorConfig<TMsg>) -> Self {
         info!("ComponentExecutor start creation");
-        let id = MsgTrace::generate_uuid();
+        let id = Uuid::new_v4();
         let (component_input_send, component_input) =
             broadcast::channel::<Message<TMsg>>(config.buffer_size);
         let (component_output, component_output_recv) =
@@ -86,19 +85,10 @@ where
             component_output_recv,
             component_input_send.clone(),
             cache.clone(),
-            id,
             config.delay_publish,
             config.buffer_size,
         );
         join_set_spawn(&mut task_set, "internal_task", task_internal_handle);
-
-        // Запускаем задачу обновления TTL сообщений
-        let task_update_ttl_in_cache_handle = task_update_ttl_in_cache(cache.clone());
-        join_set_spawn(
-            &mut task_set,
-            "update_ttl_in_cache",
-            task_update_ttl_in_cache_handle,
-        );
 
         // Запускаем задачу сбора метрик tokio
         #[cfg(feature = "log_tokio")]
@@ -176,7 +166,6 @@ async fn task_internal<TMsg>(
     mut input: mpsc::Receiver<Message<TMsg>>,
     output: broadcast::Sender<Message<TMsg>>,
     cache: Cache<TMsg>,
-    executor_id: Uuid,
     delay_publish: Duration,
     buffer_size: usize,
 ) -> Result<(), ComponentError>
@@ -192,14 +181,14 @@ where
 
     let mut less_in_period = LessInPeriod::new(Duration::from_millis(1_000));
 
-    while let Some(mut msg) = input.recv().await {
+    while let Some(msg) = input.recv().await {
         trace!("ComponentExecutor: new message: {:?}", msg);
-        msg.add_trace_item(&executor_id);
         let msg = save_msg_in_cache(msg, &cache).await;
         let Some(msg) = msg else { continue };
 
         // Проверяем переполненность канала
-        check_broadcast_lagged(&output, buffer_size, &mut less_in_period)?;
+        // TODO - len всегда большой - возможо есть подписчик, который не забирает данные.
+        // check_broadcast_lagged(&output, buffer_size, &mut less_in_period)?;
 
         output
             .send(msg)
@@ -242,32 +231,6 @@ where
     }
 }
 
-/// Обновить значения времени жизни сообщений. Удаляет сообщения, время которых истекло
-async fn task_update_ttl_in_cache<TMsg>(cache: Cache<TMsg>) -> Result<(), ComponentError>
-where
-    TMsg: MsgDataBound,
-{
-    loop {
-        sleep(UPDATE_TTL_PERIOD).await;
-        let mut cache = cache.write().await;
-        let mut keys_for_delete = vec![];
-
-        cache.iter_mut().for_each(|(key, msg)| {
-            msg.update_time_to_live(UPDATE_TTL_PERIOD);
-            if !msg.is_alive() {
-                keys_for_delete.push(key.clone());
-            }
-        });
-        for key in keys_for_delete {
-            let remove_result = cache.remove(&key);
-            if remove_result.is_none() {
-                let err = format!("Message with key {key} not found in cache",);
-                return Err(ComponentError::Execution(err));
-            }
-        }
-    }
-}
-
 /// Сохраняем сообщение в кеше
 ///
 /// Возвращает `Option<Message>`:
@@ -289,10 +252,7 @@ where
             System::Pong(_) => return None,
         }
     }
-    // Время жизни сообщения истекло
-    if !msg.is_alive() {
-        return Some(msg);
-    }
+
     let key = msg.key.clone();
     let value = msg.clone();
     {

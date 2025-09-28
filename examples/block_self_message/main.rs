@@ -1,7 +1,7 @@
 #[cfg(feature = "executor")]
-mod config_external_fn_process;
+mod config_external_fn_process_1;
 #[cfg(feature = "executor")]
-mod config_inject_periodic;
+mod config_external_fn_process_2;
 #[cfg(feature = "executor")]
 mod messages;
 
@@ -24,8 +24,8 @@ async fn main() -> anyhow::Result<()> {
     };
 
     ComponentExecutor::<Msg>::new(executor_config)
-        .add_cmp(config_inject_periodic::cmp())
-        .add_cmp(config_external_fn_process::cmp())
+        .add_cmp(config_external_fn_process_1::cmp())
+        .add_cmp(config_external_fn_process_2::cmp())
         .wait_result()
         .await?;
 

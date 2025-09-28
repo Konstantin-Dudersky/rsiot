@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{system_messages::*, MsgDataBound, MsgKey, TimeToLiveValue};
+use super::{MsgDataBound, MsgKey, system_messages::*};
 
 /// Тип сообщения
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -15,14 +15,6 @@ impl<TMsg> MsgData<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    /// Задать ограничение времени жизни сообщения
-    pub fn define_time_to_live(&self) -> TimeToLiveValue {
-        match &self {
-            MsgData::System(_) => TimeToLiveValue::Infinite,
-            MsgData::Custom(data) => data.define_time_to_live(),
-        }
-    }
-
     /// Получить ключ сообщения
     pub fn key(&self) -> String {
         match &self {

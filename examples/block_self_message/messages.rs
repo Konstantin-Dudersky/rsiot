@@ -1,10 +1,10 @@
-use serde::{Deserialize, Serialize};
-
 use rsiot::message::{MsgDataBound, MsgKey};
 
+use serde::{Deserialize, Serialize};
+
 #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
-pub enum Message {
-    TestMessage(i32),
+pub enum Msg {
+    GenerateMessage(()),
 }
 
-impl MsgDataBound for Message {}
+impl MsgDataBound for Msg {}

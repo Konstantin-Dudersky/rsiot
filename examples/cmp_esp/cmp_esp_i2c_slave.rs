@@ -32,11 +32,7 @@ async fn main() {
         CounterFromMaster(u32),
     }
 
-    impl MsgDataBound for Custom {
-        fn define_time_to_live(&self) -> rsiot::message::TimeToLiveValue {
-            TimeToLiveValue::Infinite
-        }
-    }
+    impl MsgDataBound for Custom {}
 
     // I2C messages --------------------------------------------------------------------------------
     #[derive(Debug, Deserialize, Serialize)]
