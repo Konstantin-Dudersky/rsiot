@@ -4,11 +4,11 @@ use std::{sync::Arc, time::Duration};
 
 use futures::TryFutureExt;
 use tokio::{
-    sync::{Mutex, broadcast, mpsc},
+    sync::{Mutex, mpsc},
     task::JoinSet,
 };
 
-use crate::{components::shared_tasks, message::Message};
+use crate::{components::shared_tasks, executor::MsgBusInput, message::Message};
 use crate::{executor::join_set_spawn, message::MsgDataBound};
 
 use super::{BufferBound, RequestResponseBound, config::*, tasks};
@@ -80,7 +80,7 @@ where
     pub async fn spawn(
         self,
         id: impl AsRef<str>,
-        ch_rx_msgbus_to_device: broadcast::Receiver<Message<TMsg>>,
+        ch_rx_msgbus_to_device: MsgBusInput<TMsg>,
         ch_tx_device_to_fieldbus: mpsc::Sender<TRequest>,
         ch_rx_fieldbus_to_device: mpsc::Receiver<TResponse>,
         ch_tx_device_to_msgbus: mpsc::Sender<Message<TMsg>>,
