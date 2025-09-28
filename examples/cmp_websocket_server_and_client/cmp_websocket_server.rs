@@ -64,7 +64,7 @@ async fn main() -> anyhow::Result<()> {
 
     let mut counter = 0;
     let inject_config = cmp_inject_periodic::Config {
-        period: Duration::from_millis(1000),
+        period: Duration::from_millis(100),
         fn_periodic: move || {
             let msg = ServerMessages::ServerCounter(counter);
             counter += 1;

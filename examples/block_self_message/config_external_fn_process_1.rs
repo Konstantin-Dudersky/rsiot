@@ -41,13 +41,13 @@ async fn fn_process(mut input: MsgBusInput<Msg>, output: MsgBusOutput<Msg>) -> C
     task_set.spawn(async move {
         loop {
             let msg = Msg::GenerateMessage(());
-            output.send_output(msg.to_message()).await.unwrap();
+            output.send(msg.to_message()).await.unwrap();
             sleep(Duration::from_millis(1_000)).await
         }
     });
 
     task_set.spawn(async move {
-        while let Ok(msg) = input.recv_input().await {
+        while let Ok(msg) = input.recv().await {
             let Some(msg) = msg.get_custom_data() else {
                 continue;
             };

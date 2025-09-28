@@ -29,7 +29,7 @@ where
     }
 
     /// Получение входящих сообщений
-    pub async fn recv_input(&mut self) -> Result<Message<TMsg>, ComponentError> {
+    pub async fn recv(&mut self) -> Result<Message<TMsg>, ComponentError> {
         loop {
             let msg = self.input.recv().await;
 
@@ -50,6 +50,19 @@ where
             }
 
             return Ok(msg);
+        }
+    }
+}
+
+impl<TMsg> Clone for MsgBusInput<TMsg>
+where
+    TMsg: MsgDataBound,
+{
+    fn clone(&self) -> Self {
+        Self {
+            input: self.input.resubscribe(),
+            name: self.name.clone(),
+            id: self.id,
         }
     }
 }

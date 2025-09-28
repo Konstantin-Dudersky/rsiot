@@ -2,12 +2,12 @@ mod shared;
 
 use std::time::Duration;
 
-use leptos::task::{spawn_local, Executor};
+use any_spawner::Executor;
+use leptos::task::spawn_local;
 use rsiot::{
     components::{cmp_inject_periodic, cmp_logger, cmp_websocket_client_wasm},
     executor::{ComponentExecutor, ComponentExecutorConfig},
     logging::{LogConfig, LogConfigFilter},
-    message::*,
     serde_utils::SerdeAlgKind,
 };
 use tokio::task::LocalSet;
@@ -70,14 +70,12 @@ fn main() -> anyhow::Result<()> {
                 };
                 vec![msg]
             },
-            fn_connection_state: |state| {
-                Some(Message::new_custom(ClientMessages::ConnectionState(state)))
-            },
+            fn_connection_state: |state| Some(ClientMessages::ConnectionState(state)),
         };
 
     // executor ------------------------------------------------------------------------------------
     let config_executor = ComponentExecutorConfig {
-        buffer_size: 1000,
+        buffer_size: 10,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(200),
         fn_tokio_metrics: |_| None,

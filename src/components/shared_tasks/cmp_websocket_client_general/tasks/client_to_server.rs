@@ -1,8 +1,9 @@
-use tokio::sync::mpsc;
+use tokio::sync::{broadcast, mpsc};
 use tracing::warn;
 
 use crate::{
     components_config::{websocket_client::FnClientToServer, websocket_general::WebsocketMessage},
+    executor::MsgBusInput,
     message::{Message, MsgDataBound},
     serde_utils::SerdeAlg,
 };
@@ -10,9 +11,10 @@ use crate::{
 pub struct ClientToServer<TMsg, TClientToServer>
 where
     TClientToServer: WebsocketMessage,
+    TMsg: MsgDataBound,
 {
-    pub input: mpsc::Receiver<Message<TMsg>>,
-    pub output: mpsc::Sender<Vec<u8>>,
+    pub input: MsgBusInput<TMsg>,
+    pub output: broadcast::Sender<Vec<u8>>,
     pub fn_input: FnClientToServer<TMsg, TClientToServer>,
     pub serde_alg: SerdeAlg,
 }
@@ -23,7 +25,7 @@ where
     TClientToServer: WebsocketMessage,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
-        while let Some(msg) = self.input.recv().await {
+        while let Ok(msg) = self.input.recv().await {
             let Some(msg) = msg.get_custom_data() else {
                 continue;
             };
@@ -41,7 +43,6 @@ where
 
             self.output
                 .send(bytes)
-                .await
                 .map_err(|_| super::Error::TokioSyncMpscSend)?;
         }
 

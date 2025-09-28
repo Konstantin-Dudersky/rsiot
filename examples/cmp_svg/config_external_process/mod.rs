@@ -17,7 +17,7 @@ pub fn cmp() -> Component<Config<Msg>, Msg> {
 
 async fn fn_process(mut input: MsgBusInput<Msg>, output: MsgBusOutput<Msg>) -> CmpResult {
     drop(output);
-    while let Ok(msg) = input.recv_input().await {
+    while let Ok(msg) = input.recv().await {
         let Some(msg) = msg.get_custom_data() else {
             continue;
         };

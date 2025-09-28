@@ -50,7 +50,7 @@ where
             for msg in msgs {
                 let msg = Message::new_custom(msg);
                 self.msgbus_output
-                    .send_output(msg)
+                    .send(msg)
                     .await
                     .map_err(|err| Error::TokioMpscSend(err.to_string()))?;
             }

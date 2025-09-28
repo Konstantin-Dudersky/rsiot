@@ -6,15 +6,13 @@ mod shared;
 #[cfg(feature = "cmp_websocket_client")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    use tokio::time::Duration;
-    use tracing::Level;
-
     use rsiot::{
         components::{cmp_inject_periodic, cmp_logger, cmp_websocket_client},
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::Message,
         serde_utils::SerdeAlgKind,
     };
+    use tokio::time::Duration;
+    use tracing::{Level, info, warn};
 
     use messages_client::ClientMessages;
     use shared::{ClientToServer, ServerToClient};
@@ -42,7 +40,7 @@ async fn main() -> anyhow::Result<()> {
 
     let mut counter = 0;
     let inject_config = cmp_inject_periodic::Config {
-        period: Duration::from_secs(2),
+        period: Duration::from_millis(100),
         fn_periodic: move || {
             let msg = ClientMessages::CounterFromClient(counter);
             counter = counter.wrapping_add(1);
@@ -69,12 +67,17 @@ async fn main() -> anyhow::Result<()> {
             vec![msg]
         },
         fn_connection_state: |state| {
-            Some(Message::new_custom(ClientMessages::ConnectionState(state)))
+            match state {
+                true => info!("Connection state: {:?}", state),
+
+                false => warn!("Connection state: {:?}", state),
+            }
+            Some(ClientMessages::ConnectionState(state))
         },
     };
 
     let executor_config = ComponentExecutorConfig {
-        buffer_size: 100,
+        buffer_size: 10,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
         fn_tokio_metrics: |_| None,

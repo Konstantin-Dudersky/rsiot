@@ -26,6 +26,8 @@ pub mod filter_send_periodically;
 pub mod fn_process_master;
 pub mod mpsc_to_broadcast;
 pub mod mpsc_to_msgbus;
+pub mod mpsc_to_msgbus_new;
 pub mod msgbus_to_broadcast;
 pub mod msgbus_to_mpsc;
+pub mod msgbus_to_mpsc_new;
 pub mod msgbus_to_mpsc_unbounded;

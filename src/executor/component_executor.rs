@@ -181,7 +181,7 @@ where
         r#"
 MsgBus statistics:
 Connected to input:           {}
-Connected to output (string): {}
+Connected to output (strong): {}
 Connected to output (weak):   {}
 Channel capacity:             {}
 "#,

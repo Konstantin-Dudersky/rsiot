@@ -31,7 +31,7 @@ fn fn_process_wrapper(
 }
 
 async fn fn_process(mut input: MsgBusInput<Msg>, _output: MsgBusOutput<Msg>) -> CmpResult {
-    while let Ok(msg) = input.recv_input().await {
+    while let Ok(msg) = input.recv().await {
         let Some(msg) = msg.get_custom_data() else {
             continue;
         };

@@ -36,7 +36,7 @@ async fn fn_process(mut input: MsgBusInput<Msg>, output: MsgBusOutput<Msg>) -> C
     let mut task_set = JoinSet::new();
 
     task_set.spawn(async move {
-        while let Ok(msg) = input.recv_input().await {
+        while let Ok(msg) = input.recv().await {
             let Some(msg) = msg.get_custom_data() else {
                 continue;
             };

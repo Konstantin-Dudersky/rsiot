@@ -24,7 +24,7 @@ where
     }
 
     /// Отправка исходящих сообщений
-    pub async fn send_output(&self, mut msg: Message<TMsg>) -> Result<(), ComponentError> {
+    pub async fn send(&self, mut msg: Message<TMsg>) -> Result<(), ComponentError> {
         trace!("Start send to output: {msg:?}");
 
         msg.set_cmp_source(&self.id);
@@ -35,7 +35,7 @@ where
     }
 
     /// Отправка исходящих сообщений, в синхронном окружении
-    pub fn send_output_blocking(&self, mut msg: Message<TMsg>) -> Result<(), ComponentError> {
+    pub fn send_blocking(&self, mut msg: Message<TMsg>) -> Result<(), ComponentError> {
         trace!("Start send to output: {msg:?}");
 
         msg.set_cmp_source(&self.id);
@@ -43,5 +43,22 @@ where
         self.output
             .blocking_send(msg)
             .map_err(|e| ComponentError::CmpOutput(e.to_string()))
+    }
+
+    /// Ёмкость канала
+    pub fn max_capacity(&self) -> usize {
+        self.output.max_capacity()
+    }
+}
+
+impl<TMsg> Clone for MsgBusOutput<TMsg>
+where
+    TMsg: MsgDataBound,
+{
+    fn clone(&self) -> Self {
+        Self {
+            output: self.output.clone(),
+            id: self.id,
+        }
     }
 }
