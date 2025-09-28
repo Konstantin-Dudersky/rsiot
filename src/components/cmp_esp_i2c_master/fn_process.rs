@@ -17,24 +17,21 @@ use crate::components_config::i2c_master::{self, Operation};
 use crate::components_config::master_device::{
     FieldbusRequestWithIndex, FieldbusResponseWithIndex,
 };
-use crate::{
-    executor::{CmpInOut, join_set_spawn},
-    message::MsgDataBound,
-};
+use crate::executor::{MsgBusInput, MsgBusOutput};
+use crate::{executor::join_set_spawn, message::MsgDataBound};
 
 use super::{Config, ConfigBaudrate, Error};
 
 pub async fn fn_process<TMsg, TI2c, TPeripheral>(
     config: Config<TMsg, TI2c, TPeripheral>,
-    msg_bus: CmpInOut<TMsg>,
+    input: MsgBusInput<TMsg>,
+    output: MsgBusOutput<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
     TI2c: Peripheral<P = TPeripheral> + 'static,
     TPeripheral: I2c,
 {
-    const BUFFER_SIZE: usize = 500;
-
     // Настраиваем I2C
     let baudrate = match config.baudrate {
         ConfigBaudrate::Standard => 100_u32.kHz(),
@@ -50,10 +47,9 @@ where
     let mut task_set: JoinSet<Result<(), Error>> = JoinSet::new();
 
     let config_fn_process_master = FnProcessMaster {
-        msg_bus: msg_bus.clone(),
-        buffer_size: BUFFER_SIZE,
+        input,
+        output,
         task_set: &mut task_set,
-        error_msgbus_to_broadcast: Error::TaskMsgbusToBroadcast,
         error_filter: Error::TaskFilter,
         error_mpsc_to_msgbus: Error::TaskMpscToMsgBus,
         error_master_device: Error::DeviceError,
