@@ -1,23 +1,27 @@
 use std::sync::{
-    atomic::{AtomicU8, Ordering},
     Arc,
+    atomic::{AtomicU8, Ordering},
 };
 
-use tokio::sync::mpsc;
-
-use crate::message::Message;
+use crate::{executor::MsgBusInput, message::MsgDataBound};
 
 use super::super::config::FnFindPartnerCounter;
 
-pub struct FindPartnerCounter<TMsg> {
-    pub input: mpsc::Receiver<Message<TMsg>>,
+pub struct FindPartnerCounter<TMsg>
+where
+    TMsg: MsgDataBound,
+{
+    pub input: MsgBusInput<TMsg>,
     pub fn_find_partner_counter: FnFindPartnerCounter<TMsg>,
     pub live_counter: Arc<AtomicU8>,
 }
 
-impl<TMsg> FindPartnerCounter<TMsg> {
+impl<TMsg> FindPartnerCounter<TMsg>
+where
+    TMsg: MsgDataBound,
+{
     pub async fn spawn(mut self) -> super::Result<()> {
-        while let Some(msg) = self.input.recv().await {
+        while let Ok(msg) = self.input.recv().await {
             let live_counter = (self.fn_find_partner_counter)(&msg);
             let live_counter = match live_counter {
                 Some(val) => val,

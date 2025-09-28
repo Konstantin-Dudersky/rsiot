@@ -6,20 +6,26 @@ use std::{
     time::Duration,
 };
 
-use tokio::{sync::mpsc, time::sleep};
+use tokio::time::sleep;
 
-use crate::message::Message;
+use crate::{executor::MsgBusOutput, message::MsgDataBound};
 
 use super::{super::config::FnCheckPartnerCounter, Error};
 
-pub struct CheckPartnerPeriod<TMsg> {
-    pub output: mpsc::Sender<Message<TMsg>>,
+pub struct CheckPartnerPeriod<TMsg>
+where
+    TMsg: MsgDataBound,
+{
+    pub output: MsgBusOutput<TMsg>,
     pub fn_check_partner_counter: FnCheckPartnerCounter<TMsg>,
     pub check_partner_period: Duration,
     pub live_counter: Arc<AtomicU8>,
 }
 
-impl<TMsg> CheckPartnerPeriod<TMsg> {
+impl<TMsg> CheckPartnerPeriod<TMsg>
+where
+    TMsg: MsgDataBound,
+{
     pub async fn spawn(self) -> super::Result<()> {
         let mut prev_live_counter = 0;
 
