@@ -4,7 +4,6 @@ use tokio::{
     task::JoinSet,
 };
 use tracing::{debug, error, info, trace, warn};
-use uuid::Uuid;
 
 use crate::message::{system_messages::*, *};
 
@@ -17,7 +16,7 @@ use super::{
 const RUNTIME_METRICS_PERIOD: Duration = Duration::from_millis(100);
 
 /// Уровень переполненности канала. Чем ближе к 1.0, тем раньше появится сообщение переполнения
-const BRAODCAST_LAGGED_THRESHOLD: f64 = 0.2;
+const BRAODCAST_LAGGED_THRESHOLD: f64 = 0.3;
 
 pub type FnTokioMetrics<TMsg> = fn(TokioRuntimeMetrics) -> Option<TMsg>;
 
@@ -72,7 +71,6 @@ where
     /// Создание коллекции компонентов
     pub fn new(config: ComponentExecutorConfig<TMsg>) -> Self {
         info!("ComponentExecutor start creation");
-        let id = Uuid::new_v4();
         let (component_input_send, component_input) =
             broadcast::channel::<Message<TMsg>>(config.buffer_size);
         let (component_output, component_output_recv) =
@@ -105,7 +103,6 @@ where
             component_input,
             component_output,
             cache.clone(),
-            id,
             AuthPermissions::default(),
             config.fn_auth,
         );
@@ -137,7 +134,10 @@ where
 
     /// Запустить на выполнение все компоненты и ожидать завершения выполнения выполнения какого-то
     /// компонента.
-    pub async fn wait_result(&mut self) -> Result<(), ComponentError> {
+    pub async fn wait_result(mut self) -> Result<(), ComponentError> {
+        // Удаляем неиспользуемые каналы шины сообщений
+        drop(self.cmp_in_out);
+
         let msg;
         if let Some(result) = self.task_set.join_next().await {
             match result {
@@ -177,9 +177,25 @@ where
     // Задержка, чтобы компоненты успели запуститься и подписаться на получение сообщений
     sleep(delay_publish).await;
 
+    let stat = format!(
+        r#"
+MsgBus statistics:
+Connected to input:           {}
+Connected to output (string): {}
+Connected to output (weak):   {}
+Channel capacity:             {}
+"#,
+        output.receiver_count(),
+        input.sender_strong_count(),
+        input.sender_weak_count(),
+        buffer_size
+    );
+
+    info!("{stat}");
+
     let buffer_size = buffer_size as f64;
 
-    let mut less_in_period = LessInPeriod::new(Duration::from_millis(1_000));
+    let mut less_in_period = LessInPeriod::new(Duration::from_millis(100));
 
     while let Some(msg) = input.recv().await {
         trace!("ComponentExecutor: new message: {:?}", msg);
@@ -188,7 +204,7 @@ where
 
         // Проверяем переполненность канала
         // TODO - len всегда большой - возможо есть подписчик, который не забирает данные.
-        // check_broadcast_lagged(&output, buffer_size, &mut less_in_period)?;
+        check_broadcast_lagged(&output, buffer_size, &mut less_in_period)?;
 
         output
             .send(msg)

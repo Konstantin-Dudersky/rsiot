@@ -17,7 +17,7 @@ async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt().init();
 
     let executor_config = ComponentExecutorConfig {
-        buffer_size: 10,
+        buffer_size: 20,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
         fn_tokio_metrics: |_| None,

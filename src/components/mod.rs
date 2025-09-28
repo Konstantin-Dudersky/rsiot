@@ -14,8 +14,6 @@ pub mod cmp_auth;
 
 pub mod cmp_livecounter;
 
-pub mod cmp_create_if_not_exist;
-
 pub mod cmp_derive;
 
 // #[cfg(feature = "cmp_esp")]

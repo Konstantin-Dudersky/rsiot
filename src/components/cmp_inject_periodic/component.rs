@@ -2,7 +2,7 @@ use async_trait::async_trait;
 
 use crate::{
     executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    message::MsgDataBound,
 };
 
 use super::{config::Config, fn_process::fn_process};
@@ -20,11 +20,7 @@ where
         config: Config<TMsg, TFnPeriodic>,
         in_out: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
-        fn_process(
-            config,
-            in_out.clone_with_new_id("cmp_inject_periodic", AuthPermissions::FullAccess),
-        )
-        .await?;
+        fn_process(config, in_out.msgbus_output("cmp_inject_periodic")).await?;
         Ok(())
     }
 }
