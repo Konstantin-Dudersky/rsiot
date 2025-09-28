@@ -75,23 +75,23 @@
             // "cmp_mqtt_client",
             // "cmp_plc",
             // "cmp_os_process",
-            "cmp_slint"
+            "cmp_slint",
             // "cmp_surrealdb"
             // "cmp_svg",
             // "cmp_system_info"
             // "cmp_telegram"
             // "cmp_timescaledb",
-            // "cmp_websocket_client",
-            // "cmp_websocket_server",
+            "cmp_websocket_client",
+            "cmp_websocket_server",
             // "log_console",
             // "log_file",
             // "log_loki",
             // "log_tokio"
-            // "serde_json",
-            // "serde_postcard",
-            // "serde_toml",
-            // "serde_messagepack",
-            // "serde_cbor"
+            "serde_json",
+            "serde_postcard",
+            "serde_toml",
+            "serde_messagepack",
+            "serde_cbor"
           ]
           // ---- wasm32-unknown-unknown -----------------------------------------------------------
           // "target": "wasm32-unknown-unknown",

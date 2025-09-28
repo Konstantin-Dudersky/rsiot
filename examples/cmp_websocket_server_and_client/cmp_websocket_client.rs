@@ -1,9 +1,3 @@
-//! Запуск:
-//!
-//! ```bash
-//! cargo run --example cmp_websocket_client --features "cmp_websocket_client, serde_json"
-//! ```
-
 #[cfg(feature = "cmp_websocket_client")]
 mod messages_client;
 #[cfg(feature = "cmp_websocket_client")]
@@ -12,28 +6,18 @@ mod shared;
 #[cfg(feature = "cmp_websocket_client")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    use serde::{Deserialize, Serialize};
     use tokio::time::Duration;
     use tracing::Level;
 
     use rsiot::{
         components::{cmp_inject_periodic, cmp_logger, cmp_websocket_client},
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::{Message, MsgDataBound, MsgKey},
+        message::Message,
         serde_utils::SerdeAlgKind,
     };
 
     use messages_client::ClientMessages;
     use shared::{ClientToServer, ServerToClient};
-
-    #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
-    enum Data {
-        Send(f64),
-        Recv(f64),
-        Tick(u64),
-    }
-
-    impl MsgDataBound for Data {}
 
     tracing_subscriber::fmt().init();
 
