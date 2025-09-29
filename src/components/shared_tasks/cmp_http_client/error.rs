@@ -20,9 +20,6 @@ pub enum Error {
     #[error("{COMPONENT_NAME} | TokioJoin")]
     TokioJoin(#[from] tokio::task::JoinError),
 
-    #[error("{COMPONENT_NAME} | TaskMpscToMsgBus: {0}")]
-    TaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus::Error),
-
     #[error("{COMPONENT_NAME} | End execution of HTTP client: {0}")]
     TaskEndHttpClient(String),
 }
