@@ -6,7 +6,7 @@ use serde::{Serialize, de::DeserializeOwned};
 
 use crate::{
     executor::{CmpInOut, CmpResult, Component, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    message::MsgDataBound,
 };
 
 use super::{BufferData, config::Config, fn_process::fn_process};
@@ -32,8 +32,8 @@ where
         config: Config<TMsg, TI2c, TPeripheral, TI2cRequest, TI2cResponse, TBufferData>,
         in_out: CmpInOut<TMsg>,
     ) -> CmpResult {
-        let in_out = in_out.clone_with_new_id(COMPONENT_NAME, AuthPermissions::FullAccess);
-        fn_process(config, in_out).await?;
+        let (input, output) = in_out.msgbus_input_output(COMPONENT_NAME);
+        fn_process(config, input, output).await?;
         Ok(())
     }
 }
