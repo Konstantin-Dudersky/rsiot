@@ -7,22 +7,23 @@ use esp_idf_svc::hal::{
 };
 use futures::TryFutureExt;
 use tokio::{
-    sync::{mpsc, Mutex},
+    sync::{Mutex, mpsc},
     task::JoinSet,
 };
 
-use crate::components_config::uart_general::Parity;
 use crate::{
-    components::shared_tasks::{filter_identical_data, mpsc_to_msgbus},
-    executor::{join_set_spawn, CmpInOut},
+    components::shared_tasks::{filter_identical_data, mpsc_to_msgbus_new},
+    components_config::uart_general::Parity,
+    executor::{MsgBusInput, MsgBusOutput, join_set_spawn},
     message::MsgDataBound,
 };
 
-use super::{tasks, Config};
+use super::{Config, tasks};
 
 pub async fn fn_process<TMsg, TUart, TPeripheral, TBufferData>(
     config: Config<TMsg, TUart, TPeripheral, TBufferData>,
-    msg_bus: CmpInOut<TMsg>,
+    input: MsgBusInput<TMsg>,
+    output: MsgBusOutput<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: 'static + MsgDataBound,
@@ -61,7 +62,7 @@ where
 
     // Задача обработки входящих сообщений
     let task = tasks::Input {
-        msg_bus: msg_bus.clone(),
+        input,
         fn_input: config.fn_input,
         buffer_data: buffer_data.clone(),
     };
@@ -96,9 +97,9 @@ where
     );
 
     // Задача передачи сообщений в шину
-    let task = mpsc_to_msgbus::MpscToMsgBus {
+    let task = mpsc_to_msgbus_new::MpscToMsgBus {
         input: ch_rx_filter_to_msgbus,
-        msg_bus: msg_bus.clone(),
+        output,
     };
     join_set_spawn(
         &mut task_set,

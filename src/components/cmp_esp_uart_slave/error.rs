@@ -25,7 +25,7 @@ pub enum Error {
     TaskFilterIdenticalData(shared_tasks::filter_identical_data::Error),
 
     #[error("TaskMpscToMsgbus: {0}")]
-    TaskMpscToMsgbus(shared_tasks::mpsc_to_msgbus::Error),
+    TaskMpscToMsgbus(shared_tasks::mpsc_to_msgbus_new::Error),
 }
 
 impl From<Error> for ComponentError {
