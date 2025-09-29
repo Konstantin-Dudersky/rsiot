@@ -14,20 +14,13 @@ use crate::{
 
 use super::{Config, Error, tasks};
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg>(config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
     info!("Starting cmp_esp_mqtt_client");
-    main_loop(config, in_out).await?;
-    Ok(())
-}
 
-async fn main_loop<TMsg>(config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> super::Result<()>
-where
-    TMsg: MsgDataBound + 'static,
-{
-    info!("Starting MQTT");
+    let buffer_size = msg_bus.max_capacity();
 
     let url = format!("mqtt://{}:{}", config.host, config.port);
     let conf = MqttClientConfiguration {
@@ -48,7 +41,7 @@ where
 
     let (ch_rx_send, ch_tx_recv) = MqttGeneralTasks {
         msg_bus,
-        buffer_size: 100,
+        buffer_size,
         task_set: &mut task_set,
         publish: config.publish,
         subscribe: config.subscribe,
@@ -60,15 +53,6 @@ where
         error_tokio_mpsc_send: || Error::TokioSyncMpscSend,
     }
     .spawn();
-
-    // Преобразование входящих сообщений в данные для публикации MQTT
-    // let task = tasks::Input {
-    //     input: msg_bus.clone(),
-    //     output: ch_tx_input.clone(),
-    //     config_publish: config.publish,
-    //     mqtt_msg_gen: mqtt_msg_gen.clone(),
-    // };
-    // join_set_spawn(&mut task_set, "cmp_esp_mqtt_client | input", task.spawn());
 
     // Получение сообщения от MQTT-брокера
     let task = tasks::MqttRecv {
@@ -91,15 +75,6 @@ where
         "cmp_esp_mqtt_client | mqtt_send",
         task.spawn(),
     );
-
-    // let task = tasks::Output {
-    //     input: ch_rx_output,
-    //     output_send: ch_tx_input,
-    //     output_msg_bus: msg_bus,
-    //     config_subscribe: config.subscribe,
-    //     mqtt_msg_gen: mqtt_msg_gen.clone(),
-    // };
-    // join_set_spawn(&mut task_set, "cmp_esp_mqtt_client | output", task.spawn());
 
     while let Some(res) = task_set.join_next().await {
         res??

@@ -1,6 +1,6 @@
 use crate::{
     executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    message::MsgDataBound,
 };
 use async_trait::async_trait;
 
@@ -20,11 +20,8 @@ where
         config: Config<TMsg>,
         in_out: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
-        fn_process(
-            config,
-            in_out.clone_with_new_id(COMPONENT_NAME, AuthPermissions::FullAccess),
-        )
-        .await?;
+        let input = in_out.msgbus_input(COMPONENT_NAME);
+        fn_process(config, input).await?;
         Ok(())
     }
 }

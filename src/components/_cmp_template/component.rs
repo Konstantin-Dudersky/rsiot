@@ -17,8 +17,8 @@ where
     TMsg: MsgDataBound + 'static,
 {
     async fn process(&self, config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> CmpResult {
-        let in_out = msg_bus.clone_with_new_id(COMPONENT_NAME, AuthPermissions::FullAccess);
-        fn_process(config, in_out).await?;
+        let (input, output) = msg_bus.msgbus_input_output(COMPONENT_NAME);
+        fn_process(config, input, output).await?;
         Ok(())
     }
 }

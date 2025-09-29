@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use crate::{
     components_config::can_general::BufferBound,
     executor::{CmpInOut, CmpResult, Component, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    message::MsgDataBound,
 };
 
 use super::{config::Config, fn_process::fn_process};
@@ -20,8 +20,8 @@ where
     TBuffer: BufferBound + 'static,
 {
     async fn process(&self, config: Config<TMsg, TBuffer>, msg_bus: CmpInOut<TMsg>) -> CmpResult {
-        let in_out = msg_bus.clone_with_new_id(COMPONENT_NAME, AuthPermissions::FullAccess);
-        fn_process(config, in_out).await?;
+        let (input, output) = msg_bus.msgbus_input_output(COMPONENT_NAME);
+        fn_process(config, input, output).await?;
         Ok(())
     }
 }

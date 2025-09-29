@@ -1,13 +1,13 @@
 use esp_idf_svc::hal::{peripheral::Peripheral, rmt::RmtChannel};
 use ws2812_esp32_rmt_driver::Ws2812Esp32Rmt;
 
-use crate::{executor::CmpInOut, message::MsgDataBound};
+use crate::{executor::MsgBusInput, message::MsgDataBound};
 
 use super::Config;
 
 pub async fn fn_process<TMsg, TPeripheral, TRmt>(
     config: Config<TMsg, TPeripheral, TRmt>,
-    mut msg_bus: CmpInOut<TMsg>,
+    mut input: MsgBusInput<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
@@ -16,7 +16,7 @@ where
 {
     let mut ws2812 = Ws2812Esp32Rmt::new(config.rmt_channel, config.pin)?;
 
-    while let Ok(msg) = msg_bus.recv_input().await {
+    while let Ok(msg) = input.recv().await {
         let config = (config.fn_input)(&msg);
         let Some(config) = config else { continue };
 

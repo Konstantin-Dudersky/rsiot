@@ -1,14 +1,16 @@
 use async_trait::async_trait;
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 
 use crate::{
     executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    message::MsgDataBound,
 };
 
 use super::config::Config;
 #[cfg(feature = "single-thread")]
 use super::fn_process::fn_process;
+
+pub const COMPONENT_NAME: &str = "cmp_storage_esp";
 
 #[allow(unreachable_code)]
 #[cfg(not(feature = "single-thread"))]
@@ -41,8 +43,8 @@ where
         config: Config<TMsg, TStorageData>,
         in_out: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
-        let in_out = in_out.clone_with_new_id("cmp_storage_esp", AuthPermissions::FullAccess);
-        fn_process(in_out, config)
+        let (input, output) = in_out.msgbus_input_output(COMPONENT_NAME);
+        fn_process(input, output, config)
             .await
             .map_err(|err| ComponentError::Execution(err.to_string()))
     }

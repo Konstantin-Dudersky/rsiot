@@ -1,5 +1,7 @@
 use crate::{
-    components::cmp_surrealdb::RequestStartConfig, executor::CmpInOut, message::MsgDataBound,
+    components::cmp_surrealdb::RequestStartConfig,
+    executor::{MsgBusInput, MsgBusOutput},
+    message::MsgDataBound,
 };
 
 use super::{super::DbClient, shared::execute_db_query};
@@ -8,7 +10,8 @@ pub struct RequestStart<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    pub in_out: CmpInOut<TMsg>,
+    pub msgbus_input: MsgBusInput<TMsg>,
+    pub msgbus_output: MsgBusOutput<TMsg>,
     pub start_config: RequestStartConfig<TMsg>,
     pub db_client: DbClient,
 }
@@ -21,7 +24,7 @@ where
         let query = self.start_config.query;
 
         execute_db_query(
-            self.in_out.clone(),
+            &self.msgbus_output,
             &query,
             self.db_client.clone(),
             self.start_config.fn_on_success,

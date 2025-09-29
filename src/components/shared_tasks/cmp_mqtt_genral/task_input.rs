@@ -2,7 +2,7 @@ use tokio::sync::mpsc;
 
 use crate::{
     components_config::mqtt_client::{ConfigPublish, MqttMsgGen, MqttMsgSend},
-    executor::CmpInOut,
+    executor::{CmpInOut, MsgBusInput},
     message::MsgDataBound,
 };
 
@@ -10,7 +10,7 @@ pub struct Input<TMsg, TError>
 where
     TMsg: MsgDataBound,
 {
-    pub input: CmpInOut<TMsg>,
+    pub input: MsgBusInput<TMsg>,
     pub output: mpsc::Sender<MqttMsgSend>,
     pub config_publish: ConfigPublish<TMsg>,
     pub mqtt_msg_gen: MqttMsgGen,
@@ -29,7 +29,7 @@ where
             ConfigPublish::Publish { fn_publish } => fn_publish,
         };
 
-        while let Ok(msg) = self.input.recv_input().await {
+        while let Ok(msg) = self.input.recv().await {
             let Some(msg) = msg.get_custom_data() else {
                 continue;
             };

@@ -8,7 +8,7 @@ use crate::{
     components_config::mqtt_client::{
         ConfigPublish, ConfigSubscribe, MqttMsgGen, MqttMsgRecv, MqttMsgSend,
     },
-    executor::{CmpInOut, join_set_spawn},
+    executor::{CmpInOut, MsgBusInput, MsgBusOutput, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -57,7 +57,7 @@ where
 
         // Получение сообщений из шины
         let task = Input {
-            input: self.msg_bus.clone(),
+            input: self.msg_bus.input(),
             output: ch_tx_send.clone(),
             config_publish: self.publish,
             mqtt_msg_gen: self.mqtt_msg_gen.clone(),
@@ -70,7 +70,7 @@ where
         let task = Output {
             input: ch_rx_recv,
             output_send: ch_tx_send,
-            output_msg_bus: self.msg_bus.clone(),
+            output_msg_bus: self.msg_bus.output(),
             config_subscribe: self.subscribe,
             mqtt_msg_gen: self.mqtt_msg_gen.clone(),
             error_fn_subscribe: self.error_fn_subscribe,

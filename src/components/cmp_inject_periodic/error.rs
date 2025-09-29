@@ -1,11 +1,13 @@
+use super::COMPONENT_NAME;
+
 /// Ошибки компонента cmp_inject_periodic
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error("cmp_inject_periodic | TokioMpscSend: {0}")]
+    #[error("{COMPONENT_NAME} | TokioMpscSend: {0}")]
     TokioMpscSend(String),
 
-    #[error("cmp_inject_periodic | TokioTaskJoin: {0}")]
+    #[error("{COMPONENT_NAME} | TokioTaskJoin: {0}")]
     TokioTaskJoin(#[from] tokio::task::JoinError),
 }
 

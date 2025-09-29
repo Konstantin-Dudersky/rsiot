@@ -5,7 +5,7 @@ use linux_embedded_hal::gpio_cdev::{
 use tracing::trace;
 
 use crate::{
-    executor::CmpInOut,
+    executor::MsgBusOutput,
     message::{Message, MsgDataBound},
 };
 
@@ -15,7 +15,7 @@ pub struct GpioInput<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    pub msg_bus: CmpInOut<TMsg>,
+    pub msgbus_output: MsgBusOutput<TMsg>,
 
     pub config: ConfigGpioInput<TMsg>,
 }
@@ -70,8 +70,8 @@ where
     async fn send_msg(&self, value: bool) -> Result<(), Error> {
         let msg = (self.config.fn_gpio_input)(value);
         let msg = Message::new_custom(msg);
-        self.msg_bus
-            .send_output(msg)
+        self.msgbus_output
+            .send(msg)
             .await
             .map_err(|_| Error::TokioSyncMpscSend)
     }

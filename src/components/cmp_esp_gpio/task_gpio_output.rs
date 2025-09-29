@@ -1,6 +1,6 @@
 use esp_idf_svc::hal::gpio::PinDriver;
 
-use crate::{executor::CmpInOut, message::MsgDataBound};
+use crate::{executor::MsgBusInput, message::MsgDataBound};
 
 use super::{ConfigGpioOutput, Error};
 
@@ -8,7 +8,7 @@ pub struct GpioOutput<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    pub in_out: CmpInOut<TMsg>,
+    pub input: MsgBusInput<TMsg>,
     pub config_output: ConfigGpioOutput<TMsg>,
 }
 
@@ -27,7 +27,7 @@ where
             pin.set_low().map_err(Error::SetGpioOutput)?;
         }
 
-        while let Ok(msg) = self.in_out.recv_input().await {
+        while let Ok(msg) = self.input.recv().await {
             let Some(msg) = msg.get_custom_data() else {
                 continue;
             };

@@ -2,7 +2,7 @@ use tokio::sync::mpsc;
 
 use crate::{
     components_config::mqtt_client::{ConfigSubscribe, MqttMsgGen, MqttMsgRecv, MqttMsgSend},
-    executor::CmpInOut,
+    executor::{CmpInOut, MsgBusOutput},
     message::{Message, MsgDataBound},
 };
 
@@ -12,7 +12,7 @@ where
 {
     pub input: mpsc::Receiver<MqttMsgRecv>,
     pub output_send: mpsc::Sender<MqttMsgSend>,
-    pub output_msg_bus: CmpInOut<TMsg>,
+    pub output_msg_bus: MsgBusOutput<TMsg>,
     pub config_subscribe: ConfigSubscribe<TMsg>,
     pub mqtt_msg_gen: MqttMsgGen,
     pub error_fn_subscribe: fn(anyhow::Error) -> TError,
@@ -58,7 +58,7 @@ where
                     for msg in msgs {
                         let msg = Message::new_custom(msg);
                         self.output_msg_bus
-                            .send_output(msg)
+                            .send(msg)
                             .await
                             .map_err(|_| (self.error_tokio_mpsc_send)())?;
                     }

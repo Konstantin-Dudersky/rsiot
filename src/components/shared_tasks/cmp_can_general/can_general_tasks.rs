@@ -8,7 +8,7 @@ use tokio::{
 
 use crate::{
     components_config::can_general::{BufferBound, CanFrame},
-    executor::{CmpInOut, join_set_spawn},
+    executor::{CmpInOut, MsgBusInput, MsgBusOutput, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -20,7 +20,8 @@ where
     TBuffer: BufferBound,
 {
     /// Шина сообщений
-    pub msg_bus: CmpInOut<TMsg>,
+    pub input: MsgBusInput<TMsg>,
+    pub output: MsgBusOutput<TMsg>,
 
     /// Значение в буфере по умолчанию.
     ///
@@ -60,11 +61,12 @@ where
         let buffer = Arc::new(Mutex::new(self.buffer_default));
 
         let (ch_tx_send_to_can, ch_rx_send_to_can) = mpsc::channel::<CanFrame>(self.buffer_size);
-        let (ch_tx_recv_from_can, ch_rx_recv_from_can) = mpsc::channel::<CanFrame>(self.buffer_size);
+        let (ch_tx_recv_from_can, ch_rx_recv_from_can) =
+            mpsc::channel::<CanFrame>(self.buffer_size);
 
         // Получение сообщений из шины
         let task = Input {
-            input: self.msg_bus.clone(),
+            input: self.input,
             output: ch_tx_send_to_can.clone(),
             buffer: buffer.clone(),
             fn_input: self.fn_input,
@@ -84,7 +86,7 @@ where
 
         let task = Output {
             input: ch_rx_recv_from_can,
-            output: self.msg_bus.clone(),
+            output: self.output,
             fn_output: self.fn_output,
             error_task_end: self.error_task_end_output,
             error_tokio_mpsc_send: self.error_tokio_mpsc_send,

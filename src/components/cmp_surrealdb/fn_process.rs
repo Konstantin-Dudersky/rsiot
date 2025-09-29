@@ -1,18 +1,19 @@
 use std::{sync::Arc, time::Duration};
 
-use surrealdb::{engine::remote::ws::Ws, opt::auth::Root, Surreal};
+use surrealdb::{Surreal, engine::remote::ws::Ws, opt::auth::Root};
 use tokio::{sync::Mutex, task::JoinSet, time::sleep};
 use tracing::{debug, error, info};
 
 use crate::{
-    executor::{CmpInOut, ComponentError},
+    executor::{ComponentError, MsgBusInput, MsgBusOutput},
     message::MsgDataBound,
 };
 
-use super::{tasks, Config, DbClient};
+use super::{Config, DbClient, tasks};
 
 pub async fn fn_process<TMsg>(
-    input: CmpInOut<TMsg>,
+    input: MsgBusInput<TMsg>,
+    output: MsgBusOutput<TMsg>,
     config: Config<TMsg>,
 ) -> Result<(), ComponentError>
 where
@@ -20,7 +21,7 @@ where
 {
     info!("Starting Surrealdb");
     loop {
-        let result = task_main(input.clone(), &config).await;
+        let result = task_main(input.clone(), output.clone(), &config).await;
         match result {
             Ok(_) => error!("SurrealDB stop execution"),
             Err(err) => error!("SurrealDB error: {err}"),
@@ -30,7 +31,11 @@ where
     }
 }
 
-async fn task_main<TMsg>(input: CmpInOut<TMsg>, config: &Config<TMsg>) -> super::Result<()>
+async fn task_main<TMsg>(
+    input: MsgBusInput<TMsg>,
+    output: MsgBusOutput<TMsg>,
+    config: &Config<TMsg>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
@@ -41,7 +46,8 @@ where
 
     for request_start_config in &config.request_start {
         let task = tasks::RequestStart {
-            in_out: input.clone(),
+            msgbus_input: input.clone(),
+            msgbus_output: output.clone(),
             start_config: request_start_config.clone(),
             db_client: db.clone(),
         };
@@ -51,7 +57,8 @@ where
     // Запросы на основе входящих сообщений
     for request_input_config in &config.request_input {
         let task = tasks::RequestInput {
-            in_out: input.clone(),
+            msgbus_input: input.clone(),
+            msgbus_output: output.clone(),
             input_config: request_input_config.clone(),
             db_client: db.clone(),
         };

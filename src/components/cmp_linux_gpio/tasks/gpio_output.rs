@@ -1,7 +1,7 @@
 use linux_embedded_hal::gpio_cdev::{Chip, LineRequestFlags};
 use tracing::trace;
 
-use crate::{executor::CmpInOut, message::MsgDataBound};
+use crate::{executor::MsgBusInput, message::MsgDataBound};
 
 use super::{ConfigGpioOutput, Error};
 
@@ -9,7 +9,7 @@ pub struct GpioOutput<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    pub msg_bus: CmpInOut<TMsg>,
+    pub msgbus_input: MsgBusInput<TMsg>,
 
     pub config: ConfigGpioOutput<TMsg>,
 }
@@ -35,7 +35,7 @@ where
             )
             .map_err(Error::GpioSetup)?;
 
-        while let Ok(msg) = self.msg_bus.recv_input().await {
+        while let Ok(msg) = self.msgbus_input.recv().await {
             let Some(msg) = msg.get_custom_data() else {
                 continue;
             };

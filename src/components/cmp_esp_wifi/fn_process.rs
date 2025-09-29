@@ -9,14 +9,15 @@ use esp_idf_svc::{
 use tokio::time::sleep;
 use tracing::{info, warn};
 
-use crate::{
-    executor::CmpInOut,
-    message::{Message, MsgDataBound},
-};
+use crate::executor::MsgBusOutput;
+use crate::message::{Message, MsgDataBound};
 
 use super::{Config, Error};
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg>(
+    config: Config<TMsg>,
+    msgbus_out: MsgBusOutput<TMsg>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound,
 {
@@ -34,11 +35,11 @@ where
         state = match state {
             ConnectionState::PreLaunch => state_prelaunch(&mut wifi, &wifi_config).await?,
             ConnectionState::Connect => {
-                state_connect(&mut wifi, &in_out, config.fn_wifi_connected).await?
+                state_connect(&mut wifi, &msgbus_out, config.fn_wifi_connected).await?
             }
             ConnectionState::Check => state_check(&mut wifi).await?,
             ConnectionState::Disconnect => state_disconnect(&mut wifi).await?,
-            ConnectionState::OnlyAP => state_onlyap(&in_out, config.fn_wifi_connected).await?,
+            ConnectionState::OnlyAP => state_onlyap(&msgbus_out, config.fn_wifi_connected).await?,
         };
     }
 }
@@ -126,7 +127,7 @@ where
 
 async fn state_connect<T, TMsg>(
     wifi: &mut AsyncWifi<T>,
-    in_out: &CmpInOut<TMsg>,
+    msgbus_out: &MsgBusOutput<TMsg>,
     fn_wifi_status: fn(bool) -> TMsg,
 ) -> Result<ConnectionState, Error>
 where
@@ -143,7 +144,7 @@ where
     wifi.wait_netif_up().await.map_err(Error::WaitNetifUp)?;
     info!("Wifi netif up");
 
-    wifi_connected(in_out, fn_wifi_status).await?;
+    wifi_connected(msgbus_out, fn_wifi_status).await?;
 
     Ok(ConnectionState::Check)
 }
@@ -174,21 +175,21 @@ where
 }
 
 async fn state_onlyap<TMsg>(
-    in_out: &CmpInOut<TMsg>,
+    msgbus_out: &MsgBusOutput<TMsg>,
     fn_wifi_status: fn(bool) -> TMsg,
 ) -> Result<ConnectionState, Error>
 where
     TMsg: MsgDataBound,
 {
     info!("Wifi state: only AP");
-    wifi_connected(in_out, fn_wifi_status).await?;
+    wifi_connected(msgbus_out, fn_wifi_status).await?;
     loop {
         sleep(Duration::from_secs(10)).await
     }
 }
 
 async fn wifi_connected<TMsg>(
-    in_out: &CmpInOut<TMsg>,
+    msgbus_out: &MsgBusOutput<TMsg>,
     fn_wifi_status: fn(bool) -> TMsg,
 ) -> super::Result<()>
 where
@@ -197,8 +198,8 @@ where
     // Рассылаем сообщение - wifi подключен
     let msg = (fn_wifi_status)(true);
     let msg = Message::new_custom(msg);
-    in_out
-        .send_output(msg)
+    msgbus_out
+        .send(msg)
         .await
         .map_err(|_| Error::TokioSyncMpscSend)?;
 

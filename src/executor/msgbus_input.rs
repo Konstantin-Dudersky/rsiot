@@ -20,10 +20,14 @@ impl<TMsg> MsgBusInput<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    pub(crate) fn new(input: broadcast::Receiver<Message<TMsg>>, name: &str, id: Uuid) -> Self {
+    pub(crate) fn new(
+        input: broadcast::Receiver<Message<TMsg>>,
+        name: impl Into<String>,
+        id: Uuid,
+    ) -> Self {
         Self {
             input,
-            name: name.to_string(),
+            name: name.into(),
             id,
         }
     }

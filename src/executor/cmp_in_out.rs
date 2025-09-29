@@ -1,12 +1,12 @@
 use std::{cmp::max, fmt::Debug};
 
-use tracing::{info, trace, warn};
+use tracing::{error, info, trace, warn};
 use uuid::Uuid;
 
 use crate::message::{system_messages::*, *};
 
 use super::{
-    Cache, ComponentError, MsgBusInput, MsgBusOutput,
+    ComponentError, MsgBusInput, MsgBusOutput,
     types::{CmpInput, CmpOutput, FnAuth},
 };
 
@@ -18,8 +18,6 @@ where
 {
     input: CmpInput<TMsg>,
     output: CmpOutput<TMsg>,
-    /// Ссылка на кэш
-    cache: Cache<TMsg>,
     name: String,
     id: Uuid,
     auth_perm: AuthPermissions,
@@ -34,14 +32,12 @@ where
     pub fn new(
         input: CmpInput<TMsg>,
         output: CmpOutput<TMsg>,
-        cache: Cache<TMsg>,
         auth_perm: AuthPermissions,
         fn_auth: FnAuth<TMsg>,
     ) -> Self {
         Self {
             input,
             output,
-            cache,
             id: Uuid::default(),
             name: "".to_string(),
             auth_perm,
@@ -49,17 +45,54 @@ where
         }
     }
 
+    /// Инициализация шины сообщений с новым идентификатором и именем
+    pub fn init(mut self, name: &str) -> Self {
+        let id = Uuid::new_v4();
+        self.id = id;
+        self.name = name.into();
+        info!("Start: {}, id: {}", name, id);
+        self
+    }
+
+    /// Канал входящих сообщений
+    pub fn input(&self) -> MsgBusInput<TMsg> {
+        if self.name.is_empty() {
+            error!("Component name is empty");
+            panic!("Component name is empty");
+        }
+        MsgBusInput::new(self.input.resubscribe(), self.name.clone(), self.id)
+    }
+
+    /// Канал исходящих сообщений
+    pub fn output(&self) -> MsgBusOutput<TMsg> {
+        if self.name.is_empty() {
+            error!("Component name is empty");
+            panic!("Component name is empty");
+        }
+        MsgBusOutput::new(self.output.clone(), self.id)
+    }
+
+    /// Каналы входящих сообщений и исходящих сообщений
+    pub fn input_output(&self) -> (MsgBusInput<TMsg>, MsgBusOutput<TMsg>) {
+        (self.input(), self.output())
+    }
+
+    /// Возвращает максимальный размер очереди сообщений
+    pub fn max_capacity(&self) -> usize {
+        self.output.max_capacity()
+    }
+
     /// Клонировать и присвоить новый идентификатор
     ///
     /// Необходимо вызывать в начале исполнения компонента, чтобы у каждого компонента был
     /// уникальный id
+    #[deprecated]
     pub fn clone_with_new_id(self, name: &str, auth_perm: AuthPermissions) -> Self {
         let id = Uuid::new_v4();
         info!("Start: {}, id: {}, auth_perm: {:?}", name, id, auth_perm);
         Self {
             input: self.input,
             output: self.output,
-            cache: self.cache,
             name: name.into(),
             id,
             auth_perm,
@@ -68,6 +101,7 @@ where
     }
 
     /// Компонент и получает, и отправляет сообщения
+    #[deprecated]
     pub fn msgbus_input_output(self, name: &str) -> (MsgBusInput<TMsg>, MsgBusOutput<TMsg>) {
         let id = Uuid::new_v4();
         info!("Start: {}, id: {}", name, id);
@@ -78,6 +112,7 @@ where
     }
 
     /// Компонент только получает входящие сообщения
+    #[deprecated]
     pub fn msgbus_input(self, name: &str) -> MsgBusInput<TMsg> {
         let id = Uuid::new_v4();
         info!("Start: {}, id: {}", name, id);
@@ -85,6 +120,7 @@ where
     }
 
     /// Компонент только отправляет исходящие сообщения
+    #[deprecated]
     pub fn msgbus_output(self, name: &str) -> MsgBusOutput<TMsg> {
         let id = Uuid::new_v4();
         info!("Start: {}, id: {}", name, id);
@@ -92,6 +128,7 @@ where
     }
 
     /// Получение сообщений со входа
+    #[deprecated]
     pub async fn recv_input(&mut self) -> Result<Message<TMsg>, ComponentError> {
         loop {
             let msg = self.input.recv().await;
@@ -135,22 +172,8 @@ where
         }
     }
 
-    /// Возвращает копию сообщений из кеша
-    pub async fn recv_cache_all(&self) -> Vec<Message<TMsg>> {
-        let lock = self.cache.read().await;
-        lock.values()
-            .cloned()
-            .filter_map(|m| (self.fn_auth)(m, &self.auth_perm))
-            .collect()
-    }
-
-    /// Возвращает сообщение из кеша по ключу
-    pub async fn recv_cache_msg(&self, key: &str) -> Option<Message<TMsg>> {
-        let cache = self.cache.read().await;
-        cache.get(key).map(|m| m.to_owned())
-    }
-
     /// Отправка сообщений на выход
+    #[deprecated]
     pub async fn send_output(&self, msg: Message<TMsg>) -> Result<(), ComponentError> {
         trace!("Start send to output: {msg:?}");
         // Если нет авторизации, пропускаем
@@ -167,6 +190,7 @@ where
     }
 
     /// Отправка исходящих сообщений, в синхронном окружении
+    #[deprecated]
     pub fn send_output_blocking(&self, msg: Message<TMsg>) -> Result<(), ComponentError> {
         trace!("Start send to output: {msg:?}");
         // Если нет авторизации, пропускаем
@@ -181,11 +205,6 @@ where
             .blocking_send(msg)
             .map_err(|e| ComponentError::CmpOutput(e.to_string()))
     }
-
-    /// Возвращает максимальный размер очереди сообщений
-    pub fn max_capacity(&self) -> usize {
-        self.output.max_capacity()
-    }
 }
 
 impl<TMsg> Clone for CmpInOut<TMsg>
@@ -196,7 +215,6 @@ where
         Self {
             input: self.input.resubscribe(),
             output: self.output.clone(),
-            cache: self.cache.clone(),
             id: self.id,
             name: self.name.clone(),
             auth_perm: self.auth_perm,

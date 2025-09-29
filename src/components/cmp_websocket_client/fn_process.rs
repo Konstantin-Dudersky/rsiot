@@ -1,5 +1,5 @@
 use tokio::task::JoinSet;
-use tracing::{error, info, warn};
+use tracing::{info, warn};
 
 use crate::{
     components_config::websocket_general::WebsocketMessage,

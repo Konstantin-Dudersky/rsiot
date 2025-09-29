@@ -2,10 +2,12 @@ use async_trait::async_trait;
 
 use crate::{
     executor::{CmpInOut, CmpResult, Component, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    message::MsgDataBound,
 };
 
 use super::{config::Config, fn_process::fn_process};
+
+pub const COMPONENT_NAME: &str = "cmp_os_process";
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
@@ -14,8 +16,8 @@ where
     TMsg: MsgDataBound + 'static,
 {
     async fn process(&self, config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> CmpResult {
-        let in_out = msg_bus.clone_with_new_id("CMP_TEMPLATE", AuthPermissions::FullAccess);
-        fn_process(config, in_out).await?;
+        let (input, output) = msg_bus.msgbus_input_output(COMPONENT_NAME);
+        fn_process(config, input, output).await?;
         Ok(())
     }
 }

@@ -102,7 +102,6 @@ where
         let cmp_in_out = CmpInOut::new(
             component_input,
             component_output,
-            cache.clone(),
             AuthPermissions::default(),
             config.fn_auth,
         );

@@ -4,10 +4,12 @@ use rumqttc::{AsyncClient, MqttOptions};
 use tokio::task::JoinSet;
 use tracing::info;
 
-use crate::components::shared_tasks::cmp_mqtt_genral::MqttGeneralTasks;
-use crate::executor::join_set_spawn;
-use crate::serde_utils::SerdeAlg;
-use crate::{executor::CmpInOut, message::MsgDataBound};
+use crate::{
+    components::shared_tasks::cmp_mqtt_genral::MqttGeneralTasks,
+    executor::{CmpInOut, join_set_spawn},
+    message::MsgDataBound,
+    serde_utils::SerdeAlg,
+};
 
 use super::{Config, Error, config::MqttMsgGen, tasks};
 
@@ -16,6 +18,8 @@ where
     TMsg: MsgDataBound + 'static,
 {
     info!("Starting");
+
+    let buffer_size = msg_bus.max_capacity();
 
     let mut mqttoptions = MqttOptions::new(&config.client_id, &config.host, config.port);
     mqttoptions.set_keep_alive(Duration::from_secs(5));
@@ -30,7 +34,7 @@ where
 
     let (ch_rx_send, ch_tx_recv) = MqttGeneralTasks {
         msg_bus,
-        buffer_size: 100,
+        buffer_size,
         task_set: &mut task_set,
         publish: config.publish,
         subscribe: config.subscribe,

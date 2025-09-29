@@ -1,7 +1,7 @@
 use esp_idf_svc::hal::gpio::{Level, PinDriver};
 
 use crate::{
-    executor::CmpInOut,
+    executor::MsgBusOutput,
     message::{Message, MsgDataBound},
 };
 
@@ -11,7 +11,7 @@ pub struct GpioInput<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    pub in_out: CmpInOut<TMsg>,
+    pub output: MsgBusOutput<TMsg>,
     pub config_input: ConfigGpioInput<TMsg>,
 }
 
@@ -30,8 +30,8 @@ where
             let level = gpio_level_to_bool(&level);
             let msg = (self.config_input.fn_output)(level);
             let msg = Message::new_custom(msg);
-            self.in_out
-                .send_output(msg)
+            self.output
+                .send(msg)
                 .await
                 .map_err(|_| Error::TokioSyncMpscSend)?;
             pin.wait_for_any_edge()

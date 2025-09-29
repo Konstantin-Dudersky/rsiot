@@ -3,7 +3,7 @@ use std::sync::Arc;
 use tokio::sync::Mutex;
 
 use crate::{
-    components_config::http_server::GetEndpointsCollection, executor::CmpInOut,
+    components_config::http_server::GetEndpointsCollection, executor::MsgBusInput,
     message::MsgDataBound,
 };
 
@@ -11,7 +11,7 @@ pub struct UpdateGetEndpoints<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    pub input: CmpInOut<TMsg>,
+    pub input: MsgBusInput<TMsg>,
     pub get_endpoints: Arc<Mutex<GetEndpointsCollection<TMsg>>>,
 }
 
@@ -20,7 +20,7 @@ where
     TMsg: MsgDataBound,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
-        while let Ok(msg) = self.input.recv_input().await {
+        while let Ok(msg) = self.input.recv().await {
             let Some(msg) = msg.get_custom_data() else {
                 continue;
             };

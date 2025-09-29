@@ -2,14 +2,14 @@ use tracing::{trace, warn};
 
 use crate::{
     components::cmp_surrealdb::config::{FnOnFailure, FnOnSuccess},
-    executor::CmpInOut,
+    executor::MsgBusOutput,
     message::MsgDataBound,
 };
 
 use super::{super::DbClient, Error};
 
 pub async fn execute_db_query<TMsg>(
-    in_out: CmpInOut<TMsg>,
+    msgbus_output: &MsgBusOutput<TMsg>,
     query: &str,
     db_client: DbClient,
     fn_on_success: FnOnSuccess<TMsg>,
@@ -42,8 +42,8 @@ where
         }
     };
     for msg in msgs {
-        in_out
-            .send_output(msg)
+        msgbus_output
+            .send(msg)
             .await
             .map_err(|_| Error::TokioSyncMpscSend)?;
     }

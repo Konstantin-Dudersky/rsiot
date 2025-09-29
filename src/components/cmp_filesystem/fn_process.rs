@@ -2,7 +2,7 @@ use tokio::fs::{read, try_exists, write};
 use tracing::warn;
 
 use crate::{
-    executor::CmpInOut,
+    executor::{MsgBusInput, MsgBusOutput},
     message::{Message, MsgDataBound},
     serde_utils::SerdeAlg,
 };
@@ -11,7 +11,8 @@ use super::{BufferBound, CallFnOutputKind, Config, Error};
 
 pub async fn fn_process<TMsg, TBuffer>(
     config: Config<TMsg, TBuffer>,
-    mut msg_bus: CmpInOut<TMsg>,
+    mut input: MsgBusInput<TMsg>,
+    output: MsgBusOutput<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
@@ -51,9 +52,9 @@ where
         }
     };
 
-    send_messages(config.fn_output, &buffer, &msg_bus).await?;
+    send_messages(config.fn_output, &buffer, &output).await?;
 
-    while let Ok(msg) = msg_bus.recv_input().await {
+    while let Ok(msg) = input.recv().await {
         let Some(msg) = msg.get_custom_data() else {
             continue;
         };
@@ -67,7 +68,7 @@ where
             continue;
         }
         buffer = read_from_file(&config.filename, &serde_alg).await?;
-        send_messages(config.fn_output, &buffer, &msg_bus).await?;
+        send_messages(config.fn_output, &buffer, &output).await?;
     }
 
     Ok(())
@@ -100,7 +101,7 @@ where
 async fn send_messages<TMsg, TBuffer>(
     fn_output: super::config::FnOutput<TMsg, TBuffer>,
     buffer: &TBuffer,
-    msg_bus: &CmpInOut<TMsg>,
+    msgbus_output: &MsgBusOutput<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
@@ -109,8 +110,8 @@ where
     let msgs = (fn_output)(buffer);
     for msg in msgs {
         let msg = Message::new_custom(msg);
-        msg_bus
-            .send_output(msg)
+        msgbus_output
+            .send(msg)
             .await
             .map_err(|_| super::Error::TokioMpscSend)?;
     }

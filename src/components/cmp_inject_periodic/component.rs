@@ -7,6 +7,9 @@ use crate::{
 
 use super::{config::Config, fn_process::fn_process};
 
+/// Название компонента
+pub const COMPONENT_NAME: &str = "cmp_inject_periodic";
+
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
 impl<TMsg, TFnPeriodic> IComponentProcess<Config<TMsg, TFnPeriodic>, TMsg>
@@ -20,10 +23,10 @@ where
         config: Config<TMsg, TFnPeriodic>,
         in_out: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
-        fn_process(config, in_out.msgbus_output("cmp_inject_periodic")).await?;
+        fn_process(config, in_out.msgbus_output(COMPONENT_NAME)).await?;
         Ok(())
     }
 }
 
 /// Компонент cmp_inject_periodic
-pub type Cmp<TMessage, TFnPeriodic> = Component<Config<TMessage, TFnPeriodic>, TMessage>;
+pub type Cmp<TMsg, TFnPeriodic> = Component<Config<TMsg, TFnPeriodic>, TMsg>;
