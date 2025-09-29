@@ -19,9 +19,8 @@ where
     TMsg: MsgDataBound,
     TBuffer: BufferBound,
 {
-    /// Шина сообщений
-    pub input: MsgBusInput<TMsg>,
-    pub output: MsgBusOutput<TMsg>,
+    /// Подключение к шине сообщений
+    pub msgbus_linker: CmpInOut<TMsg>,
 
     /// Значение в буфере по умолчанию.
     ///
@@ -29,9 +28,6 @@ where
     ///
     /// Если буфер не используется, можно задать значение `()`.
     pub buffer_default: TBuffer,
-
-    /// Ёмкость очередей сообщений между задачами
-    pub buffer_size: usize,
 
     /// Ссылка на коллекцию задач tokio
     pub task_set: &'a mut JoinSet<Result<(), TError>>,
@@ -60,13 +56,14 @@ where
     pub fn spawn(self) -> (mpsc::Receiver<CanFrame>, mpsc::Sender<CanFrame>) {
         let buffer = Arc::new(Mutex::new(self.buffer_default));
 
-        let (ch_tx_send_to_can, ch_rx_send_to_can) = mpsc::channel::<CanFrame>(self.buffer_size);
-        let (ch_tx_recv_from_can, ch_rx_recv_from_can) =
-            mpsc::channel::<CanFrame>(self.buffer_size);
+        let buffer_size = self.msgbus_linker.max_capacity();
+
+        let (ch_tx_send_to_can, ch_rx_send_to_can) = mpsc::channel::<CanFrame>(buffer_size);
+        let (ch_tx_recv_from_can, ch_rx_recv_from_can) = mpsc::channel::<CanFrame>(buffer_size);
 
         // Получение сообщений из шины
         let task = Input {
-            input: self.input,
+            input: self.msgbus_linker.input(),
             output: ch_tx_send_to_can.clone(),
             buffer: buffer.clone(),
             fn_input: self.fn_input,
@@ -86,12 +83,14 @@ where
 
         let task = Output {
             input: ch_rx_recv_from_can,
-            output: self.output,
+            output: self.msgbus_linker.output(),
             fn_output: self.fn_output,
             error_task_end: self.error_task_end_output,
             error_tokio_mpsc_send: self.error_tokio_mpsc_send,
         };
         join_set_spawn(self.task_set, "can_general_tasks | output", task.spawn());
+
+        self.msgbus_linker.close();
 
         (ch_rx_send_to_can, ch_tx_recv_from_can)
     }

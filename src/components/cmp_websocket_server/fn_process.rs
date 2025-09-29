@@ -16,10 +16,12 @@ use tokio::{
 use tokio_tungstenite::accept_async;
 use tracing::{error, info, warn};
 
-use crate::executor::MsgBusInput;
-use crate::executor::MsgBusOutput;
-use crate::serde_utils::SerdeAlg;
-use crate::{components::shared_tasks, executor::join_set_spawn, message::MsgDataBound};
+use crate::{
+    components::shared_tasks,
+    executor::{CmpInOut, join_set_spawn},
+    message::MsgDataBound,
+    serde_utils::SerdeAlg,
+};
 
 use super::{
     ServerToClientCache,
@@ -29,8 +31,7 @@ use super::{
 };
 
 pub async fn fn_process<TMsg, TServerToClient, TClientToServer>(
-    input: MsgBusInput<TMsg>,
-    output: MsgBusOutput<TMsg>,
+    msgbus_linker: CmpInOut<TMsg>,
     config: Config<TMsg, TServerToClient, TClientToServer>,
 ) -> Result<(), Error>
 where
@@ -43,7 +44,7 @@ where
         config
     );
 
-    let result = task_main(input, output, config.clone()).await;
+    let result = task_main(msgbus_linker, config.clone()).await;
     match result {
         Ok(_) => (),
         Err(err) => error!("{:?}", err),
@@ -54,8 +55,7 @@ where
 }
 
 async fn task_main<TMsg, TServerToClient, TClientToServer>(
-    input: MsgBusInput<TMsg>,
-    output: MsgBusOutput<TMsg>,
+    msgbus_linker: CmpInOut<TMsg>,
     config: Config<TMsg, TServerToClient, TClientToServer>,
 ) -> super::Result<()>
 where
@@ -80,7 +80,7 @@ where
 
     // Пересылка входящих сообщений ----------------------------------------------------------------
     let task = shared_tasks::msgbus_to_mpsc::MsgBusToMpsc {
-        input,
+        input: msgbus_linker.input(),
         output: ch_tx_msgbus_to_mpsc,
     };
     join_set_spawn(
@@ -109,13 +109,15 @@ where
     // Исходящие сообщения в шину сообщений --------------------------------------------------------
     let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
         input: ch_rx_mpsc_to_msgbus,
-        output,
+        output: msgbus_linker.output(),
     };
     join_set_spawn(
         &mut task_set,
         "cmp_websocket_server | mpsc_to_msgbus",
         task.spawn().map_err(super::Error::SharedTaskMpscToMsgBus),
     );
+
+    msgbus_linker.close();
 
     // Слушаем порт, при получении запроса создаем новое подключение WS
     while let Ok(stream_and_addr) = listener.accept().await {

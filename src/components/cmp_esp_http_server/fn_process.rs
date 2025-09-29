@@ -12,7 +12,7 @@ use tracing::{info, trace, warn};
 
 use crate::{
     components_config::http_server::{GetEndpointsCollection, PutEndpointsCollection},
-    executor::{MsgBusInput, MsgBusOutput, join_set_spawn},
+    executor::{CmpInOut, MsgBusOutput, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -27,8 +27,7 @@ const HEADERS: [(&str, &str); 4] = [
 ];
 
 pub async fn fn_process<TMsg>(
-    mut input: MsgBusInput<TMsg>,
-    output: MsgBusOutput<TMsg>,
+    msgbus_linker: CmpInOut<TMsg>,
     config: Config<TMsg>,
 ) -> super::Result<()>
 where
@@ -43,7 +42,7 @@ where
     let put_endpoints = Arc::new(Mutex::new(put_endpoints));
 
     // Необходимо подождать, пока поднимется Wi-Fi
-    while let Ok(msg) = input.recv().await {
+    while let Ok(msg) = msgbus_linker.input().recv().await {
         let Some(msg) = msg.get_custom_data() else {
             continue;
         };
@@ -81,7 +80,7 @@ where
     let mut task_set = JoinSet::new();
 
     let task = tasks::UpdateGetEndpoints {
-        input: input.clone(),
+        input: msgbus_linker.input(),
         get_endpoints: get_endpoints.clone(),
     };
     join_set_spawn(&mut task_set, "cmp_esp_http_server", task.spawn());
@@ -110,10 +109,10 @@ where
     // Запросы PUT
     for path in put_endpoints_paths.clone() {
         let put_endpoints = put_endpoints.clone();
-        let msg_bus = output.clone();
+        let msgbus_output = msgbus_linker.output();
         server
             .fn_handler(&path, Method::Put, move |request| {
-                route_put(request, put_endpoints.clone(), msg_bus.clone())
+                route_put(request, put_endpoints.clone(), msgbus_output.clone())
             })
             .map_err(super::Error::RegisterHandler)?;
     }
@@ -121,16 +120,15 @@ where
     // Запросы POST
     for path in put_endpoints_paths {
         let put_endpoints = put_endpoints.clone();
-        let msg_bus = output.clone();
+        let msgbus_output = msgbus_linker.output();
         server
             .fn_handler(&path, Method::Post, move |request| {
-                route_put(request, put_endpoints.clone(), msg_bus.clone())
+                route_put(request, put_endpoints.clone(), msgbus_output.clone())
             })
             .map_err(super::Error::RegisterHandler)?;
     }
 
-    drop(input);
-    drop(output);
+    drop(msgbus_linker);
 
     // Ждем выполнения всех задач ------------------------------------------------------------------
     while let Some(res) = task_set.join_next().await {

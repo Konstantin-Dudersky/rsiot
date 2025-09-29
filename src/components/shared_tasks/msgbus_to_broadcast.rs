@@ -3,7 +3,7 @@
 use tokio::{sync::broadcast::Sender, time::error};
 
 use crate::{
-    executor::CmpInOut,
+    executor::{CmpInOut, MsgBusInput},
     message::{Message, MsgDataBound},
 };
 
@@ -13,9 +13,9 @@ where
     TMsg: MsgDataBound,
 {
     /// Входящий поток сообщений из входа компонента
-    pub msg_bus: CmpInOut<TMsg>,
+    pub msgbus_input: MsgBusInput<TMsg>,
 
-    /// Исходящий поток сообщений
+    /// Исходящий поток сообщенийnu
     pub output: Sender<Message<TMsg>>,
 }
 
@@ -25,7 +25,7 @@ where
 {
     /// Запуск на выполнение
     pub async fn spawn(mut self) -> Result<(), Error> {
-        while let Ok(msg) = self.msg_bus.recv_input().await {
+        while let Ok(msg) = self.msgbus_input.recv().await {
             self.output
                 .send(msg)
                 .map_err(|e| Error::TokioSyncMpsc(e.to_string()))?;

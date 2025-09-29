@@ -3,15 +3,14 @@ use tracing::info;
 
 use crate::{
     components::shared_tasks::cmp_http_client::HttpClientGeneral,
-    executor::{MsgBusInput, MsgBusOutput, join_set_spawn},
+    executor::{CmpInOut, join_set_spawn},
     message::MsgDataBound,
 };
 
 use super::{Result, config, tasks};
 
 pub async fn fn_process<TMsg>(
-    input: MsgBusInput<TMsg>,
-    output: MsgBusOutput<TMsg>,
+    msgbus_linker: CmpInOut<TMsg>,
     config: config::Config<TMsg>,
 ) -> Result<()>
 where
@@ -19,14 +18,10 @@ where
 {
     info!("Starting http-client, configuration: {:?}", config);
 
-    let buffer_size = output.max_capacity();
-
     let mut task_set = JoinSet::new();
 
     let http_client_general = HttpClientGeneral {
-        input,
-        output,
-        buffer_size,
+        msgbus_linker,
         task_set: &mut task_set,
         requests_input: config.requests_input,
         requests_periodic: config.requests_periodic,

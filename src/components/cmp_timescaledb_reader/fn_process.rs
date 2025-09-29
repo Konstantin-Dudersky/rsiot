@@ -12,7 +12,10 @@ use crate::{
 
 use super::{Config, Error, tasks};
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg>(
+    config: Config<TMsg>,
+    msgbus_linker: CmpInOut<TMsg>,
+) -> super::Result<()>
 where
     TMsg: 'static + MsgDataBound,
 {
@@ -30,7 +33,7 @@ where
 
     for item in config.items {
         let task = tasks::Read {
-            msg_bus: msg_bus.clone(),
+            msgbus_output: msgbus_linker.output(),
             database_pool: pool.clone(),
             concurrent_connections: concurrent_connections.clone(),
             time_begin: config.time_begin,
@@ -43,6 +46,8 @@ where
 
         join_set_spawn(&mut task_set, "cmp_tsdb_reader", task.spawn());
     }
+
+    msgbus_linker.close();
 
     while let Some(res) = task_set.join_next().await {
         res??;

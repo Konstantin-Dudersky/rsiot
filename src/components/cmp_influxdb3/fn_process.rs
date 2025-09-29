@@ -2,13 +2,16 @@ use tokio::{sync::mpsc, task::JoinSet};
 use tracing::info;
 
 use crate::{
-    executor::{MsgBusInput, join_set_spawn},
+    executor::{CmpInOut, join_set_spawn},
     message::MsgDataBound,
 };
 
 use super::{config::Config, error::Error, tasks};
 
-pub async fn fn_process<TMsg>(input: MsgBusInput<TMsg>, config: Config<TMsg>) -> Result<(), Error>
+pub async fn fn_process<TMsg>(
+    msgbus_linker: CmpInOut<TMsg>,
+    config: Config<TMsg>,
+) -> Result<(), Error>
 where
     TMsg: MsgDataBound + 'static,
 {
@@ -25,7 +28,7 @@ where
     let mut task_set = JoinSet::new();
 
     let task = tasks::Input {
-        input,
+        input: msgbus_linker.input(),
         output: ch_tx_input_to_database.clone(),
         fn_input: config.fn_input,
     };
@@ -47,6 +50,8 @@ where
         "cmp_influxdb3 | send_to_database",
         task.spawn(),
     );
+
+    msgbus_linker.close();
 
     while let Some(res) = task_set.join_next().await {
         res??;

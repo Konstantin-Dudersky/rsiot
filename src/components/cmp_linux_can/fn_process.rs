@@ -6,7 +6,7 @@ use tracing::{error, info};
 use crate::{
     components::shared_tasks::cmp_can_general::CanGeneralTasks,
     components_config::can_general::BufferBound,
-    executor::{MsgBusInput, MsgBusOutput, join_set_spawn},
+    executor::{CmpInOut, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -17,8 +17,7 @@ use super::{
 
 pub async fn fn_process<TMsg, TBuffer>(
     config: Config<TMsg, TBuffer>,
-    input: MsgBusInput<TMsg>,
-    output: MsgBusOutput<TMsg>,
+    msgbus_linker: CmpInOut<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: 'static + MsgDataBound,
@@ -30,10 +29,8 @@ where
     let mut task_set: JoinSet<Result<(), Error>> = JoinSet::new();
 
     let (ch_rx_send_to_can, ch_tx_recv_from_can) = CanGeneralTasks {
-        input,
-        output,
+        msgbus_linker,
         buffer_default: config.buffer_default,
-        buffer_size: 1000,
         task_set: &mut task_set,
         fn_input: config.fn_input,
         period: config.period,

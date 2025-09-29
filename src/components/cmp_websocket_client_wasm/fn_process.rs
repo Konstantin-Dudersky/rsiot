@@ -3,20 +3,19 @@ use tracing::{info, warn};
 
 use crate::{
     components_config::websocket_general::WebsocketMessage,
-    executor::{MsgBusInput, MsgBusOutput, join_set_spawn},
+    executor::{CmpInOut, join_set_spawn},
     message::MsgDataBound,
     serde_utils::SerdeAlg,
 };
 
 use super::{Config, Error, cmp_websocket_client_general::WebsocketClientGeneralTasks, tasks};
 
-pub async fn fn_process<TMessage, TServerToClient, TClientToServer>(
-    config: Config<TMessage, TServerToClient, TClientToServer>,
-    input: MsgBusInput<TMessage>,
-    output: MsgBusOutput<TMessage>,
+pub async fn fn_process<TMsg, TServerToClient, TClientToServer>(
+    config: Config<TMsg, TServerToClient, TClientToServer>,
+    msgbus_linker: CmpInOut<TMsg>,
 ) -> super::Result<()>
 where
-    TMessage: MsgDataBound + 'static,
+    TMsg: MsgDataBound + 'static,
     TServerToClient: WebsocketMessage + 'static,
     TClientToServer: WebsocketMessage + 'static,
 {
@@ -24,15 +23,11 @@ where
 
     let serde_alg = SerdeAlg::new(config.serde_alg);
 
-    let buffer_size = output.max_capacity();
-
     let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
 
     // Запуск общих задач
     let ws_general = WebsocketClientGeneralTasks {
-        input,
-        output,
-        buffer_size,
+        msgbus_linker,
         task_set: &mut task_set,
         fn_client_to_server: config.fn_client_to_server,
         fn_server_to_client: config.fn_server_to_client,

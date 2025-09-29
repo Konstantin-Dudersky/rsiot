@@ -1,13 +1,12 @@
 use tokio::task::JoinSet;
 
-use crate::executor::{MsgBusInput, MsgBusOutput, join_set_spawn};
+use crate::executor::{CmpInOut, MsgBusInput, MsgBusOutput, join_set_spawn};
 use crate::message::*;
 
 use super::{Config, DeriveItemProcess, Error};
 
 pub async fn fn_process<TMsg>(
-    input: MsgBusInput<TMsg>,
-    output: MsgBusOutput<TMsg>,
+    msgbus_linker: CmpInOut<TMsg>,
     config: Config<TMsg>,
 ) -> super::Result<()>
 where
@@ -19,12 +18,11 @@ where
         join_set_spawn(
             &mut task_set,
             "cmp_derive",
-            task_process_derive_item(input.clone(), output.clone(), item),
+            task_process_derive_item(msgbus_linker.input(), msgbus_linker.output(), item),
         );
     }
 
-    drop(input);
-    drop(output);
+    drop(msgbus_linker);
 
     while let Some(res) = task_set.join_next().await {
         res??

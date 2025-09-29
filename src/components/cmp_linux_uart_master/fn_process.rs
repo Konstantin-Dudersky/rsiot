@@ -1,8 +1,7 @@
 use tokio::task::JoinSet;
 
 use crate::{
-    components::shared_tasks::fn_process_master::FnProcessMaster,
-    executor::{MsgBusInput, MsgBusOutput},
+    components::shared_tasks::fn_process_master::FnProcessMaster, executor::CmpInOut,
     message::MsgDataBound,
 };
 
@@ -10,8 +9,7 @@ use super::{Config, uart_comm::UartComm};
 
 pub async fn fn_process<TMsg>(
     config: Config<TMsg>,
-    input: MsgBusInput<TMsg>,
-    output: MsgBusOutput<TMsg>,
+    msgbus_linker: CmpInOut<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
@@ -19,8 +17,7 @@ where
     let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
 
     let config_fn_process_master = FnProcessMaster {
-        input,
-        output,
+        msgbus_linker,
         task_set: &mut task_set,
         error_filter: super::Error::TaskFilterIdenticalData,
         error_mpsc_to_msgbus: super::Error::TaskMpscToMsgBus,

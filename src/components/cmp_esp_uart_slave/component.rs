@@ -25,10 +25,9 @@ where
     async fn process(
         &self,
         config: Config<TMsg, TUart, TPeripheral, TBufferData>,
-        msg_bus: CmpInOut<TMsg>,
+        msgbus_linker: CmpInOut<TMsg>,
     ) -> CmpResult {
-        let (input, output) = msg_bus.msgbus_input_output(COMPONENT_NAME);
-        fn_process(config, input, output).await?;
+        fn_process(config, msgbus_linker.init(COMPONENT_NAME)).await?;
         Ok(())
     }
 }

@@ -1,10 +1,14 @@
 use async_trait::async_trait;
 
-use crate::message::{AuthPermissions, MsgDataBound};
-
-use crate::executor::{CmpInOut, Component, ComponentError, IComponentProcess};
+use crate::{
+    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
+    message::MsgDataBound,
+};
 
 use super::{config::Config, fn_process::fn_process};
+
+/// Название компонента
+pub const COMPONENT_NAME: &str = "cmp_timescaledb";
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
@@ -15,13 +19,10 @@ where
     async fn process(
         &self,
         config: Config<TMsg>,
-        input: CmpInOut<TMsg>,
+        msgbus_linker: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
-        fn_process(
-            input.clone_with_new_id("cmp_timescaledb_storing", AuthPermissions::FullAccess),
-            config,
-        )
-        .await
+        fn_process(msgbus_linker.init(COMPONENT_NAME), config).await?;
+        Ok(())
     }
 }
 

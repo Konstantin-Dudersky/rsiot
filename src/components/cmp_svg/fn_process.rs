@@ -7,7 +7,7 @@ use quick_xml::{
 };
 
 use crate::{
-    executor::{MsgBusInput, MsgBusOutput},
+    executor::CmpInOut,
     message::{Message, MsgDataBound},
 };
 
@@ -15,12 +15,14 @@ use super::{Config, Error, SvgChange, SvgChangeType};
 
 pub async fn fn_process<TMsg>(
     config: Config<TMsg>,
-    mut msgbus_input: MsgBusInput<TMsg>,
-    msgbus_output: MsgBusOutput<TMsg>,
+    msgbus_linker: CmpInOut<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
 {
+    let (mut msgbus_input, msgbus_output) = msgbus_linker.input_output();
+    msgbus_linker.close();
+
     let mut svg_file = config.file.to_string();
     let msg = (config.fn_output)(svg_file.as_bytes());
     let msg = Message::new_custom(msg);

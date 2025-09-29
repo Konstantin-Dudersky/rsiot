@@ -48,7 +48,7 @@ where
 {
     fn default() -> Self {
         Self {
-            serde_alg: SerdeAlgKind::Json,
+            serde_alg: SerdeAlgKind::Unspecified,
             url: "ws://localhost:8000".into(),
             fn_client_to_server: |_| None,
             fn_server_to_client: |_| vec![],

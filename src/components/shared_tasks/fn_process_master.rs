@@ -26,11 +26,8 @@ where
     TMsg: MsgDataBound + 'static,
     TError: Send + Sync + 'static,
 {
-    /// Шина сообщений - входящие сообщения
-    pub input: MsgBusInput<TMsg>,
-
-    /// Шина сообщений - исходящие сообщения
-    pub output: MsgBusOutput<TMsg>,
+    /// Подключение к шине MsgBus
+    pub msgbus_linker: CmpInOut<TMsg>,
 
     /// Ссылка на коллекцию задач tokio
     pub task_set: &'a mut JoinSet<Result<(), TError>>,
@@ -69,7 +66,7 @@ where
         mpsc::Sender<FieldbusResponseWithIndex<TFieldbusResponse>>,
     ) {
         let devices_count = self.devices.len();
-        let buffer_size = self.output.max_capacity();
+        let buffer_size = self.msgbus_linker.max_capacity();
 
         // Создание каналов передачи данных --------------------------------------------------------
 
@@ -110,10 +107,9 @@ where
 
         // Задачи выполнения устройств -------------------------------------------------------------
         let mut input_vec = vec![];
-        for _ in 0..self.devices.len() - 1 {
-            input_vec.push(self.input.clone());
+        for _ in 0..self.devices.len() {
+            input_vec.push(self.msgbus_linker.input());
         }
-        input_vec.push(self.input);
 
         for (index, device) in self.devices.into_iter().enumerate() {
             let ch_rx_msgbus_to_devices = input_vec[index].clone();
@@ -172,13 +168,15 @@ where
         // Создаем исходящие сообщения -------------------------------------------------------------
         let task = mpsc_to_msgbus::MpscToMsgBus {
             input: ch_rx_filter_to_msgbus,
-            output: self.output,
+            output: self.msgbus_linker.output(),
         };
         join_set_spawn(
             self.task_set,
             "fn_process_master | mpsc_to_msgbus",
             task.spawn().map_err(self.error_mpsc_to_msgbus),
         );
+
+        drop(self.msgbus_linker);
 
         (ch_rx_addindex_to_fieldbus, ch_tx_fieldbus_to_split)
     }

@@ -19,10 +19,9 @@ where
     async fn process(
         &self,
         config: Config<TMsg>,
-        in_out: CmpInOut<TMsg>,
+        msgbus_linker: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
-        let output = in_out.msgbus_output(COMPONENT_NAME);
-        fn_process(config, output).await?;
+        fn_process(config, msgbus_linker.init(COMPONENT_NAME).output()).await?;
         Ok(())
     }
 }

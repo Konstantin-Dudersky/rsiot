@@ -24,6 +24,9 @@ use crate::{
     message::*,
 };
 
+/// Название компонента
+pub const COMPONENT_NAME: &str = "cmp_external_fn_process";
+
 #[cfg(feature = "single-thread")]
 type FnProcess<TMsg> =
     Box<dyn Fn(MsgBusInput<TMsg>, MsgBusOutput<TMsg>) -> LocalBoxFuture<'static, CmpResult>>;
@@ -61,9 +64,9 @@ where
     async fn process(
         &self,
         config: Config<TMsg>,
-        in_out: CmpInOut<TMsg>,
+        msgbus_linker: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
-        let (msgbus_input, msgbus_output) = in_out.msgbus_input_output("cmp_extrenal_fn_process");
+        let (msgbus_input, msgbus_output) = msgbus_linker.init(COMPONENT_NAME).input_output();
         (config.fn_process)(msgbus_input, msgbus_output).await
     }
 }

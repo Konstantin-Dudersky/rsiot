@@ -17,15 +17,14 @@ use crate::components_config::i2c_master::{self, Operation};
 use crate::components_config::master_device::{
     FieldbusRequestWithIndex, FieldbusResponseWithIndex,
 };
-use crate::executor::{MsgBusInput, MsgBusOutput};
+use crate::executor::CmpInOut;
 use crate::{executor::join_set_spawn, message::MsgDataBound};
 
 use super::{Config, ConfigBaudrate, Error};
 
 pub async fn fn_process<TMsg, TI2c, TPeripheral>(
     config: Config<TMsg, TI2c, TPeripheral>,
-    input: MsgBusInput<TMsg>,
-    output: MsgBusOutput<TMsg>,
+    msgbus_linker: CmpInOut<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
@@ -47,8 +46,7 @@ where
     let mut task_set: JoinSet<Result<(), Error>> = JoinSet::new();
 
     let config_fn_process_master = FnProcessMaster {
-        input,
-        output,
+        msgbus_linker,
         task_set: &mut task_set,
         error_filter: Error::TaskFilter,
         error_mpsc_to_msgbus: Error::TaskMpscToMsgBus,

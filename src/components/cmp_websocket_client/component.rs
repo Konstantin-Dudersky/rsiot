@@ -24,10 +24,9 @@ where
     async fn process(
         &self,
         config: Config<TMessage, TServerToClient, TClientToServer>,
-        input: CmpInOut<TMessage>,
+        msgbus_linker: CmpInOut<TMessage>,
     ) -> Result<(), ComponentError> {
-        let (input, output) = input.msgbus_input_output(COMPONENT_NAME);
-        fn_process(input, output, config).await?;
+        fn_process(msgbus_linker.init(COMPONENT_NAME), config).await?;
         Ok(())
     }
 }

@@ -2,10 +2,13 @@ use async_trait::async_trait;
 
 use crate::{
     executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    message::MsgDataBound,
 };
 
-use super::{fn_process::fn_process, Config, StoreBound};
+use super::{Config, StoreBound, fn_process::fn_process};
+
+/// Название компонента
+pub const COMPONENT_NAME: &str = "cmp_leptos";
 
 #[cfg(feature = "single-thread")]
 #[async_trait(?Send)]
@@ -20,13 +23,9 @@ where
     async fn process(
         &self,
         config: Config<TMsg, TInputStore, TOutputStore>,
-        input: CmpInOut<TMsg>,
+        msgbus_linker: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
-        fn_process(
-            config,
-            input.clone_with_new_id("cmp_leptos", AuthPermissions::FullAccess),
-        )
-        .await?;
+        fn_process(config, msgbus_linker.init(COMPONENT_NAME)).await?;
         Err(ComponentError::Execution("Stop execution".into()))
     }
 }

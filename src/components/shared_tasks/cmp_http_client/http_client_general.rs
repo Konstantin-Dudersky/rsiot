@@ -18,11 +18,8 @@ pub struct HttpClientGeneral<'a, TMsg>
 where
     TMsg: MsgDataBound,
 {
-    pub input: MsgBusInput<TMsg>,
-    pub output: MsgBusOutput<TMsg>,
-
-    /// Ёмкость очередей сообщений между задачами
-    pub buffer_size: usize,
+    /// Подключение к шине сообщений
+    pub msgbus_linker: CmpInOut<TMsg>,
 
     /// Ссылка на коллекцию задач tokio
     pub task_set: &'a mut JoinSet<super::Result<()>>,
@@ -40,12 +37,12 @@ where
 {
     /// Запуск
     pub fn spawn(self) -> (mpsc::Receiver<MsgRequest>, mpsc::Sender<MsgResponse>) {
-        let (ch_tx_requests, ch_rx_requests) = mpsc::channel(self.buffer_size);
-        let (ch_tx_reponse, ch_rx_response) = mpsc::channel(self.buffer_size);
+        let (ch_tx_requests, ch_rx_requests) = mpsc::channel(self.msgbus_linker.max_capacity());
+        let (ch_tx_reponse, ch_rx_response) = mpsc::channel(self.msgbus_linker.max_capacity());
 
         // Создание HTTP-запросов на основе входящих сообщений
         let task = tasks::Input {
-            input: self.input,
+            input: self.msgbus_linker.input(),
             output: ch_tx_requests.clone(),
             request_input_config: self.requests_input.clone(),
         };
@@ -63,11 +60,13 @@ where
         // Обработка ответов от сервера
         let task = tasks::Response {
             input: ch_rx_response,
-            output: self.output,
+            output: self.msgbus_linker.output(),
             requests_input: self.requests_input,
             requests_periodic: self.requests_periodic,
         };
         join_set_spawn(self.task_set, "cmp_http_client | response", task.spawn());
+
+        self.msgbus_linker.close();
 
         (ch_rx_requests, ch_tx_reponse)
     }

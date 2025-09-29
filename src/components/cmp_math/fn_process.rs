@@ -4,7 +4,7 @@ use tokio::{
 };
 
 use crate::{
-    executor::{MsgBusInput, MsgBusOutput, join_set_spawn},
+    executor::{CmpInOut, MsgBusInput, MsgBusOutput, join_set_spawn},
     message::{Message, MsgDataBound},
 };
 
@@ -12,8 +12,7 @@ use super::{Algs, Config, Error, IntMsgBound, Result, algs};
 
 pub async fn fn_process<TMsg, TIntMsg>(
     config: Config<TMsg, TIntMsg>,
-    input: MsgBusInput<TMsg>,
-    output: MsgBusOutput<TMsg>,
+    msgbus_linker: CmpInOut<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: 'static + MsgDataBound,
@@ -21,13 +20,13 @@ where
 {
     let mut task_set = JoinSet::new();
 
-    let buffer_size = output.max_capacity();
+    let buffer_size = msgbus_linker.max_capacity();
 
     let (ch_tx_into_alg, ch_rx_into_alg) = broadcast::channel::<TIntMsg>(buffer_size);
     let (ch_tx_from_alg, ch_rx_from_alg) = mpsc::channel::<TIntMsg>(buffer_size);
 
     let task = TaskInput {
-        input,
+        input: msgbus_linker.input(),
         output: ch_tx_into_alg.clone(),
         fn_input: config.fn_input,
     };
@@ -128,10 +127,12 @@ where
     let task = TaskOutput {
         input: ch_rx_from_alg,
         output_to_algs: ch_tx_into_alg,
-        output_to_msgbus: output,
+        output_to_msgbus: msgbus_linker.output(),
         fn_output: config.fn_output,
     };
     join_set_spawn(&mut task_set, "cmp_math | output", task.spawn());
+
+    msgbus_linker.close();
 
     while let Some(res) = task_set.join_next().await {
         res??;

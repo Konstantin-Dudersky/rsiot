@@ -9,7 +9,10 @@ const B_IN_MB: f32 = 1048576.0;
 
 const B_IN_GB: f32 = 1073741824.0;
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg>(
+    config: Config<TMsg>,
+    msgbus_linker: CmpInOut<TMsg>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound,
 {
@@ -34,6 +37,9 @@ where
             },
         );
     }
+
+    let msgbus_output = msgbus_linker.output();
+    msgbus_linker.close();
 
     loop {
         sys.refresh_all();
@@ -78,8 +84,8 @@ where
 
         let msgs = (config.fn_output)(&system_info);
         for msg in msgs {
-            in_out
-                .send_output(msg)
+            msgbus_output
+                .send(msg)
                 .await
                 .map_err(|_| Error::TokioSyncMpscSend)?;
         }

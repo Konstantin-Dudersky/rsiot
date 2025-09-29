@@ -14,7 +14,7 @@ use tokio::{
 use crate::{
     components::shared_tasks::{filter_identical_data, mpsc_to_msgbus},
     components_config::uart_general::Parity,
-    executor::{MsgBusInput, MsgBusOutput, join_set_spawn},
+    executor::{CmpInOut, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -22,8 +22,7 @@ use super::{Config, Error, tasks};
 
 pub async fn fn_process<TMsg, TUart, TPeripheral, TBufferData>(
     config: Config<TMsg, TUart, TPeripheral, TBufferData>,
-    input: MsgBusInput<TMsg>,
-    output: MsgBusOutput<TMsg>,
+    msgbus_linker: CmpInOut<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: 'static + MsgDataBound,
@@ -62,7 +61,7 @@ where
 
     // Задача обработки входящих сообщений
     let task = tasks::Input {
-        input,
+        input: msgbus_linker.input(),
         fn_input: config.fn_input,
         buffer_data: buffer_data.clone(),
     };
@@ -99,13 +98,15 @@ where
     // Задача передачи сообщений в шину
     let task = mpsc_to_msgbus::MpscToMsgBus {
         input: ch_rx_filter_to_msgbus,
-        output,
+        output: msgbus_linker.output(),
     };
     join_set_spawn(
         &mut task_set,
         "cmp_esp_uart_slave",
         task.spawn().map_err(super::Error::TaskMpscToMsgbus),
     );
+
+    drop(msgbus_linker);
 
     // Ждем выполнения задач
     while let Some(res) = task_set.join_next().await {

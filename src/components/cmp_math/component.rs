@@ -18,9 +18,12 @@ where
     TMsg: MsgDataBound + 'static,
     TIntMsg: IntMsgBound + 'static,
 {
-    async fn process(&self, config: Config<TMsg, TIntMsg>, msg_bus: CmpInOut<TMsg>) -> CmpResult {
-        let (input, output) = msg_bus.msgbus_input_output(COMPONENT_NAME);
-        fn_process(config, input, output).await?;
+    async fn process(
+        &self,
+        config: Config<TMsg, TIntMsg>,
+        msgbus_linker: CmpInOut<TMsg>,
+    ) -> CmpResult {
+        fn_process(config, msgbus_linker.init(COMPONENT_NAME)).await?;
         Ok(())
     }
 }

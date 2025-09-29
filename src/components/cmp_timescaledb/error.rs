@@ -1,3 +1,5 @@
+use crate::executor::ComponentError;
+
 #[allow(missing_docs)]
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -24,4 +26,10 @@ pub enum Error {
 
     #[error(transparent)]
     Format(#[from] time::error::Format),
+}
+
+impl From<Error> for ComponentError {
+    fn from(value: Error) -> Self {
+        ComponentError::Execution(value.to_string())
+    }
 }

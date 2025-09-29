@@ -3,7 +3,7 @@ use tracing::{info, warn};
 
 use crate::{
     components_config::websocket_general::WebsocketMessage,
-    executor::{MsgBusInput, MsgBusOutput, join_set_spawn},
+    executor::{CmpInOut, join_set_spawn},
     message::MsgDataBound,
     serde_utils::SerdeAlg,
 };
@@ -13,8 +13,7 @@ use super::{
 };
 
 pub async fn fn_process<TMsg, TServerToClient, TClientToServer>(
-    input: MsgBusInput<TMsg>,
-    output: MsgBusOutput<TMsg>,
+    msgbus_linker: CmpInOut<TMsg>,
     config: Config<TMsg, TServerToClient, TClientToServer>,
 ) -> Result<(), Error>
 where
@@ -28,13 +27,9 @@ where
 
     let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
 
-    let buffer_size = output.max_capacity();
-
     // Запуск общих задач
     let ws_general = WebsocketClientGeneralTasks {
-        input,
-        output,
-        buffer_size,
+        msgbus_linker,
         task_set: &mut task_set,
         fn_client_to_server: config.fn_client_to_server,
         fn_server_to_client: config.fn_server_to_client,
