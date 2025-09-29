@@ -78,7 +78,7 @@ where
     );
 
     // Пересылка сообщений на выход компонента
-    let task = shared_tasks::mpsc_to_msgbus_new::MpscToMsgBus {
+    let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
         input: channel_filter_to_output_recv,
         output: output.clone(),
     };

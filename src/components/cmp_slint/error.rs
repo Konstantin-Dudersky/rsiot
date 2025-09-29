@@ -14,10 +14,10 @@ pub enum Error {
     TaskInput,
 
     #[error("cmp_slint | TaskMpscToMsgBus: {0}")]
-    TaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus_new::Error),
+    TaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus::Error),
 
     #[error("cmp_slint | TaskMsgBusToMpsc: {0}")]
-    TaskMsgBusToMpsc(shared_tasks::msgbus_to_mpsc_new::Error),
+    TaskMsgBusToMpsc(shared_tasks::msgbus_to_mpsc::Error),
 
     #[error("cmp_slint | TaskOutput")]
     TaskOutput,

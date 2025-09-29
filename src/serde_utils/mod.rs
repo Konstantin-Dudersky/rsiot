@@ -22,5 +22,5 @@ mod serde_alg;
 mod serde_alg_kind;
 
 pub use error::Error;
-pub(crate) use serde_alg::SerdeAlg;
+pub use serde_alg::SerdeAlg;
 pub use serde_alg_kind::SerdeAlgKind;

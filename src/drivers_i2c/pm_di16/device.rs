@@ -2,18 +2,18 @@ use std::sync::Arc;
 
 use futures::TryFutureExt;
 use tokio::{
-    sync::{mpsc::channel, Mutex},
+    sync::{Mutex, mpsc::channel},
     task::JoinSet,
 };
 
 use crate::{
     components::shared_tasks,
     drivers_i2c::RsiotI2cDriverBase,
-    executor::{join_set_spawn, CmpInOut},
+    executor::{CmpInOut, join_set_spawn},
     message::MsgDataBound,
 };
 
-use super::{tasks, Config};
+use super::{Config, tasks};
 
 /// Модуль PM-RQ8
 pub struct Device<TMsg, TDriver>
@@ -80,7 +80,7 @@ where
         );
 
         // Отправка исходящих сообщений
-        let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
+        let task = super::super::mpsc_to_msgbus::MpscToMsgBus {
             input: ch_filter_to_msgbus_recv,
             msg_bus: self.msg_bus,
         };

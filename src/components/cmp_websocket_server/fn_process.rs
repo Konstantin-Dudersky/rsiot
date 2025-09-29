@@ -79,7 +79,7 @@ where
     let mut task_set = JoinSet::new();
 
     // Пересылка входящих сообщений ----------------------------------------------------------------
-    let task = shared_tasks::msgbus_to_mpsc_new::MsgBusToMpsc {
+    let task = shared_tasks::msgbus_to_mpsc::MsgBusToMpsc {
         input,
         output: ch_tx_msgbus_to_mpsc,
     };
@@ -107,7 +107,7 @@ where
     join_set_spawn(&mut task_set, "cmp_websocket_server | output", task.spawn());
 
     // Исходящие сообщения в шину сообщений --------------------------------------------------------
-    let task = shared_tasks::mpsc_to_msgbus_new::MpscToMsgBus {
+    let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
         input: ch_rx_mpsc_to_msgbus,
         output,
     };

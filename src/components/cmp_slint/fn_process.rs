@@ -57,7 +57,7 @@ where
     );
 
     // Передача сообщений в шину сообщений
-    let task = shared_tasks::mpsc_to_msgbus_new::MpscToMsgBus {
+    let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
         input: ch_rx_filter_to_msgbus,
         output,
     };

@@ -12,13 +12,13 @@ use tokio::{
 };
 
 use crate::{
-    components::shared_tasks::{filter_identical_data, mpsc_to_msgbus_new},
+    components::shared_tasks::{filter_identical_data, mpsc_to_msgbus},
     components_config::uart_general::Parity,
     executor::{MsgBusInput, MsgBusOutput, join_set_spawn},
     message::MsgDataBound,
 };
 
-use super::{Config, tasks};
+use super::{Config, Error, tasks};
 
 pub async fn fn_process<TMsg, TUart, TPeripheral, TBufferData>(
     config: Config<TMsg, TUart, TPeripheral, TBufferData>,
@@ -50,7 +50,7 @@ where
         Some(config.pin_rts),
         &uart_config,
     )
-    .unwrap();
+    .map_err(Error::CreateAsyncUartDriver)?;
 
     let buffer_data = config.buffer_data_default;
     let buffer_data = Arc::new(Mutex::new(buffer_data));
@@ -97,7 +97,7 @@ where
     );
 
     // Задача передачи сообщений в шину
-    let task = mpsc_to_msgbus_new::MpscToMsgBus {
+    let task = mpsc_to_msgbus::MpscToMsgBus {
         input: ch_rx_filter_to_msgbus,
         output,
     };

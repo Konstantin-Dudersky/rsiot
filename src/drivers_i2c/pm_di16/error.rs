@@ -7,7 +7,7 @@ pub enum Error {
     TaskFilterIdenticalData(shared_tasks::filter_identical_data::Error),
 
     #[error(transparent)]
-    TaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus::Error),
+    TaskMpscToMsgBus(super::super::mpsc_to_msgbus::Error),
 
     #[error(transparent)]
     Serde(#[from] postcard_serde::Error),

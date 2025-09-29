@@ -39,10 +39,10 @@ pub enum Error {
     TaskEndOutput,
 
     #[error(transparent)]
-    SharedTaskMsgBusToMpsc(shared_tasks::msgbus_to_mpsc_new::Error),
+    SharedTaskMsgBusToMpsc(shared_tasks::msgbus_to_mpsc::Error),
 
     #[error(transparent)]
-    SharedTaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus_new::Error),
+    SharedTaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus::Error),
 
     #[error(transparent)]
     Serde(#[from] serde_utils::Error),

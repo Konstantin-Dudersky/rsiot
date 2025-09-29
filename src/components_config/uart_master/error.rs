@@ -25,7 +25,7 @@ pub enum Error {
     TaskFilterIdenticalData(shared_tasks::filter_identical_data::Error),
 
     #[error(transparent)]
-    TaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus_new::Error),
+    TaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus::Error),
 
     #[error("UartRead: {0}")]
     UartRead(String),

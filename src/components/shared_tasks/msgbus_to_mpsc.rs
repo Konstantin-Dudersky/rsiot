@@ -3,18 +3,17 @@
 use tokio::{sync::mpsc::Sender, time::error};
 
 use crate::{
-    executor::CmpInOut,
+    executor::{CmpInOut, MsgBusInput},
     message::{Message, MsgDataBound},
 };
 
 /// Задача перенаправления сообщений из `CmpInOut` в  канал `mpsc`
-#[deprecated]
 pub struct MsgBusToMpsc<TMsg>
 where
     TMsg: MsgDataBound,
 {
     /// Входящий поток сообщений из входа компонента
-    pub msg_bus: CmpInOut<TMsg>,
+    pub input: MsgBusInput<TMsg>,
 
     /// Исходящий поток сообщений
     pub output: Sender<Message<TMsg>>,
@@ -26,11 +25,11 @@ where
 {
     /// Запуск на выполнение
     pub async fn spawn(mut self) -> Result<(), Error> {
-        while let Ok(msg) = self.msg_bus.recv_input().await {
+        while let Ok(msg) = self.input.recv().await {
             self.output
                 .send(msg)
                 .await
-                .map_err(|e| Error::TokioSyncMpsc(e.to_string()))?;
+                .map_err(|_| Error::TokioSyncMpscSend)?;
         }
         Ok(())
     }
@@ -39,6 +38,6 @@ where
 #[allow(missing_docs)]
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("{0}")]
-    TokioSyncMpsc(String),
+    #[error("MsgBusToMpsc | TokioSyncMpscSend")]
+    TokioSyncMpscSend,
 }

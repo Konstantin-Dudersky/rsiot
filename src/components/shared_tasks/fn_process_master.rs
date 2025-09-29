@@ -9,7 +9,7 @@ use tokio::{
 };
 
 use crate::{
-    components::{cmp_derive::Error, shared_tasks::mpsc_to_msgbus_new},
+    components::{cmp_derive::Error, shared_tasks::mpsc_to_msgbus},
     components_config::master_device::{
         self, DeviceTrait, FieldbusRequestWithIndex, FieldbusResponseWithIndex,
         RequestResponseBound,
@@ -39,7 +39,7 @@ where
     pub error_filter: fn(filter_identical_data::Error) -> TError,
 
     /// Ошибка mpsc_to_msgbus
-    pub error_mpsc_to_msgbus: fn(mpsc_to_msgbus_new::Error) -> TError,
+    pub error_mpsc_to_msgbus: fn(mpsc_to_msgbus::Error) -> TError,
 
     /// Ошибка master_device
     pub error_master_device: fn(master_device::Error) -> TError,
@@ -170,7 +170,7 @@ where
         );
 
         // Создаем исходящие сообщения -------------------------------------------------------------
-        let task = mpsc_to_msgbus_new::MpscToMsgBus {
+        let task = mpsc_to_msgbus::MpscToMsgBus {
             input: ch_rx_filter_to_msgbus,
             output: self.output,
         };

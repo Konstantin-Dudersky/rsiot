@@ -434,9 +434,9 @@ path = "./examples/cmp_mqtt_client/main_mqtt_client_subscriber.rs"
 name = "cmp_plc"
 path = "examples/cmp_plc/cmp_plc/main.rs"
 
-[[example]]
-name = "cmp_plc_minimal"
-path = "examples/cmp_plc/minimal/main.rs"
+# [[example]]
+# name = "cmp_plc_minimal"
+# path = "examples/cmp_plc/minimal/main.rs"
 
 [[example]]
 name = "config_plc_template"
