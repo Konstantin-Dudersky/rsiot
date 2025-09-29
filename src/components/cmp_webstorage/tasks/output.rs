@@ -3,16 +3,22 @@ use std::collections::HashMap;
 use gloo::storage::{LocalStorage, SessionStorage, Storage};
 use tracing::warn;
 
-use crate::message::{Message, MsgDataBound};
-
-use super::{
-    super::{config::FnOutput, ConfigStorageKind},
-    TaskInput, TaskOutput,
+use crate::{
+    executor::MsgBusOutput,
+    message::{Message, MsgDataBound},
 };
 
-pub struct Output<TMsg> {
+use super::{
+    super::{ConfigStorageKind, config::FnOutput},
+    TaskInput,
+};
+
+pub struct Output<TMsg>
+where
+    TMsg: MsgDataBound,
+{
     pub input: TaskInput<TMsg>,
-    pub output: TaskOutput<TMsg>,
+    pub output: MsgBusOutput<TMsg>,
     pub storage_kind: ConfigStorageKind,
     pub default_messages: Vec<Message<TMsg>>,
     pub fn_output: FnOutput<TMsg>,
