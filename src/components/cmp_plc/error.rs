@@ -23,7 +23,7 @@ pub enum Error {
     TokioTaskJoin(#[from] tokio::task::JoinError),
 
     #[error(transparent)]
-    ToCmpOutput(#[from] shared_tasks::mpsc_to_msgbus::Error),
+    ToCmpOutput(#[from] shared_tasks::mpsc_to_msgbus_new::Error),
 }
 
 impl From<Error> for ComponentError {

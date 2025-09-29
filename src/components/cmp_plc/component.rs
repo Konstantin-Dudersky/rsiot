@@ -3,7 +3,7 @@ use serde::Serialize;
 
 use crate::{
     executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    message::MsgDataBound,
 };
 
 use super::{
@@ -31,12 +31,10 @@ where
         config: Config<TMsg, I, Q, S>,
         in_out: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
-        fn_process(
-            in_out.clone_with_new_id(COMPONENT_NAME, AuthPermissions::FullAccess),
-            config,
-        )
-        .await
-        .map_err(|e| ComponentError::Execution(e.to_string()))
+        let (input, output) = in_out.msgbus_input_output(COMPONENT_NAME);
+        fn_process(input, output, config)
+            .await
+            .map_err(|e| ComponentError::Execution(e.to_string()))
     }
 }
 

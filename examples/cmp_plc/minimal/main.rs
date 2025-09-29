@@ -1,3 +1,5 @@
+//! Доделать или удалить
+
 #[cfg(feature = "cmp_plc")]
 mod config_plc;
 #[cfg(feature = "cmp_plc")]

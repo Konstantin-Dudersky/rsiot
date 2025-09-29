@@ -2,23 +2,25 @@ use std::sync::Arc;
 
 use futures::TryFutureExt;
 use serde::Serialize;
-use tokio::{sync::mpsc, sync::Mutex, task::JoinSet};
+use tokio::{sync::Mutex, sync::mpsc, task::JoinSet};
 use tracing::info;
 
 use crate::{
     components::shared_tasks,
-    executor::{join_set_spawn, Cache, CmpInOut},
+    executor::{Cache, MsgBusInput, MsgBusOutput, join_set_spawn},
     message::MsgDataBound,
 };
 
 use super::{
+    Error,
     config::Config,
     plc::{FunctionBlockBase, IFunctionBlock},
-    tasks, Error,
+    tasks,
 };
 
 pub async fn fn_process<TMsg, I, Q, S>(
-    in_out: CmpInOut<TMsg>,
+    input: MsgBusInput<TMsg>,
+    output: MsgBusOutput<TMsg>,
     config: Config<TMsg, I, Q, S>,
 ) -> super::Result<()>
 where
@@ -34,20 +36,20 @@ where
 
     let mut task_set = JoinSet::<super::Result<()>>::new();
 
-    let buffer_size = in_out.max_capacity();
+    let buffer_size = output.max_capacity();
     let (channel_plc_to_filter_send, channel_plc_to_filter_recv) = mpsc::channel(buffer_size);
     let (channel_filter_to_output_send, channel_filter_to_output_recv) = mpsc::channel(buffer_size);
 
     // Сохранение входных сообщений в кеше
     let task = tasks::SaveInputInCache {
-        in_out: in_out.clone(),
+        input: input.clone(),
         input_msg_cache: input_msg_cache.clone(),
     };
     join_set_spawn(&mut task_set, "cmp_plc", task.spawn());
 
     // Ожидаем данные для восстановления памяти
     let fb_main = tasks::Retention {
-        cmp_in_out: in_out.clone(),
+        input,
         config_retention: config.retention.clone(),
         fb_main: config.fb_main.clone(),
     }
@@ -76,9 +78,9 @@ where
     );
 
     // Пересылка сообщений на выход компонента
-    let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
+    let task = shared_tasks::mpsc_to_msgbus_new::MpscToMsgBus {
         input: channel_filter_to_output_recv,
-        msg_bus: in_out.clone(),
+        output: output.clone(),
     };
     join_set_spawn(
         &mut task_set,
@@ -88,7 +90,7 @@ where
 
     // Периодический экспорт состояния
     let task = tasks::ExportCurrentState {
-        in_out: in_out.clone(),
+        output,
         config_retention: config.retention,
         fb_main: fb_main.clone(),
     };

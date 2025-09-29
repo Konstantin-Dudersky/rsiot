@@ -10,7 +10,7 @@ use tokio::task::JoinSet;
 use tracing::{info, warn};
 
 use crate::{
-    executor::{join_set_spawn, sleep, CmpInOut},
+    executor::{MsgBusInput, join_set_spawn, sleep},
     message::MsgDataBound,
 };
 
@@ -27,7 +27,7 @@ where
     S: Clone + Default + Send + Serialize + 'static + Sync,
     FunctionBlockBase<I, Q, S>: IFunctionBlock<I, Q, S>,
 {
-    pub cmp_in_out: CmpInOut<TMsg>,
+    pub input: MsgBusInput<TMsg>,
     pub config_retention: Option<ConfigRetention<TMsg, I, Q, S>>,
     pub fb_main: FunctionBlockBase<I, Q, S>,
 }
@@ -50,7 +50,7 @@ where
             join_set_spawn(&mut task_set_retention, "cmp_plc", task);
 
             task_set_retention.spawn(async move {
-                while let Ok(msg) = self.cmp_in_out.recv_input().await {
+                while let Ok(msg) = self.input.recv().await {
                     let data = (config_retention.fn_import_static)(&msg);
 
                     let Ok(data) = data else {

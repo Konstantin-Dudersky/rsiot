@@ -4,7 +4,7 @@ use serde::Serialize;
 use tokio::sync::Mutex;
 
 use crate::{
-    executor::{CmpInOut, sleep},
+    executor::{MsgBusOutput, sleep},
     message::MsgDataBound,
 };
 
@@ -21,7 +21,7 @@ where
     S: Clone + Default + Send + Serialize,
     FunctionBlockBase<I, Q, S>: IFunctionBlock<I, Q, S>,
 {
-    pub in_out: CmpInOut<TMsg>,
+    pub output: MsgBusOutput<TMsg>,
     pub config_retention: Option<ConfigRetention<TMsg, I, Q, S>>,
     pub fb_main: Arc<Mutex<FunctionBlockBase<I, Q, S>>>,
 }
@@ -52,8 +52,8 @@ where
             let msgs = (config_retention.fn_export)(&input, &output, &stat);
             let Some(msgs) = msgs else { continue };
             for msg in msgs {
-                self.in_out
-                    .send_output(msg)
+                self.output
+                    .send(msg)
                     .await
                     .map_err(|_| super::Error::TokioSyncMpscSend)?;
             }
