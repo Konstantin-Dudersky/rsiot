@@ -25,11 +25,15 @@ where
     async fn process(
         &self,
         mut config: Config<TMsg>,
-        in_out: CmpInOut<TMsg>,
+        msg_bus: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
+        let output = msg_bus.output();
+
+        drop(msg_bus);
+
         while let Ok(msg) = config.channel.recv().await {
-            in_out
-                .send_output(msg)
+            output
+                .send(msg)
                 .await
                 .map_err(|err| ComponentError::Execution(err.to_string()))?;
         }
