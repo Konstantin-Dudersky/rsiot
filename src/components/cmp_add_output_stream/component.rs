@@ -8,7 +8,7 @@ use crate::{
 use super::{Config, Error};
 
 /// Название компонента
-pub const COMPONENT_NAME: &str = "cmp_add_output_stream";
+pub const CMP_NAME: &str = "cmp_add_output_stream";
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
@@ -21,7 +21,8 @@ where
         config: Config<TMsg>,
         msg_bus: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
-        let mut input = msg_bus.msgbus_input(COMPONENT_NAME);
+        let mut input = msg_bus.init(CMP_NAME).input();
+
         while let Ok(msg) = input.recv().await {
             config
                 .channel

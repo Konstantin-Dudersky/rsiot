@@ -1,10 +1,10 @@
-use super::COMPONENT_NAME;
+use super::CMP_NAME;
 
 /// Ошибки компонента cmp_add_output_stream
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error("{COMPONENT_NAME} | TokioSyncMpscSend")]
+    #[error("{CMP_NAME} | TokioSyncMpscSend")]
     TokioSyncMpscSend,
 }
 
