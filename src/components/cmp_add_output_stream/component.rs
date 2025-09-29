@@ -19,9 +19,9 @@ where
     async fn process(
         &self,
         config: Config<TMsg>,
-        in_out: CmpInOut<TMsg>,
+        msg_bus: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
-        let mut input = in_out.msgbus_input(COMPONENT_NAME);
+        let mut input = msg_bus.msgbus_input(COMPONENT_NAME);
         while let Ok(msg) = input.recv().await {
             config
                 .channel

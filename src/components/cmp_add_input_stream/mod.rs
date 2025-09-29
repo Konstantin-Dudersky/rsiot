@@ -8,6 +8,9 @@ use crate::{
     message::*,
 };
 
+/// Название компонента
+pub const CMP_NAME: &str = "cmp_add_input_stream";
+
 /// Настройки компонента cmp_add_input_stream
 #[derive(Debug)]
 pub struct Config<TMessage> {
@@ -27,9 +30,7 @@ where
         mut config: Config<TMsg>,
         msg_bus: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
-        let output = msg_bus.output();
-
-        drop(msg_bus);
+        let output = msg_bus.init(CMP_NAME).output();
 
         while let Ok(msg) = config.channel.recv().await {
             output
