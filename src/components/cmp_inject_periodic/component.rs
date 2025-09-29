@@ -21,9 +21,10 @@ where
     async fn process(
         &self,
         config: Config<TMsg, TFnPeriodic>,
-        in_out: CmpInOut<TMsg>,
+        msg_bus: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
-        fn_process(config, in_out.msgbus_output(COMPONENT_NAME)).await?;
+        let msg_bus = msg_bus.init(COMPONENT_NAME);
+        fn_process(config, msg_bus).await?;
         Ok(())
     }
 }

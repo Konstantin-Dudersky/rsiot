@@ -1,7 +1,7 @@
 use tokio::{task::JoinSet, time::Duration};
 
 use crate::{
-    executor::{Instant, MsgBusOutput, join_set_spawn, sleep},
+    executor::{CmpInOut, Instant, MsgBusOutput, join_set_spawn, sleep},
     message::{Message, MsgDataBound},
 };
 
@@ -9,7 +9,7 @@ use super::{Config, Error};
 
 pub async fn fn_process<TMsg, TFnPeriodic>(
     config: Config<TMsg, TFnPeriodic>,
-    msgbus_output: MsgBusOutput<TMsg>,
+    msg_bus: CmpInOut<TMsg>,
 ) -> Result<(), Error>
 where
     TMsg: 'static + MsgDataBound,
@@ -19,9 +19,11 @@ where
 
     let task = TaskInjectPeriodic {
         config,
-        msgbus_output,
+        msgbus_output: msg_bus.output(),
     };
     join_set_spawn(&mut task_set, "cmp_inject_periodic", task.spawn());
+
+    drop(msg_bus);
 
     while let Some(res) = task_set.join_next().await {
         res??;
