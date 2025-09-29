@@ -18,7 +18,7 @@ use crate::{
     message::{Message, MsgDataBound},
 };
 
-use super::{filter_identical_data, mpsc_to_msgbus, msgbus_to_broadcast};
+use super::{filter_identical_data, msgbus_to_broadcast};
 
 /// Запуск задач, общих для всех компонентов, выполняющих опрос устройств по шине
 pub struct FnProcessMaster<'a, TMsg, TError, TFieldbusRequest, TFieldbusResponse>

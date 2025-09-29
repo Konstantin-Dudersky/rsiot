@@ -3,11 +3,12 @@ use async_trait::async_trait;
 use tracing::error;
 
 use crate::{
+    components::cmp_logger::COMPONENT_NAME,
     executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    message::MsgDataBound,
 };
 
-use super::{fn_process::fn_process, Config};
+use super::{Config, fn_process::fn_process};
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
@@ -20,11 +21,8 @@ where
         config: Config<TMsg>,
         in_out: CmpInOut<TMsg>,
     ) -> Result<(), ComponentError> {
-        fn_process(
-            in_out.clone_with_new_id("cmp_influxdb", AuthPermissions::FullAccess),
-            config,
-        )
-        .await?;
+        let input = in_out.msgbus_input(COMPONENT_NAME);
+        fn_process(input, config).await?;
         error!("Influxdb client component end execution");
         Ok(())
     }

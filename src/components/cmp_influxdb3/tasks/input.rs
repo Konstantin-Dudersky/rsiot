@@ -1,17 +1,14 @@
 use tokio::sync::mpsc;
 
-use crate::{
-    components_config::influxdb3::FnInput,
-    message::{Message, MsgDataBound},
-};
+use crate::{components_config::influxdb3::FnInput, executor::MsgBusInput, message::MsgDataBound};
 
-use super::{send_to_database_message::SendToDatabaseMessage, Error, Result};
+use super::{Error, Result, send_to_database_message::SendToDatabaseMessage};
 
 pub struct Input<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    pub input: mpsc::Receiver<Message<TMsg>>,
+    pub input: MsgBusInput<TMsg>,
     pub output: mpsc::Sender<SendToDatabaseMessage>,
     pub fn_input: FnInput<TMsg>,
 }
@@ -21,7 +18,7 @@ where
     TMsg: MsgDataBound,
 {
     pub async fn spawn(mut self) -> Result<()> {
-        while let Some(msg) = self.input.recv().await {
+        while let Ok(msg) = self.input.recv().await {
             let items = (self.fn_input)(&msg);
             let Some(items) = items else { continue };
             for item in items {
