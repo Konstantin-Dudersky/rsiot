@@ -1,16 +1,15 @@
 use slint::ComponentHandle;
-use tokio::sync::mpsc;
 
-use crate::message::{Message, MsgDataBound};
+use crate::{executor::MsgBusInput, message::MsgDataBound};
 
-use super::super::{config::FnInput, Error, Result, SlintWindow};
+use super::super::{Error, Result, SlintWindow, config::FnInput};
 
 pub struct Input<TMsg, TMainWindow>
 where
     TMsg: MsgDataBound,
     TMainWindow: ComponentHandle,
 {
-    pub input: mpsc::Receiver<Message<TMsg>>,
+    pub input: MsgBusInput<TMsg>,
     pub slint_window: SlintWindow<TMainWindow>,
     pub fn_input: FnInput<TMsg, TMainWindow>,
 }
@@ -21,7 +20,7 @@ where
     TMainWindow: 'static + ComponentHandle,
 {
     pub async fn spawn(mut self) -> Result<()> {
-        while let Some(msg) = self.input.recv().await {
+        while let Ok(msg) = self.input.recv().await {
             let Some(msg) = msg.get_custom_data() else {
                 continue;
             };

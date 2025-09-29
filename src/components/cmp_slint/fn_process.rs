@@ -6,7 +6,7 @@ use tokio::{sync::mpsc, task::JoinSet};
 
 use crate::{
     components::shared_tasks,
-    executor::{CmpInOut, join_set_spawn},
+    executor::{MsgBusInput, MsgBusOutput, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -14,32 +14,23 @@ use super::{Config, Error, Result, tasks};
 
 pub async fn fn_process<TMainWindow, TMsg>(
     config: Config<TMsg, TMainWindow>,
-    msg_bus: CmpInOut<TMsg>,
+    input: MsgBusInput<TMsg>,
+    output: MsgBusOutput<TMsg>,
 ) -> Result<()>
 where
     TMsg: MsgDataBound + 'static,
     TMainWindow: ComponentHandle + 'static,
 {
-    let (ch_tx_msgbus_to_input, ch_rx_msgbus_to_input) = mpsc::channel(1000);
-    let (ch_tx_output_to_filter, ch_rx_output_to_filter) = mpsc::channel(1000);
-    let (ch_tx_filter_to_msgbus, ch_rx_filter_to_msgbus) = mpsc::channel(1000);
+    let buffer_size = output.max_capacity();
+
+    let (ch_tx_output_to_filter, ch_rx_output_to_filter) = mpsc::channel(buffer_size);
+    let (ch_tx_filter_to_msgbus, ch_rx_filter_to_msgbus) = mpsc::channel(buffer_size);
 
     let mut task_set = JoinSet::new();
 
-    // Перенаправление входящих сообщений
-    let task = shared_tasks::msgbus_to_mpsc::MsgBusToMpsc {
-        msg_bus: msg_bus.clone(),
-        output: ch_tx_msgbus_to_input,
-    };
-    join_set_spawn(
-        &mut task_set,
-        "cmp_slint | msgbus_to_mpsc",
-        task.spawn().map_err(Error::TaskMsgBusToMpsc),
-    );
-
     // Обработка входящих сообщений и изменение данных в приложении Slint
     let task = tasks::Input {
-        input: ch_rx_msgbus_to_input,
+        input,
         slint_window: config.slint_window.clone(),
         fn_input: config.fn_input,
     };
@@ -66,9 +57,9 @@ where
     );
 
     // Передача сообщений в шину сообщений
-    let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
+    let task = shared_tasks::mpsc_to_msgbus_new::MpscToMsgBus {
         input: ch_rx_filter_to_msgbus,
-        msg_bus: msg_bus.clone(),
+        output,
     };
     join_set_spawn(
         &mut task_set,
