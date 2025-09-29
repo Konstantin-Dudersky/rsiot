@@ -17,8 +17,8 @@ where
     TMsg: MsgDataBound + 'static,
 {
     async fn process(&self, config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> CmpResult {
-        let (input, output) = msg_bus.msgbus_input_output(COMPONENT_NAME);
-        fn_process(config, input, output).await?;
+        let msg_bus = msg_bus.init(COMPONENT_NAME);
+        fn_process(config, msg_bus).await?;
         Ok(())
     }
 }
