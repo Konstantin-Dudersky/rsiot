@@ -6,7 +6,7 @@ use tracing::{error, info};
 use crate::{
     components::shared_tasks::cmp_can_general::CanGeneralTasks,
     components_config::can_general::BufferBound,
-    executor::{CmpInOut, join_set_spawn},
+    executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -17,7 +17,7 @@ use super::{
 
 pub async fn fn_process<TMsg, TBuffer>(
     config: Config<TMsg, TBuffer>,
-    msgbus_linker: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: 'static + MsgDataBound,

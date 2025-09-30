@@ -12,7 +12,7 @@ use tracing::{info, trace, warn};
 
 use crate::{
     components_config::http_server::{GetEndpointsCollection, PutEndpointsCollection},
-    executor::{CmpInOut, MsgBusOutput, join_set_spawn},
+    executor::{MsgBusLinker, MsgBusOutput, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -27,7 +27,7 @@ const HEADERS: [(&str, &str); 4] = [
 ];
 
 pub async fn fn_process<TMsg>(
-    msgbus_linker: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
     config: Config<TMsg>,
 ) -> super::Result<()>
 where

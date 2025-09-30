@@ -6,7 +6,7 @@ use serde::{Serialize, de::DeserializeOwned};
 use tracing::{debug, info, warn};
 
 use crate::{
-    executor::{MsgBusInput, MsgBusOutput},
+    executor::{MsgBusInput, MsgBusLinker, MsgBusOutput},
     message::MsgDataBound,
 };
 
@@ -15,8 +15,7 @@ use super::{config::Config, error::Error};
 type Result<T> = std::result::Result<T, Error>;
 
 pub async fn fn_process<TMsg, TStorageData>(
-    input: MsgBusInput<TMsg>,
-    output: MsgBusOutput<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
     config: Config<TMsg, TStorageData>,
 ) -> std::result::Result<(), Error>
 where
@@ -39,13 +38,17 @@ where
     let data = load_data(&mut nvs)?;
     let msgs = (config.fn_output)(&data);
     for msg in msgs {
-        output
+        msgbus_linker
+            .output()
             .send(msg)
             .await
             .map_err(|e| Error::SendChannel(e.to_string()))?;
     }
 
-    task_input(input, output, config, nvs, data).await?;
+    let (msgbus_input, msgbus_output) = msgbus_linker.input_output();
+    msgbus_linker.close();
+
+    task_input(msgbus_input, msgbus_output, config, nvs, data).await?;
     Ok(())
 }
 

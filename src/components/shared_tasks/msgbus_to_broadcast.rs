@@ -1,13 +1,13 @@
-//! Задача перенаправления сообщений из `CmpInOut` в  канал `broadcast`
+//! Задача перенаправления сообщений из `MsgBusLinker` в  канал `broadcast`
 
 use tokio::{sync::broadcast::Sender, time::error};
 
 use crate::{
-    executor::{CmpInOut, MsgBusInput},
+    executor::{MsgBusLinker, MsgBusInput},
     message::{Message, MsgDataBound},
 };
 
-/// Задача перенаправления сообщений из `CmpInOut` в  канал `broadcast`
+/// Задача перенаправления сообщений из `MsgBusLinker` в  канал `broadcast`
 pub struct MsgBusToBroadcast<TMsg>
 where
     TMsg: MsgDataBound,

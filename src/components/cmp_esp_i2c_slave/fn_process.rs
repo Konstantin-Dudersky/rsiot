@@ -14,7 +14,7 @@ use tracing::debug;
 
 use crate::{
     components::{cmp_esp_i2c_slave::tasks, shared_tasks},
-    executor::{MsgBusInput, MsgBusOutput, join_set_spawn},
+    executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -25,8 +25,7 @@ const BUFFER_LEN: usize = 128;
 
 pub async fn fn_process<TMsg, TI2c, TPeripheral, TI2cRequest, TI2cResponse, TBufferData>(
     config: Config<TMsg, TI2c, TPeripheral, TI2cRequest, TI2cResponse, TBufferData>,
-    input: MsgBusInput<TMsg>,
-    output: MsgBusOutput<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
@@ -54,7 +53,7 @@ where
 
     debug!("I2c slave drive initialized");
 
-    let buffer_size = output.max_capacity();
+    let buffer_size = msgbus_linker.max_capacity();
     let (channel_buffer_to_filter_send, channel_buffer_to_filter_recv) = mpsc::channel(buffer_size);
     let (channel_filter_to_output_send, channel_filter_to_output_recv) = mpsc::channel(buffer_size);
 
@@ -71,7 +70,7 @@ where
 
     // Задача обработки входящих сообщений
     let task = tasks::Input {
-        input,
+        input: msgbus_linker.input(),
         fn_input: config.fn_input,
         buffer_data: buffer_data.clone(),
     };
@@ -100,13 +99,15 @@ where
     // Пересылка сообщений на выход компонента
     let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
         input: channel_filter_to_output_recv,
-        output,
+        output: msgbus_linker.output(),
     };
     join_set_spawn(
         &mut task_set,
         "cmp_esp_i2c_slave",
         task.spawn().map_err(Error::TaskToMsgBus),
     );
+
+    msgbus_linker.close();
 
     while let Some(res) = task_set.join_next().await {
         res??;

@@ -5,7 +5,7 @@ use tokio::{sync::mpsc, task::JoinSet};
 use tracing::debug;
 
 use crate::{
-    executor::{CmpInOut, MsgBusInput, MsgBusOutput, join_set_spawn},
+    executor::{MsgBusInput, MsgBusLinker, MsgBusOutput, join_set_spawn},
     message::{system_messages::*, *},
 };
 
@@ -16,7 +16,7 @@ use super::{
 
 pub async fn fn_process<TMsg, TInputStore, TOutputStore>(
     config: Config<TMsg, TInputStore, TOutputStore>,
-    msgbus_linker: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
 ) -> Result
 where
     TMsg: MsgDataBound + 'static,

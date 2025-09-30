@@ -4,7 +4,7 @@ use rppal::gpio::{Gpio, InputPin, Level, OutputPin};
 use tokio::{task::JoinSet, time::sleep};
 
 use crate::{
-    executor::CmpInOut,
+    executor::MsgBusLinker,
     message::{Message, MsgDataBound},
 };
 
@@ -12,7 +12,7 @@ use super::{Config, Error, PullMode};
 
 const INPUT_READ_DELAY: Duration = Duration::from_millis(100);
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg>(config: Config<TMsg>, in_out: MsgBusLinker<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
@@ -53,7 +53,7 @@ where
 async fn input_pin<TMsg>(
     pin: InputPin,
     fn_output: fn(bool) -> Message<TMsg>,
-    in_out: CmpInOut<TMsg>,
+    in_out: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
@@ -92,7 +92,7 @@ where
 async fn output_pin<TMsg>(
     mut pin: OutputPin,
     fn_input: fn(Message<TMsg>) -> Option<bool>,
-    mut in_out: CmpInOut<TMsg>,
+    mut in_out: MsgBusLinker<TMsg>,
     is_low_triggered: bool,
 ) -> super::Result<()>
 where

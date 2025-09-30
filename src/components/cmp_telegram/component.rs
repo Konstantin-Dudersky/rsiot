@@ -1,11 +1,13 @@
 use async_trait::async_trait;
 
 use crate::{
-    executor::{CmpInOut, CmpResult, Component, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    executor::{CmpResult, Component, IComponentProcess, MsgBusLinker},
+    message::MsgDataBound,
 };
 
 use super::{config::Config, fn_process::fn_process};
+
+pub const COMPONENT_NAME: &str = "cmp_telegram";
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
@@ -13,9 +15,8 @@ impl<TMsg> IComponentProcess<Config<TMsg>, TMsg> for Component<Config<TMsg>, TMs
 where
     TMsg: MsgDataBound + 'static,
 {
-    async fn process(&self, config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> CmpResult {
-        let in_out = in_out.clone_with_new_id("cmp_telegram", AuthPermissions::FullAccess);
-        fn_process(config, in_out).await?;
+    async fn process(&self, config: Config<TMsg>, msgbus_linker: MsgBusLinker<TMsg>) -> CmpResult {
+        fn_process(config, msgbus_linker.init(COMPONENT_NAME)).await?;
         Ok(())
     }
 }

@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
 use crate::{
-    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
+    executor::{Component, ComponentError, IComponentProcess, MsgBusLinker},
     message::MsgDataBound,
 };
 
@@ -19,10 +19,9 @@ where
     async fn process(
         &self,
         config: super::Config<TMsg>,
-        input: CmpInOut<TMsg>,
+        msgbus_linker: MsgBusLinker<TMsg>,
     ) -> Result<(), ComponentError> {
-        let (input, output) = input.msgbus_input_output(COMPONENT_NAME);
-        fn_process(input, output, config.clone()).await?;
+        fn_process(msgbus_linker.init(COMPONENT_NAME), config.clone()).await?;
         Ok(())
     }
 }

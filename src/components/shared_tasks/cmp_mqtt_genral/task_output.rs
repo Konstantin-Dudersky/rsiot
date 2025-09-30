@@ -2,7 +2,7 @@ use tokio::sync::mpsc;
 
 use crate::{
     components_config::mqtt_client::{ConfigSubscribe, MqttMsgGen, MqttMsgRecv, MqttMsgSend},
-    executor::{CmpInOut, MsgBusOutput},
+    executor::{MsgBusLinker, MsgBusOutput},
     message::{Message, MsgDataBound},
 };
 

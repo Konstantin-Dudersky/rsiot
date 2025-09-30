@@ -3,14 +3,14 @@ use std::sync::Arc;
 use tokio::{sync::Mutex, task::JoinSet};
 use tracing::warn;
 
-use crate::{executor::CmpInOut, message::MsgDataBound};
+use crate::{executor::MsgBusLinker, message::MsgDataBound};
 
 use super::{
     super::{I2cSlaveAddress, RsiotI2cDriverBase},
+    PCF8575PinMode, TPinFnOutput,
     state::State,
     task_read_inputs::TaskReadInputs,
     task_write_output::TaskWriteOutput,
-    PCF8575PinMode, TPinFnOutput,
 };
 
 pub struct PCF8575<TMsg>
@@ -27,7 +27,7 @@ where
 {
     pub async fn fn_process(
         &self,
-        in_out: CmpInOut<TMsg>,
+        in_out: MsgBusLinker<TMsg>,
         driver: Arc<Mutex<impl RsiotI2cDriverBase + 'static>>,
     ) {
         loop {

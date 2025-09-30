@@ -12,7 +12,7 @@ use super::{
 
 /// Подключение компонента к внутренней шине сообщений исполнителя
 #[derive(Debug)]
-pub struct CmpInOut<TMsg>
+pub struct MsgBusLinker<TMsg>
 where
     TMsg: MsgDataBound,
 {
@@ -24,7 +24,7 @@ where
     fn_auth: FnAuth<TMsg>,
 }
 
-impl<TMsg> CmpInOut<TMsg>
+impl<TMsg> MsgBusLinker<TMsg>
 where
     TMsg: MsgDataBound,
 {
@@ -85,50 +85,50 @@ where
     /// Закрыть подключение
     pub fn close(self) {}
 
-    /// Клонировать и присвоить новый идентификатор
-    ///
-    /// Необходимо вызывать в начале исполнения компонента, чтобы у каждого компонента был
-    /// уникальный id
-    #[deprecated]
-    pub fn clone_with_new_id(self, name: &str, auth_perm: AuthPermissions) -> Self {
-        let id = Uuid::new_v4();
-        info!("Start: {}, id: {}, auth_perm: {:?}", name, id, auth_perm);
-        Self {
-            input: self.input,
-            output: self.output,
-            name: name.into(),
-            id,
-            auth_perm,
-            fn_auth: self.fn_auth,
-        }
-    }
+    // Клонировать и присвоить новый идентификатор
+    //
+    // Необходимо вызывать в начале исполнения компонента, чтобы у каждого компонента был
+    // уникальный id
+    // #[deprecated]
+    // pub fn clone_with_new_id(self, name: &str, auth_perm: AuthPermissions) -> Self {
+    //     let id = Uuid::new_v4();
+    //     info!("Start: {}, id: {}, auth_perm: {:?}", name, id, auth_perm);
+    //     Self {
+    //         input: self.input,
+    //         output: self.output,
+    //         name: name.into(),
+    //         id,
+    //         auth_perm,
+    //         fn_auth: self.fn_auth,
+    //     }
+    // }
 
-    /// Компонент и получает, и отправляет сообщения
-    #[deprecated]
-    pub fn msgbus_input_output(self, name: &str) -> (MsgBusInput<TMsg>, MsgBusOutput<TMsg>) {
-        let id = Uuid::new_v4();
-        info!("Start: {}, id: {}", name, id);
+    // /// Компонент и получает, и отправляет сообщения
+    // #[deprecated]
+    // pub fn msgbus_input_output(self, name: &str) -> (MsgBusInput<TMsg>, MsgBusOutput<TMsg>) {
+    //     let id = Uuid::new_v4();
+    //     info!("Start: {}, id: {}", name, id);
 
-        let input = MsgBusInput::new(self.input, name, id);
-        let output = MsgBusOutput::new(self.output, id);
-        (input, output)
-    }
+    //     let input = MsgBusInput::new(self.input, name, id);
+    //     let output = MsgBusOutput::new(self.output, id);
+    //     (input, output)
+    // }
 
-    /// Компонент только получает входящие сообщения
-    #[deprecated]
-    pub fn msgbus_input(self, name: &str) -> MsgBusInput<TMsg> {
-        let id = Uuid::new_v4();
-        info!("Start: {}, id: {}", name, id);
-        MsgBusInput::new(self.input, name, id)
-    }
+    // /// Компонент только получает входящие сообщения
+    // #[deprecated]
+    // pub fn msgbus_input(self, name: &str) -> MsgBusInput<TMsg> {
+    //     let id = Uuid::new_v4();
+    //     info!("Start: {}, id: {}", name, id);
+    //     MsgBusInput::new(self.input, name, id)
+    // }
 
-    /// Компонент только отправляет исходящие сообщения
-    #[deprecated]
-    pub fn msgbus_output(self, name: &str) -> MsgBusOutput<TMsg> {
-        let id = Uuid::new_v4();
-        info!("Start: {}, id: {}", name, id);
-        MsgBusOutput::new(self.output, id)
-    }
+    // /// Компонент только отправляет исходящие сообщения
+    // #[deprecated]
+    // pub fn msgbus_output(self, name: &str) -> MsgBusOutput<TMsg> {
+    //     let id = Uuid::new_v4();
+    //     info!("Start: {}, id: {}", name, id);
+    //     MsgBusOutput::new(self.output, id)
+    // }
 
     /// Получение сообщений со входа
     #[deprecated]
@@ -210,7 +210,7 @@ where
     }
 }
 
-impl<TMsg> Clone for CmpInOut<TMsg>
+impl<TMsg> Clone for MsgBusLinker<TMsg>
 where
     TMsg: MsgDataBound,
 {

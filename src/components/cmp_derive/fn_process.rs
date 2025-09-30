@@ -1,12 +1,12 @@
 use tokio::task::JoinSet;
 
-use crate::executor::{CmpInOut, MsgBusInput, MsgBusOutput, join_set_spawn};
+use crate::executor::{MsgBusLinker, MsgBusInput, MsgBusOutput, join_set_spawn};
 use crate::message::*;
 
 use super::{Config, DeriveItemProcess, Error};
 
 pub async fn fn_process<TMsg>(
-    msgbus_linker: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
     config: Config<TMsg>,
 ) -> super::Result<()>
 where

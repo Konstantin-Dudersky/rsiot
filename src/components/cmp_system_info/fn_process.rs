@@ -1,7 +1,7 @@
 use sysinfo::{Components, Disks, Networks, System};
 use tokio::time::sleep;
 
-use crate::{executor::CmpInOut, message::MsgDataBound};
+use crate::{executor::MsgBusLinker, message::MsgDataBound};
 
 use super::{Config, Error, SystemInfo, SystemInfoDisk, SystemInfoNetwork};
 
@@ -11,7 +11,7 @@ const B_IN_GB: f32 = 1073741824.0;
 
 pub async fn fn_process<TMsg>(
     config: Config<TMsg>,
-    msgbus_linker: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,

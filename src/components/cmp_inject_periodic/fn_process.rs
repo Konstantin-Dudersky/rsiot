@@ -1,7 +1,7 @@
 use tokio::{task::JoinSet, time::Duration};
 
 use crate::{
-    executor::{CmpInOut, Instant, MsgBusOutput, join_set_spawn, sleep},
+    executor::{MsgBusLinker, Instant, MsgBusOutput, join_set_spawn, sleep},
     message::{Message, MsgDataBound},
 };
 
@@ -9,7 +9,7 @@ use super::{Config, Error};
 
 pub async fn fn_process<TMsg, TFnPeriodic>(
     config: Config<TMsg, TFnPeriodic>,
-    msg_bus: CmpInOut<TMsg>,
+    msg_bus: MsgBusLinker<TMsg>,
 ) -> Result<(), Error>
 where
     TMsg: 'static + MsgDataBound,

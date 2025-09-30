@@ -13,7 +13,7 @@ use crate::{
         master_device::{FieldbusRequestWithIndex, FieldbusResponseWithIndex},
         spi_master,
     },
-    executor::{CmpInOut, join_set_spawn},
+    executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -21,7 +21,7 @@ use super::{Config, config::ConfigDevicesCommSettings};
 
 pub async fn fn_process<TMsg, TSpi, TPeripheral>(
     config: Config<TMsg, TSpi, TPeripheral>,
-    msgbus_linker: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,

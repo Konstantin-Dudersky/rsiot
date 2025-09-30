@@ -7,7 +7,7 @@ use tokio::{
 use crate::{
     components::shared_tasks,
     components_config::http_client::{MsgRequest, MsgResponse, RequestInput, RequestPeriodic},
-    executor::{CmpInOut, MsgBusInput, MsgBusOutput, join_set_spawn},
+    executor::{MsgBusLinker, MsgBusInput, MsgBusOutput, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -19,7 +19,7 @@ where
     TMsg: MsgDataBound,
 {
     /// Подключение к шине сообщений
-    pub msgbus_linker: CmpInOut<TMsg>,
+    pub msgbus_linker: MsgBusLinker<TMsg>,
 
     /// Ссылка на коллекцию задач tokio
     pub task_set: &'a mut JoinSet<super::Result<()>>,

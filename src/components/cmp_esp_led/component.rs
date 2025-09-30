@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use esp_idf_svc::hal::{peripheral::Peripheral, rmt::RmtChannel};
 
 use crate::{
-    executor::{CmpInOut, CmpResult, Component, IComponentProcess},
+    executor::{CmpResult, Component, IComponentProcess, MsgBusLinker},
     message::MsgDataBound,
 };
 
@@ -22,9 +22,9 @@ where
     async fn process(
         &self,
         config: Config<TMsg, TPeripheral, TRmt>,
-        msg_bus: CmpInOut<TMsg>,
+        msgbus_linker: MsgBusLinker<TMsg>,
     ) -> CmpResult {
-        let input = msg_bus.msgbus_input(COMPONENT_NAME);
+        let input = msgbus_linker.init(COMPONENT_NAME).input();
         fn_process(config, input).await?;
         Ok(())
     }

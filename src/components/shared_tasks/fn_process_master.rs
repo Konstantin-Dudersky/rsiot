@@ -14,7 +14,7 @@ use crate::{
         self, DeviceTrait, FieldbusRequestWithIndex, FieldbusResponseWithIndex,
         RequestResponseBound,
     },
-    executor::{CmpInOut, MsgBusInput, MsgBusOutput, join_set_spawn},
+    executor::{MsgBusLinker, MsgBusInput, MsgBusOutput, join_set_spawn},
     message::{Message, MsgDataBound},
 };
 
@@ -27,7 +27,7 @@ where
     TError: Send + Sync + 'static,
 {
     /// Подключение к шине MsgBus
-    pub msgbus_linker: CmpInOut<TMsg>,
+    pub msgbus_linker: MsgBusLinker<TMsg>,
 
     /// Ссылка на коллекцию задач tokio
     pub task_set: &'a mut JoinSet<Result<(), TError>>,

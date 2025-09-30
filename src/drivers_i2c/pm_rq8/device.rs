@@ -9,7 +9,7 @@ use tokio::{
 use crate::{
     components::shared_tasks,
     drivers_i2c::RsiotI2cDriverBase,
-    executor::{CmpInOut, join_set_spawn},
+    executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -24,7 +24,7 @@ where
     TDriver: RsiotI2cDriverBase,
 {
     /// Внутренняя шина сообщений
-    pub msg_bus: CmpInOut<TMsg>,
+    pub msg_bus: MsgBusLinker<TMsg>,
 
     /// Конфигурация
     pub config: Config<TMsg>,

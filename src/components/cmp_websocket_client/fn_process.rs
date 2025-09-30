@@ -3,7 +3,7 @@ use tracing::{info, warn};
 
 use crate::{
     components_config::websocket_general::WebsocketMessage,
-    executor::{CmpInOut, join_set_spawn},
+    executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
     serde_utils::SerdeAlg,
 };
@@ -13,7 +13,7 @@ use super::{
 };
 
 pub async fn fn_process<TMsg, TServerToClient, TClientToServer>(
-    msgbus_linker: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
     config: Config<TMsg, TServerToClient, TClientToServer>,
 ) -> Result<(), Error>
 where

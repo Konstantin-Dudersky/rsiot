@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
 use crate::{
-    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
+    executor::{Component, ComponentError, IComponentProcess, MsgBusLinker},
     message::{AuthPermissions, IMessageChannel, MsgDataBound},
 };
 
@@ -22,7 +22,7 @@ where
     async fn process(
         &self,
         config: ConfigAlias<TMessage, TMessageChannel>,
-        input: CmpInOut<TMessage>,
+        input: MsgBusLinker<TMessage>,
     ) -> Result<(), ComponentError> {
         let config = config.0;
         fn_process(

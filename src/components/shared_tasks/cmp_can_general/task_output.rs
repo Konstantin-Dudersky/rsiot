@@ -2,7 +2,7 @@ use tokio::sync::mpsc;
 
 use crate::{
     components_config::can_general::CanFrame,
-    executor::{CmpInOut, MsgBusOutput},
+    executor::{MsgBusLinker, MsgBusOutput},
     message::{Message, MsgDataBound},
 };
 

@@ -4,7 +4,7 @@ use byteorder::{BigEndian, ReadBytesExt};
 use tokio::{sync::Mutex, task::JoinSet, time::sleep};
 use tracing::warn;
 
-use crate::{executor::CmpInOut, message::MsgDataBound};
+use crate::{executor::MsgBusLinker, message::MsgDataBound};
 
 use super::{
     super::{I2cSlaveAddress, RsiotI2cDriverBase},
@@ -26,7 +26,7 @@ where
     /// Ссылка на драйвер
     pub driver: Arc<Mutex<Driver>>,
 
-    pub cmp_in_out: CmpInOut<TMsg>,
+    pub cmp_in_out: MsgBusLinker<TMsg>,
 }
 
 impl<TMsg, Driver> ADS1115<TMsg, Driver>
@@ -81,7 +81,7 @@ where
     pub address: I2cSlaveAddress,
     pub input: config::InputConfig<TMsg>,
     pub driver: Arc<Mutex<Driver>>,
-    pub cmp_in_out: CmpInOut<TMsg>,
+    pub cmp_in_out: MsgBusLinker<TMsg>,
 }
 
 impl<TMsg, Driver> TaskInput<TMsg, Driver>

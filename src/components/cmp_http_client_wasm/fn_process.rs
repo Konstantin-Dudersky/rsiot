@@ -3,14 +3,14 @@ use tracing::info;
 
 use crate::{
     components::shared_tasks::cmp_http_client::HttpClientGeneral,
-    executor::{CmpInOut, join_set_spawn},
+    executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
 };
 
 use super::{Result, config, tasks};
 
 pub async fn fn_process<TMsg>(
-    msgbus_linker: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
     config: config::Config<TMsg>,
 ) -> Result<()>
 where

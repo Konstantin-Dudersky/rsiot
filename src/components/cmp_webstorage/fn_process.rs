@@ -1,7 +1,7 @@
 use tokio::{sync::mpsc::channel, task::JoinSet};
 
 use crate::{
-    executor::{CmpInOut, join_set_spawn},
+    executor::{MsgBusLinker, join_set_spawn},
     message::*,
 };
 
@@ -9,7 +9,7 @@ use super::{Config, tasks};
 
 pub async fn fn_process<TMsg>(
     config: Config<TMsg>,
-    msgbus_linker: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,

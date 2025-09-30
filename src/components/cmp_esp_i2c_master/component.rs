@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use esp_idf_svc::hal::{i2c::I2c, peripheral::Peripheral};
 
 use crate::{
-    executor::{CmpInOut, CmpResult, Component, IComponentProcess},
+    executor::{CmpResult, Component, IComponentProcess, MsgBusLinker},
     message::MsgDataBound,
 };
 
@@ -23,7 +23,7 @@ where
     async fn process(
         &self,
         config: Config<TMsg, TI2c, TPeripheral>,
-        msgbus_linker: CmpInOut<TMsg>,
+        msgbus_linker: MsgBusLinker<TMsg>,
     ) -> CmpResult {
         fn_process(config, msgbus_linker.init(COMPONENT_NAME)).await?;
         Ok(())

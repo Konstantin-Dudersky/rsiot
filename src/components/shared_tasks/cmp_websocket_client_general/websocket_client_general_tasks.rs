@@ -10,7 +10,7 @@ use crate::{
         websocket_client::{FnClientToServer, FnServerToClient},
         websocket_general::WebsocketMessage,
     },
-    executor::{CmpInOut, MsgBusInput, MsgBusOutput, join_set_spawn},
+    executor::{MsgBusInput, MsgBusLinker, MsgBusOutput, join_set_spawn},
     message::MsgDataBound,
     serde_utils::SerdeAlg,
 };
@@ -26,7 +26,7 @@ where
     pub serde_alg: SerdeAlg,
 
     /// Подключение к шине сообщений
-    pub msgbus_linker: CmpInOut<TMsg>,
+    pub msgbus_linker: MsgBusLinker<TMsg>,
 
     /// Ссылка на коллекцию задач tokio
     pub task_set: &'a mut JoinSet<super::Result<()>>,

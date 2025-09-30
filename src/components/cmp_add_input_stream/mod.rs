@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use tokio::sync::broadcast;
 
 use crate::{
-    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
+    executor::{Component, ComponentError, IComponentProcess, MsgBusLinker},
     message::*,
 };
 
@@ -28,7 +28,7 @@ where
     async fn process(
         &self,
         mut config: Config<TMsg>,
-        msg_bus: CmpInOut<TMsg>,
+        msg_bus: MsgBusLinker<TMsg>,
     ) -> Result<(), ComponentError> {
         let output = msg_bus.init(CMP_NAME).output();
 

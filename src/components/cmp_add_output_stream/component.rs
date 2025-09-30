@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
 use crate::{
-    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
+    executor::{MsgBusLinker, Component, ComponentError, IComponentProcess},
     message::*,
 };
 
@@ -19,7 +19,7 @@ where
     async fn process(
         &self,
         config: Config<TMsg>,
-        msg_bus: CmpInOut<TMsg>,
+        msg_bus: MsgBusLinker<TMsg>,
     ) -> Result<(), ComponentError> {
         let mut input = msg_bus.init(CMP_NAME).input();
 

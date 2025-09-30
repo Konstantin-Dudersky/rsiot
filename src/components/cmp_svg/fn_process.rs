@@ -7,7 +7,7 @@ use quick_xml::{
 };
 
 use crate::{
-    executor::CmpInOut,
+    executor::MsgBusLinker,
     message::{Message, MsgDataBound},
 };
 
@@ -15,7 +15,7 @@ use super::{Config, Error, SvgChange, SvgChangeType};
 
 pub async fn fn_process<TMsg>(
     config: Config<TMsg>,
-    msgbus_linker: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,

@@ -8,13 +8,13 @@ use jwt::{SignWithKey, VerifyWithKey};
 use sha2::Sha256;
 
 use crate::{
-    executor::CmpInOut,
+    executor::MsgBusLinker,
     message::{system_messages::*, *},
 };
 
 use super::{Config, ConfigStore, ConfigStoreLocalItem, Error, token_payload::TokenPayload};
 
-pub async fn fn_process<TMsg>(config: Config, in_out: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg>(config: Config, in_out: MsgBusLinker<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
@@ -26,7 +26,7 @@ where
     }
 }
 
-async fn task_main<TMsg>(config: Config, mut in_out: CmpInOut<TMsg>) -> super::Result<()>
+async fn task_main<TMsg>(config: Config, mut in_out: MsgBusLinker<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {

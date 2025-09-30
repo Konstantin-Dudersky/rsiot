@@ -5,7 +5,7 @@ use tracing::warn;
 
 use crate::{
     components_config::can_general::{BufferBound, CanFrame},
-    executor::{CmpInOut, MsgBusInput},
+    executor::{MsgBusInput, MsgBusLinker},
     message::MsgDataBound,
 };
 

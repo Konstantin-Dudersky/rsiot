@@ -14,7 +14,7 @@ use tokio::{
 use crate::{
     components::shared_tasks::{filter_identical_data, mpsc_to_msgbus},
     components_config::uart_general::Parity,
-    executor::{CmpInOut, join_set_spawn},
+    executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -22,7 +22,7 @@ use super::{Config, Error, tasks};
 
 pub async fn fn_process<TMsg, TUart, TPeripheral, TBufferData>(
     config: Config<TMsg, TUart, TPeripheral, TBufferData>,
-    msgbus_linker: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: 'static + MsgDataBound,

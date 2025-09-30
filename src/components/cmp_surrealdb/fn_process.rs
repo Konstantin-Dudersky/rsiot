@@ -5,21 +5,24 @@ use tokio::{sync::Mutex, task::JoinSet, time::sleep};
 use tracing::{debug, error, info};
 
 use crate::{
-    executor::{ComponentError, MsgBusInput, MsgBusOutput},
+    executor::{ComponentError, MsgBusInput, MsgBusLinker, MsgBusOutput},
     message::MsgDataBound,
 };
 
 use super::{Config, DbClient, tasks};
 
 pub async fn fn_process<TMsg>(
-    input: MsgBusInput<TMsg>,
-    output: MsgBusOutput<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
     config: Config<TMsg>,
 ) -> Result<(), ComponentError>
 where
     TMsg: MsgDataBound + 'static,
 {
     info!("Starting Surrealdb");
+
+    let (input, output) = msgbus_linker.input_output();
+    msgbus_linker.close();
+
     loop {
         let result = task_main(input.clone(), output.clone(), &config).await;
         match result {
@@ -46,7 +49,6 @@ where
 
     for request_start_config in &config.request_start {
         let task = tasks::RequestStart {
-            msgbus_input: input.clone(),
             msgbus_output: output.clone(),
             start_config: request_start_config.clone(),
             db_client: db.clone(),

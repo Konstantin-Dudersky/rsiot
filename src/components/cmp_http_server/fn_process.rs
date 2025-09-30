@@ -11,7 +11,7 @@ use tracing::{Level, info};
 
 use crate::{
     components_config::http_server::{GetEndpointsCollection, PutEndpointsCollection},
-    executor::{MsgBusInput, MsgBusOutput, join_set_spawn},
+    executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -19,8 +19,7 @@ use super::{config::Config, routes, shared_state::SharedState, tasks};
 
 /// Компонент для получения и ввода сообщений через HTTP Server
 pub async fn fn_process<TMsg>(
-    input: MsgBusInput<TMsg>,
-    output: MsgBusOutput<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
     config: Config<TMsg>,
 ) -> super::Result<()>
 where
@@ -38,7 +37,7 @@ where
 
     // Общее состояние
     let shared_state = SharedState {
-        msgbus_output: output,
+        msgbus_output: msgbus_linker.output(),
         get_endpoints: get_endpoints.clone(),
         put_endpoints: put_endpoints.clone(),
     };
@@ -47,7 +46,7 @@ where
 
     // Задача обновления данных точек GET ----------------------------------------------------------
     let task = tasks::UpdateGetEndpoints {
-        input,
+        input: msgbus_linker.input(),
         get_endpoints: get_endpoints.clone(),
     };
     join_set_spawn(
@@ -91,6 +90,8 @@ where
         router,
     };
     join_set_spawn(&mut task_set, "cmp_http_server | axum_serve", task.spawn());
+
+    msgbus_linker.close();
 
     // Ждем выполнения всех задач ------------------------------------------------------------------
     while let Some(res) = task_set.join_next().await {

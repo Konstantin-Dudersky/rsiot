@@ -3,7 +3,7 @@ use tracing::{info, warn};
 
 use crate::{
     components_config::websocket_general::WebsocketMessage,
-    executor::{CmpInOut, join_set_spawn},
+    executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
     serde_utils::SerdeAlg,
 };
@@ -12,7 +12,7 @@ use super::{Config, Error, cmp_websocket_client_general::WebsocketClientGeneralT
 
 pub async fn fn_process<TMsg, TServerToClient, TClientToServer>(
     config: Config<TMsg, TServerToClient, TClientToServer>,
-    msgbus_linker: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,

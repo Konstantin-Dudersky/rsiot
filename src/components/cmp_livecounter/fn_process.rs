@@ -3,7 +3,7 @@ use std::sync::{Arc, atomic::AtomicU8};
 use tokio::task::JoinSet;
 
 use crate::{
-    executor::{CmpInOut, join_set_spawn},
+    executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -11,7 +11,7 @@ use super::{COMPONENT_NAME, Config, tasks};
 
 pub async fn fn_process<TMsg>(
     config: Config<TMsg>,
-    msgbus_linker: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: 'static + MsgDataBound,

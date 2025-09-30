@@ -3,14 +3,14 @@ use tracing::{debug, error, info, trace, warn};
 
 use tracing::Level;
 
-use crate::executor::{CmpInOut, MsgBusInput};
+use crate::executor::{MsgBusInput, MsgBusLinker};
 use crate::{executor::join_set_spawn, message::MsgDataBound};
 
 use super::{Config, Error};
 
 pub async fn fn_process<TMsg>(
     config: Config<TMsg>,
-    msgbus_linker: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
 ) -> Result<(), Error>
 where
     TMsg: 'static + MsgDataBound,

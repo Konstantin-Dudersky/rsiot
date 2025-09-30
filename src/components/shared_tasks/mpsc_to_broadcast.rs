@@ -3,7 +3,7 @@
 use tokio::sync::{broadcast, mpsc};
 
 use crate::{
-    executor::{CmpInOut, ComponentError},
+    executor::{MsgBusLinker, ComponentError},
     message::{Message, MsgDataBound},
 };
 

@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
 use crate::{
-    executor::{CmpInOut, CmpResult, Component, IComponentProcess},
+    executor::{CmpResult, Component, IComponentProcess, MsgBusLinker},
     message::MsgDataBound,
 };
 
@@ -16,7 +16,7 @@ impl<TMsg> IComponentProcess<Config<TMsg>, TMsg> for Component<Config<TMsg>, TMs
 where
     TMsg: MsgDataBound + 'static,
 {
-    async fn process(&self, config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> CmpResult {
+    async fn process(&self, config: Config<TMsg>, msg_bus: MsgBusLinker<TMsg>) -> CmpResult {
         let msg_bus = msg_bus.init(COMPONENT_NAME);
         fn_process(config, msg_bus).await?;
         Ok(())

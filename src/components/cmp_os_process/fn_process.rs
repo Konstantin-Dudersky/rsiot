@@ -3,13 +3,13 @@ use std::time::Duration;
 use tokio::process::Command;
 use tokio::time::sleep;
 
-use crate::{executor::CmpInOut, message::MsgDataBound};
+use crate::{executor::MsgBusLinker, message::MsgDataBound};
 
 use super::Config;
 
 pub async fn fn_process<TMsg>(
     _config: Config<TMsg>,
-    msgbus_linker: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,

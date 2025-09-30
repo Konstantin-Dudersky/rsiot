@@ -8,7 +8,7 @@ use tracing::{debug, error, info, trace, warn};
 use crate::message::{system_messages::*, *};
 
 use super::{
-    Cache, CmpInOut, LessInPeriod, TokioRuntimeMetrics, component::IComponent,
+    Cache, LessInPeriod, MsgBusLinker, TokioRuntimeMetrics, component::IComponent,
     error::ComponentError, join_set_spawn, sleep, types::FnAuth,
 };
 
@@ -26,7 +26,7 @@ where
     TMsg: MsgDataBound,
 {
     task_set: JoinSet<Result<(), ComponentError>>,
-    cmp_in_out: CmpInOut<TMsg>,
+    cmp_in_out: MsgBusLinker<TMsg>,
 }
 
 /// Настройка исполнителя
@@ -99,7 +99,7 @@ where
             join_set_spawn(&mut task_set, "tokio_metrics", task.spawn());
         }
 
-        let cmp_in_out = CmpInOut::new(
+        let cmp_in_out = MsgBusLinker::new(
             component_input,
             component_output,
             AuthPermissions::default(),

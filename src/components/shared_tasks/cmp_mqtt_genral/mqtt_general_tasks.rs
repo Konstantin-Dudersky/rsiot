@@ -8,7 +8,7 @@ use crate::{
     components_config::mqtt_client::{
         ConfigPublish, ConfigSubscribe, MqttMsgGen, MqttMsgRecv, MqttMsgSend,
     },
-    executor::{CmpInOut, MsgBusInput, MsgBusOutput, join_set_spawn},
+    executor::{MsgBusInput, MsgBusLinker, MsgBusOutput, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -19,7 +19,7 @@ where
     TMsg: MsgDataBound,
 {
     /// Шина сообщений
-    pub msg_bus: CmpInOut<TMsg>,
+    pub msg_bus: MsgBusLinker<TMsg>,
 
     /// Ёмкость очередей сообщений между задачами
     pub buffer_size: usize,

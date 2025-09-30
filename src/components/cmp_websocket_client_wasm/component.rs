@@ -2,7 +2,7 @@ use async_trait::async_trait;
 
 use crate::{
     components_config::websocket_general::WebsocketMessage,
-    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
+    executor::{Component, ComponentError, IComponentProcess, MsgBusLinker},
     message::MsgDataBound,
 };
 
@@ -24,7 +24,7 @@ where
     async fn process(
         &self,
         config: Config<TMessage, TServerToClient, TClientToServer>,
-        msgbus_linker: CmpInOut<TMessage>,
+        msgbus_linker: MsgBusLinker<TMessage>,
     ) -> Result<(), ComponentError> {
         fn_process(config, msgbus_linker.init(COMPONENT_NAME))
             .await

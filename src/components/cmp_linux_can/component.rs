@@ -2,7 +2,7 @@ use async_trait::async_trait;
 
 use crate::{
     components_config::can_general::BufferBound,
-    executor::{CmpInOut, CmpResult, Component, IComponentProcess},
+    executor::{CmpResult, Component, IComponentProcess, MsgBusLinker},
     message::MsgDataBound,
 };
 
@@ -22,7 +22,7 @@ where
     async fn process(
         &self,
         config: Config<TMsg, TBuffer>,
-        msgbus_linker: CmpInOut<TMsg>,
+        msgbus_linker: MsgBusLinker<TMsg>,
     ) -> CmpResult {
         fn_process(config, msgbus_linker.init(COMPONENT_NAME)).await?;
         Ok(())

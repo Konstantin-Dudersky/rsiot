@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use serde::{Serialize, de::DeserializeOwned};
 
 use crate::{
-    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
+    executor::{Component, ComponentError, IComponentProcess, MsgBusLinker},
     message::MsgDataBound,
 };
 
@@ -24,7 +24,7 @@ where
     async fn process(
         &self,
         config: Config<TMsg, TStorageData>,
-        input: CmpInOut<TMsg>,
+        input: MsgBusLinker<TMsg>,
     ) -> Result<(), ComponentError> {
         unimplemented!();
     }
@@ -41,10 +41,9 @@ where
     async fn process(
         &self,
         config: Config<TMsg, TStorageData>,
-        in_out: CmpInOut<TMsg>,
+        msgbus_linker: MsgBusLinker<TMsg>,
     ) -> Result<(), ComponentError> {
-        let (input, output) = in_out.msgbus_input_output(COMPONENT_NAME);
-        fn_process(input, output, config)
+        fn_process(msgbus_linker.init(COMPONENT_NAME), config)
             .await
             .map_err(|err| ComponentError::Execution(err.to_string()))
     }

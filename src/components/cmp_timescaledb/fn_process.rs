@@ -3,14 +3,14 @@ use tracing::info;
 use url::Url;
 
 use crate::{
-    executor::{CmpInOut, join_set_spawn},
+    executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
 };
 
 use super::{Error, config::Config, tasks};
 
 pub async fn fn_process<TMsg>(
-    msgbus_linker: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
     config: Config<TMsg>,
 ) -> Result<(), Error>
 where

@@ -1,4 +1,4 @@
-use rsiot::{components::cmp_logger::*, message::Message};
+use rsiot::components::cmp_logger::*;
 
 use crate::message::*;
 

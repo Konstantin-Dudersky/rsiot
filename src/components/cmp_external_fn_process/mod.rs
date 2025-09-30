@@ -18,7 +18,7 @@ pub use futures::future::BoxFuture;
 
 use crate::{
     executor::{
-        CmpInOut, CmpResult, Component, ComponentError, IComponentProcess, MsgBusInput,
+        CmpResult, Component, ComponentError, IComponentProcess, MsgBusInput, MsgBusLinker,
         MsgBusOutput,
     },
     message::*,
@@ -64,7 +64,7 @@ where
     async fn process(
         &self,
         config: Config<TMsg>,
-        msgbus_linker: CmpInOut<TMsg>,
+        msgbus_linker: MsgBusLinker<TMsg>,
     ) -> Result<(), ComponentError> {
         let (msgbus_input, msgbus_output) = msgbus_linker.init(COMPONENT_NAME).input_output();
         (config.fn_process)(msgbus_input, msgbus_output).await

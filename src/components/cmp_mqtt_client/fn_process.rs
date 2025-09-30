@@ -6,14 +6,17 @@ use tracing::info;
 
 use crate::{
     components::shared_tasks::cmp_mqtt_genral::MqttGeneralTasks,
-    executor::{CmpInOut, join_set_spawn},
+    executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
     serde_utils::SerdeAlg,
 };
 
 use super::{Config, Error, config::MqttMsgGen, tasks};
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg>(
+    config: Config<TMsg>,
+    msg_bus: MsgBusLinker<TMsg>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {

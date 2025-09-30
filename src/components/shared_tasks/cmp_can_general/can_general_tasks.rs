@@ -8,7 +8,7 @@ use tokio::{
 
 use crate::{
     components_config::can_general::{BufferBound, CanFrame},
-    executor::{CmpInOut, MsgBusInput, MsgBusOutput, join_set_spawn},
+    executor::{MsgBusInput, MsgBusLinker, MsgBusOutput, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -20,7 +20,7 @@ where
     TBuffer: BufferBound,
 {
     /// Подключение к шине сообщений
-    pub msgbus_linker: CmpInOut<TMsg>,
+    pub msgbus_linker: MsgBusLinker<TMsg>,
 
     /// Значение в буфере по умолчанию.
     ///

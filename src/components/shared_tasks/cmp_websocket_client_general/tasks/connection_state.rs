@@ -1,7 +1,7 @@
 use tokio::sync::mpsc;
 
 use crate::{
-    executor::{CmpInOut, MsgBusOutput},
+    executor::{MsgBusLinker, MsgBusOutput},
     message::{Message, MsgDataBound},
 };
 

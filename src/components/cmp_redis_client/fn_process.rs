@@ -10,7 +10,7 @@ use tokio::{
 use tracing::{error, info, trace, warn};
 
 use crate::{
-    executor::{CmpInOut, ComponentError},
+    executor::{MsgBusLinker, ComponentError},
     message::{IMessageChannel, MsgDataBound},
 };
 
@@ -19,7 +19,7 @@ use super::{config::Config, error::Error};
 type Result = std::result::Result<(), Error>;
 
 pub async fn fn_process<TMessage, TMessageChannel>(
-    in_out: CmpInOut<TMessage>,
+    in_out: MsgBusLinker<TMessage>,
     config: Config<TMessage, TMessageChannel>,
 ) -> std::result::Result<(), ComponentError>
 where
@@ -41,7 +41,7 @@ where
 }
 
 async fn task_main<TMessage, TMessageChannel>(
-    in_out: CmpInOut<TMessage>,
+    in_out: MsgBusLinker<TMessage>,
     config: Config<TMessage, TMessageChannel>,
 ) -> Result
 where
@@ -72,7 +72,7 @@ where
 
 /// Задача публикации в канале Pub/Sub, и сохранение в кеше.
 async fn task_publication<TMessage, TMessageChannel>(
-    mut input: CmpInOut<TMessage>,
+    mut input: MsgBusLinker<TMessage>,
     config: Config<TMessage, TMessageChannel>,
     mut redis_connection: MultiplexedConnection,
 ) -> Result
@@ -99,7 +99,7 @@ where
 
 /// Подписка на канал Pub/Sub
 async fn task_subscription<TMessage, TMessageChannel>(
-    output: CmpInOut<TMessage>,
+    output: MsgBusLinker<TMessage>,
     config: Config<TMessage, TMessageChannel>,
     mut pubsub: PubSub,
 ) -> Result
@@ -129,7 +129,7 @@ where
 
 /// Чтение данных из хеша
 async fn task_read_hash<TMessage, TMessageChannel>(
-    in_out: CmpInOut<TMessage>,
+    in_out: MsgBusLinker<TMessage>,
     config: Config<TMessage, TMessageChannel>,
     mut redis_connection: MultiplexedConnection,
 ) -> Result

@@ -7,7 +7,7 @@ use tracing::info;
 
 use crate::{
     components::shared_tasks,
-    executor::{Cache, CmpInOut, join_set_spawn},
+    executor::{Cache, MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -19,7 +19,7 @@ use super::{
 };
 
 pub async fn fn_process<TMsg, I, Q, S>(
-    msgbus_linker: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
     config: Config<TMsg, I, Q, S>,
 ) -> super::Result<()>
 where

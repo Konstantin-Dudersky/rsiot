@@ -1,13 +1,13 @@
-//! Задача перенаправления сообщений из канала `mpsc` в `CmpInOut`
+//! Задача перенаправления сообщений из канала `mpsc` в `MsgBusLinker`
 
 use tokio::sync::mpsc;
 
 use crate::{
-    executor::{CmpInOut, ComponentError, MsgBusOutput},
+    executor::{ComponentError, MsgBusLinker, MsgBusOutput},
     message::{Message, MsgDataBound},
 };
 
-/// Задача перенаправления сообщений из канала `mpsc` в `CmpInOut`
+/// Задача перенаправления сообщений из канала `mpsc` в `MsgBusLinker`
 pub struct MpscToMsgBus<TMsg>
 where
     TMsg: MsgDataBound,

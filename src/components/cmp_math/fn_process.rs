@@ -4,7 +4,7 @@ use tokio::{
 };
 
 use crate::{
-    executor::{CmpInOut, MsgBusInput, MsgBusOutput, join_set_spawn},
+    executor::{MsgBusInput, MsgBusLinker, MsgBusOutput, join_set_spawn},
     message::{Message, MsgDataBound},
 };
 
@@ -12,7 +12,7 @@ use super::{Algs, Config, Error, IntMsgBound, Result, algs};
 
 pub async fn fn_process<TMsg, TIntMsg>(
     config: Config<TMsg, TIntMsg>,
-    msgbus_linker: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: 'static + MsgDataBound,

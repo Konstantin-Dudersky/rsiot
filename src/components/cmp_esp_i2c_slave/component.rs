@@ -5,7 +5,7 @@ use esp_idf_svc::hal::{i2c::I2c, peripheral::Peripheral};
 use serde::{Serialize, de::DeserializeOwned};
 
 use crate::{
-    executor::{CmpInOut, CmpResult, Component, IComponentProcess},
+    executor::{CmpResult, Component, IComponentProcess, MsgBusLinker},
     message::MsgDataBound,
 };
 
@@ -30,10 +30,9 @@ where
     async fn process(
         &self,
         config: Config<TMsg, TI2c, TPeripheral, TI2cRequest, TI2cResponse, TBufferData>,
-        in_out: CmpInOut<TMsg>,
+        msgbus_linker: MsgBusLinker<TMsg>,
     ) -> CmpResult {
-        let (input, output) = in_out.msgbus_input_output(COMPONENT_NAME);
-        fn_process(config, input, output).await?;
+        fn_process(config, msgbus_linker.init(COMPONENT_NAME)).await?;
         Ok(())
     }
 }

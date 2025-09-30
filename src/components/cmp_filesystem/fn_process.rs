@@ -2,7 +2,7 @@ use tokio::fs::{read, try_exists, write};
 use tracing::warn;
 
 use crate::{
-    executor::{CmpInOut, MsgBusOutput},
+    executor::{MsgBusLinker, MsgBusOutput},
     message::{Message, MsgDataBound},
     serde_utils::SerdeAlg,
 };
@@ -11,7 +11,7 @@ use super::{BufferBound, CallFnOutputKind, Config, Error};
 
 pub async fn fn_process<TMsg, TBuffer>(
     config: Config<TMsg, TBuffer>,
-    msgbus_linker: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,

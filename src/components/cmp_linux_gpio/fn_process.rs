@@ -1,7 +1,7 @@
 use tokio::task::JoinSet;
 
 use crate::{
-    executor::{MsgBusInput, MsgBusOutput, join_set_spawn},
+    executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -12,8 +12,7 @@ use super::{
 
 pub async fn fn_process<TMsg>(
     config: Config<TMsg>,
-    input: MsgBusInput<TMsg>,
-    output: MsgBusOutput<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: 'static + MsgDataBound,
@@ -22,7 +21,7 @@ where
 
     for input in &config.gpio_input {
         let task = GpioInput {
-            msgbus_output: output.clone(),
+            msgbus_output: msgbus_linker.output(),
             config: input.clone(),
         };
         join_set_spawn(
@@ -34,7 +33,7 @@ where
 
     for output in &config.gpio_output {
         let task = GpioOutput {
-            msgbus_input: input.clone(),
+            msgbus_input: msgbus_linker.input(),
             config: output.clone(),
         };
         join_set_spawn(
@@ -44,8 +43,7 @@ where
         );
     }
 
-    drop(input);
-    drop(output);
+    msgbus_linker.close();
 
     while let Some(res) = task_set.join_next().await {
         res??;
