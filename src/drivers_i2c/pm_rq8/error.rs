@@ -1,4 +1,4 @@
-use crate::{components::shared_tasks, serde_utils::postcard_serde};
+use crate::serde_utils::postcard_serde;
 
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
@@ -10,7 +10,7 @@ pub enum Error {
     TaskI2cComm,
 
     #[error(transparent)]
-    TaskMsgBusToMpsc(#[from] shared_tasks::msgbus_to_mpsc::Error),
+    TaskMsgBusToMpsc(#[from] super::super::msgbus_to_mpsc::Error),
 
     #[error("TaskOutput")]
     TaskOutput,

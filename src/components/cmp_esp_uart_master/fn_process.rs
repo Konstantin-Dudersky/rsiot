@@ -8,15 +8,15 @@ use tokio::task::JoinSet;
 use crate::{
     components::shared_tasks::fn_process_master::FnProcessMaster,
     components_config::uart_general::Parity,
-    executor::{join_set_spawn, CmpInOut},
+    executor::{MsgBusLinker, join_set_spawnMsgBusLinker},
     message::{MsgDataBound, ServiceBound},
 };
 
-use super::{uart_comm::UartComm, Config};
+use super::{Config, uart_comm::UartComm};
 
 pub async fn fn_process<TMsg, TService, TUart, TPeripheral>(
     config: Config<TMsg, TUart, TPeripheral>,
-    msg_bus: CmpInOut<TMsg, TService>,
+    msg_bus: MsgBusLinker<TMsg, TService>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,

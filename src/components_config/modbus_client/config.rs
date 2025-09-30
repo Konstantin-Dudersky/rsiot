@@ -2,6 +2,7 @@ use std::{net::IpAddr, time::Duration};
 
 use crate::components_config::master_device::DeviceTrait;
 
+// ANCHOR: Config
 /// Конфигурация cmp_modbus_client
 #[derive(Debug)]
 pub struct Config<TMsg> {
@@ -16,7 +17,9 @@ pub struct Config<TMsg> {
     /// Вектор драйверов опрашиваемых устройств
     pub devices: Vec<Box<dyn DeviceTrait<TMsg, super::FieldbusRequest, super::FieldbusResponse>>>,
 }
+// ANCHOR: Config
 
+// ANCHOR: ConfigDevicesCommSettings
 /// Настройки коммуникации с устройствами
 #[derive(Clone, Copy, Debug)]
 pub struct ConfigDevicesCommSettings {
@@ -32,7 +35,9 @@ pub struct ConfigDevicesCommSettings {
     /// Максимальное количество одновременных соединений с данным устройством
     pub concurrent_connections: u8,
 }
+// ANCHOR: ConfigDevicesCommSettings
 
+// ANCHOR: ClientType
 /// Конфигурация Modbus клиента
 #[derive(Clone, Copy, Debug)]
 pub enum ClientType {
@@ -47,3 +52,4 @@ pub enum ClientType {
     /// Вариант для Modbus RTU
     Rtu,
 }
+// ANCHOR: ClientType

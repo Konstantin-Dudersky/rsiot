@@ -1,0 +1,30 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 1
+  }
+}
+
+style {
+    stroke-width: 1
+    stroke: gray
+}
+
+MsgBusIn: MsgBus {
+    shape: oval
+}
+MsgBusIn -> Task
+
+Task
+Task -> NVS
+Task <- NVS
+Task -> MsgBusOut
+
+NVS {
+    icon: https://icons.terrastruct.com/essentials%2F257-file.svg
+    style.stroke-dash: 5
+}
+
+MsgBusOut: MsgBus {
+    shape: oval
+}

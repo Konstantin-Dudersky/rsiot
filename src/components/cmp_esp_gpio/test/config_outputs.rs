@@ -1,23 +1,20 @@
 use esp_idf_svc::hal::peripherals::Peripherals;
 
-use crate::{
-    components::cmp_esp_gpio,
-    message::{example_message::*, MsgData},
-};
+use crate::{components::cmp_esp_gpio, message::example_message::*};
 
 #[test]
 #[allow(clippy::single_element_loop)]
-fn test() {
-    let peripherals = Peripherals::take().unwrap();
+fn test() -> anyhow::Result<()> {
+    let peripherals = Peripherals::take()?;
 
     // Пример конфигурации массива выходов
     let outputs_0 = vec![cmp_esp_gpio::ConfigGpioOutput {
         peripherals: peripherals.pins.gpio1.into(),
-        fn_input: |msg| match msg.data {
-            MsgData::Custom(Custom::EspRelay(value)) => Some(value),
+        fn_input: |msg| match msg {
+            Custom::EspRelay(value) => Some(value),
             _ => None,
         },
-        is_low_triggered: false,
+        default: false,
     }];
 
     for outputs in [outputs_0] {
@@ -26,4 +23,6 @@ fn test() {
             ..Default::default()
         };
     }
+
+    Ok(())
 }

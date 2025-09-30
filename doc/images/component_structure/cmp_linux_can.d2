@@ -1,8 +1,13 @@
 vars: {
   d2-config: {
     layout-engine: elk
-    theme-id: 0
+    theme-id: 1
   }
+}
+
+style {
+    stroke-width: 1
+    stroke: gray
 }
 
 MsgBusIn: MsgBus {
@@ -17,13 +22,19 @@ Buffer {
 
 Periodic
 
-SendToCan
+Target: "" {
+    SendToCan
 
-CAN {
-    style.stroke-dash: 5
+    CAN {
+        style.stroke-dash: 5
+    }
+
+    RcvFromCan
+
+    SendToCan -> CAN
+
+    CAN -> RcvFromCan
 }
-
-RcvFromCan
 
 Output
 
@@ -33,16 +44,13 @@ MsgBusOut: MsgBus {
 
 MsgBusIn -> Input
 
-Input -> SendToCan: mpsc::<CanFrame>
+Input -> Target.SendToCan: mpsc::<CanFrame>
 Input -> Buffer
 
-Periodic -> SendToCan: mpsc::<CanFrame>
-Periodic -> Buffer
+Periodic -> Target.SendToCan: mpsc::<CanFrame>
+Periodic <- Buffer
 
-SendToCan -> CAN
 
-CAN -> RcvFromCan
-
-RcvFromCan -> Output: mpsc::<CanFrame>
+Target.RcvFromCan -> Output: mpsc::<CanFrame>
 
 Output -> MsgBusOut

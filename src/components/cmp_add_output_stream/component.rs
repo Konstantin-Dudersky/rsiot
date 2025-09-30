@@ -1,14 +1,14 @@
 use async_trait::async_trait;
 
 use crate::{
-    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
+    executor::{MsgBusLinker, Component, ComponentError, IComponentProcess},
     message::*,
 };
 
 use super::{Config, Error};
 
 /// Название компонента
-pub const COMPONENT_NAME: &str = "CMP_TEMPLATE";
+pub const CMP_NAME: &str = "cmp_add_output_stream";
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
@@ -19,10 +19,11 @@ where
     async fn process(
         &self,
         config: Config<TMsg>,
-        in_out: CmpInOut<TMsg>,
+        msg_bus: MsgBusLinker<TMsg>,
     ) -> Result<(), ComponentError> {
-        let mut in_out = in_out.clone_with_new_id(COMPONENT_NAME, AuthPermissions::FullAccess);
-        while let Ok(msg) = in_out.recv_input().await {
+        let mut input = msg_bus.init(CMP_NAME).input();
+
+        while let Ok(msg) = input.recv().await {
             config
                 .channel
                 .send(msg.clone())

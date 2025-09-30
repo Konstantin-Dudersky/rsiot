@@ -1,25 +1,24 @@
 use tokio::task::JoinSet;
 
 use crate::{
-    components::shared_tasks::fn_process_master::FnProcessMaster, executor::CmpInOut,
+    components::shared_tasks::fn_process_master::FnProcessMaster, executor::MsgBusLinker,
     message::MsgDataBound,
 };
 
-use super::{uart_comm::UartComm, Config};
+use super::{Config, uart_comm::UartComm};
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, msg_bus: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg>(
+    config: Config<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
     let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
 
-    const BUFFER_SIZE: usize = 1000;
-
     let config_fn_process_master = FnProcessMaster {
-        msg_bus,
-        buffer_size: BUFFER_SIZE,
+        msgbus_linker,
         task_set: &mut task_set,
-        error_msgbus_to_broadcast: super::Error::TaskMsgbusToBroadcast,
         error_filter: super::Error::TaskFilterIdenticalData,
         error_mpsc_to_msgbus: super::Error::TaskMpscToMsgBus,
         error_master_device: super::Error::Device,

@@ -1,4 +1,4 @@
-use crate::{components::shared_tasks, executor::ComponentError};
+use crate::executor::ComponentError;
 
 /// Ошибки cmp_influxdb
 #[allow(missing_docs)]
@@ -20,9 +20,6 @@ pub enum Error {
 
     #[error("cmp_influxdb | {0}")]
     Config(#[from] crate::components_config::influxdb3::Error),
-
-    #[error("cmp_influxdb | {0}")]
-    TaskMsgBusToMpsc(shared_tasks::msgbus_to_mpsc::Error),
 
     #[error("cmp_influxdb | TaskInputEnd")]
     TaskInputEnd,

@@ -6,7 +6,7 @@ use time::{OffsetDateTime, format_description::well_known::Iso8601};
 use tokio::{sync::Semaphore, time::sleep};
 
 use crate::{
-    executor::CmpInOut,
+    executor::MsgBusOutput,
     message::{Message, MsgDataBound, ValueTime},
 };
 
@@ -16,7 +16,7 @@ pub struct Read<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    pub msg_bus: CmpInOut<TMsg>,
+    pub msgbus_output: MsgBusOutput<TMsg>,
     pub database_pool: Pool<Postgres>,
     pub concurrent_connections: Arc<Semaphore>,
     pub time_begin: OffsetDateTime,
@@ -46,8 +46,8 @@ where
             let msg = (self.fn_output)(row);
             let msg = Message::new_custom(msg);
 
-            self.msg_bus
-                .send_output(msg)
+            self.msgbus_output
+                .send(msg)
                 .await
                 .map_err(|_| Error::TokioSyncMpscSend)?;
 

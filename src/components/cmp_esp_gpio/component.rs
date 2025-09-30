@@ -1,11 +1,14 @@
 use async_trait::async_trait;
 
 use crate::{
-    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    executor::{Component, ComponentError, IComponentProcess, MsgBusLinker},
+    message::MsgDataBound,
 };
 
 use super::{config::Config, fn_process::fn_process};
+
+/// Название компонента
+pub const COMPONENT_NAME: &str = "cmp_esp_gpio";
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
@@ -16,10 +19,9 @@ where
     async fn process(
         &self,
         config: Config<TMsg>,
-        in_out: CmpInOut<TMsg>,
+        msgbus_linker: MsgBusLinker<TMsg>,
     ) -> Result<(), ComponentError> {
-        let in_out = in_out.clone_with_new_id("cmp_esp_gpio_input", AuthPermissions::FullAccess);
-        fn_process(config, in_out).await?;
+        fn_process(config, msgbus_linker.init(COMPONENT_NAME)).await?;
         Ok(())
     }
 }

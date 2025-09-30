@@ -5,7 +5,7 @@ use tokio::{sync::mpsc, task::JoinSet};
 use tracing::debug;
 
 use crate::{
-    executor::{join_set_spawn, CmpInOut},
+    executor::{MsgBusInput, MsgBusLinker, MsgBusOutput, join_set_spawn},
     message::{system_messages::*, *},
 };
 
@@ -16,7 +16,7 @@ use super::{
 
 pub async fn fn_process<TMsg, TInputStore, TOutputStore>(
     config: Config<TMsg, TInputStore, TOutputStore>,
-    in_out: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
 ) -> Result
 where
     TMsg: MsgDataBound + 'static,
@@ -41,11 +41,13 @@ where
 
     let mut task_set: JoinSet<Result> = JoinSet::new();
 
-    let task = task_input(in_out.clone(), config.fn_input, input_store);
-    join_set_spawn(&mut task_set, "cmp_leptos", task);
+    let (msgbus_input, msgbus_output) = msgbus_linker.input_output();
 
-    let task = task_output(in_out.clone(), config.fn_output, output_store);
-    join_set_spawn(&mut task_set, "cmp_leptos", task);
+    let task = task_input(msgbus_input, config.fn_input, input_store);
+    join_set_spawn(&mut task_set, "cmp_leptos | input", task);
+
+    let task = task_output(msgbus_output, config.fn_output, output_store);
+    join_set_spawn(&mut task_set, "cmp_leptos | output", task);
 
     while let Some(task_result) = task_set.join_next().await {
         task_result??
@@ -54,7 +56,7 @@ where
 }
 
 async fn task_input<TMsg, TInputStore>(
-    mut msg_bus: CmpInOut<TMsg>,
+    mut msgbus_input: MsgBusInput<TMsg>,
     fn_input: fn(&Message<TMsg>, &Store<TInputStore>),
     input_store: Store<TInputStore>,
 ) -> Result
@@ -62,14 +64,14 @@ where
     TMsg: MsgDataBound + 'static,
     TInputStore: StoreBound + 'static,
 {
-    while let Ok(msg) = msg_bus.recv_input().await {
+    while let Ok(msg) = msgbus_input.recv().await {
         (fn_input)(&msg, &input_store);
     }
     Ok(()) // TODO - генерация ошибок
 }
 
 async fn task_output<TMsg, TOutputStore>(
-    msg_bus: CmpInOut<TMsg>,
+    msgbus_output: MsgBusOutput<TMsg>,
     fn_output: fn(Store<TOutputStore>, mpsc::Sender<TMsg>),
     output_store: Store<TOutputStore>,
 ) -> Result
@@ -83,7 +85,7 @@ where
 
     while let Some(msg) = rx.recv().await {
         let msg = Message::new_custom(msg);
-        msg_bus.send_output(msg).await.map_err(Error::CmpOutput)?;
+        msgbus_output.send(msg).await.map_err(Error::CmpOutput)?;
     }
 
     Ok(()) // TODO - генерация ошибок

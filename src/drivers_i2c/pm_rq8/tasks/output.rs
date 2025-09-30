@@ -1,4 +1,4 @@
-use crate::{executor::CmpInOut, message::MsgDataBound};
+use crate::{executor::MsgBusLinker, message::MsgDataBound};
 
 use super::{I2cResponse, TaskInput};
 
@@ -7,7 +7,7 @@ where
     TMsg: MsgDataBound,
 {
     pub input: TaskInput<I2cResponse>,
-    pub output: CmpInOut<TMsg>,
+    pub output: MsgBusLinker<TMsg>,
 }
 
 impl<TMsg> Output<TMsg>

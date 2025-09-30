@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
 use crate::{
-    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
+    executor::{MsgBusLinker, Component, ComponentError, IComponentProcess},
     message::{AuthPermissions, MsgDataBound},
 };
 
@@ -16,7 +16,7 @@ where
     async fn process(
         &self,
         config: Config<TMsg>,
-        in_out: CmpInOut<TMsg>,
+        in_out: MsgBusLinker<TMsg>,
     ) -> Result<(), ComponentError> {
         let in_out = in_out.clone_with_new_id("cmp_raspberrypi_gpio", AuthPermissions::FullAccess);
         fn_process(config, in_out).await?;

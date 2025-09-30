@@ -8,7 +8,7 @@ mod tasks;
 
 pub use {
     component::{COMPONENT_NAME, Cmp},
-    config::{Config, ConfigRead, ConfigWrite},
+    config::{Config, ConfigGpioInput, ConfigGpioOutput},
     error::Error,
 };
 

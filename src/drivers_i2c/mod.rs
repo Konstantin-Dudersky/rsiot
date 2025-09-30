@@ -12,12 +12,14 @@ pub mod pm_rq8;
 pub mod ssd1306;
 
 mod i2c_devices;
+mod mpsc_to_msgbus;
+mod msgbus_to_mpsc;
 mod rsiot_i2c_driver_base;
 
-pub use bmp180::BMP180Oversampling;
 pub(crate) use bmp180::BMP180;
-pub use pcf8575::PCF8575PinMode;
+pub use bmp180::BMP180Oversampling;
 pub(crate) use pcf8575::PCF8575;
+pub use pcf8575::PCF8575PinMode;
 pub use rsiot_i2c_driver_base::I2cSlaveAddress;
 pub(crate) use rsiot_i2c_driver_base::RsiotI2cDriverBase;
 

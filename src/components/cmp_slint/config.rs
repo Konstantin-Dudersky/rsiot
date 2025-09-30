@@ -63,6 +63,7 @@ where
     }
 }
 
+/// Отправка исходящих сообщений из коллбеков Slint
 #[derive(Clone)]
 pub struct OutputSender<TMsg>
 where
@@ -74,10 +75,12 @@ impl<TMsg> OutputSender<TMsg>
 where
     TMsg: MsgDataBound,
 {
+    /// Создать новый экземпляр OutputSender
     pub fn new(tx: &mpsc::Sender<TMsg>) -> Self {
         Self { tx: tx.clone() }
     }
 
+    /// Отправить исходящее сообщение
     pub fn send(&self, msg: TMsg) {
         let res = self.tx.blocking_send(msg);
 

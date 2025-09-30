@@ -1,25 +1,25 @@
 use std::time::Duration;
 
-use embedded_svc::http::{client::Client as HttpClient, Method};
+use embedded_svc::http::{Method, client::Client as HttpClient};
 use esp_idf_svc::http::client::EspHttpConnection;
 use tokio::{
     task::JoinSet,
-    time::{sleep, Instant},
+    time::{Instant, sleep},
 };
 use tracing::{error, info, warn};
 use url::Url;
 
 use crate::{
     components::shared_tasks::cmp_http_client::HttpClientGeneral,
-    executor::{join_set_spawn, CmpInOut},
+    executor::{MsgBusLinker, join_set_spawn},
     message::{Message, MsgDataBound},
 };
 
-use super::{config, Error};
+use super::{Error, config};
 
 pub async fn fn_process<TMsg>(
     config: config::Config<TMsg>,
-    msg_bus: CmpInOut<TMsg>,
+    msg_bus: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
@@ -56,7 +56,10 @@ where
 }
 
 /// Основная задача
-async fn task_main<TMsg>(in_out: CmpInOut<TMsg>, config: config::Config<TMsg>) -> super::Result<()>
+async fn task_main<TMsg>(
+    in_out: MsgBusLinker<TMsg>,
+    config: config::Config<TMsg>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
@@ -95,7 +98,7 @@ where
 
 /// Задача обработки периодического запроса
 async fn task_periodic_request<TMsg>(
-    in_out: CmpInOut<TMsg>,
+    in_out: MsgBusLinker<TMsg>,
     config: config::RequestPeriodic<TMsg>,
     url: Url,
 ) -> super::Result<()>

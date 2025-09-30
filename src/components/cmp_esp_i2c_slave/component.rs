@@ -2,14 +2,17 @@ use std::fmt::Debug;
 
 use async_trait::async_trait;
 use esp_idf_svc::hal::{i2c::I2c, peripheral::Peripheral};
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 
 use crate::{
-    executor::{CmpInOut, CmpResult, Component, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    executor::{CmpResult, Component, IComponentProcess, MsgBusLinker},
+    message::MsgDataBound,
 };
 
-use super::{config::Config, fn_process::fn_process, BufferData};
+use super::{BufferData, config::Config, fn_process::fn_process};
+
+/// Название компонента
+pub const COMPONENT_NAME: &str = "cmp_esp_i2c_slave";
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
@@ -27,10 +30,9 @@ where
     async fn process(
         &self,
         config: Config<TMsg, TI2c, TPeripheral, TI2cRequest, TI2cResponse, TBufferData>,
-        in_out: CmpInOut<TMsg>,
+        msgbus_linker: MsgBusLinker<TMsg>,
     ) -> CmpResult {
-        let in_out = in_out.clone_with_new_id("cmp_esp_i2c_slave", AuthPermissions::FullAccess);
-        fn_process(config, in_out).await?;
+        fn_process(config, msgbus_linker.init(COMPONENT_NAME)).await?;
         Ok(())
     }
 }

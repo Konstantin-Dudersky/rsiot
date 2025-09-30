@@ -16,7 +16,7 @@ pub struct SystemInfo {
     pub cpu_usage: Vec<f32>,
 
     /// Temperature of components
-    pub temperatures: HashMap<String, f32>,
+    pub temperatures: HashMap<String, Option<f32>>,
 
     /// Информация о памяти
     pub memory: SystemInfoMemory,

@@ -1,19 +1,39 @@
 use crate::executor::ComponentError;
 
+use super::COMPONENT_NAME;
+
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error("CmpOutput: {0}")]
-    CmpOutput(ComponentError),
+    #[error("{COMPONENT_NAME} | CreateEspAsyncMqttClient: {0}")]
+    CreateEspAsyncMqttClient(esp_idf_svc::sys::EspError),
 
-    #[error("FnOutput: {0}")]
-    FnOutput(anyhow::Error),
+    #[error("{COMPONENT_NAME} | FnPublish: {0}")]
+    FnPublish(anyhow::Error),
 
-    #[error("TokioTaskJoin: {0}")]
+    #[error("{COMPONENT_NAME} | FnSubscribe: {0}")]
+    FnSubscribe(anyhow::Error),
+
+    #[error("{COMPONENT_NAME} | TaskEndInput")]
+    TaskEndInput,
+
+    #[error("{COMPONENT_NAME} | TaskEndMain")]
+    TaskEndMain,
+
+    #[error("{COMPONENT_NAME} | TaskEndPublish")]
+    TaskEndMqttSend,
+
+    #[error("{COMPONENT_NAME} | TaskEndMqttRecv")]
+    TaskEndMqttRecv,
+
+    #[error("{COMPONENT_NAME} | TaskEndOutput")]
+    TaskEndOutput,
+
+    #[error("{COMPONENT_NAME} | TokioSyncMpscSend")]
+    TokioSyncMpscSend,
+
+    #[error("{COMPONENT_NAME} | TokioTaskJoin: {0}")]
     TokioTaskJoin(#[from] tokio::task::JoinError),
-
-    #[error("Broker disconnected")]
-    BrokerDisconnected,
 }
 
 impl From<Error> for ComponentError {

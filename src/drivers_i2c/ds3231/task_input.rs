@@ -4,7 +4,7 @@ use tokio::sync::Mutex;
 
 use crate::{
     drivers_i2c::{I2cSlaveAddress, RsiotI2cDriverBase},
-    executor::CmpInOut,
+    executor::MsgBusLinker,
     message::{Message, MsgDataBound},
 };
 
@@ -34,7 +34,7 @@ where
     pub address: I2cSlaveAddress,
     pub driver: Arc<Mutex<Driver>>,
     pub fn_input: fn(Message<TMsg>) -> Option<InputData>,
-    pub in_out: CmpInOut<TMsg>,
+    pub in_out: MsgBusLinker<TMsg>,
 }
 
 impl<TMsg, Driver> TaskInput<TMsg, Driver>

@@ -4,6 +4,7 @@
 //! cargo run --example cmp_http_client --features="cmp_http_client, serde_json"
 //! ```
 
+#[cfg(feature = "cmp_http_client")]
 mod shared;
 
 #[cfg(feature = "cmp_http_client")]
@@ -11,7 +12,7 @@ mod shared;
 async fn main() -> anyhow::Result<()> {
     use serde::{Deserialize, Serialize};
     use tokio::time::Duration;
-    use tracing::{level_filters::LevelFilter, Level};
+    use tracing::{Level, level_filters::LevelFilter};
 
     use shared::{ClientToServer, ServerToClient};
 
@@ -39,7 +40,7 @@ async fn main() -> anyhow::Result<()> {
 
     let mut counter = 0;
     let inject_config = cmp_inject_periodic::Config {
-        period: Duration::from_millis(1000),
+        period: Duration::from_millis(100),
         fn_periodic: move || {
             let msg = Data::CounterFromClient(counter);
             counter = counter.wrapping_add(1);
@@ -63,7 +64,9 @@ async fn main() -> anyhow::Result<()> {
 
     let http_config = cmp_http_client::Config::<Data> {
         serde_alg: SerdeAlgKind::Json,
-        // base_url: "http://192.168.71.1:8010",
+        // Подключиться к cmp_esp_http_server
+        // base_url: "http://192.168.71.1:8010".into(),
+        // Подключиться к cmp_http_server
         base_url: "http://localhost:8010".into(),
         timeout: Duration::from_secs(5),
         requests_input: vec![Box::new(cmp_http_client::RequestInputConfig::<
@@ -92,7 +95,7 @@ async fn main() -> anyhow::Result<()> {
             serde_alg: SerdeAlgKind::Json,
             request_kind: cmp_http_client::RequestKind::Get,
             endpoint: "/data/test".to_string(),
-            period: Duration::from_millis(1000),
+            period: Duration::from_millis(100),
             request_body: (),
             fn_process_response_success: |s2c| vec![Data::CounterFromServer(s2c.counter)],
             fn_process_response_error: Vec::new,
@@ -100,7 +103,7 @@ async fn main() -> anyhow::Result<()> {
     };
 
     let executor_config = ComponentExecutorConfig {
-        buffer_size: 100,
+        buffer_size: 10,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
         fn_tokio_metrics: |_| None,

@@ -7,7 +7,7 @@ for target in $targets {
     for feat in $target.features {
         for add_feat in $target.add_feat {
             print_header $"workspace clippy - ($target.name) / ($feat) / ($add_feat)"
-            let command = $'cargo  ($target.toolchain) clippy --all-targets --target="($target.name)" --features="($feat), ($add_feat), logging"'
+            let command = $'cargo ($target.toolchain) clippy --all-targets --target="($target.name)" --features="($feat), ($add_feat), serde_json, serde_toml, serde_postcard, serde_cbor, serde_messagepack"'
             print $"execute command: ($command)\n"
             nu -c $command
         }

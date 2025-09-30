@@ -3,7 +3,7 @@ use std::time::Duration;
 use esp_idf_svc::{log::EspLogger, sys::link_patches};
 use rsiot::{
     cmp_plc,
-    component::{cmp_inject_periodic, cmp_logger, ComponentChain},
+    component::{ComponentChain, cmp_inject_periodic, cmp_logger},
     message::msg_types,
 };
 use tokio::main;
@@ -29,7 +29,10 @@ async fn main() {
 
     let logger_config = cmp_logger::Config {
         level: Level::INFO,
-        fn_input: |msg| Ok(Some(msg.serialize()?)),
+        fn_input: |msg| {
+            let text = format!("{msg:?}");
+            Ok(Some(text))
+        },
     };
 
     let plc_config = cmp_plc::Config {

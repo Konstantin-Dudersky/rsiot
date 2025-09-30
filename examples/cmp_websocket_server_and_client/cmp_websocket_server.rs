@@ -1,11 +1,8 @@
 //! Простеший пример сервера websocket
-//!
-//! Запуск:
-//!
-//! ```bash
-//! cargo run --example cmp_websocket_server --features "cmp_websocket_server, serde_json"
-//! ```
 
+#[cfg(feature = "cmp_websocket_server")]
+mod messages_server;
+#[cfg(feature = "cmp_websocket_server")]
 mod shared;
 
 #[cfg(feature = "cmp_websocket_server")]
@@ -21,7 +18,8 @@ async fn main() -> anyhow::Result<()> {
         serde_utils::SerdeAlgKind,
     };
 
-    use shared::{ClientToServer, ServerMessages, ServerToClient};
+    use messages_server::ServerMessages;
+    use shared::{ClientToServer, ServerToClient};
 
     tracing_subscriber::fmt()
         // .with_env_filter("trace,tokio_tungstenite=debug,tungstenite=debug")
@@ -66,7 +64,7 @@ async fn main() -> anyhow::Result<()> {
 
     let mut counter = 0;
     let inject_config = cmp_inject_periodic::Config {
-        period: Duration::from_millis(1000),
+        period: Duration::from_millis(100),
         fn_periodic: move || {
             let msg = ServerMessages::ServerCounter(counter);
             counter += 1;

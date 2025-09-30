@@ -1,5 +1,6 @@
 use std::fmt::Debug;
 
+// ANCHOR: BufferData
 /// Ограничения на структуру данных буфера
 ///
 /// На структуре необходимо реализовать:
@@ -12,3 +13,4 @@ where
     Self: Clone + Debug + Default + Send,
 {
 }
+// ANCHOR: BufferData

@@ -4,13 +4,13 @@ use tokio::{sync::Mutex, task::JoinSet};
 
 use crate::{
     drivers_i2c,
-    executor::{join_set_spawn, CmpInOut},
+    executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
 };
 
-use super::{rsiot_i2c_driver::RsiotI2cDriver, Config};
+use super::{Config, rsiot_i2c_driver::RsiotI2cDriver};
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg>(config: Config<TMsg>, in_out: MsgBusLinker<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
@@ -114,7 +114,7 @@ where
                     config,
                     driver: driver.clone(),
                 };
-                join_set_spawn(&mut task_set, device.spawn());
+                join_set_spawn(&mut task_set, "di16", device.spawn());
             }
 
             drivers_i2c::I2cDevices::PM_RQ8(config) => {
@@ -123,7 +123,7 @@ where
                     config,
                     driver: driver.clone(),
                 };
-                join_set_spawn(&mut task_set, device.spawn());
+                join_set_spawn(&mut task_set, "di16", device.spawn());
             }
 
             drivers_i2c::I2cDevices::SSD1306 {} => {

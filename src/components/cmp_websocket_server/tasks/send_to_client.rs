@@ -1,3 +1,4 @@
+use bytes::Bytes;
 use futures::{SinkExt, stream::SplitSink};
 use tokio::{net::TcpStream, sync::broadcast};
 use tokio_tungstenite::{WebSocketStream, tungstenite::Message as TungsteniteMessage};
@@ -49,6 +50,7 @@ where
 {
     trace!("Send message to client: {:?}", s2c);
     let s2c_bytes = serde_alg.serialize(s2c)?;
-    let text = TungsteniteMessage::Binary(s2c_bytes);
+    let bytes = Bytes::from_owner(s2c_bytes);
+    let text = TungsteniteMessage::Binary(bytes);
     Ok(text)
 }

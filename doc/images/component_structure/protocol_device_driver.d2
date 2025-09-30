@@ -1,0 +1,47 @@
+vars: {
+  d2-config: {
+    # layout-engine: elk
+    theme-id: 1
+  }
+}
+
+style {
+    stroke-width: 1
+    stroke: gray
+}
+
+MsgBusIn: MsgBus {
+    shape: oval
+}
+MsgBusIn -> Input: "1"
+
+Input
+Input -> BufferToRequests
+
+BufferPeriodic
+BufferPeriodic -> BufferToRequests
+
+BufferToRequests
+BufferToRequests -> Request
+
+InitRequest
+InitRequest -> Request
+
+PeriodicRequest
+PeriodicRequest -> Request
+
+Request
+Request -> FieldbusProcess: "2"
+
+FieldbusProcess {
+    style.stroke-dash: 5
+}
+FieldbusProcess -> Response: "3"
+
+Response
+Response -> MsgBusOut: "4"
+Response -> BufferToRequests
+
+MsgBusOut: MsgBus {
+    shape: oval
+}

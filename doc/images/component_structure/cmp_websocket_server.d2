@@ -1,0 +1,53 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 1
+  }
+}
+
+style {
+    stroke-width: 1
+    stroke: gray
+}
+
+MsgBusIn: MsgBus {
+    shape: oval
+}
+MsgBusIn -> Input
+
+Input
+Input -> Client1.SendToClient: "input_to_clients\nbroadcast::<TServerToClient>"
+Input -> Client2.SendToClient: "input_to_clients\nbroadcast::<TServerToClient>"
+
+Client1 {
+    SendToClient
+    SendToClient -> Websocket
+
+    Websocket: "Websocket Client" {
+        style.stroke-dash: 5
+    }
+    Websocket -> RecvFromClient
+
+    RecvFromClient
+}
+Client1.RecvFromClient -> Output: "clients_to_output\nmpsc::<TClientToServer>"
+
+Client2 {
+    SendToClient
+    SendToClient -> Websocket
+
+    Websocket: "Websocket Client" {
+        style.stroke-dash: 5
+    }
+    Websocket -> RecvFromClient
+
+    RecvFromClient
+}
+Client2.RecvFromClient -> Output: "clients_to_output\nmpsc::<TClientToServer>"
+
+Output
+Output -> MsgBusOut
+
+MsgBusOut: MsgBus {
+    shape: oval
+}

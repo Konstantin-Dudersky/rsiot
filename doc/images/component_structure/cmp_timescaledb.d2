@@ -1,0 +1,37 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 1
+  }
+}
+
+style {
+    stroke-width: 1
+    stroke: gray
+}
+
+MsgBusIn: MsgBus {
+    shape: oval
+}
+
+Input
+
+Periodic
+
+SendToDatabase
+
+TimescaleDB {
+    icon: "https://icons.terrastruct.com/essentials%2F117-database.svg"
+    style.stroke-dash: 5
+}
+
+CollectResults
+
+MsgBusIn -> Input
+
+Input -> SendToDatabase: mpsc::<InnerMessage>
+
+Periodic -> SendToDatabase: mpsc::<InnerMessage>
+
+SendToDatabase -> TimescaleDB: SQL
+SendToDatabase -> CollectResults: mpsc::<JoinHandle<Result<()>>>

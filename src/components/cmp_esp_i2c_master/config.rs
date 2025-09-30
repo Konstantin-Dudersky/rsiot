@@ -2,7 +2,13 @@ use std::time::Duration;
 
 use esp_idf_svc::hal::{gpio::AnyIOPin, i2c::I2c, peripheral::Peripheral};
 
-use crate::{drivers_i2c::I2cDevices, message::MsgDataBound};
+use crate::{
+    components_config::{
+        i2c_master::{FieldbusRequest, FieldbusResponse},
+        master_device::DeviceTrait,
+    },
+    message::MsgDataBound,
+};
 
 // ANCHOR: Config
 /// Конфигурация cmp_esp_i2c_master
@@ -30,8 +36,8 @@ where
     /// Таймаут запроса
     pub timeout: Duration,
 
-    /// Конфигурация устройств по шине
-    pub devices: Vec<I2cDevices<TMsg>>,
+    /// Драйвера устройств
+    pub devices: Vec<Box<dyn DeviceTrait<TMsg, FieldbusRequest, FieldbusResponse>>>,
 }
 // ANCHOR: Config
 

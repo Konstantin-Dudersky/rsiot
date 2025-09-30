@@ -3,6 +3,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::components::cmp_plc::plc::FbSystemData;
+use crate::executor::Instant;
 
 use super::super::super::function_block_base::{FunctionBlockBase, IFunctionBlock};
 use super::super::super::{library::edge_detect::rising_edge, types};
@@ -29,7 +30,7 @@ pub struct Q {
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 pub struct S {
     input_rising_edge: rising_edge::FB,
-    delay: types::TimeInstant,
+    delay: Instant,
 }
 
 impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
@@ -39,7 +40,7 @@ impl IFunctionBlock<I, Q, S> for FunctionBlockBase<I, Q, S> {
             .call(&mut rising_edge::I { i: input.input })
             .q
         {
-            stat.delay = types::TimeInstant::now();
+            stat.delay = Instant::now();
         }
 
         Q {

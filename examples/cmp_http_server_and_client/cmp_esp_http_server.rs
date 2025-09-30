@@ -1,10 +1,11 @@
 //! Example based on developer board ESP32-C3
 //!
-//! cargo run --example cmp_esp_http_server --target="riscv32imc-esp-espidf" --features="cmp_esp, logging" --release
+//! cargo run --example cmp_esp_http_server --target="riscv32imc-esp-espidf" --features="cmp_esp, log_esp" --release
 
+#[cfg(feature = "cmp_esp")]
 mod shared;
 
-#[cfg(all(feature = "cmp_esp", feature = "log_esp"))]
+#[cfg(feature = "cmp_esp")]
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
     use std::time::Duration;
@@ -22,7 +23,7 @@ async fn main() {
         serde_utils::SerdeAlgKind,
     };
     use tokio::task::LocalSet;
-    use tracing::{level_filters::LevelFilter, Level};
+    use tracing::{Level, level_filters::LevelFilter};
 
     use shared::{ClientToServer, ServerToClient};
 
@@ -38,6 +39,7 @@ async fn main() {
     enum Custom {
         Counter(f64),
         CounterFromClient(u8),
+        WiFiConnected(bool),
     }
 
     impl MsgDataBound for Custom {}
@@ -45,6 +47,10 @@ async fn main() {
     // cmp_http_server_esp -------------------------------------------------------------------------
     let http_server_esp_config = cmp_esp_http_server::Config {
         port: 8010,
+        fn_start: |msg| match msg {
+            Custom::WiFiConnected(v) => Some(*v),
+            _ => None,
+        },
         get_endpoints: vec![
             Box::new(GetEndpointConfig {
                 serde_alg: SerdeAlgKind::Json,
@@ -100,7 +106,7 @@ async fn main() {
     let config_inject_periodic = cmp_inject_periodic::Config {
         period: Duration::from_millis(100),
         fn_periodic: move || {
-            let msg = Message::new_custom(Custom::Counter(value));
+            let msg = Custom::Counter(value);
             value += 1.0;
             vec![msg]
         },
@@ -120,6 +126,7 @@ async fn main() {
             ssid: "test_esp".into(),
         }),
         client: None,
+        fn_wifi_connected: |v| Custom::WiFiConnected(v),
     };
 
     // executor ------------------------------------------------------------------------------------
@@ -128,6 +135,7 @@ async fn main() {
         buffer_size: 10,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
+        fn_tokio_metrics: |_| None,
     };
 
     let local_set = LocalSet::new();
@@ -145,7 +153,7 @@ async fn main() {
     local_set.await;
 }
 
-#[cfg(not(all(feature = "cmp_esp", feature = "log_esp")))]
+#[cfg(not(feature = "cmp_esp"))]
 fn main() {
     unimplemented!()
 }

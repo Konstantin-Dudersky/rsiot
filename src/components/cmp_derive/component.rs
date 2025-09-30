@@ -1,11 +1,13 @@
 use async_trait::async_trait;
 
 use crate::{
-    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
+    executor::{Component, ComponentError, IComponentProcess, MsgBusLinker},
     message::*,
 };
 
-use super::{fn_process::fn_process, Config};
+use super::{Config, fn_process::fn_process};
+
+pub const COMPONENT_NAME: &str = "cmp_derive";
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
@@ -16,14 +18,11 @@ where
     async fn process(
         &self,
         config: Config<TMsg>,
-        in_out: CmpInOut<TMsg>,
+        msgbus_linker: MsgBusLinker<TMsg>,
     ) -> Result<(), ComponentError> {
-        fn_process(
-            in_out.clone_with_new_id("cmp_derive", AuthPermissions::FullAccess),
-            config,
-        )
-        .await
-        .map_err(|e| ComponentError::Execution(e.to_string()))
+        fn_process(msgbus_linker.init(COMPONENT_NAME), config)
+            .await
+            .map_err(|e| ComponentError::Execution(e.to_string()))
     }
 }
 

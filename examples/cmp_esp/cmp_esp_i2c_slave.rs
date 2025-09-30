@@ -9,7 +9,7 @@ async fn main() {
 
     use esp_idf_svc::{hal::peripherals::Peripherals, sys::link_patches};
     use tokio::task::LocalSet;
-    use tracing::{level_filters::LevelFilter, Level};
+    use tracing::{Level, level_filters::LevelFilter};
 
     use rsiot::{
         components::{cmp_esp_i2c_slave, cmp_inject_periodic, cmp_logger},
@@ -32,11 +32,7 @@ async fn main() {
         CounterFromMaster(u32),
     }
 
-    impl MsgDataBound for Custom {
-        fn define_time_to_live(&self) -> rsiot::message::TimeToLiveValue {
-            TimeToLiveValue::Infinite
-        }
-    }
+    impl MsgDataBound for Custom {}
 
     // I2C messages --------------------------------------------------------------------------------
     #[derive(Debug, Deserialize, Serialize)]
@@ -62,7 +58,18 @@ async fn main() {
     // cmp_logger ----------------------------------------------------------------------------------
     let logger_config = cmp_logger::Config::<Custom> {
         level: Level::INFO,
-        fn_input: |msg| Ok(Some(msg.serialize_data()?)),
+        fn_input: |msg| {
+            let Some(msg) = msg.get_custom_data() else {
+                return Ok(None);
+            };
+
+            let text = match msg {
+                Custom::CounterFromMaster(content) => format!("{content}"),
+                _ => return Ok(None),
+            };
+
+            Ok(Some(text))
+        },
     };
 
     // cmp_inject_periodic -------------------------------------------------------------------------
@@ -70,7 +77,7 @@ async fn main() {
     let config_inject_periodic = cmp_inject_periodic::Config {
         period: Duration::from_secs(1),
         fn_periodic: move || {
-            let msg = Message::new_custom(Custom::Counter(counter));
+            let msg = Custom::Counter(counter);
             counter += 1;
             vec![msg]
         },
@@ -120,6 +127,7 @@ async fn main() {
         buffer_size: 10,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
+        fn_tokio_metrics: |_| None,
     };
 
     let local_set = LocalSet::new();

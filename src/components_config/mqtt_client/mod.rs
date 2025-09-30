@@ -1,22 +1,18 @@
 //! Настройки коммуникации с MQTT-брокером
 
-mod mqtt_msg;
 mod mqtt_msg_gen;
+mod mqtt_msg_recv;
+mod mqtt_msg_send;
 
-pub use mqtt_msg::MqttMsg;
-pub use mqtt_msg_gen::MqttMsgGen;
+pub use {mqtt_msg_gen::MqttMsgGen, mqtt_msg_recv::MqttMsgRecv, mqtt_msg_send::MqttMsgSend};
 
-use crate::{
-    message::{Message, MsgDataBound},
-    serde_utils::SerdeAlgKind,
-};
+use crate::{message::MsgDataBound, serde_utils::SerdeAlgKind};
 
 /// Преобразование входящих сообщений в данные для публикации в брокере
-pub type FnPublish<TMsg> = fn(&TMsg, &MqttMsgGen) -> anyhow::Result<Option<MqttMsg>>;
+pub type FnPublish<TMsg> = fn(&TMsg, &MqttMsgGen) -> anyhow::Result<Option<MqttMsgSend>>;
 
 /// Преобразование данных от брокера сообщений в исходящие сообщения
-pub type FnSubscribe<TMsg> =
-    fn(&MqttMsg, &MqttMsgGen) -> anyhow::Result<Option<Vec<Message<TMsg>>>>;
+pub type FnSubscribe<TMsg> = fn(&str, &[u8], &MqttMsgGen) -> anyhow::Result<Option<Vec<TMsg>>>;
 
 // ANCHOR: Config
 /// Конфигурация cmp_mqtt_client
@@ -87,7 +83,7 @@ where
     /// Подписаться
     Subscribe {
         /// Токен
-        token: String,
+        topic: String,
 
         /// Функция принимает сообщения из брокера и формирует возможный массив исходящих сообщений
         fn_subscribe: FnSubscribe<TMsg>,

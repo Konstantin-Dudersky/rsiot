@@ -12,7 +12,7 @@ async fn main() {
         timer::EspTaskTimerService,
     };
     use tokio::task::LocalSet;
-    use tracing::{level_filters::LevelFilter, Level};
+    use tracing::{Level, level_filters::LevelFilter};
 
     use rsiot::{
         components::{
@@ -40,15 +40,15 @@ async fn main() {
         WiFiConnected,
     }
 
-    impl MsgDataBound for Custom {
-        fn define_time_to_live(&self) -> rsiot::message::TimeToLiveValue {
-            TimeToLiveValue::Infinite
-        }
-    }
+    impl MsgDataBound for Custom {}
 
     // cmp_http_server_esp -------------------------------------------------------------------------
     let http_server_esp_config = cmp_esp_http_server::Config {
         port: 8010,
+        fn_start: |msg| match msg {
+            Custom::WiFiConnected => Some(true),
+            _ => None,
+        },
         get_endpoints: vec![],
         put_endpoints: vec![],
     };
@@ -56,7 +56,18 @@ async fn main() {
     // cmp_logger ----------------------------------------------------------------------------------
     let logger_config = cmp_logger::Config::<Custom> {
         level: Level::INFO,
-        fn_input: |msg| Ok(Some(msg.serialize_data()?)),
+        fn_input: |msg| {
+            let Some(msg) = msg.get_custom_data() else {
+                return Ok(None);
+            };
+
+            let text = match msg {
+                Custom::BootButton(content) => format!("{content}"),
+                _ => return Ok(None),
+            };
+
+            Ok(Some(text))
+        },
     };
 
     // cmp_inject_periodic -------------------------------------------------------------------------
@@ -64,7 +75,7 @@ async fn main() {
     let config_inject_periodic = cmp_inject_periodic::Config {
         period: Duration::from_secs(5),
         fn_periodic: move || {
-            let msg = Message::new_custom(Custom::Relay0(value));
+            let msg = Custom::Relay0(value);
             value = !value;
             vec![msg]
         },
@@ -88,22 +99,23 @@ async fn main() {
             password: "Admin123!".into(),
             auth_method: cmp_esp_wifi::ConfigAuthMethod::WPA2Personal,
         }),
+        fn_wifi_connected: |_v| Custom::WiFiConnected,
     };
 
     // GPIO
     let gpio_config = cmp_esp_gpio::Config {
         inputs: vec![cmp_esp_gpio::ConfigGpioInput {
             peripherals: peripherals.pins.gpio0.into(),
-            fn_output: |value| Message::new_custom(Custom::BootButton(value)),
+            fn_output: |value| Custom::BootButton(value),
             pull: cmp_esp_gpio::Pull::Down,
         }],
         outputs: vec![cmp_esp_gpio::ConfigGpioOutput {
             peripherals: peripherals.pins.gpio1.into(),
-            fn_input: |msg| match msg.data {
-                MsgData::Custom(Custom::Relay0(value)) => Some(value),
+            fn_input: |msg| match msg {
+                Custom::Relay0(value) => Some(value),
                 _ => None,
             },
-            is_low_triggered: false,
+            default: false,
         }],
     };
 
@@ -141,6 +153,7 @@ async fn main() {
         buffer_size: 10,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
+        fn_tokio_metrics: |_| None,
     };
 
     let local_set = LocalSet::new();

@@ -5,7 +5,7 @@ use tracing::warn;
 
 use crate::{
     components_config::can_general::{BufferBound, CanFrame},
-    executor::CmpInOut,
+    executor::{MsgBusInput, MsgBusLinker},
     message::MsgDataBound,
 };
 
@@ -14,7 +14,7 @@ where
     TMsg: MsgDataBound,
     TBuffer: BufferBound,
 {
-    pub input: CmpInOut<TMsg>,
+    pub input: MsgBusInput<TMsg>,
     pub output: mpsc::Sender<CanFrame>,
     pub buffer: Arc<Mutex<TBuffer>>,
     pub fn_input: fn(&TMsg, &mut TBuffer) -> anyhow::Result<Option<Vec<CanFrame>>>,
@@ -28,7 +28,7 @@ where
     TBuffer: BufferBound,
 {
     pub async fn spawn(mut self) -> Result<(), TError> {
-        while let Ok(msg) = self.input.recv_input().await {
+        while let Ok(msg) = self.input.recv().await {
             let Some(msg) = msg.get_custom_data() else {
                 continue;
             };

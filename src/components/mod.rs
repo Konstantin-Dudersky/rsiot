@@ -14,8 +14,6 @@ pub mod cmp_auth;
 
 pub mod cmp_livecounter;
 
-pub mod cmp_create_if_not_exist;
-
 pub mod cmp_derive;
 
 // #[cfg(feature = "cmp_esp")]
@@ -28,11 +26,15 @@ pub mod cmp_esp_gpio;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
-pub mod cmp_esp_i2c_slave;
+pub mod cmp_esp_http_server;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
-pub mod cmp_esp_http_server;
+pub mod cmp_esp_i2c_master;
+
+#[cfg(feature = "cmp_esp")]
+#[cfg(riscv32imc_esp_espidf)]
+pub mod cmp_esp_i2c_slave;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
@@ -40,11 +42,7 @@ pub mod cmp_esp_led;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
-pub mod cmp_esp_i2c_master;
-
-// #[cfg(feature = "cmp_esp")]
-// #[cfg(riscv32imc_esp_espidf)]
-// pub mod cmp_esp_mqtt_client;
+pub mod cmp_esp_mqtt_client;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
@@ -80,6 +78,7 @@ pub mod cmp_filesystem;
 #[cfg(any(
     aarch64_linux_android,
     aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
     x8664_unknown_linux_gnu
 ))]
 pub mod cmp_http_client;
@@ -93,7 +92,11 @@ pub mod cmp_http_client;
 pub mod cmp_http_client_wasm;
 
 #[cfg(feature = "cmp_http_server")]
-#[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
 pub mod cmp_http_server;
 
 #[cfg(feature = "cmp_influxdb")]
@@ -156,13 +159,18 @@ pub mod cmp_logger;
 pub mod cmp_math;
 
 #[cfg(feature = "cmp_modbus_client")]
-#[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
 pub mod cmp_modbus_client;
 
 #[cfg(feature = "cmp_mqtt_client")]
 #[cfg(any(
     aarch64_linux_android,
     aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
     x8664_unknown_linux_gnu
 ))]
 pub mod cmp_mqtt_client;
@@ -182,10 +190,6 @@ pub mod cmp_raspberrypi_gpio;
 #[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
 pub mod cmp_raspberrypi_i2c_master;
 
-#[cfg(feature = "cmp_redis_client")]
-#[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
-pub mod cmp_redis_client;
-
 #[cfg(feature = "cmp_slint")]
 #[cfg(any(
     aarch64_linux_android,
@@ -201,6 +205,7 @@ pub mod cmp_surrealdb;
 
 #[cfg(feature = "cmp_svg")]
 #[cfg(any(
+    aarch64_linux_android,
     aarch64_unknown_linux_gnu,
     armv7_unknown_linux_gnueabihf,
     x8664_unknown_linux_gnu
@@ -208,11 +213,19 @@ pub mod cmp_surrealdb;
 pub mod cmp_svg;
 
 #[cfg(feature = "cmp_system_info")]
-#[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
 pub mod cmp_system_info;
 
 #[cfg(feature = "cmp_telegram")]
-#[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
 pub mod cmp_telegram;
 
 #[cfg(feature = "cmp_timescaledb")]
@@ -232,7 +245,11 @@ pub mod cmp_timescaledb;
 pub mod cmp_timescaledb_reader;
 
 #[cfg(feature = "cmp_websocket_client")]
-#[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
 pub mod cmp_websocket_client;
 
 #[cfg(feature = "cmp_websocket_client_wasm")]
@@ -240,7 +257,11 @@ pub mod cmp_websocket_client;
 pub mod cmp_websocket_client_wasm;
 
 #[cfg(feature = "cmp_websocket_server")]
-#[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
 pub mod cmp_websocket_server;
 
 #[cfg(feature = "cmp_webstorage")]

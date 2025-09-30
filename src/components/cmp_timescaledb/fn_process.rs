@@ -1,42 +1,23 @@
-use tokio::{
-    sync::mpsc,
-    task::JoinSet,
-    time::{sleep, Duration},
-};
-use tracing::{error, info};
+use tokio::{sync::mpsc, task::JoinSet};
+use tracing::info;
 use url::Url;
 
 use crate::{
-    executor::{join_set_spawn, CmpInOut, ComponentError},
+    executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
 };
 
-use super::{config::Config, tasks, Result};
+use super::{Error, config::Config, tasks};
 
 pub async fn fn_process<TMsg>(
-    mut input: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
     config: Config<TMsg>,
-) -> std::result::Result<(), ComponentError>
+) -> Result<(), Error>
 where
     TMsg: 'static + MsgDataBound,
 {
     info!("Start cmp_timescaledb");
 
-    loop {
-        let result = task_main(&mut input, &config).await;
-        match result {
-            Ok(_) => (),
-            Err(err) => error!("{:?}", err),
-        }
-        sleep(Duration::from_secs(2)).await;
-        info!("Restarting...")
-    }
-}
-
-async fn task_main<TMsg>(in_out: &mut CmpInOut<TMsg>, config: &Config<TMsg>) -> Result<()>
-where
-    TMsg: 'static + MsgDataBound,
-{
     let connection_string = Url::parse(&config.connection_string)?;
 
     let (ch_tx_input_to_database, ch_rx_input_to_database) = mpsc::channel(1000);
@@ -45,7 +26,7 @@ where
     let mut task_set = JoinSet::new();
 
     let task = tasks::Input {
-        input: in_out.clone(),
+        msgbus_input: msgbus_linker.input(),
         output: ch_tx_input_to_database.clone(),
         fn_input: config.fn_input,
     };
@@ -83,6 +64,8 @@ where
     while let Some(res) = task_set.join_next().await {
         res??;
     }
+
+    // TODO - перезапуск при ошибке сохранения данных в БД
 
     Ok(())
 }

@@ -2,8 +2,11 @@
 
 use leptos::prelude::*;
 
+/// Способ интеграции видеопотока с сервиса go2rtc
 pub enum Go2rtcMode {
+    /// Интеграция через WebRTC
     WebRTC,
+    /// Интеграция через Stream
     Stream,
 }
 

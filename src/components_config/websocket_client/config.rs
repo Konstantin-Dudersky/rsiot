@@ -1,9 +1,6 @@
 //! Конфигурация websocket-клиента
 
-use crate::{
-    components_config::websocket_general::WebsocketMessage, message::Message,
-    serde_utils::SerdeAlgKind,
-};
+use crate::{components_config::websocket_general::WebsocketMessage, serde_utils::SerdeAlgKind};
 
 /// Преобразование входящих сообщений в текст для отправки на сервер
 pub type FnClientToServer<TMsg, TClientToServer> = fn(&TMsg) -> Option<TClientToServer>;
@@ -39,7 +36,7 @@ where
     /// - false - соединение разорвано
     ///
     /// Примеры см. в тестах
-    pub fn_connection_state: fn(bool) -> Option<Message<TMsg>>,
+    pub fn_connection_state: fn(bool) -> Option<TMsg>,
 }
 // ANCHOR: Config
 
@@ -51,7 +48,7 @@ where
 {
     fn default() -> Self {
         Self {
-            serde_alg: SerdeAlgKind::Json,
+            serde_alg: SerdeAlgKind::Unspecified,
             url: "ws://localhost:8000".into(),
             fn_client_to_server: |_| None,
             fn_server_to_client: |_| vec![],

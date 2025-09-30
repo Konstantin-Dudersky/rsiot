@@ -1,11 +1,14 @@
 use async_trait::async_trait;
 
 use crate::{
-    executor::{CmpInOut, CmpResult, Component, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    executor::{CmpResult, Component, IComponentProcess, MsgBusLinker},
+    message::MsgDataBound,
 };
 
 use super::{config::Config, fn_process::fn_process};
+
+/// Название компонента
+pub const COMPONENT_NAME: &str = "cmp_http_client";
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
@@ -13,12 +16,8 @@ impl<TMsg> IComponentProcess<Config<TMsg>, TMsg> for Component<Config<TMsg>, TMs
 where
     TMsg: MsgDataBound + 'static,
 {
-    async fn process(&self, config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> CmpResult {
-        fn_process(
-            in_out.clone_with_new_id("cmp_http_client_2", AuthPermissions::FullAccess),
-            config,
-        )
-        .await?;
+    async fn process(&self, config: Config<TMsg>, msgbus_linker: MsgBusLinker<TMsg>) -> CmpResult {
+        fn_process(msgbus_linker.init(COMPONENT_NAME), config).await?;
         Ok(())
     }
 }

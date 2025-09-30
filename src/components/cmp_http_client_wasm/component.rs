@@ -3,11 +3,14 @@
 use async_trait::async_trait;
 
 use crate::{
-    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    executor::{Component, ComponentError, IComponentProcess, MsgBusLinker},
+    message::MsgDataBound,
 };
 
 use super::{config::Config, fn_process::fn_process};
+
+/// Название компонента
+pub const COMPONENT_NAME: &str = "cmp_http_client_wasm";
 
 #[allow(unreachable_code)]
 #[cfg(not(feature = "single-thread"))]
@@ -19,7 +22,7 @@ where
     async fn process(
         &self,
         _config: ConfigAlias<TMsg>,
-        _input: CmpInOut<TMsg>,
+        _input: MsgBusLinker<TMsg>,
     ) -> Result<(), ComponentError> {
         unimplemented!();
         let config = _config.0;
@@ -38,14 +41,11 @@ where
     async fn process(
         &self,
         config: Config<TMsg>,
-        in_out: CmpInOut<TMsg>,
+        msgbus_linker: MsgBusLinker<TMsg>,
     ) -> Result<(), ComponentError> {
-        fn_process(
-            in_out.clone_with_new_id("cmp_http_client_wasm", AuthPermissions::FullAccess),
-            config,
-        )
-        .await
-        .map_err(|err| ComponentError::Execution(err.to_string()))
+        fn_process(msgbus_linker.init(COMPONENT_NAME), config)
+            .await
+            .map_err(|err| ComponentError::Execution(err.to_string()))
     }
 }
 

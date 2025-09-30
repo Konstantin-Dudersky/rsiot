@@ -1,0 +1,33 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 1
+  }
+}
+
+style {
+    stroke-width: 1
+    stroke: gray
+}
+
+MsgBusIn: MsgBus {
+    shape: oval
+}
+MsgBusIn -> Input
+
+Input
+Input -> SendToDatabase
+
+Periodic
+Periodic -> SendToDatabase
+
+SendToDatabase
+SendToDatabase -> CollectResults
+SendToDatabase -> InfluxDB
+
+CollectResults
+
+InfluxDB {
+icon: https://img.icons8.com/flat-round/64/influxdb.png
+    style.stroke-dash: 5
+}

@@ -2,7 +2,7 @@ use tokio::sync::mpsc;
 
 use crate::{
     components_config::can_general::CanFrame,
-    executor::CmpInOut,
+    executor::{MsgBusLinker, MsgBusOutput},
     message::{Message, MsgDataBound},
 };
 
@@ -11,7 +11,7 @@ where
     TMsg: MsgDataBound,
 {
     pub input: mpsc::Receiver<CanFrame>,
-    pub output: CmpInOut<TMsg>,
+    pub output: MsgBusOutput<TMsg>,
     pub fn_output: fn(CanFrame) -> Option<Vec<TMsg>>,
     pub error_task_end: fn() -> TError,
     pub error_tokio_mpsc_send: fn() -> TError,
@@ -29,7 +29,7 @@ where
             for msg in msgs {
                 let msg = Message::new_custom(msg);
                 self.output
-                    .send_output(msg)
+                    .send(msg)
                     .await
                     .map_err(|_| (self.error_tokio_mpsc_send)())?;
             }

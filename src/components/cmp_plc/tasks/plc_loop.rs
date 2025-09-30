@@ -1,12 +1,11 @@
 use std::{sync::Arc, time::Duration};
 
-use instant::Instant;
 use serde::Serialize;
 use tokio::sync::{Mutex, mpsc};
 use tracing::{info, trace};
 
 use crate::{
-    executor::{Cache, sleep},
+    executor::{Cache, Instant, sleep},
     message::{Message, MsgDataBound},
 };
 

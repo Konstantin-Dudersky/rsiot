@@ -1,25 +1,31 @@
 use std::{
     sync::{
-        atomic::{AtomicU8, Ordering},
         Arc,
+        atomic::{AtomicU8, Ordering},
     },
     time::Duration,
 };
 
-use tokio::{sync::mpsc, time::sleep};
+use tokio::time::sleep;
 
-use crate::message::Message;
+use crate::{executor::MsgBusOutput, message::MsgDataBound};
 
-use super::super::config::FnCheckPartnerCounter;
+use super::{super::config::FnCheckPartnerCounter, Error};
 
-pub struct CheckPartnerPeriod<TMsg> {
-    pub output: mpsc::Sender<Message<TMsg>>,
+pub struct CheckPartnerPeriod<TMsg>
+where
+    TMsg: MsgDataBound,
+{
+    pub output: MsgBusOutput<TMsg>,
     pub fn_check_partner_counter: FnCheckPartnerCounter<TMsg>,
     pub check_partner_period: Duration,
     pub live_counter: Arc<AtomicU8>,
 }
 
-impl<TMsg> CheckPartnerPeriod<TMsg> {
+impl<TMsg> CheckPartnerPeriod<TMsg>
+where
+    TMsg: MsgDataBound,
+{
     pub async fn spawn(self) -> super::Result<()> {
         let mut prev_live_counter = 0;
 
@@ -31,7 +37,10 @@ impl<TMsg> CheckPartnerPeriod<TMsg> {
             let msg = (self.fn_check_partner_counter)(live_counter != prev_live_counter);
             prev_live_counter = live_counter;
 
-            self.output.send(msg).await.unwrap();
+            self.output
+                .send(msg)
+                .await
+                .map_err(|_| Error::TokioSyncMpscSend)?;
         }
     }
 }

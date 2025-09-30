@@ -7,7 +7,7 @@ mod fn_process;
 mod tasks;
 
 pub use crate::components_config::uart_general::{Baudrate, DataBits, Parity, StopBits};
-pub use component::Cmp;
+pub use component::{COMPONENT_NAME, Cmp};
 pub use config::*;
 pub use error::Error;
 

@@ -1,30 +1,20 @@
-use crate::{components::shared_tasks, executor::ComponentError};
+use crate::executor::ComponentError;
+
+use super::COMPONENT_NAME;
 
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error("CmpOutput: {0}")]
-    CmpOutput(ComponentError),
+    #[error("{COMPONENT_NAME} | TokioSyncMpscSend")]
+    TokioSyncMpscSend,
 
-    #[error("FnOutput: {0}")]
-    FnInput(anyhow::Error),
-
-    #[error("FnOutput: {0}")]
-    FnOutput(anyhow::Error),
-
-    #[error("TokioTaskJoin: {0}")]
+    #[error("{COMPONENT_NAME} | TokioTaskJoin: {0}")]
     TokioTaskJoin(#[from] tokio::task::JoinError),
 
-    #[error(transparent)]
-    TaskMsgBusToMpsc(shared_tasks::msgbus_to_mpsc::Error),
-
-    #[error(transparent)]
-    TaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus::Error),
-
-    #[error("TaskInput")]
+    #[error("{COMPONENT_NAME} | TaskInput")]
     TaskInput,
 
-    #[error("TaskCheck")]
+    #[error("{COMPONENT_NAME} | TaskCheck")]
     TaskCheck,
 }
 

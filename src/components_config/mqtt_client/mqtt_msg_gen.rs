@@ -1,8 +1,8 @@
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 
 use crate::serde_utils::{self, SerdeAlg};
 
-use super::MqttMsg;
+use super::MqttMsgSend;
 
 /// Генератор сообщений MQTT-брокера
 #[derive(Clone)]
@@ -15,15 +15,15 @@ impl MqttMsgGen {
     /// Сериализация сообщений перед отправкой в MQTT-сервер
     pub fn ser<TPayload>(
         &self,
-        topic: &str,
+        topic: impl Into<String>,
         retain: bool,
         payload: &TPayload,
-    ) -> Result<MqttMsg, serde_utils::Error>
+    ) -> Result<MqttMsgSend, serde_utils::Error>
     where
         TPayload: Serialize,
     {
         let payload = self.serde_alg.serialize(payload)?;
-        let mqtt_msg = MqttMsg {
+        let mqtt_msg = MqttMsgSend::Publish {
             topic: topic.into(),
             retain,
             payload,

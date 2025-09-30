@@ -1,7 +1,7 @@
 use esp_idf_svc::hal::{
     gpio::AnyIOPin,
     peripheral::Peripheral,
-    spi::{config, Operation, Spi, SpiAnyPins, SpiDeviceDriver, SpiDriver, SpiDriverConfig},
+    spi::{Operation, Spi, SpiAnyPins, SpiDeviceDriver, SpiDriver, SpiDriverConfig, config},
     units::FromValueType,
 };
 use tokio::{sync::mpsc, task::JoinSet, time::sleep};
@@ -13,30 +13,26 @@ use crate::{
         master_device::{FieldbusRequestWithIndex, FieldbusResponseWithIndex},
         spi_master,
     },
-    executor::{join_set_spawn, CmpInOut},
+    executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
 };
 
-use super::{config::ConfigDevicesCommSettings, Config};
+use super::{Config, config::ConfigDevicesCommSettings};
 
 pub async fn fn_process<TMsg, TSpi, TPeripheral>(
     config: Config<TMsg, TSpi, TPeripheral>,
-    msg_bus: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
     TSpi: Peripheral<P = TPeripheral> + 'static,
     TPeripheral: Spi + SpiAnyPins + 'static,
 {
-    const BUFFER_SIZE: usize = 500;
-
     let mut task_set = JoinSet::new();
 
     let config_fn_process_master = FnProcessMaster {
-        msg_bus: msg_bus.clone(),
-        buffer_size: BUFFER_SIZE,
+        msgbus_linker,
         task_set: &mut task_set,
-        error_msgbus_to_broadcast: super::Error::TaskMsgbusToBroadcast,
         error_filter: super::Error::TaskFilter,
         error_mpsc_to_msgbus: super::Error::TaskMpscToMsgBus,
         error_master_device: super::Error::DeviceError,
@@ -178,6 +174,13 @@ async fn make_spi_operation<'a>(
             let mut transaction = [Operation::Write(write_data)];
             device.transaction(&mut transaction).unwrap();
             None
+        }
+        spi_master::Operation::Read { read_size } => {
+            let mut read_data = vec![0; *read_size as usize];
+            let mut transaction = [Operation::Read(&mut read_data)];
+            device.transaction(&mut transaction).unwrap();
+            trace!("Read SPI data: {:x?}", read_data);
+            Some(read_data)
         }
     }
 }

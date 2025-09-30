@@ -1,4 +1,6 @@
-use crate::{components::shared_tasks, serde_utils};
+use crate::{components::shared_tasks, executor::ComponentError, serde_utils};
+
+use super::COMPONENT_NAME;
 
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
@@ -21,6 +23,9 @@ pub enum Error {
     #[error("Error: {err}, text from client: {data}")]
     FnOutput { err: anyhow::Error, data: String },
 
+    #[error("{COMPONENT_NAME} | FnProcessEnd")]
+    FnProcessEnd,
+
     #[error("Client disconnected")]
     ClientDisconnected,
 
@@ -41,4 +46,10 @@ pub enum Error {
 
     #[error(transparent)]
     Serde(#[from] serde_utils::Error),
+}
+
+impl From<Error> for ComponentError {
+    fn from(value: Error) -> Self {
+        ComponentError::Execution(value.to_string())
+    }
 }

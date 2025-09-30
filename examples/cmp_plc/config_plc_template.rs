@@ -2,7 +2,7 @@
 #[allow(dead_code, unused_variables)]
 fn main() {
     // messages ------------------------------------------------------------------------------------
-    use rsiot::message::{MsgDataBound, MsgKey, TimeToLiveValue};
+    use rsiot::message::{MsgDataBound, MsgKey};
     use serde::{Deserialize, Serialize};
 
     #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
@@ -15,11 +15,7 @@ fn main() {
         Variant1,
     }
 
-    impl MsgDataBound for Custom {
-        fn define_time_to_live(&self) -> rsiot::message::TimeToLiveValue {
-            TimeToLiveValue::Infinite
-        }
-    }
+    impl MsgDataBound for Custom {}
 
     // fb_main -------------------------------------------------------------------------------------
 

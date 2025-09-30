@@ -7,22 +7,19 @@ use tokio::{
 use crate::{
     components::shared_tasks,
     components_config::http_client::{MsgRequest, MsgResponse, RequestInput, RequestPeriodic},
-    executor::{join_set_spawn, CmpInOut},
+    executor::{MsgBusLinker, MsgBusInput, MsgBusOutput, join_set_spawn},
     message::MsgDataBound,
 };
 
-use super::{tasks, Error};
+use super::{Error, tasks};
 
 /// Запуск общих задач работы HTTP-клиента
 pub struct HttpClientGeneral<'a, TMsg>
 where
     TMsg: MsgDataBound,
 {
-    /// Шина сообщений
-    pub msg_bus: CmpInOut<TMsg>,
-
-    /// Ёмкость очередей сообщений между задачами
-    pub buffer_size: usize,
+    /// Подключение к шине сообщений
+    pub msgbus_linker: MsgBusLinker<TMsg>,
 
     /// Ссылка на коллекцию задач tokio
     pub task_set: &'a mut JoinSet<super::Result<()>>,
@@ -40,25 +37,12 @@ where
 {
     /// Запуск
     pub fn spawn(self) -> (mpsc::Receiver<MsgRequest>, mpsc::Sender<MsgResponse>) {
-        let (ch_tx_msgbus_to_input, ch_rx_msgbus_to_input) = mpsc::channel(self.buffer_size);
-        let (ch_tx_requests, ch_rx_requests) = mpsc::channel(self.buffer_size);
-        let (ch_tx_reponse, ch_rx_response) = mpsc::channel(self.buffer_size);
-        let (ch_tx_output_to_msgbus, ch_rx_output_to_msgbus) = mpsc::channel(self.buffer_size);
-
-        // Получение сообщений из шины
-        let task = shared_tasks::msgbus_to_mpsc::MsgBusToMpsc {
-            msg_bus: self.msg_bus.clone(),
-            output: ch_tx_msgbus_to_input,
-        };
-        join_set_spawn(
-            self.task_set,
-            "cmp_http_client",
-            task.spawn().map_err(Error::TaskMsgBusToMpsc),
-        );
+        let (ch_tx_requests, ch_rx_requests) = mpsc::channel(self.msgbus_linker.max_capacity());
+        let (ch_tx_reponse, ch_rx_response) = mpsc::channel(self.msgbus_linker.max_capacity());
 
         // Создание HTTP-запросов на основе входящих сообщений
         let task = tasks::Input {
-            input: ch_rx_msgbus_to_input,
+            input: self.msgbus_linker.input(),
             output: ch_tx_requests.clone(),
             request_input_config: self.requests_input.clone(),
         };
@@ -76,22 +60,13 @@ where
         // Обработка ответов от сервера
         let task = tasks::Response {
             input: ch_rx_response,
-            output: ch_tx_output_to_msgbus,
+            output: self.msgbus_linker.output(),
             requests_input: self.requests_input,
             requests_periodic: self.requests_periodic,
         };
         join_set_spawn(self.task_set, "cmp_http_client | response", task.spawn());
 
-        // Отправка исходящих сообщений
-        let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
-            input: ch_rx_output_to_msgbus,
-            msg_bus: self.msg_bus,
-        };
-        join_set_spawn(
-            self.task_set,
-            "cmp_http_client",
-            task.spawn().map_err(Error::TaskMpscToMsgBus),
-        );
+        self.msgbus_linker.close();
 
         (ch_rx_requests, ch_tx_reponse)
     }

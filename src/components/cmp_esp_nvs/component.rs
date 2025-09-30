@@ -1,14 +1,16 @@
 use async_trait::async_trait;
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 
 use crate::{
-    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    executor::{Component, ComponentError, IComponentProcess, MsgBusLinker},
+    message::MsgDataBound,
 };
 
 use super::config::Config;
 #[cfg(feature = "single-thread")]
 use super::fn_process::fn_process;
+
+pub const COMPONENT_NAME: &str = "cmp_storage_esp";
 
 #[allow(unreachable_code)]
 #[cfg(not(feature = "single-thread"))]
@@ -22,7 +24,7 @@ where
     async fn process(
         &self,
         config: Config<TMsg, TStorageData>,
-        input: CmpInOut<TMsg>,
+        input: MsgBusLinker<TMsg>,
     ) -> Result<(), ComponentError> {
         unimplemented!();
     }
@@ -39,10 +41,9 @@ where
     async fn process(
         &self,
         config: Config<TMsg, TStorageData>,
-        in_out: CmpInOut<TMsg>,
+        msgbus_linker: MsgBusLinker<TMsg>,
     ) -> Result<(), ComponentError> {
-        let in_out = in_out.clone_with_new_id("cmp_storage_esp", AuthPermissions::FullAccess);
-        fn_process(in_out, config)
+        fn_process(msgbus_linker.init(COMPONENT_NAME), config)
             .await
             .map_err(|err| ComponentError::Execution(err.to_string()))
     }

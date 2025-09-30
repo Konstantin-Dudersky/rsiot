@@ -2,8 +2,8 @@ use async_trait::async_trait;
 
 use crate::{
     components_config::can_general::BufferBound,
-    executor::{CmpInOut, CmpResult, Component, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    executor::{CmpResult, Component, IComponentProcess, MsgBusLinker},
+    message::MsgDataBound,
 };
 
 use super::{config::Config, fn_process::fn_process};
@@ -19,9 +19,12 @@ where
     TMsg: MsgDataBound + 'static,
     TBuffer: BufferBound + 'static,
 {
-    async fn process(&self, config: Config<TMsg, TBuffer>, msg_bus: CmpInOut<TMsg>) -> CmpResult {
-        let in_out = msg_bus.clone_with_new_id(COMPONENT_NAME, AuthPermissions::FullAccess);
-        fn_process(config, in_out).await?;
+    async fn process(
+        &self,
+        config: Config<TMsg, TBuffer>,
+        msgbus_linker: MsgBusLinker<TMsg>,
+    ) -> CmpResult {
+        fn_process(config, msgbus_linker.init(COMPONENT_NAME)).await?;
         Ok(())
     }
 }

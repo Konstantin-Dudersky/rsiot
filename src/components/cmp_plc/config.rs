@@ -8,7 +8,7 @@ use super::plc::{FunctionBlockBase, IFunctionBlock};
 
 type TFnExport<TMsg, I, Q, S> = fn(&I, &Q, &S) -> Option<Vec<Message<TMsg>>>;
 
-// ANCHOR: config_1
+// ANCHOR: Config
 
 /// Конфигурация компонента ПЛК
 #[derive(Clone)]
@@ -32,8 +32,6 @@ where
     /// Функция преобразования входящих сообщений во входную структуру ПЛК.
     pub fn_input: fn(&mut I, &TMsg) -> (),
 
-    // ANCHOR: config_1
-    // ANCHOR: config_2
     /// Функция преобразования выходной структуры ПЛК в исходящие сообщения.
     ///
     /// **Примеры**
@@ -64,7 +62,7 @@ where
     /// Настройки сохранения состояния и восстановления при запуске
     pub retention: Option<ConfigRetention<TMsg, I, Q, S>>,
 }
-// ANCHOR: config_2
+// ANCHOR: Config
 
 impl<TMsg, I, Q, S> Default for Config<TMsg, I, Q, S>
 where
@@ -86,6 +84,7 @@ where
     }
 }
 
+// ANCHOR: ConfigRetention
 /// Настройка сохранения и восстановления области Static
 #[derive(Clone)]
 pub struct ConfigRetention<TMsg, I, Q, S>
@@ -99,6 +98,7 @@ where
     pub save_period: Duration,
 
     /// Функция преобразования состояния ПЛК в исходящие сообщения
+    /// TODO - отвязать экспорт состояния от структуры восстановления
     pub fn_export: TFnExport<TMsg, I, Q, S>,
 
     /// Функция восстановления состояния из входящих сообщений
@@ -110,6 +110,7 @@ where
     /// считаем что восттановление не удалось и запускаем ПЛК с дефолтным состоянием
     pub restore_timeout: Duration,
 }
+// ANCHOR: ConfigRetention
 
 pub enum ConfigRetentionRestoreResult<S>
 where

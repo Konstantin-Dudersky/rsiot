@@ -1,11 +1,14 @@
 use async_trait::async_trait;
 
 use crate::{
-    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
+    executor::{Component, ComponentError, IComponentProcess, MsgBusLinker},
     message::{AuthPermissions, IMessageChannel, MsgDataBound},
 };
 
 use super::{config::ConfigAlias, fn_process::fn_process};
+
+/// Название компонента
+pub const COMPONENT_NAME: &str = "cmp_redis_client";
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
@@ -19,11 +22,11 @@ where
     async fn process(
         &self,
         config: ConfigAlias<TMessage, TMessageChannel>,
-        input: CmpInOut<TMessage>,
+        input: MsgBusLinker<TMessage>,
     ) -> Result<(), ComponentError> {
         let config = config.0;
         fn_process(
-            input.clone_with_new_id("cmp_redis_client", AuthPermissions::FullAccess),
+            input.clone_with_new_id(COMPONENT_NAME, AuthPermissions::FullAccess),
             config,
         )
         .await

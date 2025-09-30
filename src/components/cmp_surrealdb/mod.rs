@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use surrealdb::{engine::remote::ws::Client, Surreal};
+use surrealdb::{Surreal, engine::remote::ws::Client};
 use tokio::sync::Mutex;
 
 mod component;
@@ -11,7 +11,7 @@ mod error;
 mod fn_process;
 mod tasks;
 
-pub use component::Cmp;
+pub use component::{COMPONENT_NAME, Cmp};
 pub use config::{Config, RequestInputConfig, RequestStartConfig};
 pub use error::Error;
 

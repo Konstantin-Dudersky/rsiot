@@ -9,7 +9,7 @@ use tokio::{sync::Mutex, time::sleep};
 use tracing::{info, trace, warn};
 
 use crate::{
-    executor::CmpInOut,
+    executor::MsgBusLinker,
     message::{Message, MsgDataBound, PhyQuantity},
 };
 
@@ -24,7 +24,7 @@ where
     pub address: I2cSlaveAddress,
     pub fn_output: fn(BMP180Data) -> Vec<Message<TMsg>>,
     pub oversampling: BMP180Oversampling,
-    pub cmp_in_out: CmpInOut<TMsg>,
+    pub cmp_in_out: MsgBusLinker<TMsg>,
 }
 
 impl<TMsg> BMP180<TMsg>

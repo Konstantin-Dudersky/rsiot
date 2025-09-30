@@ -5,6 +5,7 @@
 //! cargo run --example cmp_http_server --target x86_64-unknown-linux-gnu --features cmp_http_server, single-thread
 //!
 
+#[cfg(feature = "cmp_http_server")]
 mod shared;
 
 #[cfg(feature = "cmp_http_server")]
@@ -61,6 +62,7 @@ fn main() -> anyhow::Result<()> {
 
     let http_server_config = cmp_http_server::Config {
         port: 8010,
+        fn_start: |_| Some(true),
         get_endpoints: vec![Box::new(GetEndpointConfig {
             serde_alg: SerdeAlgKind::Json,
             path: "/data/test",
@@ -94,7 +96,7 @@ fn main() -> anyhow::Result<()> {
     };
 
     let executor_config = ComponentExecutorConfig {
-        buffer_size: 100,
+        buffer_size: 10,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
         fn_tokio_metrics: |_| None,

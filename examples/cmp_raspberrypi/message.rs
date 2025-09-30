@@ -8,8 +8,4 @@ pub enum Custom {
     SetOutput2(bool),
 }
 
-impl MsgDataBound for Custom {
-    fn define_time_to_live(&self) -> rsiot::message::TimeToLiveValue {
-        TimeToLiveValue::Infinite
-    }
-}
+impl MsgDataBound for Custom {}

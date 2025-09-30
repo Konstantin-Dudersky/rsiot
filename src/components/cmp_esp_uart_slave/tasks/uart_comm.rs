@@ -6,8 +6,7 @@ use tracing::{info, trace, warn};
 
 use crate::components_config::uart_general::{FieldbusRequest, FieldbusResponse};
 
-use super::super::TFnUartComm;
-use super::Buffer;
+use super::{super::TFnUartComm, Buffer, Error};
 
 pub struct UartComm<TBufferData> {
     pub uart: AsyncUartDriver<'static, UartDriver<'static>>,
@@ -65,8 +64,11 @@ impl<TBufferData> UartComm<TBufferData> {
 
             let write_buffer = response.to_write_buffer();
 
-            self.uart.write_all(&write_buffer).await.unwrap();
-            self.uart.flush().await.unwrap();
+            self.uart
+                .write_all(&write_buffer)
+                .await
+                .map_err(Error::UartWriteAll)?;
+            self.uart.flush().await.map_err(Error::UartFlush)?;
         }
     }
 }

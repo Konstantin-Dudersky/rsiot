@@ -1,6 +1,6 @@
 use esp_idf_svc::hal::gpio::{AnyIOPin, AnyOutputPin, Pull};
 
-use crate::message::{Message, MsgDataBound};
+use crate::message::MsgDataBound;
 
 /// Конфигурация компонента cmp_esp_gpio
 pub struct Config<TMsg>
@@ -11,7 +11,7 @@ where
     ///
     /// **Примеры**
     ///
-    /// ```rust
+    /// ```no_run
     #[doc = include_str!("test/config_inputs.rs")]
     /// ```
     pub inputs: Vec<ConfigGpioInput<TMsg>>,
@@ -20,7 +20,7 @@ where
     ///
     /// **Примеры**
     ///
-    /// ```rust
+    /// ```no_run
     #[doc = include_str!("test/config_outputs.rs")]
     /// ```
     pub outputs: Vec<ConfigGpioOutput<TMsg>>,
@@ -47,7 +47,7 @@ where
     pub peripherals: AnyIOPin,
 
     /// Функция преобразования значения пина в сообщение
-    pub fn_output: fn(bool) -> Message<TMsg>,
+    pub fn_output: fn(bool) -> TMsg,
 
     /// Подключение резистора подтяжки
     pub pull: Pull,
@@ -66,8 +66,8 @@ where
     /// ```rust
     /// fn_input: |_| None
     /// ```
-    pub fn_input: fn(Message<TMsg>) -> Option<bool>,
+    pub fn_input: fn(TMsg) -> Option<bool>,
 
-    /// Подается ли напряжения в отключенном состоянии или нет
-    pub is_low_triggered: bool,
+    /// Значение по умолчанию при запуске
+    pub default: bool,
 }

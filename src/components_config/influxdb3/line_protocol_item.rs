@@ -4,6 +4,7 @@ use crate::message::*;
 
 use super::FieldValue;
 
+// ANCHOR: LineProtocolItem
 /// Строка записи в данных в базу через HTTP API
 #[derive(Debug)]
 pub struct LineProtocolItem {
@@ -19,6 +20,7 @@ pub struct LineProtocolItem {
     /// Метка времени
     pub ts: Option<Timestamp>,
 }
+// ANCHOR: LineProtocolItem
 
 impl LineProtocolItem {
     /// Новая строка записи

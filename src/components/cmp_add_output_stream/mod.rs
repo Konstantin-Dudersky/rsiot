@@ -5,7 +5,7 @@ mod config;
 mod error;
 
 pub use {
-    component::{COMPONENT_NAME, Cmp},
+    component::{CMP_NAME, Cmp},
     config::Config,
     error::Error,
 };

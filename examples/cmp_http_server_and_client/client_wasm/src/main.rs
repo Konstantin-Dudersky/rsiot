@@ -2,7 +2,8 @@ mod shared;
 
 use std::time::Duration;
 
-use leptos::task::{spawn_local, Executor};
+use any_spawner::Executor;
+use leptos::task::spawn_local;
 use rsiot::{
     components::{cmp_http_client_wasm, cmp_inject_periodic, cmp_logger},
     executor::{ComponentExecutor, ComponentExecutorConfig},
@@ -48,7 +49,7 @@ fn main() -> anyhow::Result<()> {
     // cmp_inject_periodic -------------------------------------------------------------------------
     let mut counter = 0;
     let inject_config = cmp_inject_periodic::Config {
-        period: Duration::from_millis(1000),
+        period: Duration::from_millis(100),
         fn_periodic: move || {
             let msg = Data::CounterFromClient(counter);
             counter = counter.wrapping_add(1);
@@ -88,7 +89,7 @@ fn main() -> anyhow::Result<()> {
             serde_alg: SerdeAlgKind::Json,
             request_kind: cmp_http_client_wasm::RequestKind::Get,
             endpoint: "/data/test".to_string(),
-            period: Duration::from_millis(500),
+            period: Duration::from_millis(100),
             request_body: (),
             fn_process_response_success: |s2c| vec![Data::CounterFromServer(s2c.counter)],
             fn_process_response_error: Vec::new,
@@ -97,7 +98,7 @@ fn main() -> anyhow::Result<()> {
 
     // executor ------------------------------------------------------------------------------------
     let config_executor = ComponentExecutorConfig {
-        buffer_size: 1000,
+        buffer_size: 10,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(200),
         fn_tokio_metrics: |_| None,

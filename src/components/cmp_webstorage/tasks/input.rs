@@ -1,17 +1,17 @@
 use gloo::storage::{LocalStorage, SessionStorage, Storage};
 
-use crate::message::MsgDataBound;
+use crate::{executor::MsgBusInput, message::MsgDataBound};
 
 use super::{
-    super::{config::FnInput, ConfigStorageKind},
-    TaskInput, TaskOutput,
+    super::{ConfigStorageKind, config::FnInput},
+    TaskOutput,
 };
 
 pub struct Input<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    pub input: TaskInput<TMsg>,
+    pub input: MsgBusInput<TMsg>,
     pub output: TaskOutput<TMsg>,
     pub storage_kind: ConfigStorageKind,
     pub fn_input: FnInput<TMsg>,
@@ -22,7 +22,7 @@ where
     TMsg: MsgDataBound,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
-        while let Some(msg) = self.input.recv().await {
+        while let Ok(msg) = self.input.recv().await {
             let msg = (self.fn_input)(msg);
             let Some(msg) = msg else { continue };
             match self.storage_kind {

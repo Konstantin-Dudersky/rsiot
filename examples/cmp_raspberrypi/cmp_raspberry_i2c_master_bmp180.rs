@@ -24,7 +24,7 @@ async fn main() {
         message::{MsgDataBound, MsgKey},
     };
     use serde::{Deserialize, Serialize};
-    use tracing::{info, Level};
+    use tracing::{Level, info};
 
     tracing_subscriber::fmt().init();
 
@@ -41,7 +41,10 @@ async fn main() {
     // cmp_logger ----------------------------------------------------------------------------------
     let logger_config = cmp_logger::Config {
         level: Level::INFO,
-        fn_input: |msg| Ok(Some(msg.serialize()?)),
+        fn_input: |msg| {
+            let text = format!("{msg:?}");
+            Ok(Some(text))
+        },
     };
 
     // cmp_raspberrypi_i2c_master ------------------------------------------------------------------

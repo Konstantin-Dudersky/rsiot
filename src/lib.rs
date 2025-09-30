@@ -153,7 +153,7 @@ pub mod message;
 #[cfg(feature = "executor")]
 pub mod components;
 
-#[cfg(any(feature = "cmp_esp", feature = "cmp_raspberrypi"))]
+#[cfg(feature = "cmp_raspberrypi")]
 pub mod drivers_i2c;
 
 #[cfg(feature = "env_vars")]

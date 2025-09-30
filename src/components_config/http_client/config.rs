@@ -42,11 +42,11 @@ mod tests {
     #[test]
     fn connect_with_http_server() {
         Config::<Custom> {
-            serde_alg: SerdeAlgKind::Json,
+            serde_alg: SerdeAlgKind::Unspecified,
             base_url: "http://10.0.6.5:80".into(),
             timeout: Duration::from_secs(5),
             requests_input: vec![Box::new(RequestInputConfig::<Custom, (), ()> {
-                serde_alg: SerdeAlgKind::Json,
+                serde_alg: SerdeAlgKind::Unspecified,
                 request_kind: RequestKind::Post,
                 endpoint: "/messages".into(),
                 fn_create_request: |_msg| Some(()),
@@ -54,7 +54,7 @@ mod tests {
                 fn_process_response_error: Vec::new,
             })],
             requests_periodic: vec![Box::new(RequestPeriodicConfig::<Custom, (), ()> {
-                serde_alg: SerdeAlgKind::Json,
+                serde_alg: SerdeAlgKind::Unspecified,
                 request_kind: RequestKind::Get,
                 endpoint: "/messages".into(),
                 period: Duration::from_secs(2),

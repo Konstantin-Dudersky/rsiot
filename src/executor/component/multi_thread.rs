@@ -2,14 +2,14 @@ use async_trait::async_trait;
 
 use crate::message::MsgDataBound;
 
-use super::super::{CmpInOut, CmpResult, ComponentError};
+use super::super::{MsgBusLinker, CmpResult, ComponentError};
 
 /// Представление обобщенного компонента
 pub struct Component<TConfig, TMsg>
 where
     TMsg: MsgDataBound,
 {
-    in_out: Option<CmpInOut<TMsg>>,
+    in_out: Option<MsgBusLinker<TMsg>>,
     config: Option<TConfig>,
 }
 
@@ -33,7 +33,7 @@ where
     Self: IComponentProcess<TConfig, TMsg>,
     TConfig: Send,
 {
-    fn set_interface(&mut self, in_out: CmpInOut<TMsg>) {
+    fn set_interface(&mut self, in_out: MsgBusLinker<TMsg>) {
         self.in_out = Some(in_out);
     }
 
@@ -61,7 +61,7 @@ where
     TMsg: MsgDataBound,
 {
     /// Основная функция компонента
-    async fn process(&self, config: TConfig, in_out: CmpInOut<TMsg>) -> CmpResult;
+    async fn process(&self, config: TConfig, in_out: MsgBusLinker<TMsg>) -> CmpResult;
 }
 
 /// Интерфейс компонента, который используется исполнитель при добавлении компонентов
@@ -70,7 +70,7 @@ pub trait IComponent<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    fn set_interface(&mut self, in_out: CmpInOut<TMsg>);
+    fn set_interface(&mut self, in_out: MsgBusLinker<TMsg>);
 
     async fn spawn(&mut self) -> CmpResult;
 }

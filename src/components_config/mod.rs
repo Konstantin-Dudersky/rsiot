@@ -3,7 +3,7 @@
 //! Конфигурация описывается в элементах языка Rust, не зависит от конкретных коммуникационных
 //! библиотек. Конкретные реализации компонентов импортируют этот крейт.
 
-#[cfg(feature = "cmp_linux_can")]
+#[cfg(any(feature = "cmp_linux_can", feature = "cmp_esp"))]
 pub mod can_general;
 
 pub mod http_client;
@@ -24,9 +24,6 @@ pub mod modbus_client;
 
 #[cfg(any(feature = "cmp_mqtt_client", feature = "cmp_esp"))]
 pub mod mqtt_client;
-
-#[cfg(feature = "cmp_redis_client")]
-pub mod redis_client;
 
 #[cfg(feature = "executor")]
 pub mod uart_general;

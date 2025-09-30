@@ -17,15 +17,6 @@ pub enum ClientToServer {
 }
 impl WebsocketMessage for ClientToServer {}
 
-// ServerMessages ----------------------------------------------------------------------------------
-
-#[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
-pub enum ServerMessages {
-    ServerCounter(u32),
-    CounterFromClient(u8),
-}
-impl MsgDataBound for ServerMessages {}
-
 // ClientMessages ----------------------------------------------------------------------------------
 
 #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]

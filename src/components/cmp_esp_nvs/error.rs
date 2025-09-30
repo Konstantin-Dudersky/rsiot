@@ -1,5 +1,7 @@
 use esp_idf_svc::sys::EspError;
 
+use crate::executor::ComponentError;
+
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("Deserialization error: {0}")]
@@ -16,4 +18,10 @@ pub enum Error {
 
     #[error("Take partition error: {0}")]
     TakePartition(EspError),
+}
+
+impl From<Error> for ComponentError {
+    fn from(value: Error) -> Self {
+        ComponentError::Execution(value.to_string())
+    }
 }

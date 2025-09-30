@@ -19,6 +19,9 @@ use super::MsgKey;
 /// Типы системных сообщений
 #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
 pub enum System {
+    /// Компонент не успевает обрабатывать сообщения
+    Lagged,
+
     /// Запрос авторизации по логину и паролю
     AuthRequestByLogin(AuthRequestByLogin),
 
@@ -36,22 +39,19 @@ pub enum System {
 
     /// Проверка связи - ответ от партнера по коммуникации
     Pong(Pong),
-
-    /// Для ESP - wifi подключен
-    EspWifiConnected,
 }
 
 impl System {
     /// Определяем сообщения, которые можно передавать между сервисами
     pub fn define_enabled_routes(&self) -> bool {
         match self {
+            System::Lagged => todo!(),
             System::AuthRequestByLogin(_) => todo!(),
             System::AuthRequestByToken(_) => todo!(),
             System::AuthResponseErr(_) => todo!(),
             System::AuthResponseOk(_) => todo!(),
             System::Ping(_) => todo!(),
             System::Pong(_) => todo!(),
-            System::EspWifiConnected => false,
         }
     }
 }

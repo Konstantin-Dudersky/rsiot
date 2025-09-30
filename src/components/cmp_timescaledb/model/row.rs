@@ -1,9 +1,10 @@
 //! Модель строки в БД
 
-use sqlx::{types::time::OffsetDateTime, FromRow};
+use sqlx::{FromRow, types::time::OffsetDateTime};
 
 use super::agg_type::AggType;
 
+// ANCHOR: Row
 /// Модель строки в БД
 #[derive(Debug, FromRow)]
 pub struct Row {
@@ -22,6 +23,7 @@ pub struct Row {
     /// Массив следующих аггрегаций
     pub aggnext: Vec<AggType>,
 }
+// ANCHOR: Row
 
 impl Row {
     /// Создать строку в таблице, только entity, attr и value

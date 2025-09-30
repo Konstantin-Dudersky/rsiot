@@ -1,0 +1,35 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 1
+  }
+}
+
+style {
+    stroke-width: 1
+    stroke: gray
+}
+
+MsgBusIn: MsgBus {
+    shape: oval
+}
+MsgBusIn -> ClientToServer
+
+ClientToServer -> Send: "input_to_send\nmpsc::<Vec<u8>>"
+
+Send -> Websocket
+
+Websocket: "Websocket Server" {
+    style.stroke-dash: 5
+}
+Websocket -> Receive
+
+Receive -> ServerToClient: "receive_to_output\nmpsc::<Vec<u8>>"
+
+ServerToClient -> MsgBusOut
+
+ConnectionState -> MsgBusOut
+
+MsgBusOut: MsgBus {
+    shape: oval
+}

@@ -8,7 +8,7 @@ use super::messages::*;
 
 pub fn new() -> rsiot::executor::Component<Config<Msg, Buffer>, Msg> {
     let config_filesystem = Config::<Msg, Buffer> {
-        filename: "examples/cmp_filesystem/test_files/test_file.json".into(),
+        filename: "examples/cmp_filesystem/test_file.json".into(),
         serde_alg: SerdeAlgKind::Json,
         call_fn_output_kind: CallFnOutputKind::Always,
         fn_input: |msg, buffer| match msg {

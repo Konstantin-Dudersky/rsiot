@@ -1,4 +1,4 @@
-use crate::{executor::CmpInOut, message::MsgDataBound};
+use crate::{executor::MsgBusInput, message::MsgDataBound};
 
 use super::{super::config::TFnInput, Buffer};
 
@@ -7,7 +7,7 @@ where
     TMsg: MsgDataBound,
 {
     pub buffer_data: Buffer<TBufferData>,
-    pub msg_bus: CmpInOut<TMsg>,
+    pub input: MsgBusInput<TMsg>,
     pub fn_input: TFnInput<TMsg, TBufferData>,
 }
 
@@ -16,7 +16,7 @@ where
     TMsg: MsgDataBound,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
-        while let Ok(msg) = self.msg_bus.recv_input().await {
+        while let Ok(msg) = self.input.recv().await {
             let mut buffer_data = self.buffer_data.lock().await;
             (self.fn_input)(&msg, &mut buffer_data);
         }

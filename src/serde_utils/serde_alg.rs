@@ -1,4 +1,4 @@
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 
 use super::{Error, SerdeAlgKind};
 
@@ -15,14 +15,23 @@ impl SerdeAlg {
     }
 
     /// Сериализация
-    pub fn serialize<TData>(&self, data: &TData) -> Result<Vec<u8>, Error>
+    pub fn serialize<TData>(
+        &self,
+        #[allow(unused_variables)] data: &TData,
+    ) -> Result<Vec<u8>, Error>
     where
         TData: Serialize,
     {
         #[allow(unreachable_patterns)]
         match self.kind {
+            #[cfg(feature = "serde_cbor")]
+            SerdeAlgKind::Cbor => super::cbor::serialize(data),
+
             #[cfg(feature = "serde_json")]
             SerdeAlgKind::Json => super::json::serialize(data),
+
+            #[cfg(feature = "serde_messagepack")]
+            SerdeAlgKind::MessagePack => super::messagepack::serialize(data),
 
             #[cfg(feature = "serde_toml")]
             SerdeAlgKind::Toml => super::toml::serialize(data),
@@ -30,19 +39,25 @@ impl SerdeAlg {
             #[cfg(feature = "serde_postcard")]
             SerdeAlgKind::Postcard => super::postcard::serialize(data),
 
-            _ => Err(Error::UnknownAlg(self.kind)),
+            SerdeAlgKind::Unspecified => Err(Error::UnknownAlg(self.kind)),
         }
     }
 
     /// Десериализация
-    pub fn deserialize<TData>(&self, data: &[u8]) -> Result<TData, Error>
+    pub fn deserialize<TData>(&self, #[allow(unused_variables)] data: &[u8]) -> Result<TData, Error>
     where
         TData: DeserializeOwned,
     {
         #[allow(unreachable_patterns)]
         match self.kind {
+            #[cfg(feature = "serde_cbor")]
+            SerdeAlgKind::Cbor => super::cbor::deserialize(data),
+
             #[cfg(feature = "serde_json")]
             SerdeAlgKind::Json => super::json::deserialize(data),
+
+            #[cfg(feature = "serde_messagepack")]
+            SerdeAlgKind::MessagePack => super::messagepack::deserialize(data),
 
             #[cfg(feature = "serde_toml")]
             SerdeAlgKind::Toml => super::toml::deserialize(data),
@@ -50,7 +65,7 @@ impl SerdeAlg {
             #[cfg(feature = "serde_postcard")]
             SerdeAlgKind::Postcard => super::postcard::deserialize(data),
 
-            _ => Err(Error::UnknownAlg(self.kind)),
+            SerdeAlgKind::Unspecified => Err(Error::UnknownAlg(self.kind)),
         }
     }
 }

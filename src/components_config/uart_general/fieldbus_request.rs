@@ -2,6 +2,7 @@ use std::{fmt::Debug, time::Instant};
 
 use crate::components_config::master_device::RequestResponseBound;
 
+// ANCHOR: FieldbusRequest
 /// Структура отдельного запроса на коммуникацию по шине UART
 #[derive(Clone, Debug)]
 pub struct FieldbusRequest {
@@ -13,6 +14,7 @@ pub struct FieldbusRequest {
     /// Данные для передачи по uart
     pub packet: Vec<u8>,
 }
+// ANCHOR: FieldbusRequest
 
 impl FieldbusRequest {
     /// Создание запроса

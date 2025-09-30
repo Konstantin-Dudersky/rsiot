@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use esp_idf_svc::hal::{peripheral::Peripheral, uart::Uart};
 
 use crate::{
-    executor::{CmpInOut, CmpResult, Component, IComponentProcess},
+    executor::{CmpResult, Component, IComponentProcess, MsgBusLinker},
     message::{AuthPermissions, MsgDataBound, ServiceBound},
 };
 
@@ -22,7 +22,7 @@ where
     async fn process(
         &self,
         config: Config<TMsg, TUart, TPeripheral>,
-        msg_bus: CmpInOut<TMsg, TService>,
+        msg_bus: MsgBusLinker<TMsg, TService>,
     ) -> CmpResult {
         let in_out = msg_bus.clone_with_new_id("cmp_esp_uart_master", AuthPermissions::FullAccess);
         fn_process(config, in_out).await?;

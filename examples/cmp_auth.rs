@@ -16,17 +16,29 @@ async fn main() -> anyhow::Result<()> {
 
     let logger_config = cmp_logger::Config {
         level: Level::INFO,
-        fn_input: |msg| Ok(Some(msg.serialize()?)),
+        fn_input: |msg| {
+            let Some(msg) = msg.get_custom_data() else {
+                return Ok(None);
+            };
+
+            let text = match msg {
+                Custom::ValueInstantF64(content) => format!("{content}"),
+                _ => return Ok(None),
+            };
+
+            Ok(Some(text))
+        },
     };
 
-    let inject_periodic_config = cmp_inject_periodic::Config {
+    let _inject_periodic_config = cmp_inject_periodic::Config {
         period: Duration::from_secs(4),
         fn_periodic: move || {
             let value = AuthRequestByLogin {
                 login: "admin".to_string(),
                 password: "admin".to_string(),
             };
-            let msg = Message::new(MsgData::System(System::AuthRequestByLogin(value)));
+            let msg: Message<example_message::Custom> =
+                Message::new(MsgData::System(System::AuthRequestByLogin(value)));
 
             vec![msg]
         },
@@ -45,12 +57,15 @@ async fn main() -> anyhow::Result<()> {
         buffer_size: 100,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
+        fn_tokio_metrics: |_| None,
     };
 
     ComponentExecutor::<Custom>::new(executor_config)
         .add_cmp(cmp_logger::Cmp::new(logger_config))
         .add_cmp(cmp_auth::Cmp::new(auth_config))
-        .add_cmp(cmp_inject_periodic::Cmp::new(inject_periodic_config))
+        // TODO - cmp_inject_periodic генерирует пользовательские сообщения. Возможно, необходимо
+        // отказаться от MsgData
+        // .add_cmp(cmp_inject_periodic::Cmp::new(inject_periodic_config))
         .wait_result()
         .await?;
 

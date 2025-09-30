@@ -1,5 +1,6 @@
 //! Кол-во стоповых бит
 
+// ANCHOR: StopBits
 /// Кол-во стоповых бит
 #[allow(missing_docs)]
 #[derive(Clone, Debug, Default)]
@@ -9,6 +10,7 @@ pub enum StopBits {
     _1p5,
     _2,
 }
+// ANCHOR: StopBits
 
 impl From<StopBits> for f64 {
     fn from(value: StopBits) -> Self {

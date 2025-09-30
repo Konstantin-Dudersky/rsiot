@@ -6,17 +6,25 @@
         "cargo": {
           // ---- aarch64_linux_android ------------------------------------------------------------
           // "target": "aarch64-linux-android",
-          // "features": ["cmp_slint", "rustdoc"]
+          // "features": [
+          // "rustdoc",
+          // "cmp_slint",
+          // "cmp_mqtt_client"
+          // ]
           // ---- aarch64-unknown-linux-gnu --------------------------------------------------------
           // "target": "aarch64-unknown-linux-gnu",
           // "features": [
           //   "rustdoc",
           // "cmp_linux_gpio",
           // "cmp_math"
+          // "cmp_mqtt_client"
           //   "cmp_plc",
-          // "cmp_raspberrypi"
+          // "cmp_raspberrypi",
           //   "cmp_slint",
           //   "cmp_telegram"
+          // "cmp_websocket_client",
+          // "cmp_websocket_server"
+          // "deprecated_stend"
           // ]
           // ---- armv7-unknown-linux-gnueabihf ----------------------------------------------------
           // "target": "armv7-unknown-linux-gnueabihf",
@@ -35,19 +43,23 @@
           // ---- riscv32imc-esp-espidf ------------------------------------------------------------
           // "target": "riscv32imc-esp-espidf",
           // "features": [
-          //   "executor",
-          //    "log_esp",
-          //   "cmp_esp",
-          //   "cmp_plc",
-          //   "serde_postcard"
+          // "executor",
+          // "log_esp",
+          // "cmp_esp",
+          // "cmp_plc",
+          // "serde_json",
+          // "serde_postcard",
+          // "serde_toml",
+          // "serde_messagepack",
+          // "serde_cbor"
           // ]
           // ---- x86_64-unknown-linux-gnu ---------------------------------------------------------
           "target": "x86_64-unknown-linux-gnu",
           "features": [
-            "rustdoc",
+            // "rustdoc",
             // "executor",
             // "single-thread",
-            //   "env_vars",
+            // "env_vars",
             // "cmp_auth",
             // "cmp_filesystem",
             // "cmp_http_client",
@@ -59,27 +71,28 @@
             // "cmp_linux_i2c_master",
             // "cmp_linux_spi_master",
             // "cmp_linux_uart_master",
-            // "cmp_math"
+            // "cmp_math",
             // "cmp_modbus_client",
             // "cmp_mqtt_client",
             // "cmp_plc",
-            // "cmp_redis_client",
             // "cmp_os_process",
-            // "cmp_slint"
-            // "cmp_surrealdb",
-            "cmp_svg"
+            // "cmp_slint",
+            "cmp_surrealdb",
+            // "cmp_svg",
             // "cmp_system_info",
             // "cmp_telegram",
             // "cmp_timescaledb",
             // "cmp_websocket_client",
             // "cmp_websocket_server",
-            //   "serde_json",
-            //   "serde_postcard",
-            //   "serde_toml",
             // "log_console",
             // "log_file",
             // "log_loki",
             // "log_tokio"
+            "serde_json",
+            "serde_postcard",
+            "serde_toml",
+            "serde_messagepack",
+            "serde_cbor"
           ]
           // ---- wasm32-unknown-unknown -----------------------------------------------------------
           // "target": "wasm32-unknown-unknown",
@@ -87,17 +100,36 @@
           // "single-thread", // Активировать обязательно !
           // "rustdoc",
           // "executor",
-          // "logging",
-          // "cmp_http_client_wasm"
-          //   "cmp_leptos",
-          //   "cmp_plc",
-          // "cmp_websocket_client_wasm"
-          //   "cmp_webstorage",
-          //   "serde_json",
-          //   "serde_toml"
-          // "log_webconsole"
+          // "cmp_http_client_wasm",
+          // "cmp_leptos",
+          // "cmp_plc",
+          // "cmp_websocket_client_wasm",
+          // "cmp_webstorage",
+          // "log_webconsole",
+          // "serde_json",
+          // "serde_postcard",
+          // "serde_toml",
+          // "serde_messagepack",
+          // "serde_cbor"
           // ]
         }
+      }
+    },
+    "cargo-tom": {
+      "initialization_options": {
+        /// Search
+        // "per_page": 25,
+        /// What features should be displayed on hover
+        /// All, UnusedOpt, Features,
+        // "feature_display_mode": "UnusedOpt",
+        "hide_docs_info_message": true
+        /// Sort toml on format
+        // "sort_format": false,
+        /// Use stable versions in completions
+        // "stable_version": true,
+        /// Offline mode uses https://github.com/frederik-uni/crates.io-dump-minfied for search
+        /// The order is non existent feel free to contribute
+        // "offline": false
       }
     }
   }

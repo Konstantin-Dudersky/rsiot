@@ -1,15 +1,18 @@
-use tokio::sync::{broadcast, mpsc};
+use tokio::sync::mpsc;
 
 use crate::{
-    executor::CheckCapacity,
-    message::{Message, MsgDataBound},
+    executor::{CheckCapacity, MsgBusInput},
+    message::MsgDataBound,
 };
 
 use super::{Buffer, BufferBound, Error};
 
-pub struct InputRequest<TMsg, TBuffer> {
+pub struct InputRequest<TMsg, TBuffer>
+where
+    TMsg: MsgDataBound,
+{
     pub buffer: Buffer<TBuffer>,
-    pub ch_rx_msgbus_to_device: broadcast::Receiver<Message<TMsg>>,
+    pub ch_rx_msgbus_to_device: MsgBusInput<TMsg>,
     pub ch_tx_buffer: mpsc::Sender<()>,
     pub fn_msgs_to_buffer: fn(&TMsg, &mut TBuffer),
 }

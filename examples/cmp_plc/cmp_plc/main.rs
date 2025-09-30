@@ -4,11 +4,11 @@
 //! cargo run --example cmp_plc --target x86_64-unknown-linux-gnu --features="cmp_plc"
 //! ```
 
-// #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[cfg(feature = "cmp_plc")]
 mod fb1_example;
-// #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[cfg(feature = "cmp_plc")]
 mod fb2_example;
-// #[cfg(any(target_arch = "x86_64", target_arch = "aarch64"))]
+#[cfg(feature = "cmp_plc")]
 mod message;
 
 #[cfg(feature = "cmp_plc")]
@@ -54,7 +54,10 @@ async fn main() -> anyhow::Result<()> {
 
     let logger_config = cmp_logger::Config {
         level: Level::INFO,
-        fn_input: |msg| Ok(Some(msg.serialize()?)),
+        fn_input: |msg| {
+            let text = format!("{msg:?}");
+            Ok(Some(text))
+        },
     };
 
     let executor_config = ComponentExecutorConfig {

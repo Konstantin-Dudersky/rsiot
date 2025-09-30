@@ -12,6 +12,7 @@
 //! sudo ./cmp_raspberry
 //! ```
 
+#[cfg(feature = "cmp_raspberrypi")]
 mod message;
 
 #[cfg(feature = "cmp_raspberrypi")]
@@ -32,7 +33,10 @@ async fn main() {
 
     let logger_config = cmp_logger::Config {
         level: Level::INFO,
-        fn_input: |msg| Ok(Some(msg.serialize()?)),
+        fn_input: |msg| {
+                    let text = format!("{msg:?}");
+                    Ok(Some(text))
+                },
     };
 
     let config_raspberrypi_gpio = cmp_raspberrypi_gpio::Config {
@@ -65,7 +69,7 @@ async fn main() {
     let config_inject_periodic = cmp_inject_periodic::Config {
         period: Duration::from_secs(5),
         fn_periodic: move || {
-            let msg = Message::new_custom(Custom::SetOutput2(flag));
+            let msg = Custom::SetOutput2(flag);
             flag = !flag;
             vec![msg]
         },
@@ -75,6 +79,7 @@ async fn main() {
         buffer_size: 100,
         fn_auth: |msg, _| Some(msg),
         delay_publish: Duration::from_millis(100),
+        fn_tokio_metrics: |_| None,
     };
 
     ComponentExecutor::<Custom>::new(executor_config)

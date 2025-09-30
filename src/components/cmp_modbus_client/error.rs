@@ -1,5 +1,7 @@
 use crate::{components::shared_tasks, components_config::master_device, executor::ComponentError};
 
+use super::COMPONENT_NAME;
+
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error(transparent)]
@@ -11,11 +13,15 @@ pub enum Error {
     #[error(transparent)]
     Device(#[from] master_device::Error),
 
-    // #[error("Modbus request error. Request: {request:?}. Error: {error}")]
-    // Request {
-    //     request: super::config::Request,
-    //     error: String,
-    // },
+    #[error("{COMPONENT_NAME} | ModbusException: {0}")]
+    ModbusException(#[from] tokio_modbus::ExceptionCode),
+
+    #[error("{COMPONENT_NAME} | ModbusRequest: {0}")]
+    ModbusRequest(#[from] tokio_modbus::Error),
+
+    #[error("{COMPONENT_NAME} | SemaphoreAcquire: {0}")]
+    SemaphoreAcquire(#[from] tokio::sync::AcquireError),
+
     #[error(transparent)]
     TaskFilter(shared_tasks::filter_identical_data::Error),
 

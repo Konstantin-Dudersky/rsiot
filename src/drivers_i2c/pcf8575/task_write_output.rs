@@ -3,7 +3,7 @@ use std::{sync::Arc, time::Duration};
 use tokio::sync::Mutex;
 
 use crate::{
-    executor::CmpInOut,
+    executor::MsgBusLinker,
     message::{Message, MsgDataBound},
 };
 
@@ -18,7 +18,7 @@ where
     TMsg: MsgDataBound,
     Driver: RsiotI2cDriverBase,
 {
-    pub in_out: CmpInOut<TMsg>,
+    pub in_out: MsgBusLinker<TMsg>,
     pub fn_input: fn(Message<TMsg>) -> Option<bool>,
     pub state: State,
     pub driver: Arc<Mutex<Driver>>,

@@ -4,7 +4,7 @@ use tokio::{sync::Mutex, task::JoinSet};
 use tracing::warn;
 
 use crate::{
-    executor::CmpInOut,
+    executor::MsgBusLinker,
     message::{Message, MsgDataBound},
 };
 
@@ -28,7 +28,7 @@ where
     /// Период чтения данных с часов
     pub fn_output_period: Duration,
     /// Внутренняя шина сообщений
-    pub in_out: CmpInOut<TMsg>,
+    pub in_out: MsgBusLinker<TMsg>,
 }
 
 impl<TMsg> DS3231<TMsg>

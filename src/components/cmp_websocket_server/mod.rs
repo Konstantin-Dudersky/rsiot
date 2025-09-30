@@ -31,7 +31,7 @@ mod fn_process;
 mod doc;
 mod tasks;
 
-pub use component::Cmp;
+pub use component::{COMPONENT_NAME, Cmp};
 pub use config::Config;
 pub use errors::Error;
 

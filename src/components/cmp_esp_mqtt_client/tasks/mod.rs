@@ -1,7 +1,6 @@
-mod input;
-mod output;
+mod mqtt_recv;
+mod mqtt_send;
 
 use super::{Error, Result};
 
-pub use input::Input;
-pub use output::Output;
+pub use {mqtt_recv::MqttRecv, mqtt_send::MqttSend};

@@ -10,7 +10,7 @@ for target in $targets {
     print_header $"cargo doc - ($target.name) / ($features) / ($add_feat)"
 
     # generate docs
-    let command = $'cargo ($target.toolchain) doc --target ($target.name) --features="($features), ($add_feat), logging" --no-deps'
+    let command = $'cargo ($target.toolchain) doc --target ($target.name) --features="($features), ($add_feat)" --no-deps'
     print $"execute command: ($command)\n"
     nu -c $command
 

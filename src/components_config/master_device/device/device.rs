@@ -4,11 +4,11 @@ use std::{sync::Arc, time::Duration};
 
 use futures::TryFutureExt;
 use tokio::{
-    sync::{Mutex, broadcast, mpsc},
+    sync::{Mutex, mpsc},
     task::JoinSet,
 };
 
-use crate::{components::shared_tasks, message::Message};
+use crate::{components::shared_tasks, executor::MsgBusInput, message::Message};
 use crate::{executor::join_set_spawn, message::MsgDataBound};
 
 use super::{BufferBound, RequestResponseBound, config::*, tasks};
@@ -79,8 +79,8 @@ where
     /// Запустить работу
     pub async fn spawn(
         self,
-        id: String,
-        ch_rx_msgbus_to_device: broadcast::Receiver<Message<TMsg>>,
+        id: impl AsRef<str>,
+        ch_rx_msgbus_to_device: MsgBusInput<TMsg>,
         ch_tx_device_to_fieldbus: mpsc::Sender<TRequest>,
         ch_rx_fieldbus_to_device: mpsc::Receiver<TResponse>,
         ch_tx_device_to_msgbus: mpsc::Sender<Message<TMsg>>,
@@ -114,7 +114,7 @@ where
             };
             join_set_spawn(
                 &mut task_set,
-                &format!("master_device | periodic_request | {id}"),
+                format!("master_device | periodic_request | {}", id.as_ref()),
                 task.spawn(),
             );
         }
@@ -128,7 +128,7 @@ where
         };
         join_set_spawn(
             &mut task_set,
-            &format!("master_device | input_request | {id}"),
+            format!("master_device | input_request | {}", id.as_ref()),
             task.spawn(),
         );
 
@@ -139,7 +139,7 @@ where
         };
         join_set_spawn(
             &mut task_set,
-            &format!("master_device | buffer_periodic | {id}"),
+            format!("master_device | buffer_periodic | {}", id.as_ref()),
             task.spawn(),
         );
 
@@ -152,7 +152,7 @@ where
         };
         join_set_spawn(
             &mut task_set,
-            &format!("master_device | buffer_to_requests | {id}"),
+            format!("master_device | buffer_to_requests | {}", id.as_ref()),
             task.spawn(),
         );
 
@@ -163,7 +163,7 @@ where
         };
         join_set_spawn(
             &mut task_set,
-            &format!("master_device | request | {id}"),
+            format!("master_device | request | {}", id.as_ref()),
             task.spawn(),
         );
 
@@ -178,7 +178,7 @@ where
         };
         join_set_spawn(
             &mut task_set,
-            &format!("master_device | response | {id}"),
+            format!("master_device | response | {}", id.as_ref()),
             task.spawn(),
         );
 
@@ -189,7 +189,7 @@ where
         };
         join_set_spawn(
             &mut task_set,
-            &format!("master_device | filter_identical_data | {id}"),
+            format!("master_device | filter_identical_data | {}", id.as_ref()),
             task.spawn().map_err(super::Error::TaskFilterIdenticalData),
         );
 

@@ -5,4 +5,8 @@ mod config;
 mod error;
 mod fn_process;
 
-pub use {component::Cmp, config::Config, error::Error};
+pub use {
+    component::{COMPONENT_NAME, Cmp},
+    config::Config,
+    error::Error,
+};

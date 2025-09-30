@@ -11,17 +11,14 @@ pub enum Error {
     #[error("Deserialization error: {0}")]
     Deserialization(String),
 
+    #[error("{COMPONENT_NAME} | FnProcessEnd")]
+    FnProcessEnd,
+
     #[error("Serialization error: {0}")]
     Serialization(String),
 
     #[error("Error when setting up connection: {0}")]
     SetupConnection(String),
-
-    #[error(transparent)]
-    TaskMsgbusToMpsc(shared_tasks::msgbus_to_mpsc::Error),
-
-    #[error(transparent)]
-    TaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus::Error),
 
     #[error("TaskConnectionState")]
     TaskConnectionState,

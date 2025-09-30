@@ -2,8 +2,8 @@ use async_trait::async_trait;
 use serde::Serialize;
 
 use crate::{
-    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    executor::{Component, ComponentError, IComponentProcess, MsgBusLinker},
+    message::MsgDataBound,
 };
 
 use super::{
@@ -29,14 +29,11 @@ where
     async fn process(
         &self,
         config: Config<TMsg, I, Q, S>,
-        in_out: CmpInOut<TMsg>,
+        msgbus_linker: MsgBusLinker<TMsg>,
     ) -> Result<(), ComponentError> {
-        fn_process(
-            in_out.clone_with_new_id(COMPONENT_NAME, AuthPermissions::FullAccess),
-            config,
-        )
-        .await
-        .map_err(|e| ComponentError::Execution(e.to_string()))
+        fn_process(msgbus_linker.init(COMPONENT_NAME), config)
+            .await
+            .map_err(|e| ComponentError::Execution(e.to_string()))
     }
 }
 

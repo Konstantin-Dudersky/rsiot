@@ -5,7 +5,7 @@ use tracing::debug;
 
 use crate::{
     drivers_i2c::{I2cSlaveAddress, RsiotI2cDriverBase},
-    executor::CmpInOut,
+    executor::MsgBusLinker,
     message::{Message, MsgDataBound},
 };
 
@@ -36,7 +36,7 @@ where
     pub period: Duration,
     pub driver: Arc<Mutex<Driver>>,
     pub fn_output: fn(OutputData) -> Option<Vec<Message<TMsg>>>,
-    pub in_out: CmpInOut<TMsg>,
+    pub in_out: MsgBusLinker<TMsg>,
 }
 
 impl<TMsg, Driver> TaskOutput<TMsg, Driver>

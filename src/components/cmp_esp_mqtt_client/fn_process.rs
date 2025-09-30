@@ -1,83 +1,87 @@
 use std::time::Duration;
 
 use esp_idf_svc::mqtt::client::{EspAsyncMqttClient, MqttClientConfiguration};
-use tokio::{task::JoinSet, time::sleep};
-use tracing::{info, warn};
+use tokio::task::JoinSet;
+use tracing::info;
 
 use crate::{
-    executor::CmpInOut,
-    message::{system_messages, MsgData, MsgDataBound},
+    components::shared_tasks::cmp_mqtt_genral::MqttGeneralTasks,
+    components_config::mqtt_client::MqttMsgGen,
+    executor::{MsgBusLinker, join_set_spawn},
+    message::MsgDataBound,
+    serde_utils::SerdeAlg,
 };
 
-use super::{tasks, Config};
+use super::{Config, Error, tasks};
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, mut in_out: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg>(
+    config: Config<TMsg>,
+    msg_bus: MsgBusLinker<TMsg>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
-    // Необходимо подождать, пока поднимется Wi-Fi
-    while let Ok(msg) = in_out.recv_input().await {
-        match msg.data {
-            MsgData::System(system_messages::System::EspWifiConnected) => break,
-            _ => continue,
-        }
+    info!("Starting cmp_esp_mqtt_client");
+
+    let buffer_size = msg_bus.max_capacity();
+
+    let url = format!("mqtt://{}:{}", config.host, config.port);
+    let conf = MqttClientConfiguration {
+        client_id: Some(&config.client_id),
+        keep_alive_interval: Some(Duration::from_secs(5)),
+        ..Default::default()
+    };
+
+    let (client, connection) =
+        EspAsyncMqttClient::new(&url, &conf).map_err(Error::CreateEspAsyncMqttClient)?;
+    info!("MQTT client created");
+
+    let mqtt_msg_gen = MqttMsgGen {
+        serde_alg: SerdeAlg::new(config.serde_alg),
+    };
+
+    let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
+
+    let (ch_rx_send, ch_tx_recv) = MqttGeneralTasks {
+        msg_bus,
+        buffer_size,
+        task_set: &mut task_set,
+        publish: config.publish,
+        subscribe: config.subscribe,
+        mqtt_msg_gen,
+        error_fn_publish: Error::FnPublish,
+        error_fn_subscribe: Error::FnSubscribe,
+        error_task_end_input: || Error::TaskEndInput,
+        error_task_end_output: || Error::TaskEndOutput,
+        error_tokio_mpsc_send: || Error::TokioSyncMpscSend,
     }
-    main_loop(config, in_out).await?;
-    Ok(())
-}
+    .spawn();
 
-async fn main_loop<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> super::Result<()>
-where
-    TMsg: MsgDataBound + 'static,
-{
-    loop {
-        info!("Starting MQTT");
+    // Получение сообщения от MQTT-брокера
+    let task = tasks::MqttRecv {
+        connection,
+        output: ch_tx_recv,
+    };
+    join_set_spawn(
+        &mut task_set,
+        "cmp_esp_mqtt_client | mqtt_recv",
+        task.spawn(),
+    );
 
-        let url = format!("mqtt://{}:{}", config.host, config.port);
-        let conf = MqttClientConfiguration {
-            client_id: Some(&config.client_id),
-            keep_alive_interval: Some(Duration::from_secs(5)),
-            ..Default::default()
-        };
+    // Отправление входящих сообщений на MQTT-брокер
+    let task = tasks::MqttSend {
+        input: ch_rx_send,
+        client,
+    };
+    join_set_spawn(
+        &mut task_set,
+        "cmp_esp_mqtt_client | mqtt_send",
+        task.spawn(),
+    );
 
-        let (client, connection) = EspAsyncMqttClient::new(&url, &conf).unwrap();
-        info!("MQTT client created");
-
-        let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
-
-        // Получение сообщения от MQTT-брокера
-        let task = tasks::Output {
-            connection,
-            config_fn_output: config.fn_output,
-            in_out: in_out.clone(),
-        };
-        task_set.spawn_local(task.spawn());
-
-        // Отправление сообщений из кеша на MQTT-брокер
-
-        // Отправление входящих сообщений на MQTT-брокер
-        let task = tasks::Input {
-            in_out: in_out.clone(),
-            config_fn_input: config.fn_input,
-            client,
-        };
-        task_set.spawn_local(task.spawn());
-
-        while let Some(res) = task_set.join_next().await {
-            let res = res?;
-            match res {
-                Ok(_) => continue,
-                Err(err) => {
-                    let err = format!("cmp_esp_mqtt_client error: {}", err);
-                    warn!("{err}");
-                    break;
-                }
-            }
-        }
-        task_set.shutdown().await;
-
-        sleep(Duration::from_secs(2)).await;
-        // TODO - здесь все падает, ESP перезагружается.
-        // Вроде все правильно, возможно ошибка в esp-idf-svc
+    while let Some(res) = task_set.join_next().await {
+        res??
     }
+
+    Err(Error::TaskEndMain)
 }

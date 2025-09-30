@@ -5,7 +5,7 @@ use tokio::sync::Mutex;
 use tracing::warn;
 
 use crate::{
-    drivers_i2c::RsiotI2cDriverBase, executor::CmpInOut, message::MsgDataBound,
+    drivers_i2c::RsiotI2cDriverBase, executor::MsgBusLinker, message::MsgDataBound,
     serde_utils::postcard_serde,
 };
 
@@ -18,7 +18,7 @@ where
     TDriver: RsiotI2cDriverBase,
 {
     /// Внутренняя шина сообщений
-    pub msg_bus: CmpInOut<TMsg>,
+    pub msg_bus: MsgBusLinker<TMsg>,
 
     /// Конфигурация
     pub config: Config<TMsg>,

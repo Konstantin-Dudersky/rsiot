@@ -2,11 +2,14 @@ use async_trait::async_trait;
 use slint::ComponentHandle;
 
 use crate::{
-    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    executor::{Component, ComponentError, IComponentProcess, MsgBusLinker},
+    message::MsgDataBound,
 };
 
-use super::{fn_process::fn_process, Config};
+use super::{Config, fn_process::fn_process};
+
+/// Название компонента
+pub const COMPONENT_NAME: &str = "cmp_slint";
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
@@ -20,10 +23,9 @@ where
     async fn process(
         &self,
         config: Config<TMsg, TMainWindow>,
-        input: CmpInOut<TMsg>,
+        msgbus_linker: MsgBusLinker<TMsg>,
     ) -> Result<(), ComponentError> {
-        let input = input.clone_with_new_id("cmp_slint", AuthPermissions::FullAccess);
-        fn_process(config, input).await?;
+        fn_process(config, msgbus_linker.init(COMPONENT_NAME)).await?;
         Ok(())
     }
 }

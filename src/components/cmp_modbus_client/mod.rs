@@ -19,12 +19,9 @@
 //! # Пример
 //!
 //! ```rust
-#![doc = include_str!("../../../examples/cmp_modbus_client_simulator.rs")]
+#![doc = include_str!("../../../examples/cmp_modbus_client_simulator/main.rs")]
 //! ```
 //!
-
-//! TODO - рестарт не работает
-//! TODO - переделать с использованием fn_master_process
 
 mod component;
 mod config;
@@ -35,7 +32,7 @@ mod fn_process;
 /// Обмен данными с устройством, поддерживающим Modbus TCP сервер.
 ///
 /// См. [документацию](https://docs.rs/rsiot-modbus-client/latest/)
-pub use component::Cmp;
+pub use component::{COMPONENT_NAME, Cmp};
 pub use config::*;
 
 type Result<T> = std::result::Result<T, error::Error>;

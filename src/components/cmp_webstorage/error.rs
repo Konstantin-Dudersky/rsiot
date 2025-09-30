@@ -1,5 +1,3 @@
-use crate::components::shared_tasks;
-
 /// Ошибки компонента cmp_webstorage
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
@@ -23,15 +21,9 @@ pub enum Error {
     TokioSyncMpsc(String),
 
     // Ошибки в задачах ----------------------------------------------------------------------------
-    #[error(transparent)]
-    TaskMsgBusToMpsc(shared_tasks::msgbus_to_mpsc::Error),
-
     #[error("TaskInput")]
     TaskEndInput,
 
     #[error("TaskOutput")]
     TaskEndOutput,
-
-    #[error(transparent)]
-    TaskMpscToMsgBus(shared_tasks::mpsc_to_msgbus::Error),
 }

@@ -12,11 +12,11 @@ use tracing::{info, trace, warn};
 
 use crate::{
     components_config::http_server::{GetEndpointsCollection, PutEndpointsCollection},
-    executor::{join_set_spawn, CmpInOut},
-    message::{system_messages, MsgData, MsgDataBound},
+    executor::{MsgBusLinker, MsgBusOutput, join_set_spawn},
+    message::MsgDataBound,
 };
 
-use super::{config::handler_info, tasks, Config};
+use super::{Config, config::handler_info, tasks};
 
 /// Заголовки для разрешения CORS
 const HEADERS: [(&str, &str); 4] = [
@@ -26,7 +26,10 @@ const HEADERS: [(&str, &str); 4] = [
     ("Access-Control-Allow-Headers", "*"),
 ];
 
-pub async fn fn_process<TMsg>(mut in_out: CmpInOut<TMsg>, config: Config<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg>(
+    msgbus_linker: MsgBusLinker<TMsg>,
+    config: Config<TMsg>,
+) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
@@ -39,10 +42,19 @@ where
     let put_endpoints = Arc::new(Mutex::new(put_endpoints));
 
     // Необходимо подождать, пока поднимется Wi-Fi
-    while let Ok(msg) = in_out.recv_input().await {
-        match msg.data {
-            MsgData::System(system_messages::System::EspWifiConnected) => break,
-            _ => continue,
+    while let Ok(msg) = msgbus_linker.input().recv().await {
+        let Some(msg) = msg.get_custom_data() else {
+            continue;
+        };
+
+        let start = (config.fn_start)(&msg);
+
+        if let Some(start) = start
+            && start
+        {
+            break;
+        } else {
+            continue;
         }
     }
     info!("Starting cmp_esp_http_server");
@@ -68,7 +80,7 @@ where
     let mut task_set = JoinSet::new();
 
     let task = tasks::UpdateGetEndpoints {
-        input: in_out.clone(),
+        input: msgbus_linker.input(),
         get_endpoints: get_endpoints.clone(),
     };
     join_set_spawn(&mut task_set, "cmp_esp_http_server", task.spawn());
@@ -97,10 +109,10 @@ where
     // Запросы PUT
     for path in put_endpoints_paths.clone() {
         let put_endpoints = put_endpoints.clone();
-        let msg_bus = in_out.clone();
+        let msgbus_output = msgbus_linker.output();
         server
             .fn_handler(&path, Method::Put, move |request| {
-                route_put(request, put_endpoints.clone(), msg_bus.clone())
+                route_put(request, put_endpoints.clone(), msgbus_output.clone())
             })
             .map_err(super::Error::RegisterHandler)?;
     }
@@ -108,13 +120,15 @@ where
     // Запросы POST
     for path in put_endpoints_paths {
         let put_endpoints = put_endpoints.clone();
-        let msg_bus = in_out.clone();
+        let msgbus_output = msgbus_linker.output();
         server
             .fn_handler(&path, Method::Post, move |request| {
-                route_put(request, put_endpoints.clone(), msg_bus.clone())
+                route_put(request, put_endpoints.clone(), msgbus_output.clone())
             })
             .map_err(super::Error::RegisterHandler)?;
     }
+
+    drop(msgbus_linker);
 
     // Ждем выполнения всех задач ------------------------------------------------------------------
     while let Some(res) = task_set.join_next().await {
@@ -162,7 +176,7 @@ where
 fn route_put<TMsg>(
     mut request: Request<&mut EspHttpConnection>,
     put_endpoints: Arc<Mutex<PutEndpointsCollection<TMsg>>>,
-    msg_bus: CmpInOut<TMsg>,
+    output: MsgBusOutput<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
@@ -187,7 +201,7 @@ where
 
     let Some(msg) = msg else { return Ok(()) };
 
-    msg_bus.send_output_blocking(msg)?;
+    output.send_blocking(msg)?;
 
     Ok(())
 }

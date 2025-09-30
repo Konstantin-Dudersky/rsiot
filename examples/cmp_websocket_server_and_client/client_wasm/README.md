@@ -1,5 +1,5 @@
 Запусть на выполнение:
 
-```
-trunk server --open
+```sh
+trunk serve --open
 ```

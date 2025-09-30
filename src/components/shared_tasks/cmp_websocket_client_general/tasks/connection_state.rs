@@ -1,7 +1,7 @@
 use tokio::sync::mpsc;
 
 use crate::{
-    executor::CmpInOut,
+    executor::{MsgBusLinker, MsgBusOutput},
     message::{Message, MsgDataBound},
 };
 
@@ -15,9 +15,9 @@ where
     /// Канал получения состояния соединения
     pub input: mpsc::Receiver<bool>,
     /// Шина сообщений
-    pub output: CmpInOut<TMsg>,
+    pub output: MsgBusOutput<TMsg>,
     /// Преобразование состояния в исходящее сообщение
-    pub fn_connection_state: fn(bool) -> Option<Message<TMsg>>,
+    pub fn_connection_state: fn(bool) -> Option<TMsg>,
 }
 
 impl<TMsg> ConnectionState<TMsg>
@@ -36,16 +36,17 @@ where
 
 async fn create_msg_and_send<TMsg>(
     state: bool,
-    fn_connection_state: fn(bool) -> Option<Message<TMsg>>,
-    output: &CmpInOut<TMsg>,
+    fn_connection_state: fn(bool) -> Option<TMsg>,
+    output: &MsgBusOutput<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
 {
     let msg = (fn_connection_state)(state);
     let Some(msg) = msg else { return Ok(()) };
+    let msg = msg.to_message();
     output
-        .send_output(msg)
+        .send(msg)
         .await
         .map_err(|_| super::Error::TokioSyncMpscSend)
 }

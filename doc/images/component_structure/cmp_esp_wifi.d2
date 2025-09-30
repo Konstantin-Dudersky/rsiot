@@ -1,0 +1,25 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 1
+  }
+}
+
+style {
+    stroke-width: 1
+    stroke: gray
+}
+
+Task
+Task -> MsgBusOut
+Task -> WiFi
+Task <- WiFi
+
+WiFi {
+    icon: https://icons.terrastruct.com/essentials%2F104-wifi.svg
+    style.stroke-dash: 5
+}
+
+MsgBusOut: MsgBus {
+    shape: oval
+}

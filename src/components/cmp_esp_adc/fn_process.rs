@@ -5,13 +5,13 @@ use esp_idf_svc::hal::adc::{self, AdcDriver};
 use tokio::{sync::Mutex, task::JoinSet, time::sleep};
 
 use crate::{
-    executor::CmpInOut,
+    executor::MsgBusLinker,
     message::{Message, MsgDataBound},
 };
 
 use super::{Config, ConfigInputType};
 
-pub async fn fn_process<TMsg>(config: Config<TMsg>, in_out: CmpInOut<TMsg>) -> super::Result<()>
+pub async fn fn_process<TMsg>(config: Config<TMsg>, in_out: MsgBusLinker<TMsg>) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
 {
@@ -73,7 +73,7 @@ where
 }
 
 async fn postprocess<TMsg>(
-    in_out: CmpInOut<TMsg>,
+    in_out: MsgBusLinker<TMsg>,
     fn_output: fn(u16) -> Message<TMsg>,
     update_period: Duration,
     sample: u16,

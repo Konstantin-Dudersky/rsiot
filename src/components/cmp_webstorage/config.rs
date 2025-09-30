@@ -14,30 +14,12 @@ where
     pub storage_kind: ConfigStorageKind,
 
     /// Сохранение сообщений в хранилище
-    ///
-    /// **Примеры**
-    ///
-    /// ```rust
-    #[doc = include_str!("test/config_fn_input.rs")]
-    /// ```
     pub fn_input: FnInput<TMsg>,
 
     /// Загрузка сообщений из хранилища
-    ///
-    /// **Примеры**
-    ///
-    /// ```rust
-    #[doc = include_str!("test/config_fn_output.rs")]
-    /// ```
     pub fn_output: FnOutput<TMsg>,
 
     /// Сообщения по-умолчанию, когда хранилище пустое
-    ///
-    /// **Примеры**
-    ///
-    /// ```rust
-    #[doc = include_str!("test/config_default_messages.rs")]
-    /// ```
     pub default_messages: Vec<Message<TMsg>>,
 }
 // ANCHOR: Config

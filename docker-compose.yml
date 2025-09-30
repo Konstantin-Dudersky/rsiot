@@ -66,7 +66,7 @@ services:
     ports:
       - "5020:5020"
     volumes:
-      - ./modbus_server.json:/app/modbus_server.json
+      - ./examples/cmp_modbus_client_simulator/modbus_server.json:/app/modbus_server.json
 
   # redis
   redis:

@@ -1,5 +1,5 @@
 use crate::{
-    executor::CmpInOut,
+    executor::MsgBusInput,
     message::{Message, MsgDataBound},
 };
 
@@ -9,7 +9,7 @@ pub struct Input<TMsg>
 where
     TMsg: MsgDataBound,
 {
-    pub input: CmpInOut<TMsg>,
+    pub input: MsgBusInput<TMsg>,
     pub bot: TelegramBot,
     pub fn_input: fn(Message<TMsg>) -> Option<String>,
 }
@@ -19,7 +19,7 @@ where
     TMsg: MsgDataBound,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
-        while let Ok(msg) = self.input.recv_input().await {
+        while let Ok(msg) = self.input.recv().await {
             let msg = (self.fn_input)(msg);
             let Some(msg) = msg else { continue };
             self.bot.send_message(&msg).await;

@@ -2,14 +2,14 @@ use std::{sync::Arc, time::Duration};
 
 use futures::TryFutureExt;
 use tokio::{
-    sync::{mpsc::channel, Mutex},
+    sync::{Mutex, mpsc::channel},
     task::JoinSet,
 };
 
 use crate::{
     components::shared_tasks,
     drivers_i2c::RsiotI2cDriverBase,
-    executor::{join_set_spawn, CmpInOut},
+    executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -24,7 +24,7 @@ where
     TDriver: RsiotI2cDriverBase,
 {
     /// Внутренняя шина сообщений
-    pub msg_bus: CmpInOut<TMsg>,
+    pub msg_bus: MsgBusLinker<TMsg>,
 
     /// Конфигурация
     pub config: Config<TMsg>,
@@ -50,7 +50,7 @@ where
         let (ch_2_send, ch_2_recv) = channel(100);
 
         // Входящие сообщения в канал mpsc
-        let task = shared_tasks::msgbus_to_mpsc::MsgBusToMpsc {
+        let task = super::super::msgbus_to_mpsc::MsgBusToMpsc {
             msg_bus: self.msg_bus.clone(),
             output: ch_0_send,
         };

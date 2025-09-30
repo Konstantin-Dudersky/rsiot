@@ -5,16 +5,16 @@ use esp_idf_svc::hal::{
     peripheral::Peripheral,
 };
 use futures::TryFutureExt;
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 use tokio::{
-    sync::{mpsc, Mutex},
+    sync::{Mutex, mpsc},
     task::JoinSet,
 };
 use tracing::debug;
 
 use crate::{
     components::{cmp_esp_i2c_slave::tasks, shared_tasks},
-    executor::{join_set_spawn, CmpInOut},
+    executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -25,7 +25,7 @@ const BUFFER_LEN: usize = 128;
 
 pub async fn fn_process<TMsg, TI2c, TPeripheral, TI2cRequest, TI2cResponse, TBufferData>(
     config: Config<TMsg, TI2c, TPeripheral, TI2cRequest, TI2cResponse, TBufferData>,
-    msg_bus: CmpInOut<TMsg>,
+    msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
@@ -47,13 +47,13 @@ where
         config.slave_address,
         &i2c_idf_config,
     )
-    .unwrap();
+    .map_err(Error::I2cDriverCreation)?;
 
     let buffer_data = Arc::new(Mutex::new(config.buffer_data_default.clone()));
 
     debug!("I2c slave drive initialized");
 
-    let buffer_size = msg_bus.max_capacity();
+    let buffer_size = msgbus_linker.max_capacity();
     let (channel_buffer_to_filter_send, channel_buffer_to_filter_recv) = mpsc::channel(buffer_size);
     let (channel_filter_to_output_send, channel_filter_to_output_recv) = mpsc::channel(buffer_size);
 
@@ -70,7 +70,7 @@ where
 
     // Задача обработки входящих сообщений
     let task = tasks::Input {
-        msg_bus: msg_bus.clone(),
+        input: msgbus_linker.input(),
         fn_input: config.fn_input,
         buffer_data: buffer_data.clone(),
     };
@@ -99,7 +99,7 @@ where
     // Пересылка сообщений на выход компонента
     let task = shared_tasks::mpsc_to_msgbus::MpscToMsgBus {
         input: channel_filter_to_output_recv,
-        msg_bus: msg_bus.clone(),
+        output: msgbus_linker.output(),
     };
     join_set_spawn(
         &mut task_set,
@@ -107,8 +107,10 @@ where
         task.spawn().map_err(Error::TaskToMsgBus),
     );
 
+    msgbus_linker.close();
+
     while let Some(res) = task_set.join_next().await {
-        res.unwrap()?;
+        res??;
     }
 
     Ok(())

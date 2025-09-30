@@ -4,6 +4,8 @@ use ws2812_esp32_rmt_driver::RGB8;
 
 use crate::message::{Message, MsgDataBound};
 
+pub type FnInput<TMsg> = fn(&Message<TMsg>) -> Option<Vec<(u8, ConfigRgb)>>;
+
 /// Конфигурация cmp_esp_led
 pub struct Config<TMsg, TPeripheral, TRmt>
 where
@@ -18,7 +20,7 @@ where
     pub rmt_channel: TRmt,
 
     /// Функция преобразования входящих сообщений в значение цвета
-    pub fn_input: fn(&Message<TMsg>) -> Option<Vec<(u8, ConfigRgb)>>,
+    pub fn_input: FnInput<TMsg>,
 }
 
 /// Задание цвета

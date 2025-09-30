@@ -1,16 +1,20 @@
+#[cfg(feature = "cmp_svg")]
 mod config_external_process;
+#[cfg(feature = "cmp_svg")]
 mod config_inject_periodic;
+#[cfg(feature = "cmp_svg")]
 mod config_svg;
+#[cfg(feature = "cmp_svg")]
 mod message;
 
-use std::time::Duration;
-
-use rsiot::executor::{ComponentExecutor, ComponentExecutorConfig};
-use tokio::main;
-use tracing::Level;
-
-#[main]
+#[cfg(feature = "cmp_svg")]
+#[tokio::main]
 async fn main() {
+    use std::time::Duration;
+
+    use rsiot::executor::{ComponentExecutor, ComponentExecutorConfig};
+    use tracing::Level;
+
     tracing_subscriber::fmt().with_max_level(Level::INFO).init();
 
     let config_executor = ComponentExecutorConfig {
@@ -27,4 +31,9 @@ async fn main() {
         .wait_result()
         .await
         .unwrap();
+}
+
+#[cfg(not(feature = "cmp_svg"))]
+fn main() {
+    unimplemented!()
 }

@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "*"
+any_spawner = "*"
 serde = { version = "1", features = ["derive"] }
 strum = { version = "*", features = ["derive"] }
 rsiot = { path = "../../../", features = [
@@ -12,8 +13,9 @@ rsiot = { path = "../../../", features = [
     "cmp_http_client_wasm",
     "log_webconsole",
     "single-thread",
+    "serde_json",
 ] }
-tokio = { version = "1.37.0", features = ["rt"] }
+tokio = { version = "1.47.1", features = ["rt"] }
 tracing = "*"
 gloo = { version = "0.11.0", features = [
     "dialogs",
@@ -24,4 +26,4 @@ gloo = { version = "0.11.0", features = [
     "utils",
 ] }
 
-leptos = { version = "0.7.3", features = ["csr"] }
+leptos = { version = "0.8.9", features = ["csr"] }

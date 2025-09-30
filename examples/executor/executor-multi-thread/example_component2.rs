@@ -5,7 +5,7 @@ use tokio::time::sleep;
 use tracing::info;
 
 use rsiot::{
-    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
+    executor::{Component, ComponentError, IComponentProcess, MsgBusLinker},
     message::MsgDataBound,
 };
 
@@ -16,7 +16,11 @@ impl<TMsg> IComponentProcess<Config, TMsg> for Component<Config, TMsg>
 where
     TMsg: MsgDataBound,
 {
-    async fn process(&self, _config: Config, _input: CmpInOut<TMsg>) -> Result<(), ComponentError> {
+    async fn process(
+        &self,
+        _config: Config,
+        _input: MsgBusLinker<TMsg>,
+    ) -> Result<(), ComponentError> {
         loop {
             info!("Component 2");
             sleep(Duration::from_secs(2)).await;

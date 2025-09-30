@@ -2,11 +2,14 @@ use async_trait::async_trait;
 
 use crate::{
     components_config::websocket_general::WebsocketMessage,
-    executor::{CmpInOut, Component, ComponentError, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    executor::{Component, ComponentError, IComponentProcess, MsgBusLinker},
+    message::MsgDataBound,
 };
 
 use super::{config::Config, fn_process::fn_process};
+
+/// Название компонента
+pub const COMPONENT_NAME: &str = "cmp_websocket_client_wasm";
 
 #[cfg(feature = "single-thread")]
 #[async_trait(?Send)]
@@ -21,14 +24,11 @@ where
     async fn process(
         &self,
         config: Config<TMessage, TServerToClient, TClientToServer>,
-        input: CmpInOut<TMessage>,
+        msgbus_linker: MsgBusLinker<TMessage>,
     ) -> Result<(), ComponentError> {
-        fn_process(
-            config,
-            input.clone_with_new_id("cmp_websocket_client_wasm", AuthPermissions::FullAccess),
-        )
-        .await
-        .map_err(|err| ComponentError::Execution(err.to_string()))
+        fn_process(config, msgbus_linker.init(COMPONENT_NAME))
+            .await
+            .map_err(|err| ComponentError::Execution(err.to_string()))
     }
 }
 
