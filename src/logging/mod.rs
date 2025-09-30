@@ -231,7 +231,6 @@ impl LogConfig {
                 .spawn()
                 .with_filter(filter);
 
-            // let layer = console_subscriber::spawn().with_filter(filter);
             Some(layer)
         };
         #[cfg(not(feature = "log_tokio"))]
@@ -241,14 +240,14 @@ impl LogConfig {
         #[cfg(feature = "log_webconsole")]
         let layer_webconsole = {
             console_error_panic_hook::set_once();
-            use tracing_subscriber::{EnvFilter, Layer, fmt::time::ChronoLocal};
+            use tracing_subscriber::{EnvFilter, Layer, fmt::time::LocalTime};
             use tracing_web::MakeWebConsoleWriter;
 
             let global_filter = EnvFilter::new(filter_value(&self.filter)?);
 
             let layer = tracing_subscriber::fmt::layer()
                 .with_ansi(false)
-                .with_timer(ChronoLocal::rfc_3339())
+                .with_timer(LocalTime::rfc_3339())
                 .with_writer(MakeWebConsoleWriter::new())
                 .with_filter(global_filter);
             Some(layer)

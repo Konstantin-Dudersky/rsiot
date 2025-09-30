@@ -16,14 +16,18 @@ anyhow = { version = "1.0.100" }
 bitvec = { version = "1.0.1" }
 bytes = { version = "1.10.1" }
 byteorder = { version = "1.5.0" }
-# TODO - возможно заменить на time
-chrono = { version = "0.4.42", features = ["serde"] }
 crc = { version = "3.3.0" }
 document-features = { version = "0.2.11" }
 serde = { version = "1.0.228", features = ["derive"] }
 strum = { version = "0.27.2", features = ["derive"] }
 thiserror = { version = "2.0.17" }
-time = { version = "0.3.44", features = ["formatting", "macros", "serde"] }
+time = { version = "0.3.44", features = [
+    "formatting",
+    "local-offset",
+    "macros",
+    "serde",
+    "wasm-bindgen",
+] }
 tracing = { version = "0.1.41", features = ["log"] }
 uuid = { version = "1.18.1", features = [
     "macro-diagnostics",
@@ -103,7 +107,8 @@ toml = { version = "0.9.7", optional = true }
 tracing-appender = { version = "0.2.3", optional = true }
 tracing-subscriber = { version = "0.3.20", features = [
     "env-filter",
-    "chrono",
+    "time",
+    "local-time",
 ], optional = true }
 tower-http = { version = "0.6.6", features = [
     "cors",
@@ -157,8 +162,7 @@ tokio = { version = "^1.36.0", features = [
 
 
 [dev-dependencies]
-# serde_json = { version = "1.0.145" }
-tracing-subscriber = { version = "0.3.20", features = ["env-filter", "chrono"] }
+tracing-subscriber = { version = "0.3.20", features = ["env-filter"] }
 itertools = "0.14.0"
 rsiot-devices = { path = "../rsiot-devices" }
 

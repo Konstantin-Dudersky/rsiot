@@ -61,9 +61,7 @@ impl LineProtocolItem {
         line.push_str(&fields);
 
         if let Some(ts) = &self.ts {
-            let ts = ts
-                .timestamp_nanos_opt()
-                .ok_or(super::Error::WrongTimestamp(*ts))?;
+            let ts = ts.unix_timestamp_nanos();
             line.push(' ');
             line.push_str(&ts.to_string());
         }
