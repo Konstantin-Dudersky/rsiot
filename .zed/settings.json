@@ -41,18 +41,18 @@
           //   "cmp_timescaledb"
           // ]
           // ---- riscv32imc-esp-espidf ------------------------------------------------------------
-          // "target": "riscv32imc-esp-espidf",
-          // "features": [
-          // "executor",
-          // "log_esp",
-          // "cmp_esp",
-          // "cmp_plc",
-          // "serde_json",
-          // "serde_postcard",
-          // "serde_toml",
-          // "serde_messagepack",
-          // "serde_cbor"
-          // ]
+          "target": "riscv32imc-esp-espidf",
+          "features": [
+            // "executor",
+            // "log_esp",
+            "cmp_esp",
+            // "cmp_plc",
+            "serde_json",
+            "serde_postcard",
+            "serde_toml",
+            "serde_messagepack",
+            "serde_cbor"
+          ]
           // ---- x86_64-unknown-linux-gnu ---------------------------------------------------------
           // "target": "x86_64-unknown-linux-gnu",
           // "features": [
@@ -88,30 +88,30 @@
           // "log_file",
           // "log_loki",
           // "log_tokio"
-          //   "serde_json",
-          //   "serde_postcard",
-          //   "serde_toml",
-          //   "serde_messagepack",
-          //   "serde_cbor"
+          // "serde_json",
+          // "serde_postcard",
+          // "serde_toml",
+          // "serde_messagepack",
+          // "serde_cbor"
           // ]
           // ---- wasm32-unknown-unknown -----------------------------------------------------------
-          "target": "wasm32-unknown-unknown",
-          "features": [
-            "single-thread", // Активировать обязательно !
-            // "rustdoc",
-            // "executor",
-            // "cmp_http_client_wasm",
-            // "cmp_leptos",
-            // "cmp_plc",
-            // "cmp_websocket_client_wasm",
-            // "cmp_webstorage",
-            "log_webconsole",
-            "serde_json",
-            "serde_postcard",
-            "serde_toml",
-            "serde_messagepack",
-            "serde_cbor"
-          ]
+          // "target": "wasm32-unknown-unknown",
+          // "features": [
+          // "single-thread", // Активировать обязательно !
+          // "rustdoc",
+          // "executor",
+          // "cmp_http_client_wasm",
+          // "cmp_leptos",
+          // "cmp_plc",
+          // "cmp_websocket_client_wasm",
+          // "cmp_webstorage",
+          // "log_webconsole",
+          // "serde_json",
+          // "serde_postcard",
+          // "serde_toml",
+          // "serde_messagepack",
+          // "serde_cbor"
+          // ]
         }
       }
     },
