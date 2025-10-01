@@ -108,6 +108,7 @@ pub mod cmp_http_server;
 pub mod cmp_influxdb3;
 
 pub mod cmp_inject_periodic;
+pub mod cmp_inject_single;
 
 #[cfg(feature = "cmp_leptos")]
 #[cfg(wasm32_unknown_unknown)]

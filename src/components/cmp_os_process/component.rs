@@ -7,6 +7,7 @@ use crate::{
 
 use super::{config::Config, fn_process::fn_process};
 
+/// Название компонента
 pub const COMPONENT_NAME: &str = "cmp_os_process";
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
