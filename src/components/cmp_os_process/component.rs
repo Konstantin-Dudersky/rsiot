@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
 use crate::{
-    executor::{MsgBusLinker, CmpResult, Component, IComponentProcess},
+    executor::{CmpResult, Component, IComponentProcess, MsgBusLinker},
     message::MsgDataBound,
 };
 
@@ -21,5 +21,5 @@ where
     }
 }
 
-/// Компонент CMP_TEMPLATE
+/// Компонент cmp_os_process
 pub type Cmp<TMsg> = Component<Config<TMsg>, TMsg>;

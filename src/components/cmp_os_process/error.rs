@@ -1,5 +1,7 @@
 use crate::executor::ComponentError;
 
+use super::COMPONENT_NAME;
+
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -11,6 +13,12 @@ pub enum Error {
 
     #[error("FnOutput: {0}")]
     FnOutput(anyhow::Error),
+
+    #[error("{COMPONENT_NAME} | TaskCommandEnd")]
+    TaskCommandEnd,
+
+    #[error("{COMPONENT_NAME} | FnProcessEnd")]
+    FnProcessEnd,
 
     #[error("TokioTaskJoin: {0}")]
     TokioTaskJoin(#[from] tokio::task::JoinError),
