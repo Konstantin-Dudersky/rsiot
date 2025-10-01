@@ -9,6 +9,11 @@ use super::MqttMsgSend;
 pub struct MqttMsgGen {
     /// Алгоритм сериализации
     pub serde_alg: SerdeAlg,
+
+    /// Часть топика, которая будет добавлена к каждому сообщению
+    ///
+    /// <base_topic>/<topic>
+    pub base_topic: String,
 }
 
 impl MqttMsgGen {
@@ -22,9 +27,16 @@ impl MqttMsgGen {
     where
         TPayload: Serialize,
     {
+        let topic = if self.base_topic.is_empty() {
+            topic.into()
+        } else {
+            format!("{}/{}", self.base_topic, topic.into())
+        };
+
         let payload = self.serde_alg.serialize(payload)?;
+
         let mqtt_msg = MqttMsgSend::Publish {
-            topic: topic.into(),
+            topic,
             retain,
             payload,
         };

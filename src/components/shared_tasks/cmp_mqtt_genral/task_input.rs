@@ -26,7 +26,7 @@ where
     pub async fn spawn(mut self) -> Result<(), TError> {
         let fn_publish = match self.config_publish {
             ConfigPublish::NoPublish => return Ok(()),
-            ConfigPublish::Publish { fn_publish } => fn_publish,
+            ConfigPublish::Publish { fn_publish, .. } => fn_publish,
         };
 
         while let Ok(msg) = self.input.recv().await {
