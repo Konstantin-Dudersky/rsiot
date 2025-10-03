@@ -7,12 +7,12 @@ where
     TMsg: MsgDataBound,
 {
     /// Вектор команд
-    pub commands: Vec<Command<TMsg>>,
+    pub commands: Vec<ConfigCommand<TMsg>>,
 }
 
 /// Конфигурация отдельной команды
 #[derive(Clone)]
-pub struct Command<TMsg>
+pub struct ConfigCommand<TMsg>
 where
     TMsg: MsgDataBound,
 {
@@ -23,8 +23,14 @@ where
     pub fn_output: fn(&[ExecResult]) -> Option<Vec<TMsg>>,
 }
 
+/// Результат выполнения команды
 pub struct ExecResult {
+    /// Статус выполнения команды
     pub status: String,
+
+    /// Вывод команды
     pub stdout: String,
+
+    /// Ошибки команды
     pub stderr: String,
 }

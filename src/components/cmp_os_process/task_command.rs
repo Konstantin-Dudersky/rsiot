@@ -5,7 +5,7 @@ use crate::{
     message::MsgDataBound,
 };
 
-use super::{Command, Error, ExecResult};
+use super::{ConfigCommand, Error, ExecResult};
 
 pub struct TaskCommand<TMsg>
 where
@@ -13,7 +13,7 @@ where
 {
     pub msgbus_input: MsgBusInput<TMsg>,
     pub msgbus_output: MsgBusOutput<TMsg>,
-    pub config: Command<TMsg>,
+    pub config: ConfigCommand<TMsg>,
 }
 
 impl<TMsg> TaskCommand<TMsg>
@@ -32,7 +32,7 @@ where
             let mut exec_results = vec![];
 
             for cmd in cmds {
-                let exec_result = execute_command(&cmd).await.unwrap();
+                let exec_result = execute_command(&cmd).await?;
                 exec_results.push(exec_result);
             }
 
@@ -40,7 +40,10 @@ where
             let Some(msgs) = msgs else { continue };
 
             for msg in msgs {
-                self.msgbus_output.send(msg.to_message()).await.unwrap();
+                self.msgbus_output
+                    .send(msg.to_message())
+                    .await
+                    .map_err(|_| Error::TokioSyncMpscSend)?;
             }
         }
 
@@ -58,8 +61,8 @@ async fn execute_command(cmd: &str) -> Result<ExecResult, Error> {
 
     let exec_result = ExecResult {
         status: output.status.to_string(),
-        stdout: String::from_utf8(output.stdout).unwrap(),
-        stderr: String::from_utf8(output.stderr).unwrap(),
+        stdout: String::from_utf8(output.stdout)?,
+        stderr: String::from_utf8(output.stderr)?,
     };
 
     Ok(exec_result)
@@ -67,7 +70,7 @@ async fn execute_command(cmd: &str) -> Result<ExecResult, Error> {
 
 fn string_to_tokio_command(input: &str) -> Result<TokioCommand, Error> {
     let parts = input.split(" ").collect::<Vec<&str>>();
-    let program = parts.get(0).unwrap();
+    let program = parts.first().ok_or(Error::EmptyCommand)?;
     let mut cmd = TokioCommand::new(program);
     for arg in parts[1..].iter() {
         cmd.arg(arg);

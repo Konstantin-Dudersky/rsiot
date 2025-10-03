@@ -5,8 +5,8 @@ use crate::message::*;
 
 pub fn cmp() -> Component<Config<Msg>, Msg> {
     let config = Config {
-        commands: vec![Command {
-            fn_input: |msg| None,
+        commands: vec![ConfigCommand {
+            fn_input: |_msg| None,
             fn_output: |results| {
                 for result in results {
                     info!("Result: {}", result.stdout);

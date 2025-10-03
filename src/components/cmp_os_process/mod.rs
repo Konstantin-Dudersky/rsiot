@@ -4,10 +4,11 @@ mod component;
 mod config;
 mod error;
 mod fn_process;
+pub mod helpers;
 mod task_command;
 
 pub use {
     component::{COMPONENT_NAME, Cmp},
-    config::{Command, Config, ExecResult},
+    config::{Config, ConfigCommand, ExecResult},
     error::Error,
 };
