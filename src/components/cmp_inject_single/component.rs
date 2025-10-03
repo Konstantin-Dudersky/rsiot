@@ -12,15 +12,21 @@ pub const COMPONENT_NAME: &str = "cmp_inject_single";
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
-impl<TMsg> IComponentProcess<Config<TMsg>, TMsg> for Component<Config<TMsg>, TMsg>
+impl<TMsg, TFnSingle> IComponentProcess<Config<TMsg, TFnSingle>, TMsg>
+    for Component<Config<TMsg, TFnSingle>, TMsg>
 where
     TMsg: MsgDataBound + 'static,
+    TFnSingle: FnOnce() -> Vec<TMsg> + Send + Sync,
 {
-    async fn process(&self, config: Config<TMsg>, msgbus_linker: MsgBusLinker<TMsg>) -> CmpResult {
+    async fn process(
+        &self,
+        config: Config<TMsg, TFnSingle>,
+        msgbus_linker: MsgBusLinker<TMsg>,
+    ) -> CmpResult {
         fn_process(config, msgbus_linker.init(COMPONENT_NAME)).await?;
         Ok(())
     }
 }
 
 /// Компонент cmp_inject_single
-pub type Cmp<TMsg> = Component<Config<TMsg>, TMsg>;
+pub type Cmp<TMsg, TFnSingle> = Component<Config<TMsg, TFnSingle>, TMsg>;

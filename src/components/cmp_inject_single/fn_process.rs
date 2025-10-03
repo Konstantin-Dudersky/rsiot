@@ -7,12 +7,13 @@ use crate::{
 
 use super::{Config, Error};
 
-pub async fn fn_process<TMsg>(
-    config: Config<TMsg>,
+pub async fn fn_process<TMsg, TFnSingle>(
+    config: Config<TMsg, TFnSingle>,
     msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound,
+    TFnSingle: FnOnce() -> Vec<TMsg> + Send + Sync,
 {
     let msgs = (config.fn_output)();
     let output = msgbus_linker.output();
