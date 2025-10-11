@@ -1,9 +1,7 @@
 #[cfg(feature = "cmp_math")]
 mod config_inject_periodic;
-// #[cfg(feature = "cmp_math")]
-// mod config_math;
 #[cfg(feature = "cmp_math")]
-mod config_math_new;
+mod config_math;
 #[cfg(feature = "cmp_math")]
 mod messages;
 
@@ -25,7 +23,7 @@ async fn main() -> anyhow::Result<()> {
 
     ComponentExecutor::new(executor_config)
         .add_cmp(config_inject_periodic::cmp())
-        .add_cmp(config_math_new::cmp())
+        .add_cmp(config_math::cmp())
         .wait_result()
         .await?;
 

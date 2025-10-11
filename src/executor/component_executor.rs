@@ -181,12 +181,10 @@ where
 MsgBus statistics:
 Connected to input:           {}
 Connected to output (strong): {}
-Connected to output (weak):   {}
 Channel capacity:             {}
 "#,
         output.receiver_count(),
         input.sender_strong_count(),
-        input.sender_weak_count(),
         buffer_size
     );
 
@@ -202,7 +200,6 @@ Channel capacity:             {}
         let Some(msg) = msg else { continue };
 
         // Проверяем переполненность канала
-        // TODO - len всегда большой - возможо есть подписчик, который не забирает данные.
         check_broadcast_lagged(&output, buffer_size, &mut less_in_period)?;
 
         output

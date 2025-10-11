@@ -8,6 +8,7 @@ pub fn cmp() -> Component<Config<Msg>, Msg> {
     let config = Config {
         connection_string: "postgres://postgres:postgres@localhost:5432/db_data".into(),
         max_connections: 5,
+        max_cache_size: 10_000,
         table_name: "raw",
         send_period: Duration::from_secs(2),
         fn_input: |msg| {
