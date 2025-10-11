@@ -19,7 +19,9 @@ impl Periodic {
             self.output
                 .send(InnerMessage::SendByTimer)
                 .await
-                .map_err(|_| Error::TokioMpsc)?;
+                .map_err(|_| Error::TokioMpsc {
+                    task_name: "Periodic",
+                })?;
         }
     }
 }

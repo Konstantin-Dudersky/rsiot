@@ -1,8 +1,11 @@
 use tokio::sync::mpsc;
 
-use crate::{executor::MsgBusInput, message::MsgDataBound};
+use crate::{
+    executor::{CheckCapacity, MsgBusInput},
+    message::MsgDataBound,
+};
 
-use super::{super::config::FnInput, Error, InnerMessage, Result};
+use super::{super::config::FnInput, COMPONENT_NAME, Error, InnerMessage, Result};
 
 pub struct Input<TMsg>
 where
@@ -18,6 +21,8 @@ where
     TMsg: MsgDataBound,
 {
     pub async fn spawn(mut self) -> Result<()> {
+        let desc = format!("{COMPONENT_NAME} | task Input | channel output");
+
         while let Ok(msg) = self.msgbus_input.recv().await {
             let Some(msg) = msg.get_custom_data() else {
                 continue;
@@ -25,9 +30,10 @@ where
             let items = (self.fn_input)(&msg);
             let Some(items) = items else { continue };
             self.output
+                .check_capacity(0.2, &desc)
                 .send(InnerMessage::Rows(items))
                 .await
-                .map_err(|_| Error::TokioMpsc)?;
+                .map_err(|_| Error::TokioMpsc { task_name: "Input" })?;
         }
         Err(Error::TaskInputEnd)
     }

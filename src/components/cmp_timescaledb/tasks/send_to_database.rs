@@ -1,67 +1,62 @@
 use std::time::Duration;
 
-use sqlx::{postgres::PgPoolOptions, query, Pool, Postgres};
+use sqlx::{Pool, Postgres, query};
 use time::format_description::well_known::Iso8601;
 use tokio::{sync::mpsc, task::JoinHandle};
-use tracing::{info, trace, warn};
-use url::Url;
+use tracing::{trace, warn};
 
 use crate::executor::CheckCapacity;
 
-use super::{Error, InnerMessage, Result, Row};
+use super::{DatabasePool, Error, InnerMessage, Result, Row};
 
 pub struct SendToDatabase {
     pub input: mpsc::Receiver<InnerMessage>,
     pub output: mpsc::Sender<JoinHandle<Result<()>>>,
-    pub connection_string: Url,
-    pub max_connections: u32,
+    pub max_cache_size: usize,
     pub table_name: &'static str,
-    pub delete_before_write: bool,
+    pub pool: DatabasePool,
 }
 
 impl SendToDatabase {
     pub async fn spawn(mut self) -> Result<()> {
-        let mut cache = vec![];
-
-        let pool = PgPoolOptions::new()
-            .max_connections(self.max_connections)
-            .connect(self.connection_string.as_str())
-            .await?;
-
-        if self.delete_before_write {
-            warn!("Deleting table {}", self.table_name);
-            let sql = format!("DROP TABLE IF EXISTS {}", self.table_name);
-            query(&sql).execute(&pool).await?;
-        }
-
-        if self.table_name != "raw" {
-            info!("Creating table {}", self.table_name);
-            let sql = format!(
-                "CREATE TABLE IF NOT EXISTS {} (LIKE raw INCLUDING ALL)",
-                self.table_name
-            );
-            query(&sql).execute(&pool).await?;
-        }
+        let mut cache = Vec::with_capacity(self.max_cache_size);
 
         while let Some(msg) = self.input.recv().await {
             match msg {
-                InnerMessage::Rows(rows) => cache.extend(rows),
+                InnerMessage::Rows(rows) => {
+                    cache.extend(rows);
+                    if cache.len() > self.max_cache_size {
+                        cache.clear();
+                    }
+                }
                 InnerMessage::SendByTimer => {
                     if cache.is_empty() {
                         continue;
                     }
                     let sql = prepare_sql_statement(self.table_name, &cache)?;
-                    let task = execute_sql(sql, pool.clone());
                     cache.clear();
+
+                    let pool = { self.pool.lock().await.clone() };
+                    let Some(pool) = pool else {
+                        warn!(
+                            "Подключение к базе данных еще не установлено, запрос не формируется"
+                        );
+                        continue;
+                    };
+
+                    let task = execute_sql(sql, pool.clone());
                     let task = tokio::task::Builder::new()
                         .name("cmp_timescaledb | execute_sql")
                         .spawn(task)
                         .map_err(Error::Spawn)?;
-                    self.output
+                    let res = self
+                        .output
                         .check_capacity(0.2, "ch_tx_database_to_results")
-                        .send_timeout(task, Duration::from_secs(5))
-                        .await
-                        .map_err(|_| Error::TokioMpsc)?;
+                        .send_timeout(task, Duration::from_millis(100))
+                        .await;
+                    if let Err(err) = res {
+                        warn!("Failed to send task to database: {}", err);
+                    }
                 }
             }
         }

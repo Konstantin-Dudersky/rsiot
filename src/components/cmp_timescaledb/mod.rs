@@ -13,8 +13,9 @@ mod helpers;
 mod model;
 mod tasks;
 
+use std::sync::Arc;
 pub use {
-    component::Cmp,
+    component::{COMPONENT_NAME, Cmp},
     config::Config,
     error::Error,
     helpers::*,
@@ -22,6 +23,7 @@ pub use {
 };
 
 type Result<T> = std::result::Result<T, Error>;
+type DatabasePool = Arc<tokio::sync::Mutex<Option<sqlx::Pool<sqlx::Postgres>>>>;
 
 // async fn save_row_in_db(row: Row, pool: Pool<Postgres>) -> Result<()> {
 //     debug!("Save row in database: {:?}", row);
