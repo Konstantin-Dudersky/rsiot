@@ -49,6 +49,8 @@ where
     let task = task_output(msgbus_output, config.fn_output, output_store);
     join_set_spawn(&mut task_set, "cmp_leptos | output", task);
 
+    msgbus_linker.close();
+
     while let Some(task_result) = task_set.join_next().await {
         task_result??
     }
