@@ -10,3 +10,12 @@ pub struct ValueTime {
     /// Метка времени
     pub time: OffsetDateTime,
 }
+
+impl Default for ValueTime {
+    fn default() -> Self {
+        Self {
+            value: Default::default(),
+            time: OffsetDateTime::now_utc(),
+        }
+    }
+}

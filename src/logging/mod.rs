@@ -256,16 +256,16 @@ impl LogConfig {
         let layer_webconsole: Option<Layer<_>> = None;
 
         // log_webconsole_perf ---------------------------------------------------------------------
-        #[cfg(feature = "log_webconsole")]
-        let layer_webconsole_perf = {
-            use tracing_subscriber::fmt::format::Pretty;
-            use tracing_web::performance_layer;
+        // #[cfg(feature = "log_webconsole")]
+        // let layer_webconsole_perf = {
+        //     use tracing_subscriber::fmt::format::Pretty;
+        //     use tracing_web::performance_layer;
 
-            let layer = performance_layer().with_details_from_fields(Pretty::default());
-            Some(layer)
-        };
-        #[cfg(not(feature = "log_webconsole"))]
-        let layer_webconsole_perf: Option<Layer<_>> = None;
+        //     let layer = performance_layer().with_details_from_fields(Pretty::default());
+        //     Some(layer)
+        // };
+        // #[cfg(not(feature = "log_webconsole"))]
+        // let layer_webconsole_perf: Option<Layer<_>> = None;
 
         // registry --------------------------------------------------------------------------------
         registry()
@@ -274,7 +274,7 @@ impl LogConfig {
             .with(layer_loki)
             .with(layer_tokio)
             .with(layer_webconsole)
-            .with(layer_webconsole_perf)
+            // .with(layer_webconsole_perf)
             .init();
 
         #[cfg(feature = "log_console")]

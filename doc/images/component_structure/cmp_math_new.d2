@@ -1,0 +1,57 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 1
+  }
+}
+
+style {
+    stroke-width: 1
+    stroke: gray
+}
+
+MsgBusIn: MsgBus {
+    shape: oval
+}
+MsgBusIn -> Branch1.Input
+MsgBusIn -> Branch1.Alg1
+MsgBusIn -> BranchN.Input
+MsgBusIn -> BranchN.Alg1
+MsgBusIn -> BranchN.Alg2
+MsgBusIn -> BranchN.AlgN
+
+Branch1 {
+    Input
+    Input -> Alg1: mpsc::<ValueTime>
+
+    Alg1
+    Alg1 -> Output: mpsc::<ValueTime>
+
+    Output
+}
+Branch1.Alg1 -> MsgBusOut
+Branch1.Output -> MsgBusOut
+
+BranchN {
+    Input
+    Input -> Alg1: mpsc::<ValueTime>
+
+    Alg1
+    Alg1 -> Alg2: mpsc::<ValueTime>
+
+    Alg2
+    Alg2 -> AlgN: mpsc::<ValueTime>
+
+    AlgN
+    AlgN -> Output: mpsc::<ValueTime>
+
+    Output
+}
+BranchN.Alg1 -> MsgBusOut
+BranchN.Alg2 -> MsgBusOut
+BranchN.AlgN -> MsgBusOut
+BranchN.Output -> MsgBusOut
+
+MsgBusOut: MsgBus {
+    shape: oval
+}

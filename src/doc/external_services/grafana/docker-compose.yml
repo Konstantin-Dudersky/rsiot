@@ -1,13 +1,14 @@
 services:
-  grafana:
-    container_name: grafana
-    hostname: grafana
+  service_grafana:
+    container_name: service_grafana
+    hostname: service_grafana
     image: grafana/grafana:12.0.2 # https://hub.docker.com/r/grafana/grafana/tags
     environment:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_DASHBOARDS_MIN_REFRESH_INTERVAL=1s
         # настройки источника - TimescaleDB
       - TIMESCALEDB_HOST=timescaledb
       - TIMESCALEDB_PORT=5432

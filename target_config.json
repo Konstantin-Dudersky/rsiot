@@ -124,6 +124,7 @@
         "cmp_math",
         "cmp_modbus_client",
         "cmp_mqtt_client",
+        "cmp_os_process",
         "cmp_plc",
         "cmp_slint",
         "cmp_svg",

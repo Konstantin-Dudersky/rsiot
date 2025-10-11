@@ -159,6 +159,9 @@ pub mod cmp_logger;
 #[cfg(feature = "cmp_math")]
 pub mod cmp_math;
 
+// #[cfg(feature = "cmp_math")]
+// pub mod cmp_math_new;
+
 #[cfg(feature = "cmp_modbus_client")]
 #[cfg(any(
     aarch64_unknown_linux_gnu,
@@ -177,7 +180,11 @@ pub mod cmp_modbus_client;
 pub mod cmp_mqtt_client;
 
 #[cfg(feature = "cmp_os_process")]
-#[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
 pub mod cmp_os_process;
 
 #[cfg(feature = "cmp_plc")]
