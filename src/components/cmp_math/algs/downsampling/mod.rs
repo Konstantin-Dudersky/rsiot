@@ -1,5 +1,6 @@
-//! SMA - Simple Moving Average
+//! Прореживание
 
+mod calculation;
 mod output_value;
 mod task;
 

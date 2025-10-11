@@ -1,11 +1,12 @@
-//! Differential
+//! Шаблон алгоритма
 
 mod calculation;
-mod gamma;
+mod indicators;
 mod output_value;
 mod task;
 
+#[allow(unused)]
 pub(crate) use task::Task;
-pub use {gamma::Gamma, output_value::OutputValue};
+pub use {indicators::Indicators, output_value::OutputValue};
 
 use super::{AlgFnOutputMsgbus, AlgInput, AlgOutput, Error};

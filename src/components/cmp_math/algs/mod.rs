@@ -1,100 +1,40 @@
+//! Алгоритмы
+
+#[allow(unused)]
+mod _alg_template;
 pub(crate) mod derivative;
-// pub(crate) mod differential_nw;
+pub mod downsampling;
 pub(crate) mod ema;
 pub(crate) mod last_over_time_window;
-pub(crate) mod simple_moving_average;
 pub(crate) mod sma;
+pub mod statistic;
+
+use crate::message::{MsgDataBound, ValueTime};
 
 pub use {derivative::Gamma, ema::EmaKind};
 
-use tokio::sync::{broadcast, mpsc};
+use tokio::sync::mpsc;
 
 use std::time::Duration;
 
-use time::OffsetDateTime;
+use super::Error;
 
-use super::{Error, IntMsgBound, Result};
-
-type AlgInput<TIntMsg> = broadcast::Receiver<TIntMsg>;
-type AlgOutput<TIntMsg> = mpsc::Sender<TIntMsg>;
+type AlgInput = mpsc::Receiver<ValueTime>;
+type AlgOutput = mpsc::Sender<ValueTime>;
+type AlgFnOutputMsgbus<TMsg, OV> = fn(&OV) -> Option<TMsg>;
 
 /// Перечень алгоритмов для обработки данных
-pub enum Algs<TIntMsg>
+pub enum Algs<TMsg>
 where
-    TIntMsg: IntMsgBound,
+    TMsg: MsgDataBound,
 {
-    // ANCHOR: LastOverTimeWindow
-    /// Выборка последних значений в каждом периоде времени
-    LastOverTimeWindow {
-        /// Входящие сообщения
-        fn_input_value: fn(TIntMsg) -> Option<f64>,
-        /// Период времени, за который выбирается последнее значение
-        ///
-        /// Константа: `|_| Some(Duration::from_millis(100))`
-        fn_input_window: fn(TIntMsg) -> Option<Duration>,
-
-        /// Исходящие сообщения
-        fn_output: fn(f64) -> TIntMsg,
-    },
-    // ANCHOR: LastOverTimeWindow
-    // ANCHOR: SimpleMovingAverage
-    /// Простое скользящее среднее
-    SimpleMovingAverage {
-        /// Входящие сообщения
-        fn_input_value: fn(TIntMsg) -> Option<f64>,
-        /// Количество значений
-        ///
-        /// Константа: `|_| Some(100)`
-        fn_input_count: fn(TIntMsg) -> Option<usize>,
-        /// Исходящие сообщения
-        fn_output: fn(f64) -> TIntMsg,
-    },
-    // ANCHOR: SimpleMovingAverage
-    // ANCHOR: SMA
-    /// Простое скользящее среднее
-    ///
-    /// TODO: Текущая реализация - last. Проработать next и linear.
-    SMA {
-        /// Функция извлечения значения
-        fn_input_value: fn(TIntMsg) -> Option<(f64, OffsetDateTime)>,
-
-        /// Функция нахождения окна времени
-        ///
-        /// Константа: `|_| Some(Duration::from_millis(100))`
-        fn_input_time_window: fn(TIntMsg) -> Option<Duration>,
-
-        /// Функция создания выходного значения
-        fn_output: fn(sma::OutputValue) -> TIntMsg,
-    },
-    // ANCHOR: SMA
-    // ANCHOR: EMA
-    /// Экспоненциальное скользящее среднее
-    EMA {
-        /// Вид алгоритма
-        kind: ema::EmaKind,
-
-        /// Функция извлечения значения
-        fn_input_value: fn(TIntMsg) -> Option<(f64, OffsetDateTime)>,
-
-        /// Функция нахождения окна времени
-        ///
-        /// Константа: `|_| Some(Duration::from_millis(100))`
-        fn_input_time_window: fn(TIntMsg) -> Option<Duration>,
-
-        /// Функция создания выходного значения
-        fn_output: fn(ema::OutputValue) -> TIntMsg,
-    },
-    // ANCHOR: EMA
     // ANCHOR: Derivative
     /// Дифференциальное значение
     Derivative {
-        /// Функция извлечения значения
-        fn_input_value: fn(TIntMsg) -> Option<(f64, OffsetDateTime)>,
-
         /// Функция нахождения окна времени
         ///
         /// Константа: `|_| Some(Duration::from_millis(100))`
-        fn_input_time_window: fn(TIntMsg) -> Option<Duration>,
+        time_window: Duration,
 
         /// Время нормализации.
         ///
@@ -105,7 +45,76 @@ where
         gamma: derivative::Gamma,
 
         /// Функция создания выходного значения
-        fn_output: fn(derivative::OutputValue) -> TIntMsg,
+        fn_output_msgbus: AlgFnOutputMsgbus<TMsg, derivative::OutputValue>,
     },
     // ANCHOR: Derivative
+
+    // ANCHOR: Downsampling
+    /// Прореживание
+    Downsampling {
+        /// Окно времени
+        time_window: Duration,
+
+        /// Функция создания выходного значения
+        fn_output_msgbus: AlgFnOutputMsgbus<TMsg, downsampling::OutputValue>,
+    },
+    // ANCHOR: Downsampling
+
+    // ANCHOR: EMA
+    /// Экспоненциальное скользящее среднее
+    EMA {
+        /// Вид алгоритма
+        kind: ema::EmaKind,
+
+        /// Функция нахождения окна времени
+        ///
+        /// Константа: `|_| Some(Duration::from_millis(100))`
+        time_window: Duration,
+
+        /// Функция создания выходного значения
+        fn_output_msgbus: AlgFnOutputMsgbus<TMsg, ema::OutputValue>,
+    },
+    // ANCHOR: EMA
+
+    // ANCHOR: LastOverTimeWindow
+    /// Выборка последних значений в каждом периоде времени
+    LastOverTimeWindow {
+        /// Период времени, за который выбирается последнее значение
+        ///
+        /// Константа: `|_| Some(Duration::from_millis(100))`
+        time_window: Duration,
+
+        /// Исходящие сообщения
+        fn_output_msgbus: AlgFnOutputMsgbus<TMsg, f64>,
+    },
+    // ANCHOR: LastOverTimeWindow
+
+    // ANCHOR: SMA
+    /// Простое скользящее среднее
+    ///
+    /// TODO: Текущая реализация - last. Проработать next и linear.
+    SMA {
+        /// Функция нахождения окна времени
+        ///
+        /// Константа: `|_| Some(Duration::from_millis(100))`
+        time_window: Duration,
+
+        /// Функция создания выходного значения
+        fn_output_msgbus: AlgFnOutputMsgbus<TMsg, sma::OutputValue>,
+    },
+    // ANCHOR: SMA
+
+    // ANCHOR: Statistic
+    /// Статистиска
+    Statistic {
+        /// Окно времени
+        time_window: Duration,
+
+        /// Выбор индикаторов
+        indicators: statistic::Indicators,
+
+        /// Функция создания выходного значения
+        fn_output_msgbus: AlgFnOutputMsgbus<TMsg, statistic::OutputValue>,
+    },
+    // ANCHOR: Statistic
 }

@@ -8,7 +8,7 @@ use super::messages::*;
 pub fn cmp() -> Component<Config<Msg, IntMsg>, Msg> {
     let config = Config {
         fn_input: |msg| match msg {
-            Msg::InputValue(v) => Some(IntMsg::InputValue(v)),
+            Msg::InputValue(v) => Some(vec![IntMsg::InputValue(v)]),
             Msg::OutputValue(_) => None,
         },
         fn_output: |int_msg| match int_msg {

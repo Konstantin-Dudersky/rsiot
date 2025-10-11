@@ -6,7 +6,8 @@ use crate::{
 };
 
 use super::{
-    AlgFnOutputMsgbus, AlgInput, AlgOutput, Error, Gamma, OutputValue, calculation::Calculation,
+    AlgFnOutputMsgbus, AlgInput, AlgOutput, Error, Indicators, OutputValue,
+    calculation::Calculation,
 };
 
 pub struct Task<TMsg>
@@ -17,8 +18,7 @@ where
     pub output: AlgOutput,
     pub output_msgbus: MsgBusOutput<TMsg>,
     pub time_window: Duration,
-    pub normalization_time: Duration,
-    pub gamma: Gamma,
+    pub indicators: Indicators,
     pub fn_output_msgbus: AlgFnOutputMsgbus<TMsg, OutputValue>,
 }
 
@@ -27,12 +27,13 @@ where
     TMsg: MsgDataBound,
 {
     pub async fn spawn(mut self) -> Result<(), Error> {
-        let mut calculation = Calculation::new(self.gamma, self.normalization_time);
+        let mut calculation = Calculation::new(self.time_window, self.indicators);
 
-        while let Some(vt) = self.input.recv().await {
-            let out_value = calculation.step(vt, self.time_window);
+        while let Some(input_value) = self.input.recv().await {
+            let ov = calculation.step(input_value);
+            let Some(output_value) = ov else { continue };
 
-            let msg = (self.fn_output_msgbus)(&out_value);
+            let msg = (self.fn_output_msgbus)(&output_value);
             if let Some(msg) = msg {
                 self.output_msgbus
                     .send(msg.to_message())
@@ -42,14 +43,13 @@ where
 
             self.output
                 .send(ValueTime {
-                    value: out_value.derivative,
-                    time: out_value.time,
+                    value: output_value.value,
+                    time: output_value.time,
                 })
                 .await
-                .map_err(|_| Error::AlgTaskUnexpectedEnd(String::from("derivative")))?;
+                .map_err(|_| Error::AlgTaskUnexpectedEnd(String::from("_alg_template")))?;
         }
 
-        let err = String::from("derivative");
-        Err(Error::AlgTaskUnexpectedEnd(err))
+        Err(Error::AlgTaskUnexpectedEnd(String::from("_alg_template")))
     }
 }

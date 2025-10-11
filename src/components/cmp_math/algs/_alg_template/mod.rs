@@ -1,5 +1,6 @@
-//! SMA - Simple Moving Average
+//! Шаблон алгоритма
 
+mod calculation;
 mod output_value;
 mod task;
 

@@ -1,32 +1,43 @@
 use std::sync::Arc;
 
-use tokio::sync::{mpsc, Mutex};
+use tokio::sync::Mutex;
 
-use crate::executor::sleep;
+use crate::{
+    executor::{MsgBusOutput, sleep},
+    message::MsgDataBound,
+};
 
-use super::{buffer::Buffer, Error, IntMsgBound, Result};
+use super::{AlgFnOutputMsgbus, AlgOutput, Error, buffer::Buffer};
 
-pub struct TaskOutput<TIntMsg>
+pub struct TaskOutput<TMsg>
 where
-    TIntMsg: IntMsgBound,
+    TMsg: MsgDataBound,
 {
-    pub output: mpsc::Sender<TIntMsg>,
-    pub fn_output: fn(f64) -> TIntMsg,
+    pub output: AlgOutput,
+    pub output_msgbus: MsgBusOutput<TMsg>,
+    pub fn_output_msgbus: AlgFnOutputMsgbus<TMsg, f64>,
     pub buffer: Arc<Mutex<Buffer>>,
 }
-impl<TIntMsg> TaskOutput<TIntMsg>
+impl<TMsg> TaskOutput<TMsg>
 where
-    TIntMsg: IntMsgBound,
+    TMsg: MsgDataBound,
 {
-    pub async fn spawn(self) -> Result<()> {
+    pub async fn spawn(self) -> Result<(), Error> {
         loop {
             let (last_value, window) = {
                 let buffer = self.buffer.lock().await;
                 (buffer.last_value, buffer.window)
             };
 
-            let int_msg = (self.fn_output)(last_value);
-            self.output.send(int_msg).await.map_err(|_| {
+            let msg = (self.fn_output_msgbus)(&last_value.value);
+            if let Some(msg) = msg {
+                self.output_msgbus
+                    .send(msg.to_message())
+                    .await
+                    .map_err(|_| Error::SendToMsgbus)?;
+            }
+
+            self.output.send(last_value).await.map_err(|_| {
                 Error::AlgTaskUnexpectedEnd("AlgLastOverTimeWindow - TaskOutput".into())
             })?;
 

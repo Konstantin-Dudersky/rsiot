@@ -1,43 +1,42 @@
 use std::{sync::Arc, time::Duration};
 
-use tokio::{
-    sync::{broadcast, mpsc, Mutex},
-    task::JoinSet,
-};
+use tokio::{sync::Mutex, task::JoinSet};
 
-use crate::executor::join_set_spawn;
+use crate::{
+    executor::{MsgBusOutput, join_set_spawn},
+    message::{MsgDataBound, ValueTime},
+};
 
 use super::{
-    buffer::Buffer, task_input::TaskInput, task_output::TaskOutput, Error, IntMsgBound, Result,
+    AlgFnOutputMsgbus, AlgInput, AlgOutput, Error, buffer::Buffer, task_input::TaskInput,
+    task_output::TaskOutput,
 };
 
-pub struct Task<TIntMsg>
+pub struct Task<TMsg>
 where
-    TIntMsg: IntMsgBound,
+    TMsg: MsgDataBound,
 {
-    pub input: broadcast::Receiver<TIntMsg>,
-    pub output: mpsc::Sender<TIntMsg>,
-    pub fn_input_value: fn(TIntMsg) -> Option<f64>,
-    pub fn_input_window: fn(TIntMsg) -> Option<Duration>,
-    pub fn_output: fn(f64) -> TIntMsg,
+    pub input: AlgInput,
+    pub output: AlgOutput,
+    pub output_msgbus: MsgBusOutput<TMsg>,
+    pub time_window: Duration,
+    pub fn_output: AlgFnOutputMsgbus<TMsg, f64>,
 }
 
-impl<TIntMsg> Task<TIntMsg>
+impl<TMsg> Task<TMsg>
 where
-    TIntMsg: 'static + IntMsgBound,
+    TMsg: 'static + MsgDataBound,
 {
-    pub async fn spawn(self) -> Result<()> {
+    pub async fn spawn(self) -> Result<(), Error> {
         let mut task_set = JoinSet::new();
 
         let buffer = Arc::new(Mutex::new(Buffer {
-            last_value: 0.0,
-            window: Duration::from_millis(100),
+            last_value: ValueTime::default(),
+            window: self.time_window,
         }));
 
         let task = TaskInput {
             input: self.input,
-            fn_input_value: self.fn_input_value,
-            fn_input_window: self.fn_input_window,
             buffer: buffer.clone(),
         };
         join_set_spawn(
@@ -48,7 +47,8 @@ where
 
         let task = TaskOutput {
             output: self.output,
-            fn_output: self.fn_output,
+            output_msgbus: self.output_msgbus,
+            fn_output_msgbus: self.fn_output,
             buffer: buffer.clone(),
         };
         join_set_spawn(

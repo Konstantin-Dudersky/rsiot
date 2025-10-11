@@ -1,36 +1,29 @@
-use std::fmt::Debug;
-
-use crate::message::MsgDataBound;
+use crate::message::{MsgDataBound, ValueTime};
 
 use super::Algs;
 
 // ANCHOR: Config
 /// Конфигурация компонента cmp_math
-pub struct Config<TMsg, TIntMsg>
+pub struct Config<TMsg>
 where
     TMsg: MsgDataBound,
-    TIntMsg: IntMsgBound,
 {
-    /// # Пример
-    ///
-    /// ```rust
-    /// fn_input: |_| None
-    /// ```
-    pub fn_input: fn(TMsg) -> Option<TIntMsg>,
-
-    /// # Пример
-    ///
-    /// ```rust
-    /// fn_output: |_| vec![]
-    /// ```
-    pub fn_output: fn(TIntMsg) -> Option<Vec<TMsg>>,
-
-    /// Алгоритмы математической обработки
-    pub algs: Vec<Algs<TIntMsg>>,
+    /// Ветки конфигурации
+    pub branches: Vec<ConfigBranch<TMsg>>,
 }
 // ANCHOR: Config
 
-// ANCHOR: IntMsgBound
-/// Типаж для внутренних сообщений
-pub trait IntMsgBound: Clone + Copy + Debug + Send + Sync {}
-// ANCHOR: IntMsgBound
+/// Конфигурация ветки
+pub struct ConfigBranch<TMsg>
+where
+    TMsg: MsgDataBound,
+{
+    /// Функция получения значения из входящих сообщений
+    pub fn_input: fn(&TMsg) -> Option<ValueTime>,
+
+    /// Алгоритмы математической обработки
+    pub algs: Vec<Algs<TMsg>>,
+
+    /// Функция создания исходящего сообщения на основе значения
+    pub fn_output: fn(&ValueTime) -> Option<TMsg>,
+}
