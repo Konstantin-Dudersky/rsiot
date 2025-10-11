@@ -39,7 +39,7 @@ async fn fn_process(mut input: MsgBusInput<Msg>, output: MsgBusOutput<Msg>) -> C
     while let Ok(msg) = input.recv().await {
         match msg.data {
             MsgData::System(msg) => match msg {
-                System::Lagged => warn!("Lagged message"),
+                System::InputChannelFull => warn!("Lagged message"),
                 _ => continue,
             },
             MsgData::Custom(msg) => match msg {

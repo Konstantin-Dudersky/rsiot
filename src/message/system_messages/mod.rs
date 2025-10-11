@@ -19,8 +19,11 @@ use super::MsgKey;
 /// Типы системных сообщений
 #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
 pub enum System {
-    /// Компонент не успевает обрабатывать сообщения
-    Lagged,
+    /// Входной канал заполнен сообщениями
+    InputChannelFull,
+
+    /// Выходной канал заполнен сообщениями
+    OutputChannelFull,
 
     /// Запрос авторизации по логину и паролю
     AuthRequestByLogin(AuthRequestByLogin),
@@ -45,7 +48,8 @@ impl System {
     /// Определяем сообщения, которые можно передавать между сервисами
     pub fn define_enabled_routes(&self) -> bool {
         match self {
-            System::Lagged => todo!(),
+            System::InputChannelFull => todo!(),
+            System::OutputChannelFull => todo!(),
             System::AuthRequestByLogin(_) => todo!(),
             System::AuthRequestByToken(_) => todo!(),
             System::AuthResponseErr(_) => todo!(),

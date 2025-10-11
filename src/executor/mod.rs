@@ -18,6 +18,9 @@ mod msgbus_input;
 mod msgbus_linker;
 mod msgbus_output;
 mod sleep;
+mod task_internal;
+#[cfg(feature = "log_tokio")]
+mod task_runtime_metrics;
 mod tokio_runtime_metrics;
 mod types;
 
