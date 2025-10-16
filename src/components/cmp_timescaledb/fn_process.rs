@@ -1,18 +1,17 @@
-use std::sync::Arc;
-
-use tokio::{
-    sync::{Mutex, mpsc},
-    task::JoinSet,
+use std::{
+    sync::{Arc, atomic::AtomicBool},
+    time::Duration,
 };
+
+use tokio::{sync::mpsc, task::JoinSet};
 use tracing::info;
-use url::Url;
 
 use crate::{
     executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
 };
 
-use super::{DatabasePool, Error, config::Config, tasks};
+use super::{Error, config::Config, tasks};
 
 pub async fn fn_process<TMsg>(
     msgbus_linker: MsgBusLinker<TMsg>,
@@ -23,9 +22,7 @@ where
 {
     info!("Start cmp_timescaledb");
 
-    let pool: DatabasePool = Arc::new(Mutex::new(None));
-
-    let connection_string = Url::parse(&config.connection_string)?;
+    let database_setup = Arc::new(AtomicBool::new(false));
 
     let (ch_tx_input_to_database, ch_rx_input_to_database) = mpsc::channel(1000);
     let (ch_tx_database_to_results, ch_rx_database_to_results) = mpsc::channel(10);
@@ -33,11 +30,11 @@ where
     let mut task_set = JoinSet::new();
 
     let task = tasks::SetupDatabase {
-        pool: pool.clone(),
-        connection_string,
-        max_connections: config.max_connections,
+        connection_string: config.connection_string.clone(),
         delete_before_write: config.delete_before_write,
         table_name: config.table_name,
+        database_setup: database_setup.clone(),
+        reconnect_interval: Duration::from_millis(1_000),
     };
     join_set_spawn(
         &mut task_set,
@@ -63,7 +60,8 @@ where
         output: ch_tx_database_to_results,
         table_name: config.table_name,
         max_cache_size: config.max_cache_size,
-        pool: pool.clone(),
+        connection_string: config.connection_string,
+        database_setup,
     };
     join_set_spawn(
         &mut task_set,

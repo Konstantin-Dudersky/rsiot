@@ -5,6 +5,15 @@ use super::COMPONENT_NAME;
 #[allow(missing_docs)]
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
+    #[error("{COMPONENT_NAME} | DatabaseCloseConnection: {0}")]
+    DatabaseCloseConnection(sqlx::Error),
+
+    #[error("{COMPONENT_NAME} | ConnectToDatabas: {0}")]
+    DatabaseConnect(sqlx::Error),
+
+    #[error("{COMPONENT_NAME} | DatabaseExecute: {0}")]
+    DatabaseExecute(sqlx::Error),
+
     #[error(transparent)]
     Format(#[from] time::error::Format),
 
@@ -19,6 +28,9 @@ pub enum Error {
 
     #[error("{COMPONENT_NAME} | Error spawning task")]
     Spawn(std::io::Error),
+
+    #[error("{COMPONENT_NAME} | TaskCollectResults")]
+    TaskCollectResults,
 
     #[error("{COMPONENT_NAME} | TaskInputEnd")]
     TaskInputEnd,

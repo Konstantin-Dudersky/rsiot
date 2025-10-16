@@ -1,20 +1,27 @@
-use std::time::Duration;
+use std::{
+    sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+    },
+    time::Duration,
+};
 
-use sqlx::{Pool, Postgres, query};
+use sqlx::{Connection, PgConnection, query};
 use time::format_description::well_known::Iso8601;
 use tokio::{sync::mpsc, task::JoinHandle};
-use tracing::{trace, warn};
+use tracing::warn;
 
 use crate::executor::CheckCapacity;
 
-use super::{DatabasePool, Error, InnerMessage, Result, Row};
+use super::{Error, InnerMessage, Result, Row};
 
 pub struct SendToDatabase {
     pub input: mpsc::Receiver<InnerMessage>,
     pub output: mpsc::Sender<JoinHandle<Result<()>>>,
     pub max_cache_size: usize,
     pub table_name: &'static str,
-    pub pool: DatabasePool,
+    pub connection_string: String,
+    pub database_setup: Arc<AtomicBool>,
 }
 
 impl SendToDatabase {
@@ -26,6 +33,10 @@ impl SendToDatabase {
                 InnerMessage::Rows(rows) => {
                     cache.extend(rows);
                     if cache.len() > self.max_cache_size {
+                        warn!(
+                            "Кэш превысил максимальный размер: {}; очистка",
+                            self.max_cache_size
+                        );
                         cache.clear();
                     }
                 }
@@ -33,22 +44,21 @@ impl SendToDatabase {
                     if cache.is_empty() {
                         continue;
                     }
+
                     let sql = prepare_sql_statement(self.table_name, &cache)?;
                     cache.clear();
 
-                    let pool = { self.pool.lock().await.clone() };
-                    let Some(pool) = pool else {
-                        warn!(
-                            "Подключение к базе данных еще не установлено, запрос не формируется"
-                        );
+                    if !self.database_setup.load(Ordering::Relaxed) {
+                        warn!("Database not setup");
                         continue;
-                    };
+                    }
 
-                    let task = execute_sql(sql, pool.clone());
+                    let task = execute_sql(sql, self.connection_string.clone());
                     let task = tokio::task::Builder::new()
                         .name("cmp_timescaledb | execute_sql")
                         .spawn(task)
                         .map_err(Error::Spawn)?;
+
                     let res = self
                         .output
                         .check_capacity(0.2, "ch_tx_database_to_results")
@@ -93,12 +103,23 @@ fn prepare_sql_statement(table_name: &str, rows: &[Row]) -> Result<String> {
     Ok(sql)
 }
 
-async fn execute_sql(sql: String, pool: Pool<Postgres>) -> Result<()> {
-    trace!("Execute SQL: {:?}", sql);
-    let result = query(&sql).execute(&pool).await;
-    if let Err(e) = result {
-        warn!("Failed to execute SQL: {:?}", e);
-    }
+async fn execute_sql(sql: String, connection_string: String) -> Result<()> {
+    // Подключаемся к базе данных.
+    //
+    // Не используется пул подключений, поскольку была утечка памяти
+    let mut conn = PgConnection::connect(&connection_string)
+        .await
+        .map_err(Error::DatabaseConnect)?;
+
+    // Выполняем SQL-запрос
+    query(&sql)
+        .execute(&mut conn)
+        .await
+        .map_err(Error::DatabaseExecute)?;
+
+    // Закрываем подключение к базе данных
+    conn.close().await.map_err(Error::DatabaseCloseConnection)?;
+
     Ok(())
 }
 

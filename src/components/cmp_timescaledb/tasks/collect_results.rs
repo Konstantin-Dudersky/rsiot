@@ -1,5 +1,5 @@
 use tokio::{sync::mpsc, task::JoinHandle};
-use tracing::warn;
+use tracing::{debug, warn};
 
 use super::{Error, Result};
 
@@ -11,6 +11,7 @@ impl CollectResults {
     pub async fn spawn(mut self) -> Result<()> {
         while let Some(msg) = self.input.recv().await {
             let res = msg.await;
+            debug!("SQL execution result: {:?}", res);
             if let Err(err) = res {
                 warn!("Error sending to database: {}", err);
             }

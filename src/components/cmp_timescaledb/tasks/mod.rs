@@ -6,7 +6,7 @@ mod send_to_database;
 mod setup_database;
 
 use {
-    super::{COMPONENT_NAME, DatabasePool, Error, Result, Row},
+    super::{COMPONENT_NAME, Error, Result, Row},
     inner_message::InnerMessage,
 };
 
