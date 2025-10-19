@@ -3,7 +3,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
 pub enum Msg {
-    AddLine(String),
+    AddLineFile1(String),
+    AddLineFile2(String),
     EndProcessing,
 }
 

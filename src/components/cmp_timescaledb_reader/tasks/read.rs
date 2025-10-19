@@ -18,7 +18,6 @@ where
 {
     pub msgbus_output: MsgBusOutput<TMsg>,
     pub database_pool: Pool<Postgres>,
-    pub concurrent_connections: Arc<Semaphore>,
     pub time_begin: OffsetDateTime,
     pub time_end: OffsetDateTime,
     pub entity: &'static str,

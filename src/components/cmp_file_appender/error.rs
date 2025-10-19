@@ -5,6 +5,9 @@ use super::COMPONENT_NAME;
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    #[error("{COMPONENT_NAME} | CreateDirAll: {0}")]
+    CreateDirAll(std::io::Error),
+
     #[error("{COMPONENT_NAME} | CreateFile: {0}")]
     CreateFile(std::io::Error),
 

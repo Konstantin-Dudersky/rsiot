@@ -1,9 +1,3 @@
-//! Запуск:
-//!
-//! ```bash
-//!
-//! ```
-
 #[cfg(feature = "cmp_filesystem")]
 mod config_file_appender;
 #[cfg(feature = "cmp_filesystem")]

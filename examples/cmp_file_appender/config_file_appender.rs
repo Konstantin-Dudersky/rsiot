@@ -2,11 +2,18 @@ use rsiot::{components::cmp_file_appender::*, executor::Component};
 
 use crate::messages::Msg;
 
-pub fn cmp() -> Component<Config<Msg>, Msg> {
+pub fn cmp() -> Component<Config<Msg, impl Fn(Msg) -> ConfigAction>, Msg> {
     let config = Config {
-        filename: "examples/cmp_file_appender/test.csv".to_string(),
+        _msg_phantom: std::marker::PhantomData,
         fn_input: |msg| match msg {
-            Msg::AddLine(v) => ConfigAction::AppendLine(v.clone()),
+            Msg::AddLineFile1(v) => ConfigAction::AppendLine {
+                filename: "examples/cmp_file_appender/test_1.csv".to_string(),
+                line: v.clone(),
+            },
+            Msg::AddLineFile2(v) => ConfigAction::AppendLine {
+                filename: "examples/cmp_file_appender/test_2.csv".to_string(),
+                line: v.clone(),
+            },
             Msg::EndProcessing => ConfigAction::EndProcessing,
         },
     };

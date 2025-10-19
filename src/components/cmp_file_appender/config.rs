@@ -1,19 +1,19 @@
-use crate::message::MsgDataBound;
+use std::marker::PhantomData;
 
-/// Функция преобразования сообщений в строки для сохранения в файл
-pub type FnInput<TMsg> = fn(&TMsg) -> ConfigAction;
+use crate::message::MsgDataBound;
 
 /// Конфигурация компонента cmp_file_appender
 #[derive(Clone)]
-pub struct Config<TMsg>
+pub struct Config<TMsg, TFnInput>
 where
     TMsg: MsgDataBound,
+    TFnInput: Fn(TMsg) -> ConfigAction + Send + Sync,
 {
-    /// Название файла
-    pub filename: String,
+    /// PhantomData для сообщений
+    pub _msg_phantom: PhantomData<TMsg>,
 
     /// Функция преобразования сообщений в строки для сохранения в файл
-    pub fn_input: FnInput<TMsg>,
+    pub fn_input: TFnInput,
 }
 
 /// Действие на основе входящего сообщения
@@ -23,7 +23,13 @@ pub enum ConfigAction {
     NoAction,
 
     /// Добавить строку в файл
-    AppendLine(String),
+    AppendLine {
+        /// Название файла
+        filename: String,
+
+        /// Строка для добавления в файл
+        line: String,
+    },
 
     /// Завершить обработку
     EndProcessing,
