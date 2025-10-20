@@ -15,7 +15,7 @@ where
     TMsg: MsgDataBound,
 {
     pub input: MsgBusInput<TMsg>,
-    pub lagged: Arc<AtomicBool>,
+    pub input_lagged: Arc<AtomicBool>,
 }
 
 impl<TMsg> CheckLagged<TMsg>
@@ -25,7 +25,7 @@ where
     pub async fn spawn(mut self) -> Result<(), Error> {
         while let Ok(msg) = self.input.recv().await {
             if let MsgData::System(System::InputChannelFull) = msg.data {
-                self.lagged.store(true, Ordering::Release);
+                self.input_lagged.store(true, Ordering::Release);
             }
         }
 

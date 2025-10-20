@@ -3,4 +3,4 @@ mod read;
 
 use super::Error;
 
-pub use read::Read;
+pub use {check_lagged::CheckLagged, read::Read};

@@ -1,8 +1,7 @@
-use std::sync::Arc;
+use std::sync::{Arc, atomic::AtomicBool};
 
 use sqlx::postgres::PgPoolOptions;
-use tokio::{sync::Semaphore, task::JoinSet, time::sleep};
-use tracing::info;
+use tokio::task::JoinSet;
 use url::Url;
 
 use crate::{
@@ -10,7 +9,7 @@ use crate::{
     message::MsgDataBound,
 };
 
-use super::{Config, Error, tasks};
+use super::{Config, Error, prepare_sql_statement::prepare_sql_statement, tasks};
 
 pub async fn fn_process<TMsg>(
     config: Config<TMsg>,
@@ -27,34 +26,49 @@ where
         .await
         .map_err(Error::PgConnectionError)?;
 
-    let concurrent_connections = Arc::new(Semaphore::new(config.max_connections as usize));
+    let input_lagged = Arc::new(AtomicBool::new(false));
 
     let mut task_set = JoinSet::new();
 
-    for item in config.items {
-        let task = tasks::Read {
-            msgbus_output: msgbus_linker.output(),
-            database_pool: pool.clone(),
-            concurrent_connections: concurrent_connections.clone(),
-            time_begin: config.time_begin,
-            time_end: config.time_end,
-            entity: item.entity,
-            attr: item.attr,
-            fn_output: item.fn_output,
-            delay_between_msgs: config.delay_between_msgs,
-        };
+    // Задача проверки загруженности входного канала сообщений
+    let task = tasks::CheckLagged {
+        input: msgbus_linker.input(),
+        input_lagged: input_lagged.clone(),
+    };
+    join_set_spawn(
+        &mut task_set,
+        "cmp_tsdb_reader | check_lagged",
+        task.spawn(),
+    );
 
-        join_set_spawn(&mut task_set, "cmp_tsdb_reader", task.spawn());
-    }
+    let mut task = tasks::Read {
+        msgbus_output: msgbus_linker.output(),
+        database_pool: pool.clone(),
+        delay_between_msgs: config.delay_between_msgs,
+        input_lagged,
+    };
+
+    let output_shutdown = msgbus_linker.output();
 
     msgbus_linker.close();
+
+    for item in config.items {
+        let sql =
+            prepare_sql_statement(config.time_begin, config.time_end, item.entity, item.attr)?;
+
+        task.fetch(&sql, item.fn_output).await?;
+    }
+
+    let msg = (config.fn_shutdown)();
+    let msg = msg.to_message();
+    output_shutdown
+        .send(msg)
+        .await
+        .map_err(|_| Error::TokioSyncMpscSend)?;
 
     while let Some(res) = task_set.join_next().await {
         res??;
     }
-
-    sleep(config.shutdown_delay).await;
-    info!("Reader tasks have been shut down");
 
     Ok(())
 }

@@ -5,7 +5,10 @@ use tokio::{
 };
 use tracing::{error, info};
 
-use crate::message::{AuthPermissions, Message, MsgDataBound};
+use crate::{
+    executor::Instant,
+    message::{AuthPermissions, Message, MsgDataBound},
+};
 
 #[cfg(feature = "log_tokio")]
 use super::task_runtime_metrics::TaskRuntimeMetrics;
@@ -26,6 +29,7 @@ where
 {
     task_set: JoinSet<Result<(), ComponentError>>,
     cmp_in_out: MsgBusLinker<TMsg>,
+    start_time: Instant,
 }
 
 /// Настройка исполнителя
@@ -109,6 +113,7 @@ where
         Self {
             task_set,
             cmp_in_out,
+            start_time: Instant::now(),
         }
     }
 
@@ -139,6 +144,7 @@ where
 
         let msg;
         if let Some(result) = self.task_set.join_next().await {
+            info!("Program runtime: {:?}", self.start_time.elapsed());
             match result {
                 Ok(Ok(_)) => {
                     msg = "Component has finished executing with Ok result".to_string();

@@ -34,8 +34,8 @@ where
     /// переполнению шины
     pub delay_between_msgs: Duration,
 
-    /// Задержка перед окончанием работы
-    pub shutdown_delay: Duration,
+    /// Сообщение об окончании работы компонента, когда все данные были успешно прочитаны
+    pub fn_shutdown: fn() -> TMsg,
 }
 // ANCHOR: Config
 

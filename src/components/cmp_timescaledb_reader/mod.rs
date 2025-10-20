@@ -4,6 +4,7 @@ mod component;
 mod config;
 mod error;
 mod fn_process;
+mod prepare_sql_statement;
 mod tasks;
 
 pub use component::{COMPONENT_NAME, Cmp};
