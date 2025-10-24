@@ -52,9 +52,10 @@ async fn action_append_line(
 ) -> Result<(), Error> {
     if !files.contains_key(&filename) {
         // Заменяем символы, не допустимые в имени файла Windows
-        let filename_save = filename.replace(":", "\u{A789}");
+        // let filename_save = filename.replace(":", "\u{A789}");
+        // let filename_save = filename.replace(":", "-");
 
-        let path = Path::new(&filename_save);
+        let path = Path::new(&filename);
 
         // Создаём все папки, если необходимо
         if let Some(parent) = path.parent() {

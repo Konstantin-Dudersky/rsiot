@@ -8,6 +8,9 @@ pub enum Error {
     #[error("{COMPONENT_NAME} | PConnectionError: {0}")]
     PgConnectionError(sqlx::Error),
 
+    #[error("{COMPONENT_NAME} | SqlxFetchAll: {0}")]
+    SqlxFetchAll(String),
+
     #[error("{COMPONENT_NAME} | TimeFormat: {0}")]
     TimeFormat(#[from] time::error::Format),
 
@@ -19,9 +22,6 @@ pub enum Error {
 
     #[error("{COMPONENT_NAME} | TokioTaskJoin: {0}")]
     TokioTaskJoin(#[from] tokio::task::JoinError),
-
-    #[error("{COMPONENT_NAME} | TryNext: {0}")]
-    TryNext(String),
 
     #[error("{COMPONENT_NAME} | UrlParseError: {0}")]
     UrlParseError(#[from] url::ParseError),

@@ -244,21 +244,21 @@ pub mod cmp_system_info;
 ))]
 pub mod cmp_telegram;
 
-#[cfg(feature = "cmp_timescaledb")]
+#[cfg(feature = "cmp_tsdb")]
 #[cfg(any(
     aarch64_unknown_linux_gnu,
     armv7_unknown_linux_gnueabihf,
     x8664_unknown_linux_gnu
 ))]
-pub mod cmp_timescaledb;
+pub mod cmp_tsdb;
 
-#[cfg(feature = "cmp_timescaledb")]
+#[cfg(feature = "cmp_tsdb")]
 #[cfg(any(
     aarch64_unknown_linux_gnu,
     armv7_unknown_linux_gnueabihf,
     x8664_unknown_linux_gnu
 ))]
-pub mod cmp_timescaledb_reader;
+pub mod cmp_tsdb_reader;
 
 #[cfg(feature = "cmp_websocket_client")]
 #[cfg(any(

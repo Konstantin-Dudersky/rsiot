@@ -45,6 +45,12 @@ impl SendToDatabase {
                         continue;
                     }
 
+                    if self.output.capacity() <= 1 {
+                        warn!("ch_tx_database_to_results full, cancel sending");
+                        cache.clear();
+                        continue;
+                    }
+
                     let sql = prepare_sql_statement(self.table_name, &cache)?;
                     cache.clear();
 

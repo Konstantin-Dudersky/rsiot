@@ -6,7 +6,6 @@ use std::{
     time::Duration,
 };
 
-use futures::TryStreamExt;
 use sqlx::{Pool, Postgres, query_as};
 use tokio::time::sleep;
 use tracing::info;
@@ -37,13 +36,12 @@ where
         sql: &str,
         fn_output: fn(ValueTime) -> TMsg,
     ) -> Result<(), Error> {
-        let mut rows = query_as::<_, ValueTime>(sql).fetch(&self.database_pool);
-
-        while let Some(row) = rows
-            .try_next()
+        let rows = query_as::<_, ValueTime>(sql)
+            .fetch_all(&self.database_pool)
             .await
-            .map_err(|e| Error::TryNext(e.to_string()))?
-        {
+            .map_err(|e| Error::SqlxFetchAll(e.to_string()))?;
+
+        for row in rows {
             let msg = (fn_output)(row);
             let msg = msg.to_message();
 
