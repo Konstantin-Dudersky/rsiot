@@ -1,3 +1,3 @@
 pub mod tokio_runtime_metrics;
 
-use super::Row;
+use super::{Error, Row, RowBuilder};

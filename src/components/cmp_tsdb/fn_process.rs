@@ -11,14 +11,15 @@ use crate::{
     message::MsgDataBound,
 };
 
-use super::{Error, config::Config, tasks};
+use super::{Error, Row, config::Config, tasks};
 
-pub async fn fn_process<TMsg>(
+pub async fn fn_process<TMsg, TFnInput>(
     msgbus_linker: MsgBusLinker<TMsg>,
-    config: Config<TMsg>,
+    config: Config<TMsg, TFnInput>,
 ) -> Result<(), Error>
 where
     TMsg: 'static + MsgDataBound,
+    TFnInput: 'static + Fn(&TMsg) -> Result<Option<Vec<Row>>, Error> + Send + Sync,
 {
     info!("Start cmp_timescaledb");
 

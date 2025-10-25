@@ -1,5 +1,5 @@
 services:
-  timescaledb:
+  svc_tsdb:
     command: postgres
       -c config_file=/etc/postgresql/postgresql.conf
       -c hba_file=/etc/postgresql/pg_hba.conf
@@ -20,9 +20,9 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./postgresql.conf:/etc/postgresql/postgresql.conf
-      - ./pg_hba.conf:/etc/postgresql/pg_hba.conf
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../../src/doc/external_services/tsdb/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ../../src/doc/external_services/tsdb/pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - ../../src/doc/external_services/tsdb/init.sql:/docker-entrypoint-initdb.d/init.sql
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
       - timescaledb_volume:/var/lib/postgresql/data

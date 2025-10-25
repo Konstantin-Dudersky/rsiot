@@ -1,14 +1,14 @@
 Запустить базу данных и pgadmin:
 
 ```sh
-cd examples/cmp_timescaledb
-docker-compose up
+cd examples/cmp_tsdb
+docker compose up
 ```
 
 Запустить пример:
 
 ```sh
-RUST_LOG=debug cargo run --example cmp_timescaledb --features "cmp_timescaledb"
+RUST_LOG=debug cargo run --example cmp_tsdb --features "cmp_tsdb"
 ```
 
 SQL-скрипт для чтения данных из TimescaleDB:

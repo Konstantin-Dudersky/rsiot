@@ -85,13 +85,9 @@ fn prepare_sql_statement(table_name: &str, rows: &[Row]) -> Result<String> {
         .iter()
         .map(|row| {
             let time = row.time.format(&Iso8601::DEFAULT)?;
-            let aggts = match row.aggts {
-                Some(v) => v.format(&Iso8601::DEFAULT)?,
-                None => "NULL".to_string(),
-            };
             let sql = format!(
-                "('{time}', '{}', '{}', {}, '{:?}', {aggts}, ARRAY[]::AggType[])",
-                row.entity, row.attr, row.value, row.agg,
+                "('{time}', '{}', '{}', '{}', '{}', {})",
+                row.hst, row.svc, row.cmp, row.key, row.value
             );
             Ok(sql)
         })
@@ -101,10 +97,8 @@ fn prepare_sql_statement(table_name: &str, rows: &[Row]) -> Result<String> {
     let sql = format!(
         r#"INSERT INTO {table_name}
     VALUES {values}
-    ON CONFLICT (time, entity, attr, agg) DO UPDATE
-        SET value = excluded.value,
-             aggts = excluded.aggts,
-             aggnext = excluded.aggnext;"#
+    ON CONFLICT (time, hst, svc, cmp, key) DO UPDATE
+        SET value = excluded.value;"#
     );
     Ok(sql)
 }
@@ -133,32 +127,29 @@ async fn execute_sql(sql: String, connection_string: String) -> Result<()> {
 mod tests {
     use time::macros::datetime;
 
-    use super::{super::super::AggType, *};
+    use super::{super::super::RowBuilder, *};
 
     #[test]
     fn test1() -> anyhow::Result<()> {
-        let time1 = datetime!(2025-07-23 10:00:00 +3);
-        let time2 = datetime!(2025-07-23 10:00:01 +3);
-        let rows = vec![
-            Row {
-                time: time1,
-                entity: "test_entity".to_string(),
-                attr: "test_attr".to_string(),
-                value: 1.23,
-                agg: AggType::Curr,
-                aggts: None,
-                aggnext: vec![],
-            },
-            Row {
-                time: time2,
-                entity: "test_entity".to_string(),
-                attr: "test_attr".to_string(),
-                value: 4.56,
-                agg: AggType::Curr,
-                aggts: None,
-                aggnext: vec![],
-            },
-        ];
+        let row_builder = RowBuilder::new()
+            .hst("hst_test")
+            .svc("svc_test")
+            .cmp("cmp_test");
+
+        let row1 = row_builder
+            .clone()
+            .key("key1")
+            .value(1.23)
+            .time(datetime!(2025-07-23 10:00:00 +3))
+            .row()?;
+        let row2 = row_builder
+            .clone()
+            .key("key1")
+            .value(4.56)
+            .time(datetime!(2025-07-23 10:00:01 +3))
+            .row()?;
+
+        let rows = vec![row1, row2];
 
         let test_sql = prepare_sql_statement("raw", &rows)?;
         let test_sql = test_sql
@@ -167,7 +158,7 @@ mod tests {
             .collect::<Vec<&str>>()
             .join(" ");
 
-        let correct_sql = "INSERT INTO raw VALUES ('2025-07-23T10:00:00.000000000+03:00', 'test_entity', 'test_attr', 1.23, 'Curr', NULL, ARRAY[]::AggType[]), ('2025-07-23T10:00:01.000000000+03:00', 'test_entity', 'test_attr', 4.56, 'Curr', NULL, ARRAY[]::AggType[]) ON CONFLICT (time, entity, attr, agg) DO UPDATE SET value = excluded.value, aggts = excluded.aggts, aggnext = excluded.aggnext;";
+        let correct_sql = "INSERT INTO raw VALUES ('2025-07-23T10:00:00.000000000+03:00', 'hst_test', 'svc_test', 'cmp_test', 'key1', 1.23), ('2025-07-23T10:00:01.000000000+03:00', 'hst_test', 'svc_test', 'cmp_test', 'key1', 4.56) ON CONFLICT (time, hst, svc, cmp, key) DO UPDATE SET value = excluded.value;";
 
         assert_eq!(test_sql, correct_sql);
         Ok(())

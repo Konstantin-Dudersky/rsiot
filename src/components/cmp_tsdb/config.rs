@@ -1,18 +1,20 @@
-use std::time::Duration;
+use std::{marker::PhantomData, time::Duration};
 
 use crate::message::MsgDataBound;
 
-use super::Row;
-
-pub type FnInput<TMsg> = fn(&TMsg) -> Option<Vec<Row>>;
+use super::{Error, Row};
 
 // ANCHOR: Config
 /// Конфигурация компонента cmp_timescaledb
 #[derive(Clone, Debug)]
-pub struct Config<TMsg>
+pub struct Config<TMsg, TFnInput>
 where
     TMsg: MsgDataBound,
+    TFnInput: Fn(&TMsg) -> Result<Option<Vec<Row>>, Error> + Send + Sync,
 {
+    /// PhantomData для сообщений
+    pub _msg_phantom: PhantomData<TMsg>,
+
     /// Строка подключения к БД
     ///
     /// Примеры:
@@ -37,7 +39,7 @@ where
     pub send_period: Duration,
 
     /// Функция преобразования сообщений в строки для Timescaledb
-    pub fn_input: FnInput<TMsg>,
+    pub fn_input: TFnInput,
 
     /// Удалить таблицу перед записью
     pub delete_before_write: bool,

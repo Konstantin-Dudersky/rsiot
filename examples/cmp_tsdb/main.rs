@@ -1,9 +1,9 @@
-#[cfg(feature = "cmp_timescaledb")]
-mod config_timescaledb;
-#[cfg(feature = "cmp_timescaledb")]
+#[cfg(feature = "cmp_tsdb")]
+mod config_tsdb;
+#[cfg(feature = "cmp_tsdb")]
 mod message;
 
-#[cfg(feature = "cmp_timescaledb")]
+#[cfg(feature = "cmp_tsdb")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
@@ -32,18 +32,18 @@ async fn main() -> anyhow::Result<()> {
     let executor_config = ComponentExecutorConfig {
         buffer_size: 1000,
         fn_auth: |msg, _| Some(msg),
-        delay_publish: Duration::from_millis(100),
+        delay_publish: Duration::from_millis(10),
         fn_tokio_metrics: |_| None,
     };
 
     ComponentExecutor::new(executor_config)
         .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
-        .add_cmp(config_timescaledb::cmp())
+        .add_cmp(config_tsdb::cmp())
         .wait_result()
         .await?;
 
     Ok(())
 }
 
-#[cfg(not(feature = "cmp_timescaledb"))]
+#[cfg(not(feature = "cmp_tsdb"))]
 fn main() {}

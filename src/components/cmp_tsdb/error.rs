@@ -8,7 +8,7 @@ pub enum Error {
     #[error("{COMPONENT_NAME} | DatabaseCloseConnection: {0}")]
     DatabaseCloseConnection(sqlx::Error),
 
-    #[error("{COMPONENT_NAME} | ConnectToDatabas: {0}")]
+    #[error("{COMPONENT_NAME} | DatabaseConnect: {0}")]
     DatabaseConnect(sqlx::Error),
 
     #[error("{COMPONENT_NAME} | DatabaseExecute: {0}")]
@@ -22,6 +22,9 @@ pub enum Error {
 
     #[error(transparent)]
     ParseError(#[from] url::ParseError),
+
+    #[error("{COMPONENT_NAME} | RowIncorrect: {0}")]
+    RowIncorrect(String),
 
     #[error(transparent)]
     SqlxError(#[from] sqlx::Error),
