@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use rsiot::{components::cmp_timescaledb_reader::*, executor::Component};
+use rsiot::{components::cmp_tsdb_reader::*, executor::Component};
 use time::macros::datetime;
 
 use super::message::*;
@@ -17,7 +17,7 @@ pub fn cmp() -> Component<Config<Msg>, Msg> {
             fn_output: |value| Msg::MTsdbReader(MTsdbReader::AccelX(value)),
         }],
         delay_between_msgs: Duration::from_millis(1),
-        shutdown_delay: Duration::from_secs(5),
+        fn_shutdown: || Msg::Shutdown(()),
     };
     Cmp::new(config)
 }

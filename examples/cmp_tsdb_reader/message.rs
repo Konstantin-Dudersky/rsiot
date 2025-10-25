@@ -5,6 +5,7 @@ use rsiot::message::{MsgDataBound, MsgKey, ValueTime};
 #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
 pub enum Msg {
     MTsdbReader(MTsdbReader),
+    Shutdown(()),
 }
 
 impl MsgDataBound for Msg {}

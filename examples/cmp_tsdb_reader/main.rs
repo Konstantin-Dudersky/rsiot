@@ -1,11 +1,11 @@
-#[cfg(feature = "cmp_timescaledb")]
+#[cfg(feature = "cmp_tsdb")]
 mod config_logger;
-#[cfg(feature = "cmp_timescaledb")]
+#[cfg(feature = "cmp_tsdb")]
 mod config_timescaledb_reader;
-#[cfg(feature = "cmp_timescaledb")]
+#[cfg(feature = "cmp_tsdb")]
 mod message;
 
-#[cfg(feature = "cmp_timescaledb")]
+#[cfg(feature = "cmp_tsdb")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
@@ -32,5 +32,5 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[cfg(not(feature = "cmp_timescaledb"))]
+#[cfg(not(feature = "cmp_tsdb"))]
 fn main() {}
