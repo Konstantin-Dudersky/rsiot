@@ -196,6 +196,27 @@ dependencies = [
 
 [[package]]
 name = "android-activity"
+version = "0.5.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ee91c0c2905bae44f84bfa4e044536541df26b7703fd0888deeb9060fcc44289"
+dependencies = [
+ "android-properties",
+ "bitflags 2.10.0",
+ "cc",
+ "cesu8",
+ "jni",
+ "jni-sys",
+ "libc",
+ "log",
+ "ndk 0.8.0",
+ "ndk-context",
+ "ndk-sys 0.5.0+25.2.9519653",
+ "num_enum",
+ "thiserror 1.0.69",
+]
+
+[[package]]
+name = "android-activity"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ef6978589202a00cd7e118380c448a08b6ed394c3a8df3a430d0898e3a42d046"
@@ -208,9 +229,9 @@ dependencies = [
  "jni-sys",
  "libc",
  "log",
- "ndk",
+ "ndk 0.9.0",
  "ndk-context",
- "ndk-sys",
+ "ndk-sys 0.6.0+11769913",
  "num_enum",
  "thiserror 1.0.69",
 ]
@@ -2681,20 +2702,6 @@ dependencies = [
 
 [[package]]
 name = "embuild"
-version = "0.32.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a6e3e470e31fd4cae065d37f7cad56d42861ba1f9a35aa277694dee3d6b357c4"
-dependencies = [
- "anyhow",
- "bitflags 1.3.2",
- "filetime",
- "log",
- "shlex",
- "thiserror 1.0.69",
-]
-
-[[package]]
-name = "embuild"
 version = "0.33.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e188ad2bbe82afa841ea4a29880651e53ab86815db036b2cb9f8de3ac32dad75"
@@ -2853,7 +2860,7 @@ dependencies = [
  "embedded-hal-nb",
  "embedded-io 0.6.1",
  "embedded-io-async",
- "embuild 0.33.1",
+ "embuild",
  "enumset",
  "esp-idf-sys",
  "heapless 0.8.0",
@@ -2871,7 +2878,7 @@ dependencies = [
  "embassy-futures",
  "embedded-hal-async",
  "embedded-svc",
- "embuild 0.33.1",
+ "embuild",
  "enumset",
  "esp-idf-hal",
  "futures-io",
@@ -2892,7 +2899,7 @@ dependencies = [
  "cargo_metadata",
  "cmake",
  "const_format",
- "embuild 0.33.1",
+ "embuild",
  "envy",
  "libc",
  "regex",
@@ -4204,10 +4211,13 @@ version = "1.14.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "38c42a78b1ace78c7fa4ba42de61ba85799342c0b8c62adca33f3132dab427c6"
 dependencies = [
+ "android-activity 0.5.2",
+ "android-activity 0.6.0",
  "android-build",
  "i-slint-core",
  "i-slint-renderer-skia",
  "jni",
+ "ndk 0.9.0",
  "raw-window-handle",
 ]
 
@@ -4258,6 +4268,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e138660c634d6bbdf98bb2d0cfa487cda28e032e133a2a2c974f1cc494198765"
 dependencies = [
  "cfg-if",
+ "i-slint-backend-android-activity",
  "i-slint-backend-linuxkms",
  "i-slint-backend-qt",
  "i-slint-backend-winit",
@@ -5732,6 +5743,20 @@ dependencies = [
 
 [[package]]
 name = "ndk"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2076a31b7010b17a38c01907c45b945e8f11495ee4dd588309718901b1f7a5b7"
+dependencies = [
+ "bitflags 2.10.0",
+ "jni-sys",
+ "log",
+ "ndk-sys 0.5.0+25.2.9519653",
+ "num_enum",
+ "thiserror 1.0.69",
+]
+
+[[package]]
+name = "ndk"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c3f42e7bbe13d351b6bead8286a43aac9534b82bd3cc43e47037f012ebfd62d4"
@@ -5739,7 +5764,7 @@ dependencies = [
  "bitflags 2.10.0",
  "jni-sys",
  "log",
- "ndk-sys",
+ "ndk-sys 0.6.0+11769913",
  "num_enum",
  "raw-window-handle",
  "thiserror 1.0.69",
@@ -5750,6 +5775,15 @@ name = "ndk-context"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "27b02d87554356db9e9a873add8782d4ea6e3e58ea071a9adb9a2e8ddb884a8b"
+
+[[package]]
+name = "ndk-sys"
+version = "0.5.0+25.2.9519653"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8c196769dd60fd4f363e11d948139556a344e79d451aeb2fa2fd040738ef7691"
+dependencies = [
+ "jni-sys",
+]
 
 [[package]]
 name = "ndk-sys"
@@ -7831,7 +7865,7 @@ dependencies = [
  "dotenvy",
  "embedded-graphics",
  "embedded-svc",
- "embuild 0.33.1",
+ "embuild",
  "envy",
  "esp-idf-svc",
  "futures",
@@ -7839,7 +7873,6 @@ dependencies = [
  "heapless 0.8.0",
  "hmac",
  "http 1.3.1",
- "i-slint-backend-android-activity",
  "itertools 0.14.0",
  "jwt",
  "leptos",
@@ -8669,6 +8702,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9c35c4bdca2c42c69b21ceb416aa4ba76c3f54df30e9ce85dcad0742229422a6"
 dependencies = [
  "const-field-offset",
+ "i-slint-backend-android-activity",
  "i-slint-backend-qt",
  "i-slint-backend-selector",
  "i-slint-core",
@@ -11762,7 +11796,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c66d4b9ed69c4009f6321f762d6e61ad8a2389cd431b97cb1e146812e9e6c732"
 dependencies = [
  "ahash 0.8.12",
- "android-activity",
+ "android-activity 0.6.0",
  "atomic-waker",
  "bitflags 2.10.0",
  "block2 0.5.1",
@@ -11777,7 +11811,7 @@ dependencies = [
  "js-sys",
  "libc",
  "memmap2",
- "ndk",
+ "ndk 0.9.0",
  "objc2 0.5.2",
  "objc2-app-kit 0.2.2",
  "objc2-foundation 0.2.2",
@@ -11852,11 +11886,11 @@ checksum = "ea2f10b9bb0928dfb1b42b65e1f9e36f7f54dbdf08457afefb38afcdec4fa2bb"
 
 [[package]]
 name = "ws2812-esp32-rmt-driver"
-version = "0.12.0"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "56c578740a03455e0a88e01c7233384c4e1c1fa9e181898547110b4911e98b69"
+checksum = "c60395c0cf0801aaf5d7b02a8b3ea5937754a10400c701056618e35c0bc34c62"
 dependencies = [
- "embuild 0.32.0",
+ "embuild",
  "esp-idf-hal",
  "esp-idf-sys",
  "heapless 0.8.0",
