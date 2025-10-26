@@ -78,6 +78,7 @@ palette = { version = "0.7.6", features = ["named"], optional = true }
 serde_json = { version = "1.0.145", optional = true }
 sha2 = { version = "0.10.9", optional = true }
 slint = { version = "1.14.1", optional = true }
+i-slint-backend-android-activity = { version = "=1.14.1", optional = true }
 socketcan = { version = "3.5.0", features = ["tokio"], optional = true }
 sqlx = { version = "0.8.6", features = [
     "macros",
@@ -311,7 +312,7 @@ cmp_plc = ["executor"]
 cmp_raspberrypi = ["executor", "dep:bincode", "serde_postcard", "dep:rppal"]
 
 ## Компонент пользовательского интерфейса, реализованного с помощью библиотеки Slint
-cmp_slint = ["executor", "dep:slint"]
+cmp_slint = ["executor", "dep:slint", "dep:i-slint-backend-android-activity"]
 
 ## Компонент доступа к БД SurrealDB
 cmp_surrealdb = ["executor", "dep:surrealdb"]
