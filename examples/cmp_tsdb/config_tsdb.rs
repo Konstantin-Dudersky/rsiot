@@ -17,6 +17,7 @@ pub fn cmp() -> Cmp<Msg, impl Fn(&Msg) -> FnInputReturn> {
         fn_input: |msg| {
             let row = match msg {
                 Msg::Counter(v) => RowBuilder::new()
+                    .prj("prj_test")
                     .hst("hst_test")
                     .svc("svc_test")
                     .cmp("cmp_inject_periodic")

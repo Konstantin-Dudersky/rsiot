@@ -11,6 +11,9 @@ pub struct Row {
     /// Метка времени
     pub time: OffsetDateTime,
 
+    /// Проект
+    pub prj: String,
+
     /// Хост
     pub hst: String,
 
@@ -34,6 +37,9 @@ pub struct RowBuilder {
     /// Метка времени
     time: Option<OffsetDateTime>,
 
+    /// Проект
+    prj: Option<String>,
+
     /// Хост
     hst: Option<String>,
 
@@ -54,6 +60,14 @@ impl RowBuilder {
     /// Создать построителя
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Добавить проект
+    pub fn prj(self, prj: impl Into<String>) -> Self {
+        Self {
+            prj: Some(prj.into()),
+            ..self
+        }
     }
 
     /// Добавить хост
@@ -106,6 +120,14 @@ impl RowBuilder {
 
     /// Собрать строку
     pub fn row(self) -> Result<Row, Error> {
+        let prj = match self.prj {
+            Some(v) => v,
+            None => {
+                let err = "Empty field 'prj'".to_string();
+                return Err(Error::RowIncorrect(err));
+            }
+        };
+
         let hst = match self.hst {
             Some(v) => v,
             None => {
@@ -153,6 +175,7 @@ impl RowBuilder {
 
         Ok(Row {
             time,
+            prj,
             hst,
             svc,
             cmp,

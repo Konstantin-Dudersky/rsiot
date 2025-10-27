@@ -86,8 +86,8 @@ fn prepare_sql_statement(table_name: &str, rows: &[Row]) -> Result<String> {
         .map(|row| {
             let time = row.time.format(&Iso8601::DEFAULT)?;
             let sql = format!(
-                "('{time}', '{}', '{}', '{}', '{}', {})",
-                row.hst, row.svc, row.cmp, row.key, row.value
+                "('{time}', '{}', '{}', '{}', '{}', '{}', {})",
+                row.prj, row.hst, row.svc, row.cmp, row.key, row.value
             );
             Ok(sql)
         })
@@ -97,7 +97,7 @@ fn prepare_sql_statement(table_name: &str, rows: &[Row]) -> Result<String> {
     let sql = format!(
         r#"INSERT INTO {table_name}
     VALUES {values}
-    ON CONFLICT (time, hst, svc, cmp, key) DO UPDATE
+    ON CONFLICT (time, prj, hst, svc, cmp, key) DO UPDATE
         SET value = excluded.value;"#
     );
     Ok(sql)
@@ -132,6 +132,7 @@ mod tests {
     #[test]
     fn test1() -> anyhow::Result<()> {
         let row_builder = RowBuilder::new()
+            .prj("prj_test")
             .hst("hst_test")
             .svc("svc_test")
             .cmp("cmp_test");
@@ -158,7 +159,7 @@ mod tests {
             .collect::<Vec<&str>>()
             .join(" ");
 
-        let correct_sql = "INSERT INTO raw VALUES ('2025-07-23T10:00:00.000000000+03:00', 'hst_test', 'svc_test', 'cmp_test', 'key1', 1.23), ('2025-07-23T10:00:01.000000000+03:00', 'hst_test', 'svc_test', 'cmp_test', 'key1', 4.56) ON CONFLICT (time, hst, svc, cmp, key) DO UPDATE SET value = excluded.value;";
+        let correct_sql = "INSERT INTO raw VALUES ('2025-07-23T10:00:00.000000000+03:00', 'prj_test', 'hst_test', 'svc_test', 'cmp_test', 'key1', 1.23), ('2025-07-23T10:00:01.000000000+03:00', 'prj_test', 'hst_test', 'svc_test', 'cmp_test', 'key1', 4.56) ON CONFLICT (time, prj, hst, svc, cmp, key) DO UPDATE SET value = excluded.value;";
 
         assert_eq!(test_sql, correct_sql);
         Ok(())
