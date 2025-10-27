@@ -6,25 +6,23 @@ use std::{
     time::Duration,
 };
 
-use sqlx::{Connection, PgConnection, query};
 use time::format_description::well_known::Iso8601;
-use tokio::{sync::mpsc, task::JoinHandle};
+use tokio::sync::mpsc;
 use tracing::warn;
 
 use crate::executor::CheckCapacity;
 
 use super::{Error, InnerMessage, Result, Row};
 
-pub struct SendToDatabase {
+pub struct PrepareSQL {
     pub input: mpsc::Receiver<InnerMessage>,
-    pub output: mpsc::Sender<JoinHandle<Result<()>>>,
+    pub output: mpsc::Sender<String>,
     pub max_cache_size: usize,
     pub table_name: &'static str,
-    pub connection_string: String,
     pub database_setup: Arc<AtomicBool>,
 }
 
-impl SendToDatabase {
+impl PrepareSQL {
     pub async fn spawn(mut self) -> Result<()> {
         let mut cache = Vec::with_capacity(self.max_cache_size);
 
@@ -59,16 +57,10 @@ impl SendToDatabase {
                         continue;
                     }
 
-                    let task = execute_sql(sql, self.connection_string.clone());
-                    let task = tokio::task::Builder::new()
-                        .name("cmp_timescaledb | execute_sql")
-                        .spawn(task)
-                        .map_err(Error::Spawn)?;
-
                     let res = self
                         .output
                         .check_capacity(0.2, "ch_tx_database_to_results")
-                        .send_timeout(task, Duration::from_millis(100))
+                        .send_timeout(sql, Duration::from_millis(100))
                         .await;
                     if let Err(err) = res {
                         warn!("Failed to send task to database: {}", err);
@@ -101,26 +93,6 @@ fn prepare_sql_statement(table_name: &str, rows: &[Row]) -> Result<String> {
         SET value = excluded.value;"#
     );
     Ok(sql)
-}
-
-async fn execute_sql(sql: String, connection_string: String) -> Result<()> {
-    // Подключаемся к базе данных.
-    //
-    // Не используется пул подключений, поскольку была утечка памяти
-    let mut conn = PgConnection::connect(&connection_string)
-        .await
-        .map_err(Error::DatabaseConnect)?;
-
-    // Выполняем SQL-запрос
-    query(&sql)
-        .execute(&mut conn)
-        .await
-        .map_err(Error::DatabaseExecute)?;
-
-    // Закрываем подключение к базе данных
-    conn.close().await.map_err(Error::DatabaseCloseConnection)?;
-
-    Ok(())
 }
 
 #[cfg(test)]

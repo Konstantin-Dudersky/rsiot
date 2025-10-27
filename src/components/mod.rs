@@ -250,7 +250,7 @@ pub mod cmp_telegram;
     armv7_unknown_linux_gnueabihf,
     x8664_unknown_linux_gnu
 ))]
-pub mod cmp_tsdb;
+pub mod cmp_tsdb_writer;
 
 #[cfg(feature = "cmp_tsdb")]
 #[cfg(any(

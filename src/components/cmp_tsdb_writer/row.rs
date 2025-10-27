@@ -1,5 +1,7 @@
 //! Модель строки в БД
 
+use std::borrow::Cow;
+
 use sqlx::{FromRow, types::time::OffsetDateTime};
 
 use super::Error;
@@ -12,19 +14,19 @@ pub struct Row {
     pub time: OffsetDateTime,
 
     /// Проект
-    pub prj: String,
+    pub prj: Cow<'static, str>,
 
     /// Хост
-    pub hst: String,
+    pub hst: Cow<'static, str>,
 
     /// Сервис
-    pub svc: String,
+    pub svc: Cow<'static, str>,
 
     /// Компонент
-    pub cmp: String,
+    pub cmp: Cow<'static, str>,
 
     /// Ключ
-    pub key: String,
+    pub key: Cow<'static, str>,
 
     /// Значение
     pub value: f64,
@@ -38,19 +40,19 @@ pub struct RowBuilder {
     time: Option<OffsetDateTime>,
 
     /// Проект
-    prj: Option<String>,
+    prj: Option<Cow<'static, str>>,
 
     /// Хост
-    hst: Option<String>,
+    hst: Option<Cow<'static, str>>,
 
     /// Сервис
-    svc: Option<String>,
+    svc: Option<Cow<'static, str>>,
 
     /// Компонент
-    cmp: Option<String>,
+    cmp: Option<Cow<'static, str>>,
 
     /// Ключ
-    key: Option<String>,
+    key: Option<Cow<'static, str>>,
 
     /// Значение
     value: Option<f64>,
@@ -63,7 +65,7 @@ impl RowBuilder {
     }
 
     /// Добавить проект
-    pub fn prj(self, prj: impl Into<String>) -> Self {
+    pub fn prj(self, prj: impl Into<Cow<'static, str>>) -> Self {
         Self {
             prj: Some(prj.into()),
             ..self
@@ -71,7 +73,7 @@ impl RowBuilder {
     }
 
     /// Добавить хост
-    pub fn hst(self, hst: impl Into<String>) -> Self {
+    pub fn hst(self, hst: impl Into<Cow<'static, str>>) -> Self {
         Self {
             hst: Some(hst.into()),
             ..self
@@ -79,7 +81,7 @@ impl RowBuilder {
     }
 
     /// Добавить сервис
-    pub fn svc(self, svc: impl Into<String>) -> Self {
+    pub fn svc(self, svc: impl Into<Cow<'static, str>>) -> Self {
         Self {
             svc: Some(svc.into()),
             ..self
@@ -87,7 +89,7 @@ impl RowBuilder {
     }
 
     /// Добавить компонент
-    pub fn cmp(self, cmp: impl Into<String>) -> Self {
+    pub fn cmp(self, cmp: impl Into<Cow<'static, str>>) -> Self {
         Self {
             cmp: Some(cmp.into()),
             ..self
@@ -95,7 +97,7 @@ impl RowBuilder {
     }
 
     /// Добавить ключ
-    pub fn key(self, key: impl Into<String>) -> Self {
+    pub fn key(self, key: impl Into<Cow<'static, str>>) -> Self {
         Self {
             key: Some(key.into()),
             ..self

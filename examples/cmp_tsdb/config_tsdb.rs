@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use rsiot::components::cmp_tsdb::*;
+use rsiot::components::cmp_tsdb_writer::*;
 
 use super::message::*;
 

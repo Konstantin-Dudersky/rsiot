@@ -11,7 +11,7 @@ use crate::{
     message::MsgDataBound,
 };
 
-use super::{Error, Row, config::Config, tasks};
+use super::{COMPONENT_NAME, Error, Row, config::Config, tasks};
 
 pub async fn fn_process<TMsg, TFnInput>(
     msgbus_linker: MsgBusLinker<TMsg>,
@@ -21,7 +21,7 @@ where
     TMsg: 'static + MsgDataBound,
     TFnInput: 'static + Fn(&TMsg) -> Result<Option<Vec<Row>>, Error> + Send + Sync,
 {
-    info!("Start cmp_timescaledb");
+    info!("Start {COMPONENT_NAME}");
 
     let database_setup = Arc::new(AtomicBool::new(false));
 
@@ -39,7 +39,7 @@ where
     };
     join_set_spawn(
         &mut task_set,
-        "cmp_timescaledb | setup_database",
+        format!("{COMPONENT_NAME} | setup_database"),
         task.spawn(),
     );
 
@@ -48,34 +48,42 @@ where
         output: ch_tx_input_to_database.clone(),
         fn_input: config.fn_input,
     };
-    join_set_spawn(&mut task_set, "cmp_timescaledb | input", task.spawn());
+    join_set_spawn(
+        &mut task_set,
+        format!("{COMPONENT_NAME} | input"),
+        task.spawn(),
+    );
 
     let task = tasks::Periodic {
         output: ch_tx_input_to_database,
         period: config.send_period,
     };
-    join_set_spawn(&mut task_set, "cmp_timescaledb | periodic", task.spawn());
+    join_set_spawn(
+        &mut task_set,
+        format!("{COMPONENT_NAME} | periodic"),
+        task.spawn(),
+    );
 
-    let task = tasks::SendToDatabase {
+    let task = tasks::PrepareSQL {
         input: ch_rx_input_to_database,
         output: ch_tx_database_to_results,
         table_name: config.table_name,
         max_cache_size: config.max_cache_size,
-        connection_string: config.connection_string,
         database_setup,
     };
     join_set_spawn(
         &mut task_set,
-        "cmp_timescaledb | send_to_database",
+        format!("{COMPONENT_NAME} | prepare_sql"),
         task.spawn(),
     );
 
-    let task = tasks::CollectResults {
+    let task = tasks::ExecuteSQL {
         input: ch_rx_database_to_results,
+        connection_string: config.connection_string,
     };
     join_set_spawn(
         &mut task_set,
-        "cmp_timescaledb | collect_results",
+        format!("{COMPONENT_NAME} | execute_sql"),
         task.spawn(),
     );
 

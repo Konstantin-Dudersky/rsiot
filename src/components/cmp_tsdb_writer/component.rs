@@ -8,7 +8,7 @@ use crate::{
 use super::{Error, Row, config::Config, fn_process::fn_process};
 
 /// Название компонента
-pub const COMPONENT_NAME: &str = "cmp_timescaledb";
+pub const COMPONENT_NAME: &str = "cmp_tsdb_writer";
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
@@ -28,5 +28,5 @@ where
     }
 }
 
-/// Компонент cmp_timescaledb
+/// Компонент cmp_tsdb_writer
 pub type Cmp<TMsg, TFnInput> = Component<Config<TMsg, TFnInput>, TMsg>;

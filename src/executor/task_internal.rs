@@ -51,9 +51,6 @@ Channels capacity:            {}
 
         while let Some(msg) = self.output.recv().await {
             trace!("ComponentExecutor: new message: {:?}", msg);
-            let msg = save_msg_in_cache(msg, &self.cache).await;
-            let Some(msg) = msg else { continue };
-
             // Проверяем переполненность канала
             check_input_overflow(&self.input, max_capacity, &mut input_less_in_period)?;
             check_output_overflow(
@@ -62,7 +59,6 @@ Channels capacity:            {}
                 max_capacity,
                 &mut output_less_in_period,
             )?;
-
             self.input
                 .send(msg)
                 .map_err(|_| ComponentError::TaskInternalSend)?;
@@ -77,6 +73,8 @@ Channels capacity:            {}
 /// Возвращает `Option<Message>`:
 /// - None - сообщение не нужно отправлять дальше
 /// - Some(Message) - сообщение нужно отправить на вход всех компонентов
+///
+/// TODO - сделать опциональный компонент, для сохранения и просмотра значений сообщений. Возможно, на базе cmp_http_server
 async fn save_msg_in_cache<TMsg>(msg: Message<TMsg>, cache: &Cache<TMsg>) -> Option<Message<TMsg>>
 where
     TMsg: MsgDataBound,
