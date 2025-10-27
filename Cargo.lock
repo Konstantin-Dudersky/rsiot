@@ -1145,9 +1145,9 @@ dependencies = [
 
 [[package]]
 name = "bstr"
-version = "1.12.0"
+version = "1.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "234113d19d0d7d613b40e86fb654acf958910802bcceab913a4f9e7cda03b1a4"
+checksum = "63044e1ae8e69f3b5a92c736ca6269b8d12fa7efe39bf34ddb06d102cf0e2cab"
 dependencies = [
  "memchr",
  "serde",
@@ -5627,9 +5627,9 @@ dependencies = [
 
 [[package]]
 name = "moxcms"
-version = "0.7.7"
+version = "0.7.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c588e11a3082784af229e23e8e4ecf5bcc6fbe4f69101e0421ce8d79da7f0b40"
+checksum = "692af879e4d9383c0fd9dec15524af6b6977c8bf1c6b278a4526d5341347c574"
 dependencies = [
  "num-traits",
  "pxfm",
