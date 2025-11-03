@@ -5,7 +5,7 @@ use crate::{
     message::MsgDataBound,
 };
 
-use super::{Error, Row, config::Config, fn_process::fn_process};
+use super::{Error, config::Config, fn_process::fn_process};
 
 /// Название компонента
 pub const COMPONENT_NAME: &str = "cmp_tsdb_writer";
@@ -16,7 +16,7 @@ impl<TMsg, TFnInput> IComponentProcess<Config<TMsg, TFnInput>, TMsg>
     for Component<Config<TMsg, TFnInput>, TMsg>
 where
     TMsg: 'static + MsgDataBound,
-    TFnInput: 'static + Fn(&TMsg) -> Result<Option<Vec<Row>>, Error> + Send + Sync,
+    TFnInput: 'static + Fn(&TMsg) -> Result<Option<Vec<String>>, Error> + Send + Sync,
 {
     async fn process(
         &self,

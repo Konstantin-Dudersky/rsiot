@@ -1,8 +1,13 @@
 use std::{
+    str::FromStr,
     sync::{Arc, atomic::AtomicBool},
     time::Duration,
 };
 
+use sqlx::{
+    ConnectOptions,
+    postgres::{PgConnectOptions, PgPoolOptions},
+};
 use tokio::{sync::mpsc, task::JoinSet};
 use tracing::info;
 
@@ -11,7 +16,7 @@ use crate::{
     message::MsgDataBound,
 };
 
-use super::{COMPONENT_NAME, Error, Row, config::Config, tasks};
+use super::{COMPONENT_NAME, Error, config::Config, tasks};
 
 pub async fn fn_process<TMsg, TFnInput>(
     msgbus_linker: MsgBusLinker<TMsg>,
@@ -19,7 +24,7 @@ pub async fn fn_process<TMsg, TFnInput>(
 ) -> Result<(), Error>
 where
     TMsg: 'static + MsgDataBound,
-    TFnInput: 'static + Fn(&TMsg) -> Result<Option<Vec<Row>>, Error> + Send + Sync,
+    TFnInput: 'static + Fn(&TMsg) -> Result<Option<Vec<String>>, Error> + Send + Sync,
 {
     info!("Start {COMPONENT_NAME}");
 
@@ -54,9 +59,11 @@ where
         task.spawn(),
     );
 
+    msgbus_linker.close();
+
     let task = tasks::Periodic {
         output: ch_tx_input_to_database,
-        period: config.send_period,
+        save_by_period: config.save_by_period,
     };
     join_set_spawn(
         &mut task_set,
@@ -64,12 +71,25 @@ where
         task.spawn(),
     );
 
+    let conn_options = PgConnectOptions::from_str(&config.connection_string)?
+        .disable_statement_logging()
+        // TODO - возможно вынести в конфигурацию
+        .options([("statement_timeout", "1500")]) // в ms
+        // TODO - возможно вынести в конфигурацию
+        .application_name("cmp_tsdb_writer");
+    let pool_options = PgPoolOptions::new()
+        .max_connections(config.max_connections)
+        .acquire_slow_threshold(Duration::from_millis(1_000));
+    let db_pool = pool_options.connect_with(conn_options).await?;
+
     let task = tasks::PrepareSQL {
         input: ch_rx_input_to_database,
         output: ch_tx_database_to_results,
         table_name: config.table_name,
-        max_cache_size: config.max_cache_size,
         database_setup,
+        db_pool,
+        save_by_period: config.save_by_period,
+        save_by_row_count: config.save_by_row_count,
     };
     join_set_spawn(
         &mut task_set,
@@ -77,17 +97,15 @@ where
         task.spawn(),
     );
 
-    let task = tasks::ExecuteSQL {
+    let task = tasks::WaitResult {
         input: ch_rx_database_to_results,
-        connection_string: config.connection_string,
+        fn_query_stat: config.fn_query_stat,
     };
     join_set_spawn(
         &mut task_set,
-        format!("{COMPONENT_NAME} | execute_sql"),
+        format!("{COMPONENT_NAME} | wait_result"),
         task.spawn(),
     );
-
-    msgbus_linker.close();
 
     while let Some(res) = task_set.join_next().await {
         res??;

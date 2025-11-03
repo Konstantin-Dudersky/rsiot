@@ -2,187 +2,195 @@
 
 use std::borrow::Cow;
 
-use sqlx::{FromRow, types::time::OffsetDateTime};
+use sqlx::types::time::OffsetDateTime;
+use time::format_description::well_known::Iso8601;
 
 use super::Error;
 
-// ANCHOR: Row
-/// Модель строки в БД
-#[derive(Debug, FromRow)]
-pub struct Row {
-    /// Метка времени
-    pub time: OffsetDateTime,
+// // ANCHOR: Row
+// /// Модель строки в БД
+// #[derive(Debug, FromRow)]
+// pub struct Row {
+//     /// Метка времени
+//     pub time: OffsetDateTime,
 
-    /// Проект
-    pub prj: Cow<'static, str>,
+//     /// Проект
+//     pub prj: Cow<'static, str>,
 
-    /// Хост
-    pub hst: Cow<'static, str>,
+//     /// Хост
+//     pub hst: Cow<'static, str>,
 
-    /// Сервис
-    pub svc: Cow<'static, str>,
+//     /// Сервис
+//     pub svc: Cow<'static, str>,
 
-    /// Компонент
-    pub cmp: Cow<'static, str>,
+//     /// Компонент
+//     pub cmp: Cow<'static, str>,
 
-    /// Ключ
-    pub key: Cow<'static, str>,
+//     /// Ключ
+//     pub key: Cow<'static, str>,
 
-    /// Значение
-    pub value: f64,
-}
-// ANCHOR: Row
+//     /// Значение
+//     pub value: f64,
+// }
+// // ANCHOR: Row
 
-/// Построитель строки в БД
-#[derive(Default, Clone)]
-pub struct RowBuilder {
-    /// Метка времени
-    time: Option<OffsetDateTime>,
-
-    /// Проект
-    prj: Option<Cow<'static, str>>,
-
-    /// Хост
-    hst: Option<Cow<'static, str>>,
-
-    /// Сервис
-    svc: Option<Cow<'static, str>>,
-
-    /// Компонент
-    cmp: Option<Cow<'static, str>>,
-
-    /// Ключ
-    key: Option<Cow<'static, str>>,
-
-    /// Значение
-    value: Option<f64>,
-}
-
+/// Построитель записи в БД
+pub struct RowBuilder {}
 impl RowBuilder {
-    /// Создать построителя
-    pub fn new() -> Self {
-        Self::default()
+    /// Добавить название проекта
+    pub fn prj(prj: impl Into<Cow<'static, str>>) -> RowPrj {
+        RowPrj { prj: prj.into() }
     }
+}
 
-    /// Добавить проект
-    pub fn prj(self, prj: impl Into<Cow<'static, str>>) -> Self {
-        Self {
-            prj: Some(prj.into()),
-            ..self
+/// Информация о проекте
+pub struct RowPrj {
+    prj: Cow<'static, str>,
+}
+impl RowPrj {
+    /// Добавить название хоста
+    pub fn hst(self, hst: impl Into<Cow<'static, str>>) -> RowPrjHst {
+        RowPrjHst {
+            prj: self.prj,
+            hst: hst.into(),
+        }
+    }
+}
+
+/// Информация о проекте и хосте
+pub struct RowPrjHst {
+    prj: Cow<'static, str>,
+    hst: Cow<'static, str>,
+}
+impl RowPrjHst {
+    /// Добавить название сервиса
+    pub fn svc(self, svc: impl Into<Cow<'static, str>>) -> RowPrjHstSvc {
+        RowPrjHstSvc {
+            prj: self.prj,
+            hst: self.hst,
+            svc: svc.into(),
+        }
+    }
+}
+
+/// Информация о проекте, хосте и сервисе
+pub struct RowPrjHstSvc {
+    prj: Cow<'static, str>,
+    hst: Cow<'static, str>,
+    svc: Cow<'static, str>,
+}
+impl RowPrjHstSvc {
+    /// Добавить название компонента
+    pub fn cmp(self, cmp: impl Into<Cow<'static, str>>) -> RowPrjHstSvcCmp {
+        RowPrjHstSvcCmp {
+            prj: self.prj,
+            hst: self.hst,
+            svc: self.svc,
+            cmp: cmp.into(),
         }
     }
 
-    /// Добавить хост
-    pub fn hst(self, hst: impl Into<Cow<'static, str>>) -> Self {
-        Self {
-            hst: Some(hst.into()),
-            ..self
-        }
+    /// Подготовить запись в БД с заданной меткой времени
+    pub fn row_with_ts(
+        &self,
+        cmp: impl AsRef<str>,
+        key: impl AsRef<str>,
+        value: impl Into<f64>,
+        time: &OffsetDateTime,
+    ) -> Result<String, Error> {
+        let time = time.format(&Iso8601::DEFAULT)?;
+        let sql = row_to_sql(
+            &time,
+            &self.prj,
+            &self.hst,
+            &self.svc,
+            cmp.as_ref(),
+            key.as_ref(),
+            value.into(),
+        );
+        Ok(sql)
     }
 
-    /// Добавить сервис
-    pub fn svc(self, svc: impl Into<Cow<'static, str>>) -> Self {
-        Self {
-            svc: Some(svc.into()),
-            ..self
-        }
+    /// Подготовить запись в БД с текущим временем
+    pub fn row_without_ts(
+        &self,
+        cmp: impl AsRef<str>,
+        key: impl AsRef<str>,
+        value: impl Into<f64>,
+    ) -> Result<String, Error> {
+        let time = OffsetDateTime::now_local()?.format(&Iso8601::DEFAULT)?;
+        let sql = row_to_sql(
+            &time,
+            &self.prj,
+            &self.hst,
+            &self.svc,
+            cmp.as_ref(),
+            key.as_ref(),
+            value.into(),
+        );
+        Ok(sql)
+    }
+}
+
+/// Информация о проекте, хосте, сервисе и компоненте
+pub struct RowPrjHstSvcCmp {
+    prj: Cow<'static, str>,
+    hst: Cow<'static, str>,
+    svc: Cow<'static, str>,
+    cmp: Cow<'static, str>,
+}
+impl RowPrjHstSvcCmp {
+    /// Подготовить запись в БД с заданной меткой времени
+    pub fn row_with_ts(
+        &self,
+        key: impl AsRef<str>,
+        value: impl Into<f64>,
+        time: &OffsetDateTime,
+    ) -> Result<String, Error> {
+        let time = time.format(&Iso8601::DEFAULT)?;
+        let sql = row_to_sql(
+            &time,
+            &self.prj,
+            &self.hst,
+            &self.svc,
+            &self.cmp,
+            key.as_ref(),
+            value.into(),
+        );
+        Ok(sql)
     }
 
-    /// Добавить компонент
-    pub fn cmp(self, cmp: impl Into<Cow<'static, str>>) -> Self {
-        Self {
-            cmp: Some(cmp.into()),
-            ..self
-        }
+    /// Подготовить запись в БД с текущим временем
+    pub fn row_without_ts(
+        &self,
+        key: impl AsRef<str>,
+        value: impl Into<f64>,
+    ) -> Result<String, Error> {
+        let time = OffsetDateTime::now_local()?.format(&Iso8601::DEFAULT)?;
+        let sql = row_to_sql(
+            &time,
+            &self.prj,
+            &self.hst,
+            &self.svc,
+            &self.cmp,
+            key.as_ref(),
+            value.into(),
+        );
+        Ok(sql)
     }
+}
 
-    /// Добавить ключ
-    pub fn key(self, key: impl Into<Cow<'static, str>>) -> Self {
-        Self {
-            key: Some(key.into()),
-            ..self
-        }
-    }
-
-    /// Добавить значение
-    pub fn value(self, value: impl Into<f64>) -> Self {
-        Self {
-            value: Some(value.into()),
-            ..self
-        }
-    }
-
-    /// Добавить время
-    pub fn time(self, time: impl Into<OffsetDateTime>) -> Self {
-        Self {
-            time: Some(time.into()),
-            ..self
-        }
-    }
-
-    /// Собрать строку
-    pub fn row(self) -> Result<Row, Error> {
-        let prj = match self.prj {
-            Some(v) => v,
-            None => {
-                let err = "Empty field 'prj'".to_string();
-                return Err(Error::RowIncorrect(err));
-            }
-        };
-
-        let hst = match self.hst {
-            Some(v) => v,
-            None => {
-                let err = "Empty field 'hst'".to_string();
-                return Err(Error::RowIncorrect(err));
-            }
-        };
-
-        let svc = match self.svc {
-            Some(v) => v,
-            None => {
-                let err = "Empty field 'svc'".to_string();
-                return Err(Error::RowIncorrect(err));
-            }
-        };
-
-        let cmp = match self.cmp {
-            Some(v) => v,
-            None => {
-                let err = "Empty field 'cmp'".to_string();
-                return Err(Error::RowIncorrect(err));
-            }
-        };
-
-        let key = match self.key {
-            Some(v) => v,
-            None => {
-                let err = "Empty field 'key'".to_string();
-                return Err(Error::RowIncorrect(err));
-            }
-        };
-
-        let value = match self.value {
-            Some(v) => v,
-            None => {
-                let err = "Empty field 'value'".to_string();
-                return Err(Error::RowIncorrect(err));
-            }
-        };
-
-        let time = match self.time {
-            Some(v) => v,
-            None => OffsetDateTime::now_utc(),
-        };
-
-        Ok(Row {
-            time,
-            prj,
-            hst,
-            svc,
-            cmp,
-            key,
-            value,
-        })
-    }
+fn row_to_sql(
+    time: &str,
+    prj: &str,
+    hst: &str,
+    svc: &str,
+    cmp: &str,
+    key: &str,
+    value: f64,
+) -> String {
+    format!(
+        "('{}', '{}', '{}', '{}', '{}', '{}', {})",
+        time, prj, hst, svc, cmp, key, value
+    )
 }

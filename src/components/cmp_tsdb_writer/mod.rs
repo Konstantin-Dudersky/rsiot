@@ -10,6 +10,7 @@ mod config;
 mod error;
 mod fn_process;
 mod helpers;
+mod query_stat;
 mod row;
 mod tasks;
 
@@ -18,7 +19,8 @@ pub use {
     config::Config,
     error::Error,
     helpers::*,
-    row::{Row, RowBuilder},
+    query_stat::QueryStat,
+    row::{RowBuilder, RowPrj, RowPrjHst, RowPrjHstSvc},
 };
 
 type Result<T> = std::result::Result<T, Error>;

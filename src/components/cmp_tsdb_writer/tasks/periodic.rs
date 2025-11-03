@@ -8,13 +8,13 @@ use super::{Error, InnerMessage, Result};
 
 pub struct Periodic {
     pub output: mpsc::Sender<InnerMessage>,
-    pub period: Duration,
+    pub save_by_period: Duration,
 }
 
 impl Periodic {
     pub async fn spawn(self) -> Result<()> {
         loop {
-            sleep(self.period).await;
+            sleep(self.save_by_period).await;
 
             self.output
                 .send(InnerMessage::SendByTimer)

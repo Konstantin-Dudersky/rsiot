@@ -16,12 +16,13 @@ CREATE TABLE raw (
 ) WITH (
    tsdb.hypertable,
    tsdb.partition_column = 'time',
-   tsdb.chunk_interval = 'PT10M',
+   tsdb.chunk_interval = 'PT1M',
    tsdb.segmentby = 'prj, hst, svc, cmp, key',
    tsdb.orderby = 'time ASC'
 );
 
-CALL add_columnstore_policy('raw', after => INTERVAL 'PT10M');
+-- CALL remove_columnstore_policy('raw');
+-- CALL add_columnstore_policy('raw', after => INTERVAL 'PT10M');
 
 -- agg_30min
 CREATE TABLE agg_30min (LIKE raw);

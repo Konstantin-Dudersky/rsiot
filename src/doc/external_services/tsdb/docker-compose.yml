@@ -5,13 +5,13 @@ services:
       -c hba_file=/etc/postgresql/pg_hba.conf
     container_name: service_timescaledb
     healthcheck:
-      test: pg_isready -d db_prod
+      test: pg_isready -d db_data
       interval: 30s
       timeout: 60s
       retries: 5
       start_period: 80s
     hostname: service_timescaledb
-    image: timescale/timescaledb:2.21.1-pg17 # https://hub.docker.com/r/timescale/timescaledb/tags
+    image: timescale/timescaledb:2.23.0-pg18 # https://hub.docker.com/r/timescale/timescaledb/tags
     networks:
       - network_internal
     environment:
@@ -22,6 +22,7 @@ services:
     profiles:
       - dev
       - target
+    user: postgres
     volumes:
       - ./timescaledb/postgresql.conf:/etc/postgresql/postgresql.conf
       - ./timescaledb/pg_hba.conf:/etc/postgresql/pg_hba.conf

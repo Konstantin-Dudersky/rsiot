@@ -8,7 +8,7 @@ docker compose up
 Запустить пример:
 
 ```sh
-RUST_LOG=debug cargo run --example cmp_tsdb --features "cmp_tsdb"
+RUST_LOG=debug cargo run --example cmp_tsdb --features "cmp_tsdb" -- 20 0
 ```
 
 SQL-скрипт для чтения данных из TimescaleDB:

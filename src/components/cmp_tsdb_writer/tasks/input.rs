@@ -5,12 +5,12 @@ use crate::{
     message::MsgDataBound,
 };
 
-use super::{COMPONENT_NAME, Error, InnerMessage, Row};
+use super::{COMPONENT_NAME, Error, InnerMessage};
 
 pub struct Input<TMsg, TFnInput>
 where
     TMsg: MsgDataBound,
-    TFnInput: Fn(&TMsg) -> Result<Option<Vec<Row>>, Error> + Send + Sync,
+    TFnInput: Fn(&TMsg) -> Result<Option<Vec<String>>, Error> + Send + Sync,
 {
     pub msgbus_input: MsgBusInput<TMsg>,
     pub output: mpsc::Sender<InnerMessage>,
@@ -20,7 +20,7 @@ where
 impl<TMsg, TFnInput> Input<TMsg, TFnInput>
 where
     TMsg: MsgDataBound,
-    TFnInput: Fn(&TMsg) -> Result<Option<Vec<Row>>, Error> + Send + Sync,
+    TFnInput: Fn(&TMsg) -> Result<Option<Vec<String>>, Error> + Send + Sync,
 {
     pub async fn spawn(mut self) -> Result<(), Error> {
         let desc = format!("{COMPONENT_NAME} | task Input | channel output");

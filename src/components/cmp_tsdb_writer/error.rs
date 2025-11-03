@@ -14,8 +14,11 @@ pub enum Error {
     #[error("{COMPONENT_NAME} | DatabaseExecute: {0}")]
     DatabaseExecute(sqlx::Error),
 
-    #[error(transparent)]
-    Format(#[from] time::error::Format),
+    #[error("{COMPONENT_NAME} | TimeFormat: {0}")]
+    TimeFormat(#[from] time::error::Format),
+
+    #[error("{COMPONENT_NAME} | TimeIndeterminatedOffset: {0}")]
+    TimeIndeterminatedOffset(#[from] time::error::IndeterminateOffset),
 
     #[error("{COMPONENT_NAME} | Internal buffer too large: {0}")]
     LargeInternalBuffer(usize),
