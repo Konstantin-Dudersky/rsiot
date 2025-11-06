@@ -13,7 +13,7 @@ use crate::{
 #[cfg(feature = "log_tokio")]
 use super::task_runtime_metrics::TaskRuntimeMetrics;
 use super::{
-    Cache, MsgBusLinker, TokioRuntimeMetrics, component::IComponent, error::ComponentError,
+    MsgBusLinker, TokioRuntimeMetrics, component::IComponent, error::ComponentError,
     join_set_spawn, task_internal::TaskInternal, types::FnAuth,
 };
 
@@ -78,7 +78,6 @@ where
             broadcast::channel::<Message<TMsg>>(config.buffer_size);
         let (component_output, component_output_recv) =
             mpsc::channel::<Message<TMsg>>(config.buffer_size);
-        let cache: Cache<TMsg> = Cache::new();
         let mut task_set: JoinSet<Result<(), ComponentError>> = JoinSet::new();
 
         // Запускаем внутреннюю задачу
@@ -86,7 +85,6 @@ where
         let task = TaskInternal {
             output: component_output_recv,
             input: component_input_send.clone(),
-            cache: cache.clone(),
             delay_publish: config.delay_publish,
             max_capacity: config.buffer_size,
         };

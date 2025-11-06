@@ -16,6 +16,8 @@ pub mod cmp_livecounter;
 
 pub mod cmp_derive;
 
+pub mod cmp_derive_new;
+
 // #[cfg(feature = "cmp_esp")]
 // #[cfg(riscv32imc_esp_espidf)]
 // pub mod cmp_esp_adc;

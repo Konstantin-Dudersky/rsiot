@@ -5,7 +5,7 @@ use tracing::{debug, info, trace, warn};
 
 use crate::message::{Message, MsgData, MsgDataBound, system_messages::System};
 
-use super::{Cache, ComponentError, LessInPeriod, sleep};
+use super::{ComponentError, LessInPeriod, sleep};
 
 /// Уровень переполненности канала. Чем ближе к 1.0, тем раньше появится сообщение переполнения
 const CHANNEL_FULL: f64 = 0.3;
@@ -16,7 +16,6 @@ where
 {
     pub input: broadcast::Sender<Message<TMsg>>,
     pub output: mpsc::Receiver<Message<TMsg>>,
-    pub cache: Cache<TMsg>,
     pub delay_publish: Duration,
     pub max_capacity: usize,
 }
@@ -66,40 +65,6 @@ Channels capacity:            {}
         warn!("Internal task: stop");
         Ok(())
     }
-}
-
-/// Сохраняем сообщение в кеше
-///
-/// Возвращает `Option<Message>`:
-/// - None - сообщение не нужно отправлять дальше
-/// - Some(Message) - сообщение нужно отправить на вход всех компонентов
-///
-/// TODO - сделать опциональный компонент, для сохранения и просмотра значений сообщений. Возможно, на базе cmp_http_server
-async fn save_msg_in_cache<TMsg>(msg: Message<TMsg>, cache: &Cache<TMsg>) -> Option<Message<TMsg>>
-where
-    TMsg: MsgDataBound,
-{
-    // Фильтруем сообщения авторизации
-    if let MsgData::System(data) = &msg.data {
-        match data {
-            System::InputChannelFull => return Some(msg),
-            System::OutputChannelFull => return Some(msg),
-            System::AuthRequestByLogin(_) => return Some(msg),
-            System::AuthRequestByToken(_) => return Some(msg),
-            System::AuthResponseErr(_) => return Some(msg),
-            System::AuthResponseOk(_) => return Some(msg),
-            System::Ping(_) => return None,
-            System::Pong(_) => return None,
-        }
-    }
-
-    let key = msg.key.clone();
-    let value = msg.clone();
-    {
-        let mut lock = cache.write().await;
-        lock.insert(key, value);
-    }
-    Some(msg)
 }
 
 /// Функция проверки переполненности канала

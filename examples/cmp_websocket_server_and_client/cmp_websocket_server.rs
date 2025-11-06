@@ -55,7 +55,7 @@ async fn main() -> anyhow::Result<()> {
         fn_client_to_server: |c2s: ClientToServer| {
             let msg = match c2s {
                 ClientToServer::ClientCounter(counter) => {
-                    Message::new_custom(ServerMessages::CounterFromClient(counter))
+                    ServerMessages::CounterFromClient(counter)
                 }
             };
             vec![msg]

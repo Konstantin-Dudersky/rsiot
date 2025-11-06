@@ -1,7 +1,10 @@
+use std::time::Duration;
+
 use tokio::task::JoinSet;
+use tracing::info;
 
 use crate::{
-    executor::{MsgBusLinker, join_set_spawn},
+    executor::{MsgBusLinker, join_set_spawn, sleep},
     message::MsgDataBound,
 };
 
@@ -16,24 +19,33 @@ where
 {
     let mut task_set: JoinSet<Result<(), Error>> = JoinSet::new();
 
-    for (index, cmd) in config.commands.into_iter().enumerate() {
-        let task = TaskCommand {
-            msgbus_input: msgbus_linker.input(),
-            msgbus_output: msgbus_linker.output(),
-            config: cmd,
-        };
+    if config.commands.is_empty() {
+        info!("{COMPONENT_NAME} | command list is empty");
+        msgbus_linker.close();
 
-        join_set_spawn(
-            &mut task_set,
-            format!("{COMPONENT_NAME} | {index}"),
-            task.spawn(),
-        );
-    }
+        loop {
+            sleep(Duration::MAX).await;
+        }
+    } else {
+        for (index, cmd) in config.commands.into_iter().enumerate() {
+            let task = TaskCommand {
+                msgbus_input: msgbus_linker.input(),
+                msgbus_output: msgbus_linker.output(),
+                config: cmd,
+            };
 
-    msgbus_linker.close();
+            join_set_spawn(
+                &mut task_set,
+                format!("{COMPONENT_NAME} | {index}"),
+                task.spawn(),
+            );
+        }
 
-    while let Some(res) = task_set.join_next().await {
-        res??;
+        msgbus_linker.close();
+
+        while let Some(res) = task_set.join_next().await {
+            res??;
+        }
     }
 
     Err(Error::FnProcessEnd)

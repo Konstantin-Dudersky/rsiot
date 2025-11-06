@@ -8,6 +8,12 @@ pub enum Error {
     #[error("{COMPONENT_NAME} | EmptyCommand")]
     EmptyCommand,
 
+    #[error("{COMPONENT_NAME} | CommandExecution. Command:  {command}; error: {error}")]
+    CommandExecution {
+        command: String,
+        error: tokio::io::Error,
+    },
+
     #[error("{COMPONENT_NAME} | FnProcessEnd")]
     FnProcessEnd,
 
