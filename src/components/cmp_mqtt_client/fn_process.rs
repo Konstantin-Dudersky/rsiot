@@ -5,7 +5,7 @@ use tokio::task::JoinSet;
 use tracing::info;
 
 use crate::{
-    components::shared_tasks::cmp_mqtt_genral::MqttGeneralTasks,
+    components::{cmp_mqtt_client::ConfigPublish, shared_tasks::cmp_mqtt_genral::MqttGeneralTasks},
     executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
     serde_utils::SerdeAlg,
@@ -29,8 +29,18 @@ where
 
     let (client, eventloop) = AsyncClient::new(mqttoptions, config.client_capacity);
 
+    let base_topic = if let ConfigPublish::Publish {
+        base_topic: topic_part,
+        ..
+    } = &config.publish
+    {
+        topic_part.clone()
+    } else {
+        "".to_string()
+    };
     let mqtt_msg_gen = MqttMsgGen {
         serde_alg: SerdeAlg::new(config.serde_alg),
+        base_topic,
     };
 
     let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();

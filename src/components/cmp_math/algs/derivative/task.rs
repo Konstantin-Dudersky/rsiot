@@ -1,51 +1,52 @@
 use std::time::Duration;
-use time::OffsetDateTime;
 
-use crate::message::ValueTime;
-
-use super::{
-    AlgInput, AlgOutput, Error, Gamma, IntMsgBound, OutputValue, Result, calculation::Calculation,
+use crate::{
+    executor::MsgBusOutput,
+    message::{MsgDataBound, ValueTime},
 };
 
-pub struct Task<TIntMsg>
+use super::{
+    AlgFnOutputMsgbus, AlgInput, AlgOutput, Error, Gamma, OutputValue, calculation::Calculation,
+};
+
+pub struct Task<TMsg>
 where
-    TIntMsg: IntMsgBound,
+    TMsg: MsgDataBound,
 {
-    pub input: AlgInput<TIntMsg>,
-    pub output: AlgOutput<TIntMsg>,
-    pub fn_input_value: fn(TIntMsg) -> Option<(f64, OffsetDateTime)>,
-    pub fn_input_time_window: fn(TIntMsg) -> Option<Duration>,
+    pub input: AlgInput,
+    pub output: AlgOutput,
+    pub output_msgbus: MsgBusOutput<TMsg>,
+    pub time_window: Duration,
     pub normalization_time: Duration,
     pub gamma: Gamma,
-    pub fn_output: fn(OutputValue) -> TIntMsg,
+    pub fn_output_msgbus: AlgFnOutputMsgbus<TMsg, OutputValue>,
 }
 
-impl<TIntMsg> Task<TIntMsg>
+impl<TMsg> Task<TMsg>
 where
-    TIntMsg: IntMsgBound,
+    TMsg: MsgDataBound,
 {
-    pub async fn spawn(mut self) -> Result<()> {
-        let mut time_window = Duration::default();
+    pub async fn spawn(mut self) -> Result<(), Error> {
         let mut calculation = Calculation::new(self.gamma, self.normalization_time);
 
-        while let Ok(input_int_msg) = self.input.recv().await {
-            // Получаем новое значение окна времени
-            if let Some(new_time_window) = (self.fn_input_time_window)(input_int_msg) {
-                time_window = new_time_window;
+        while let Some(vt) = self.input.recv().await {
+            let out_value = calculation.step(vt, self.time_window);
+
+            let msg = (self.fn_output_msgbus)(&out_value);
+            if let Some(msg) = msg {
+                self.output_msgbus
+                    .send(msg.to_message())
+                    .await
+                    .map_err(|_| Error::SendToMsgbus)?;
             }
 
-            // Получаем новое значение
-            if let Some((value, time)) = (self.fn_input_value)(input_int_msg) {
-                let new_value = ValueTime { value, time };
-
-                let out_value = calculation.step(new_value, time_window);
-
-                let output_int_msg = (self.fn_output)(out_value);
-                self.output
-                    .send(output_int_msg)
-                    .await
-                    .map_err(|_| Error::AlgTaskUnexpectedEnd(String::from("derivative")))?;
-            };
+            self.output
+                .send(ValueTime {
+                    value: out_value.derivative,
+                    time: out_value.time,
+                })
+                .await
+                .map_err(|_| Error::AlgTaskUnexpectedEnd(String::from("derivative")))?;
         }
 
         let err = String::from("derivative");

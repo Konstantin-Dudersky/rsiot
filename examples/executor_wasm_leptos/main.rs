@@ -13,7 +13,7 @@ fn main() -> anyhow::Result<()> {
     use reactive_stores::Store;
     use tokio::task::LocalSet;
 
-    use crate::{
+    use rsiot::{
         components::cmp_leptos,
         executor::{ComponentExecutor, ComponentExecutorConfig},
         logging::{LogConfig, LogConfigFilter},

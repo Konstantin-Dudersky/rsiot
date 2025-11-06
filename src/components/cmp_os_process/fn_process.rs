@@ -1,31 +1,52 @@
 use std::time::Duration;
 
-use tokio::process::Command;
-use tokio::time::sleep;
+use tokio::task::JoinSet;
+use tracing::info;
 
-use crate::{executor::MsgBusLinker, message::MsgDataBound};
+use crate::{
+    executor::{MsgBusLinker, join_set_spawn, sleep},
+    message::MsgDataBound,
+};
 
-use super::Config;
+use super::{COMPONENT_NAME, Config, Error, task_command::TaskCommand};
 
 pub async fn fn_process<TMsg>(
-    _config: Config<TMsg>,
+    config: Config<TMsg>,
     msgbus_linker: MsgBusLinker<TMsg>,
-) -> super::Result<()>
+) -> Result<(), Error>
 where
-    TMsg: MsgDataBound,
+    TMsg: 'static + MsgDataBound,
 {
-    msgbus_linker.close();
-    loop {
-        let output = Command::new("echo").arg("hello").arg("world").output();
+    let mut task_set: JoinSet<Result<(), Error>> = JoinSet::new();
 
-        let output = match output.await {
-            Ok(v) => v,
-            Err(_) => todo!(),
-        };
+    if config.commands.is_empty() {
+        info!("{COMPONENT_NAME} | command list is empty");
+        msgbus_linker.close();
 
-        println!("Status: {}", output.status.success());
-        println!("Stdout: {:?}", output.stdout);
+        loop {
+            sleep(Duration::MAX).await;
+        }
+    } else {
+        for (index, cmd) in config.commands.into_iter().enumerate() {
+            let task = TaskCommand {
+                msgbus_input: msgbus_linker.input(),
+                msgbus_output: msgbus_linker.output(),
+                config: cmd,
+            };
 
-        sleep(Duration::from_secs(2)).await;
+            join_set_spawn(
+                &mut task_set,
+                format!("{COMPONENT_NAME} | {index}"),
+                task.spawn(),
+            );
+        }
+
+        msgbus_linker.close();
+
+        while let Some(res) = task_set.join_next().await {
+            res??;
+        }
     }
+
+    Err(Error::FnProcessEnd)
 }

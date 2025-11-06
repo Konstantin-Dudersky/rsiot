@@ -27,4 +27,4 @@ where
 /// Функция преобразования входящих сообщений в перечисление, пересылаемое по вебсокету
 pub type FnInput<TMsg, TServerToClient> = fn(&Message<TMsg>) -> Option<TServerToClient>;
 /// Функция перечисления, пересылаемых по вебсокету, в исходящий поток сообщений
-pub type FnOutput<TMsg, TClientToServer> = fn(TClientToServer) -> Vec<Message<TMsg>>;
+pub type FnOutput<TMsg, TClientToServer> = fn(TClientToServer) -> Vec<TMsg>;

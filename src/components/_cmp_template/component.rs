@@ -1,8 +1,8 @@
 use async_trait::async_trait;
 
 use crate::{
-    executor::{MsgBusLinker, CmpResult, Component, IComponentProcess},
-    message::{AuthPermissions, MsgDataBound},
+    executor::{CmpResult, Component, IComponentProcess, MsgBusLinker},
+    message::MsgDataBound,
 };
 
 use super::{config::Config, fn_process::fn_process};

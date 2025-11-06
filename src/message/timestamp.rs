@@ -1,61 +1,67 @@
-use chrono::{DateTime, Datelike, FixedOffset, Local, Timelike, Weekday};
 use serde::{Deserialize, Serialize};
+use time::{
+    OffsetDateTime, Weekday,
+    format_description::{self, well_known::Rfc3339},
+};
 
 /// Метка времени
-///
-/// Тип на основе `chrono::DateTime<FixedOffset>`. По-умолчанию создается текущая метка времени.
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
-pub struct Timestamp(pub DateTime<FixedOffset>);
+pub struct Timestamp(OffsetDateTime);
 
 impl Timestamp {
     /// Преобразовать в строку с заданным форматом
-    pub fn format(&self, fmt: &str) -> String {
-        self.0.format(fmt).to_string()
+    pub fn format(&self, fmt: &str) -> Result<String, String> {
+        let format = format_description::parse(fmt).map_err(|e| e.to_string())?;
+        self.0.format(&format).map_err(|e| e.to_string())
     }
 
     /// Returns an RFC 3339 and ISO 8601 date and time string such as `1996-12-19T16:39:57-08:00`.
-    pub fn to_rfc3339(&self) -> String {
-        self.0.to_rfc3339()
+    pub fn to_rfc3339(&self) -> Result<String, String> {
+        self.0.format(&Rfc3339).map_err(|e| e.to_string())
     }
 
     /// Возвращает время Unix с наносекундной точностью
-    pub fn timestamp_nanos_opt(&self) -> Option<i64> {
-        self.0.timestamp_nanos_opt()
+    pub fn unix_timestamp_nanos(&self) -> i128 {
+        self.0.unix_timestamp_nanos()
     }
 
     /// Возвращает номер дня недели. 1 = понедельник, 7 = воскресенье
     pub fn weekday(&self) -> u8 {
         match self.0.weekday() {
-            Weekday::Mon => 1,
-            Weekday::Tue => 2,
-            Weekday::Wed => 3,
-            Weekday::Thu => 4,
-            Weekday::Fri => 5,
-            Weekday::Sat => 6,
-            Weekday::Sun => 7,
+            Weekday::Monday => 1,
+            Weekday::Tuesday => 2,
+            Weekday::Wednesday => 3,
+            Weekday::Thursday => 4,
+            Weekday::Friday => 5,
+            Weekday::Saturday => 6,
+            Weekday::Sunday => 7,
         }
     }
 
     /// Часы
-    pub fn hour(&self) -> u32 {
+    pub fn hour(&self) -> u8 {
         self.0.hour()
     }
 
     /// Минуты
-    pub fn minute(&self) -> u32 {
+    pub fn minute(&self) -> u8 {
         self.0.minute()
     }
 
     /// Секунды
-    pub fn second(&self) -> u32 {
+    pub fn second(&self) -> u8 {
         self.0.second()
     }
 }
 
-/// TODO - вместо Utc использовать местный часовой пояс?
 impl Default for Timestamp {
     fn default() -> Self {
-        Self(Local::now().into())
+        let local_time = OffsetDateTime::now_local();
+        let local_time = match local_time {
+            Ok(v) => v,
+            Err(_) => OffsetDateTime::now_utc(),
+        };
+        Self(local_time)
     }
 }
 

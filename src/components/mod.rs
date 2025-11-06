@@ -16,6 +16,8 @@ pub mod cmp_livecounter;
 
 pub mod cmp_derive;
 
+pub mod cmp_derive_new;
+
 // #[cfg(feature = "cmp_esp")]
 // #[cfg(riscv32imc_esp_espidf)]
 // pub mod cmp_esp_adc;
@@ -72,6 +74,14 @@ pub mod cmp_external_fn_process;
     armv7_unknown_linux_gnueabihf,
     x8664_unknown_linux_gnu
 ))]
+pub mod cmp_file_appender;
+
+#[cfg(feature = "cmp_filesystem")]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
 pub mod cmp_filesystem;
 
 #[cfg(feature = "cmp_http_client")]
@@ -108,6 +118,7 @@ pub mod cmp_http_server;
 pub mod cmp_influxdb3;
 
 pub mod cmp_inject_periodic;
+pub mod cmp_inject_single;
 
 #[cfg(feature = "cmp_leptos")]
 #[cfg(wasm32_unknown_unknown)]
@@ -158,6 +169,9 @@ pub mod cmp_logger;
 #[cfg(feature = "cmp_math")]
 pub mod cmp_math;
 
+// #[cfg(feature = "cmp_math")]
+// pub mod cmp_math_new;
+
 #[cfg(feature = "cmp_modbus_client")]
 #[cfg(any(
     aarch64_unknown_linux_gnu,
@@ -176,7 +190,11 @@ pub mod cmp_modbus_client;
 pub mod cmp_mqtt_client;
 
 #[cfg(feature = "cmp_os_process")]
-#[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
 pub mod cmp_os_process;
 
 #[cfg(feature = "cmp_plc")]
@@ -228,21 +246,21 @@ pub mod cmp_system_info;
 ))]
 pub mod cmp_telegram;
 
-#[cfg(feature = "cmp_timescaledb")]
+#[cfg(feature = "cmp_tsdb")]
 #[cfg(any(
     aarch64_unknown_linux_gnu,
     armv7_unknown_linux_gnueabihf,
     x8664_unknown_linux_gnu
 ))]
-pub mod cmp_timescaledb;
+pub mod cmp_tsdb_writer;
 
-#[cfg(feature = "cmp_timescaledb")]
+#[cfg(feature = "cmp_tsdb")]
 #[cfg(any(
     aarch64_unknown_linux_gnu,
     armv7_unknown_linux_gnueabihf,
     x8664_unknown_linux_gnu
 ))]
-pub mod cmp_timescaledb_reader;
+pub mod cmp_tsdb_reader;
 
 #[cfg(feature = "cmp_websocket_client")]
 #[cfg(any(

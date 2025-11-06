@@ -5,4 +5,4 @@ mod task_output;
 
 pub(crate) use task::Task;
 
-use super::{Error, IntMsgBound, Result};
+use super::{AlgFnOutputMsgbus, AlgInput, AlgOutput, Error};

@@ -1,5 +1,7 @@
 use crate::executor::ComponentError;
 
+use super::COMPONENT_NAME;
+
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -11,6 +13,9 @@ pub enum Error {
 
     #[error("FnProcessEnd")]
     FnProcessEnd,
+
+    #[error("{COMPONENT_NAME} | SendToMsgbus")]
+    SendToMsgbus,
 
     #[error("TaskInputEnd")]
     TaskInputEnd,

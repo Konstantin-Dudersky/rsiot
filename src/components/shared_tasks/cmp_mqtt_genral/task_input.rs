@@ -1,4 +1,5 @@
-use tokio::sync::mpsc;
+use tokio::sync::mpsc::{self, error::TrySendError};
+use tracing::warn;
 
 use crate::{
     components_config::mqtt_client::{ConfigPublish, MqttMsgGen, MqttMsgSend},
@@ -26,8 +27,10 @@ where
     pub async fn spawn(mut self) -> Result<(), TError> {
         let fn_publish = match self.config_publish {
             ConfigPublish::NoPublish => return Ok(()),
-            ConfigPublish::Publish { fn_publish } => fn_publish,
+            ConfigPublish::Publish { fn_publish, .. } => fn_publish,
         };
+
+        let mut channel_full = false;
 
         while let Ok(msg) = self.input.recv().await {
             let Some(msg) = msg.get_custom_data() else {
@@ -38,10 +41,23 @@ where
 
             let Some(mqtt_msg) = mqtt_msg else { continue };
 
-            self.output
-                .send(mqtt_msg)
-                .await
-                .map_err(|_| (self.error_tokio_mpsc_send)())?;
+            let res = self.output.try_send(mqtt_msg);
+            if let Err(err) = res {
+                match err {
+                    TrySendError::Full(_) => {
+                        if !channel_full {
+                            channel_full = true;
+                            warn!("MQTT client too slow or disconnected");
+                            continue;
+                        }
+                    }
+                    TrySendError::Closed(_) => {
+                        break;
+                    }
+                }
+            } else {
+                channel_full = false;
+            }
         }
 
         Err((self.error_task_end)())

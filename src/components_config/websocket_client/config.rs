@@ -20,7 +20,17 @@ where
     pub serde_alg: SerdeAlgKind,
 
     /// Адрес Websocket-сервера
-    /// "ws://localhost:9001"
+    ///
+    /// # Примеры
+    ///
+    /// "ws://localhost:8000"
+    ///
+    /// # На платформе WASM
+    ///
+    /// ```
+    /// let hostname = cmp_leptos::utils::define_hostname().unwrap();
+    /// let url = format!("ws://{hostname}:8000"),
+    /// ```
     pub url: String,
 
     /// Преобразование входящих сообщений в текст для отправки на сервер

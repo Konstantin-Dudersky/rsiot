@@ -1,19 +1,33 @@
 use crate::executor::ComponentError;
 
+use super::COMPONENT_NAME;
+
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error("CmpOutput: {0}")]
-    CmpOutput(ComponentError),
+    #[error("{COMPONENT_NAME} | EmptyCommand")]
+    EmptyCommand,
 
-    #[error("FnOutput: {0}")]
-    FnInput(anyhow::Error),
+    #[error("{COMPONENT_NAME} | CommandExecution. Command:  {command}; error: {error}")]
+    CommandExecution {
+        command: String,
+        error: tokio::io::Error,
+    },
 
-    #[error("FnOutput: {0}")]
-    FnOutput(anyhow::Error),
+    #[error("{COMPONENT_NAME} | FnProcessEnd")]
+    FnProcessEnd,
 
-    #[error("TokioTaskJoin: {0}")]
+    #[error("{COMPONENT_NAME} | TaskCommandEnd")]
+    TaskCommandEnd,
+
+    #[error("{COMPONENT_NAME} | TokioSyncMpscSend")]
+    TokioSyncMpscSend,
+
+    #[error("{COMPONENT_NAME} | TokioTaskJoin: {0}")]
     TokioTaskJoin(#[from] tokio::task::JoinError),
+
+    #[error("{COMPONENT_NAME} | UnicodeConversion")]
+    UnicodeConversion(#[from] std::string::FromUtf8Error),
 }
 
 impl From<Error> for ComponentError {

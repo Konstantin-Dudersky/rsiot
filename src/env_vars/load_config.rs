@@ -28,16 +28,24 @@ where
 
     println!("Пробуем загрузить переменные из файла .env");
     let vars = load_from_file();
-    match vars {
+    let err = match vars {
         Ok(vars) => {
             println!("Переменные из файла успешно загружены");
-            Ok(vars)
+            return Ok(vars);
         }
         Err(err) => {
             println!("Ошибка загрузки переменных из файла .env: {err}");
-            Err(err)
+            err
         }
-    }
+    };
+
+    let help = format!(
+        "\n\nПроверьте содержимое файла .env: \n{:?}",
+        TEnvVars::default()
+    );
+    println!("{}", help);
+
+    Err(err)
 }
 
 /// Загружаем переменные из окружения

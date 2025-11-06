@@ -1,0 +1,21 @@
+Запустить базу данных и pgadmin:
+
+```sh
+cd examples/cmp_tsdb
+docker compose up
+```
+
+Запустить пример:
+
+```sh
+RUST_LOG=debug cargo run --example cmp_tsdb --features "cmp_tsdb" -- 20 0
+```
+
+SQL-скрипт для чтения данных из TimescaleDB:
+
+```sql
+SELECT "time", value
+FROM raw
+ORDER BY "time" DESC
+LIMIT 5000
+```

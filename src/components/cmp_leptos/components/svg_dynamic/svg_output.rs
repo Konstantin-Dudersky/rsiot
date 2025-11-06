@@ -1,5 +1,5 @@
 /// Обработка событий svg-файла
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct SvgOutput<T>
 where
     T: Fn(&str),

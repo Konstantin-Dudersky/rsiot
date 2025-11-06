@@ -1,0 +1,56 @@
+#[cfg(feature = "cmp_tsdb")]
+mod config_tsdb;
+#[cfg(feature = "cmp_tsdb")]
+mod message;
+
+#[cfg(feature = "cmp_tsdb")]
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .init();
+
+    use std::env;
+
+    use tokio::time::Duration;
+
+    use rsiot::{
+        components::cmp_inject_periodic,
+        executor::{ComponentExecutor, ComponentExecutorConfig},
+    };
+
+    use message::Msg;
+
+    let args: Vec<String> = env::args().collect();
+    let rows_in_cycle = args.get(1).unwrap();
+    let rows_in_cycle = rows_in_cycle.parse::<u32>().unwrap();
+    let instance_number = args.get(2).unwrap();
+
+    let mut counter = 0;
+    let inject_config = cmp_inject_periodic::Config {
+        period: Duration::from_millis(1),
+        fn_periodic: move || {
+            let msg = Msg::Counter(counter);
+            counter += 1;
+            vec![msg]
+        },
+    };
+
+    let executor_config = ComponentExecutorConfig {
+        buffer_size: 1000,
+        fn_auth: |msg, _| Some(msg),
+        delay_publish: Duration::from_millis(10),
+        fn_tokio_metrics: |_| None,
+    };
+
+    ComponentExecutor::new(executor_config)
+        .add_cmp(cmp_inject_periodic::Cmp::new(inject_config))
+        .add_cmp(config_tsdb::cmp(rows_in_cycle, instance_number.clone()))
+        .wait_result()
+        .await?;
+
+    Ok(())
+}
+
+#[cfg(not(feature = "cmp_tsdb"))]
+fn main() {}

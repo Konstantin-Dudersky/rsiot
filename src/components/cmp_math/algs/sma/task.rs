@@ -2,92 +2,105 @@ use std::collections::VecDeque;
 
 use std::time::Duration;
 use time::OffsetDateTime;
-use tokio::sync::{broadcast, mpsc};
 
-use super::{Error, IntMsgBound, OutputValue, Result};
+use crate::{
+    executor::MsgBusOutput,
+    message::{MsgDataBound, ValueTime},
+};
 
-pub struct Task<TIntMsg>
+use super::{AlgFnOutputMsgbus, AlgInput, AlgOutput, Error, OutputValue};
+
+pub struct Task<TMsg>
 where
-    TIntMsg: IntMsgBound,
+    TMsg: MsgDataBound,
 {
-    pub input: broadcast::Receiver<TIntMsg>,
-    pub output: mpsc::Sender<TIntMsg>,
-    pub fn_input_value: fn(TIntMsg) -> Option<(f64, OffsetDateTime)>,
-    pub fn_input_time_window: fn(TIntMsg) -> Option<Duration>,
-    pub fn_output: fn(OutputValue) -> TIntMsg,
+    pub input: AlgInput,
+    pub output: AlgOutput,
+    pub output_msgbus: MsgBusOutput<TMsg>,
+    pub time_window: Duration,
+    pub fn_output_msgbus: AlgFnOutputMsgbus<TMsg, OutputValue>,
 }
 
-impl<TIntMsg> Task<TIntMsg>
+impl<TMsg> Task<TMsg>
 where
-    TIntMsg: IntMsgBound,
+    TMsg: MsgDataBound,
 {
-    pub async fn spawn(mut self) -> Result<()> {
-        let mut time_window = Duration::default();
+    pub async fn spawn(mut self) -> Result<(), Error> {
         let mut buffer: VecDeque<ValueInBuffer> = VecDeque::new();
         let mut out_value: Option<ValueInBuffer> = None;
 
-        while let Ok(input_int_msg) = self.input.recv().await {
-            // Получаем новое значение окна времени
-            if let Some(new_time_window) = (self.fn_input_time_window)(input_int_msg) {
-                time_window = new_time_window;
+        while let Some(input_value) = self.input.recv().await {
+            let buffer_back = match buffer.back() {
+                // Если в буфере есть значение, рассчитываем площадь
+                Some(last) => {
+                    let area = calc_area(last.time, input_value.time, last.value);
+                    ValueInBuffer {
+                        value: input_value.value,
+                        time: input_value.time,
+                        area,
+                    }
+                }
+                None => ValueInBuffer {
+                    value: input_value.value,
+                    time: input_value.time,
+                    area: 0.0,
+                },
+            };
+
+            // Добавляем новое значение в конец буфера
+            buffer.push_back(buffer_back);
+
+            // Удаляем значения, метка времени которых не попадает в окно
+            let begin_ts = buffer_back.time - self.time_window;
+            loop {
+                let value = buffer.front();
+                let Some(value) = value else { break };
+                if value.time < begin_ts {
+                    out_value = buffer.pop_front();
+                } else {
+                    break;
+                }
             }
 
-            // Получаем новое значение
-            if let Some((value, time)) = (self.fn_input_value)(input_int_msg) {
-                let buffer_back = match buffer.back() {
-                    // Если в буфере есть значение, рассчитываем площадь
-                    Some(last) => {
-                        let area = calc_area(last.time, time, last.value);
-                        ValueInBuffer { value, time, area }
-                    }
-                    None => ValueInBuffer {
-                        value,
-                        time,
-                        area: 0.0,
-                    },
-                };
+            if buffer.is_empty() {
+                continue;
+            }
 
-                // Добавляем новое значение в конец буфера
-                buffer.push_back(buffer_back);
+            // Вычисляем полную площадь, которая может содержать "лишнюю" площадь
+            let mut full_area = buffer.iter().map(|v| v.area).sum::<f64>();
 
-                // Удаляем значения, метка времени которых не попадает в окно
-                let begin_ts = buffer_back.time - time_window;
-                loop {
-                    let value = buffer.front();
-                    let Some(value) = value else { break };
-                    if value.time < begin_ts {
-                        out_value = buffer.pop_front();
-                    } else {
-                        break;
-                    }
-                }
+            // Вычисляем "лишнюю" площадь, которая не попадает в окно
+            if let Some(out_value) = out_value {
+                let left_area = calc_area(
+                    out_value.time,
+                    buffer_back.time - self.time_window,
+                    out_value.value,
+                );
+                full_area -= left_area;
+            }
 
-                if buffer.is_empty() {
-                    continue;
-                }
+            let sma = full_area / self.time_window.as_nanos() as f64;
 
-                // Вычисляем полную площадь, которая может содержать "лишнюю" площадь
-                let mut full_area = buffer.iter().map(|v| v.area).sum::<f64>();
-
-                // Вычисляем "лишнюю" площадь, которая не попадает в окно
-                if let Some(out_value) = out_value {
-                    let left_area = calc_area(
-                        out_value.time,
-                        buffer_back.time - time_window,
-                        out_value.value,
-                    );
-                    full_area -= left_area;
-                }
-
-                let sma = full_area / time_window.as_nanos() as f64;
-
-                let out_value = OutputValue { sma, time };
-                let output_int_msg = (self.fn_output)(out_value);
-                self.output
-                    .send(output_int_msg)
-                    .await
-                    .map_err(|_| Error::AlgTaskUnexpectedEnd(String::from("SMA")))?;
+            let out_value = OutputValue {
+                sma,
+                time: input_value.time,
             };
+
+            let msg = (self.fn_output_msgbus)(&out_value);
+            if let Some(msg) = msg {
+                self.output_msgbus
+                    .send(msg.to_message())
+                    .await
+                    .map_err(|_| Error::SendToMsgbus)?;
+            }
+
+            self.output
+                .send(ValueTime {
+                    value: out_value.sma,
+                    time: out_value.time,
+                })
+                .await
+                .map_err(|_| Error::AlgTaskUnexpectedEnd(String::from("SMA")))?;
         }
 
         let err = String::from("SMA");

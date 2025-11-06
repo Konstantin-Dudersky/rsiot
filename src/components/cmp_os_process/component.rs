@@ -1,12 +1,13 @@
 use async_trait::async_trait;
 
 use crate::{
-    executor::{MsgBusLinker, CmpResult, Component, IComponentProcess},
+    executor::{CmpResult, Component, IComponentProcess, MsgBusLinker},
     message::MsgDataBound,
 };
 
 use super::{config::Config, fn_process::fn_process};
 
+/// Название компонента
 pub const COMPONENT_NAME: &str = "cmp_os_process";
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
@@ -21,5 +22,5 @@ where
     }
 }
 
-/// Компонент CMP_TEMPLATE
+/// Компонент cmp_os_process
 pub type Cmp<TMsg> = Component<Config<TMsg>, TMsg>;

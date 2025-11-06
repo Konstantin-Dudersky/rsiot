@@ -38,6 +38,7 @@ where
 
     let mqtt_msg_gen = MqttMsgGen {
         serde_alg: SerdeAlg::new(config.serde_alg),
+        base_topic: todo!(),
     };
 
     let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();

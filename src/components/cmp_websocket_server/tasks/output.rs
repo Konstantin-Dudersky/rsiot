@@ -24,6 +24,7 @@ where
         while let Some(c2s) = self.input.recv().await {
             let msgs = (self.fn_output)(c2s);
             for msg in msgs {
+                let msg = Message::new_custom(msg);
                 self.output
                     .send(msg)
                     .await
