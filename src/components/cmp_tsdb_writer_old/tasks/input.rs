@@ -5,7 +5,7 @@ use crate::{
     message::MsgDataBound,
 };
 
-use super::{COMPONENT_NAME, ConfigTable, Error, InnerMessage};
+use super::{COMPONENT_NAME, Error, InnerMessage};
 
 pub struct Input<TMsg, TFnInput>
 where
@@ -14,7 +14,7 @@ where
 {
     pub msgbus_input: MsgBusInput<TMsg>,
     pub output: mpsc::Sender<InnerMessage>,
-    pub table: ConfigTable<TMsg, TFnInput>,
+    pub fn_input: TFnInput,
 }
 
 impl<TMsg, TFnInput> Input<TMsg, TFnInput>
@@ -29,7 +29,7 @@ where
             let Some(msg) = msg.get_custom_data() else {
                 continue;
             };
-            let items = (self.table.fn_input)(&msg)?;
+            let items = (self.fn_input)(&msg)?;
             let Some(items) = items else { continue };
             self.output
                 .check_capacity(0.2, &desc)

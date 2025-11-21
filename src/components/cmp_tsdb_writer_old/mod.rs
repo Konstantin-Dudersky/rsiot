@@ -11,15 +11,15 @@ mod error;
 mod fn_process;
 pub mod helpers;
 mod query_stat;
-mod row_builder;
+mod row;
 mod tasks;
 
 pub use {
     component::{COMPONENT_NAME, Cmp},
-    config::{Config, ConfigTable, ConfigTableField, ConfigTableFieldType},
+    config::Config,
     error::Error,
     query_stat::QueryStat,
-    row_builder::{row_with_ts, row_without_ts},
+    row::{RowBuilder, RowPrj, RowPrjHst, RowPrjHstSvc},
 };
 
 type Result<T> = std::result::Result<T, Error>;

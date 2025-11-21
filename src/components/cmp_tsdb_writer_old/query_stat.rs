@@ -3,9 +3,6 @@ use std::{fmt::Display, time::Duration};
 /// Статистика выполнения SQL-запроса
 #[derive(Default)]
 pub struct QueryStat {
-    /// Название таблицы
-    pub table_name: String,
-
     /// Количество строк
     pub rows_count: usize,
 
@@ -23,11 +20,6 @@ impl QueryStat {
     /// Создать структуру со значениями по умолчанию
     pub fn new() -> Self {
         Default::default()
-    }
-
-    /// Установить название таблицы
-    pub fn set_table_name(&mut self, table_name: &str) {
-        self.table_name = table_name.to_string();
     }
 
     /// Установить количество строк

@@ -27,8 +27,7 @@ services:
       - ../../src/doc/external_services/tsdb/init.sql:/docker-entrypoint-initdb.d/init.sql
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-      - /media/konstantin/data/timescaledb_volume:/pgdata
-      # - /media/konstantin/data/timescaledb_volume:/var/lib/postgresql/data
+      - timescaledb_volume:/pgdata
 
   pgadmin:
     container_name: pgadmin

@@ -52,6 +52,10 @@ pub mod cmp_esp_nvs;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
+pub mod cmp_esp_speed;
+
+#[cfg(feature = "cmp_esp")]
+#[cfg(riscv32imc_esp_espidf)]
 pub mod cmp_esp_spi_master;
 
 // #[cfg(feature = "cmp_esp")]
@@ -252,7 +256,7 @@ pub mod cmp_telegram;
     armv7_unknown_linux_gnueabihf,
     x8664_unknown_linux_gnu
 ))]
-pub mod cmp_tsdb_writer;
+pub mod cmp_tsdb_reader;
 
 #[cfg(feature = "cmp_tsdb")]
 #[cfg(any(
@@ -260,7 +264,24 @@ pub mod cmp_tsdb_writer;
     armv7_unknown_linux_gnueabihf,
     x8664_unknown_linux_gnu
 ))]
-pub mod cmp_tsdb_reader;
+pub mod cmp_tsdb_reader2;
+
+#[cfg(feature = "cmp_tsdb")]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
+pub mod cmp_tsdb_writer;
+
+#[deprecated]
+#[cfg(feature = "cmp_tsdb")]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
+pub mod cmp_tsdb_writer_old;
 
 #[cfg(feature = "cmp_websocket_client")]
 #[cfg(any(

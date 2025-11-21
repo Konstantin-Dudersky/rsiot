@@ -10,12 +10,12 @@ use tracing::{trace, warn};
 use crate::{
     components_config::{
         master_device::{FieldbusRequestWithIndex, FieldbusResponseWithIndex},
-        uart_general::{self, calculate_transmission_time, FieldbusRequest, FieldbusResponse},
+        uart_general::{self, FieldbusRequest, FieldbusResponse, calculate_transmission_time},
     },
     executor::CheckCapacity,
 };
 
-use super::{data_rate, Error};
+use super::{Error, data_rate};
 
 const READ_BUFFER_LEN: usize = 1000;
 const READ_BUFFER_CHUNK: usize = 32;
@@ -77,6 +77,7 @@ impl UartComm {
             let device_index = fieldbus_request.device_index;
             let uart_request = fieldbus_request.request;
             let request_creation_time = uart_request.request_creation_time;
+            let request_kind = uart_request.request_kind;
 
             trace!("Send: {:?}", uart_request);
 
@@ -159,6 +160,7 @@ impl UartComm {
 
             let fieldbus_response = FieldbusResponse {
                 request_creation_time,
+                request_kind,
                 packet,
             };
 

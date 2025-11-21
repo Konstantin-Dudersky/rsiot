@@ -11,24 +11,29 @@ pub struct FieldbusResponse {
     /// Можно контролировать время выполнения запросов
     pub request_creation_time: Instant,
 
+    /// Вид запроса.
+    ///
+    /// Необходим для правильной расшифровки ответа
+    pub request_kind: u8,
+
     /// Ответ
     pub packet: Vec<u8>,
 }
 // ANCHOR: FieldbusResponse
 
 impl FieldbusResponse {
-    /// Создание ответа
-    pub fn new(packet: Vec<u8>) -> Self {
-        Self {
-            request_creation_time: Instant::now(),
-            packet,
-        }
-    }
+    // /// Создание ответа
+    // pub fn new(packet: Vec<u8>) -> Self {
+    //     Self {
+    //         request_creation_time: Instant::now(),
+    //         packet,
+    //     }
+    // }
 
-    /// Подготовить ответ для передачи по сети
-    pub fn to_write_buffer(self) -> Vec<u8> {
-        self.packet
-    }
+    // /// Подготовить ответ для передачи по сети
+    // pub fn to_write_buffer(self) -> Vec<u8> {
+    //     self.packet
+    // }
 }
 
 impl RequestResponseBound for FieldbusResponse {}
