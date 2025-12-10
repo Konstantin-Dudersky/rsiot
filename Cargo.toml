@@ -7,7 +7,7 @@ license = "MIT OR Apache-2.0"
 name = "rsiot"
 readme = "README.md"
 repository = "https://github.com/Konstantin-Dudersky/rsiot"
-rust-version = "1.89.0"
+rust-version = "1.91.0"
 version = "0.0.86"
 
 

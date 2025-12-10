@@ -13,13 +13,12 @@ use crate::{
 
 use super::{COMPONENT_NAME, Error, QueryStat, config::Config, config::ConfigTableForSetup, tasks};
 
-pub async fn fn_process<TMsg, TFnInput>(
+pub async fn fn_process<TMsg>(
     msgbus_linker: MsgBusLinker<TMsg>,
-    config: Config<TMsg, TFnInput>,
+    config: Config<TMsg>,
 ) -> Result<(), Error>
 where
     TMsg: 'static + MsgDataBound,
-    TFnInput: 'static + Fn(&TMsg) -> Result<Option<Vec<String>>, Error> + Send + Sync,
 {
     info!("Start {COMPONENT_NAME}");
 

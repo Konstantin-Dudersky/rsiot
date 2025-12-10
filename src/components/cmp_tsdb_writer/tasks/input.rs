@@ -7,20 +7,18 @@ use crate::{
 
 use super::{COMPONENT_NAME, ConfigTable, Error, InnerMessage};
 
-pub struct Input<TMsg, TFnInput>
+pub struct Input<TMsg>
 where
     TMsg: MsgDataBound,
-    TFnInput: Fn(&TMsg) -> Result<Option<Vec<String>>, Error> + Send + Sync,
 {
     pub msgbus_input: MsgBusInput<TMsg>,
     pub output: mpsc::Sender<InnerMessage>,
-    pub table: ConfigTable<TMsg, TFnInput>,
+    pub table: ConfigTable<TMsg>,
 }
 
-impl<TMsg, TFnInput> Input<TMsg, TFnInput>
+impl<TMsg> Input<TMsg>
 where
     TMsg: MsgDataBound,
-    TFnInput: Fn(&TMsg) -> Result<Option<Vec<String>>, Error> + Send + Sync,
 {
     pub async fn spawn(mut self) -> Result<(), Error> {
         let desc = format!("{COMPONENT_NAME} | task Input | channel output");
@@ -29,11 +27,12 @@ where
             let Some(msg) = msg.get_custom_data() else {
                 continue;
             };
-            let items = (self.table.fn_input)(&msg)?;
-            let Some(items) = items else { continue };
+            let row = (self.table.fn_input)(&msg)?;
+
+            let Some(row) = row else { continue };
             self.output
                 .check_capacity(0.2, &desc)
-                .send(InnerMessage::Rows(items))
+                .send(InnerMessage::Row(row))
                 .await
                 .map_err(|_| Error::TokioMpsc { task_name: "Input" })?;
         }

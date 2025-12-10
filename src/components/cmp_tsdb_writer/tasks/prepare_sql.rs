@@ -5,7 +5,7 @@ use tokio::{
     sync::{Mutex, mpsc},
     task::JoinHandle,
 };
-use tracing::warn;
+use tracing::{trace, warn};
 
 use crate::executor::Instant;
 
@@ -30,8 +30,8 @@ impl PrepareSQL {
 
         while let Some(msg) = self.input.recv().await {
             match msg {
-                InnerMessage::Rows(rows) => {
-                    cache.extend(rows);
+                InnerMessage::Row(row) => {
+                    cache.push(row);
 
                     if cache.len() < self.save_by_row_count {
                         continue;
@@ -57,6 +57,7 @@ impl PrepareSQL {
             let mut query_stat = QueryStat::new();
 
             let sql = prepare_sql_statement(&self.table_name, &cache)?;
+            trace!("SQL statement: {}", sql);
 
             query_stat.set_table_name(&self.table_name);
             query_stat.set_rows_count(cache.len());

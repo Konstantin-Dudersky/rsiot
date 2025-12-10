@@ -6,16 +6,11 @@ use tracing::info;
 
 use super::message::*;
 
-type FnInputReturn = Result<Option<Vec<String>>, Error>;
-
-pub fn cmp(
-    rows_in_cycle: u32,
-    instance_number: String,
-) -> Cmp<Msg, impl Fn(&Msg) -> FnInputReturn> {
+pub fn cmp(rows_in_cycle: u32, instance_number: String) -> Cmp<Msg> {
     let hst = format!("hst_test_{}", instance_number);
 
     // Таблица
-    let fields = (0..rows_in_cycle)
+    let fields = (0..10)
         .map(|cn| ConfigTableField {
             field_name: format!("counter_{:02}", cn),
             data_type: ConfigTableFieldType::NumericDoublePrecision,
@@ -23,7 +18,6 @@ pub fn cmp(
         .collect::<Vec<_>>();
 
     let table = ConfigTable {
-        _msg_phantom: std::marker::PhantomData,
         prj: "prj_test".into(),
         hst,
         svc: "svc_test".into(),
@@ -34,12 +28,12 @@ pub fn cmp(
         compress_interval: Duration::from_hours(1),
         retention_interval: Some(Duration::from_hours(24)),
         fields,
-        fn_input: move |msg| {
+        fn_input: |msg| {
             let mut rng = rand::rng();
 
             let rows = match msg {
                 Msg::Counter(_) => {
-                    let values = (0..rows_in_cycle)
+                    let values = (0..10)
                         .map(|_| {
                             let value: f64 = rng.random();
                             format!("{}", value)
@@ -48,12 +42,11 @@ pub fn cmp(
                     row_without_ts(&values).unwrap()
                 }
             };
-            Ok(Some(vec![rows]))
+            Ok(Some(rows))
         },
     };
 
     let config = Config {
-        _msg_phantom: std::marker::PhantomData,
         connection_string: "postgres://postgres:postgres@localhost:5432/db_data".into(),
         max_connections: 10,
         tables: vec![table],

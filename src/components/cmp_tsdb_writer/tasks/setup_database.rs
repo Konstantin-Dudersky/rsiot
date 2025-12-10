@@ -167,7 +167,7 @@ CREATE TABLE IF NOT EXISTS "{}" (
 fn sql_remove_columnstore_policy(table: &ConfigTableForSetup) -> String {
     format!(
         r#"
-CALL remove_columnstore_policy('{}');"#,
+CALL remove_columnstore_policy('{}', if_exists => true);"#,
         table.table_name
     )
 }

@@ -1,4 +1,4 @@
-use std::{marker::PhantomData, time::Duration};
+use std::time::Duration;
 
 use crate::message::MsgDataBound;
 
@@ -7,14 +7,10 @@ use super::{Error, QueryStat};
 // ANCHOR: Config
 /// Конфигурация компонента cmp_timescaledb
 #[derive(Clone, Debug)]
-pub struct Config<TMsg, TFnInput>
+pub struct Config<TMsg>
 where
     TMsg: MsgDataBound,
-    TFnInput: Fn(&TMsg) -> Result<Option<Vec<String>>, Error> + Send + Sync,
 {
-    /// PhantomData для сообщений
-    pub _msg_phantom: PhantomData<TMsg>,
-
     /// Строка подключения к БД
     ///
     /// Примеры:
@@ -28,7 +24,7 @@ where
     pub max_connections: u32,
 
     /// Название таблицы для сохранения данных
-    pub tables: Vec<ConfigTable<TMsg, TFnInput>>,
+    pub tables: Vec<ConfigTable<TMsg>>,
 
     /// Отправить в базу данных, если в кеше присутствует больше указанного количества строк
     pub save_by_row_count: usize,
@@ -45,14 +41,10 @@ where
 
 /// Конфигурация таблицы для сохранения данных в БД
 #[derive(Clone, Debug)]
-pub struct ConfigTable<TMsg, TFnInput>
+pub struct ConfigTable<TMsg>
 where
     TMsg: MsgDataBound,
-    TFnInput: Fn(&TMsg) -> Result<Option<Vec<String>>, Error> + Send + Sync,
 {
-    /// PhantomData для сообщений
-    pub _msg_phantom: PhantomData<TMsg>,
-
     /// Проект
     pub prj: String,
 
@@ -81,15 +73,14 @@ where
     pub fields: Vec<ConfigTableField>,
 
     /// Функция преобразования сообщений в строки для Timescaledb
-    pub fn_input: TFnInput,
+    pub fn_input: fn(&TMsg) -> Result<Option<String>, Error>,
 
     /// Удалить таблицу перед записью
     pub delete_before_write: bool,
 }
-impl<TMsg, TFnInput> ConfigTable<TMsg, TFnInput>
+impl<TMsg> ConfigTable<TMsg>
 where
     TMsg: MsgDataBound,
-    TFnInput: Fn(&TMsg) -> Result<Option<Vec<String>>, Error> + Send + Sync,
 {
     /// Название таблицы в БД
     pub fn table_name(&self) -> String {
@@ -146,12 +137,11 @@ pub(crate) struct ConfigTableForSetup {
     pub values: Vec<ConfigTableField>,
 }
 
-impl<TMsg, TFnInput> From<&ConfigTable<TMsg, TFnInput>> for ConfigTableForSetup
+impl<TMsg> From<&ConfigTable<TMsg>> for ConfigTableForSetup
 where
     TMsg: MsgDataBound,
-    TFnInput: Fn(&TMsg) -> Result<Option<Vec<String>>, Error> + Send + Sync,
 {
-    fn from(config_table: &ConfigTable<TMsg, TFnInput>) -> Self {
+    fn from(config_table: &ConfigTable<TMsg>) -> Self {
         ConfigTableForSetup {
             table_name: config_table.table_name(),
             delete_before_write: config_table.delete_before_write,
