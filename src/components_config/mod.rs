@@ -22,6 +22,7 @@ pub mod influxdb3;
 #[cfg(feature = "cmp_modbus_client")]
 pub mod modbus_client;
 
+#[cfg(feature = "cmp_linux_uart")]
 pub mod modbus_frame;
 
 #[cfg(any(feature = "cmp_mqtt_client", feature = "cmp_esp"))]
