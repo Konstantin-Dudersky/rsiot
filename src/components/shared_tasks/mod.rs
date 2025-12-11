@@ -21,6 +21,9 @@ pub(crate) mod cmp_http_client;
 #[cfg(any(feature = "cmp_esp", feature = "cmp_mqtt_client"))]
 pub(crate) mod cmp_mqtt_genral;
 
+#[cfg(feature = "cmp_linux_uart")]
+pub mod cmp_linux_uart;
+
 pub mod filter_identical_data;
 pub mod filter_send_periodically;
 pub mod fn_process_master;

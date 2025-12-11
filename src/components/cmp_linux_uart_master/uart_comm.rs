@@ -89,7 +89,8 @@ impl UartComm {
                     .set_value(1)
                     .map_err(|e| super::Error::GpioPinSet(e.to_string()))?;
             }
-            port.clear(serialport::ClearBuffer::All).unwrap();
+            port.clear(serialport::ClearBuffer::All)
+                .map_err(|e| Error::PortClear(e.to_string()))?;
 
             // Записываем буфер и ждем, пока данные отправятся
             port.write(&write_buffer)
@@ -104,7 +105,8 @@ impl UartComm {
             );
             sleep(transmission_time);
 
-            port.clear(serialport::ClearBuffer::All).unwrap();
+            port.clear(serialport::ClearBuffer::All)
+                .map_err(|e| Error::PortClear(e.to_string()))?;
 
             // Сбрасываем пин RTS
             if let Some(pin_rts) = &pin_rts {

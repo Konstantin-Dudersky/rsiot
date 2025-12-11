@@ -6,7 +6,7 @@ use tracing::info;
 
 use super::message::*;
 
-pub fn cmp(rows_in_cycle: u32, instance_number: String) -> Cmp<Msg> {
+pub fn cmp(_rows_in_cycle: u32, instance_number: String) -> Cmp<Msg> {
     let hst = format!("hst_test_{}", instance_number);
 
     // Таблица

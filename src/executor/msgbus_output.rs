@@ -34,6 +34,7 @@ where
             .map_err(|e| ComponentError::CmpOutput(e.to_string()))
     }
 
+    /// Попытка мгновенной отправки исходящих сообщений
     pub fn try_send(&self, mut msg: Message<TMsg>) -> Result<(), ComponentError> {
         trace!("Start send to output: {msg:?}");
 

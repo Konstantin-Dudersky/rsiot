@@ -160,13 +160,21 @@ pub mod cmp_linux_i2c_master;
 ))]
 pub mod cmp_linux_spi_master;
 
-#[cfg(feature = "cmp_linux_uart_master")]
+#[cfg(feature = "cmp_linux_uart")]
 #[cfg(any(
     aarch64_unknown_linux_gnu,
     armv7_unknown_linux_gnueabihf,
     x8664_unknown_linux_gnu
 ))]
 pub mod cmp_linux_uart_master;
+
+#[cfg(feature = "cmp_linux_uart")]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
+pub mod cmp_linux_uart_slave;
 
 pub mod cmp_logger;
 
@@ -273,15 +281,6 @@ pub mod cmp_tsdb_reader2;
     x8664_unknown_linux_gnu
 ))]
 pub mod cmp_tsdb_writer;
-
-#[deprecated]
-#[cfg(feature = "cmp_tsdb")]
-#[cfg(any(
-    aarch64_unknown_linux_gnu,
-    armv7_unknown_linux_gnueabihf,
-    x8664_unknown_linux_gnu
-))]
-pub mod cmp_tsdb_writer_old;
 
 #[cfg(feature = "cmp_websocket_client")]
 #[cfg(any(

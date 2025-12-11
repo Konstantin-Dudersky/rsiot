@@ -2,7 +2,7 @@
 
 /// Значения скорости
 #[allow(missing_docs)]
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Copy, Debug, Default)]
 pub enum Baudrate {
     #[default]
     _9_600,

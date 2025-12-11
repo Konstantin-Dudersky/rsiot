@@ -30,7 +30,7 @@ pub mod mqtt_client;
 #[cfg(feature = "executor")]
 pub mod uart_general;
 
-#[cfg(any(feature = "cmp_esp", feature = "cmp_linux_uart_master",))]
+#[cfg(any(feature = "cmp_esp", feature = "cmp_linux_uart",))]
 pub mod uart_master;
 
 #[cfg(feature = "executor")]
