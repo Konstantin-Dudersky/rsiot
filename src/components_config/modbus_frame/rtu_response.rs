@@ -2,12 +2,17 @@ use bytes::{Buf, Bytes, BytesMut};
 
 use super::{CRC_ALG, Error};
 
+/// Извлечение данных из ответа Modbus RTU
 pub struct RTUResponse {
+    /// Предполагаемый адрес устройства
     pub address: u8,
+
+    /// Данные ответа
     pub data: Bytes,
 }
 
 impl RTUResponse {
+    /// Извлечь данные из ответа Modbus RTU
     pub fn parse(self) -> Result<BytesMut, Error> {
         let mut frame: BytesMut = self.data.into();
 

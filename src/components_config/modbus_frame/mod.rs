@@ -1,3 +1,5 @@
+//! Работа с фреймами Modbus
+
 mod error;
 mod rtu_request;
 mod rtu_response;

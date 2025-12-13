@@ -2,24 +2,53 @@ use bytes::{BufMut, Bytes, BytesMut};
 
 use super::CRC_ALG;
 
+/// Функциональный код запроса
 pub enum FunctionCode {
+    /// Чтение значений из регистров флагов
     ReadCoils,
+
+    /// Чтение значений из регистров дискретных входов
     ReadDiscreteInputs,
-    ReadHoldingRegisters { quantity: u16 },
+
+    /// Чтение значений из регистров хранения
+    ReadHoldingRegisters {
+        /// Количество регистров для чтения
+        quantity: u16,
+    },
+
+    /// Чтение значений из регистров ввода
     ReadInputRegisters,
+
+    /// Запись значения одного флага
     WriteSingleCoil,
-    WriteSingleRegister { value: u16 },
+
+    /// Запись значения в один регистр хранения
+    WriteSingleRegister {
+        /// Значение
+        value: u16,
+    },
+
+    /// Запись значений в несколько регистров флагов
     WriteMultipleCoils,
+
+    /// Запись значений в несколько регистров хранения
     WriteMultipleRegisters,
 }
 
+/// Создание запроса Modbus RTU
 pub struct RTURequest {
+    /// Адрес устройства
     pub address: u8,
+
+    /// Стартовый адрес регистра
     pub start_address: u16,
+
+    /// Функциональный код запроса
     pub function_code: FunctionCode,
 }
 
 impl RTURequest {
+    /// Создать запрос
     pub fn create(self) -> Bytes {
         let mut buf = BytesMut::new();
 
