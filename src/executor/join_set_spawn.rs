@@ -24,6 +24,23 @@ where
     T: Send + 'static,
 {
     let res = join_set.build_task().name(name.as_ref()).spawn(task);
+
+    if let Err(e) = res {
+        error!("Error spawning task: {}", e);
+    }
+}
+
+/// Добавить блокирующую задачу в множество задач (многопоточная версия)
+pub fn join_set_spawn_blocking<F, T>(join_set: &mut JoinSet<T>, name: impl AsRef<str>, task: F)
+where
+    F: FnOnce() -> T + Send + 'static,
+    T: Send + 'static,
+{
+    let res = join_set
+        .build_task()
+        .name(name.as_ref())
+        .spawn_blocking(task);
+
     if let Err(e) = res {
         error!("Error spawning task: {}", e);
     }

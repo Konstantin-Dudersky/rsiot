@@ -18,7 +18,7 @@ where
     TI2c: Peripheral<P = TPeripheral> + 'static,
     TPeripheral: I2c,
 {
-    /// Ссылка на аппартный интерфейс I2C
+    /// Ссылка на аппаратный интерфейс I2C
     pub i2c: TI2c,
 
     /// Пин сигнала SDA

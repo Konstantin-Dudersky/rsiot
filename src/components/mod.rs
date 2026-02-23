@@ -24,6 +24,10 @@ pub mod cmp_derive_new;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
+pub mod cmp_esp_can;
+
+#[cfg(feature = "cmp_esp")]
+#[cfg(riscv32imc_esp_espidf)]
 pub mod cmp_esp_gpio;
 
 #[cfg(feature = "cmp_esp")]
@@ -62,9 +66,9 @@ pub mod cmp_esp_spi_master;
 // #[cfg(riscv32imc_esp_espidf)]
 // pub mod cmp_esp_uart_master;
 
-#[cfg(feature = "cmp_esp")]
-#[cfg(riscv32imc_esp_espidf)]
-pub mod cmp_esp_uart_slave;
+// #[cfg(feature = "cmp_esp")]
+// #[cfg(riscv32imc_esp_espidf)]
+// pub mod cmp_esp_uart_slave;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]

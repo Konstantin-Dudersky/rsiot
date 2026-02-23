@@ -30,7 +30,7 @@ pub use component::{Component, IComponentProcess};
 pub use component_executor::{ComponentExecutor, ComponentExecutorConfig};
 pub use error::ComponentError;
 pub use instant::Instant;
-pub use join_set_spawn::join_set_spawn;
+pub use join_set_spawn::{join_set_spawn, join_set_spawn_blocking};
 pub(crate) use less_in_period::LessInPeriod;
 pub use msgbus_linker::MsgBusLinker;
 pub use sleep::sleep;
