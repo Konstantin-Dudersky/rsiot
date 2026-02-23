@@ -5,7 +5,7 @@ use crate::{
     message::MsgDataBound,
 };
 
-use super::{COMPONENT_NAME, Config, Error, task_edge_detect::TaskEdgeDetect};
+use super::{COMPONENT_NAME, Config, Error, int_msg::IntMsg, task_edge_detect::TaskEdgeDetect};
 
 pub async fn fn_process<TMsg>(
     config: Config<TMsg>,
@@ -14,7 +14,7 @@ pub async fn fn_process<TMsg>(
 where
     TMsg: 'static + MsgDataBound,
 {
-    let (ch_tx, ch_rx) = mpsc::channel::<()>(10);
+    let (ch_tx, ch_rx) = mpsc::channel::<IntMsg>(10);
 
     let mut task_set: JoinSet<Result<(), Error>> = JoinSet::new();
 
@@ -23,15 +23,28 @@ where
         output: ch_tx.clone(),
         pin_speed: config.pin_speed,
         pin_led: config.pin_led,
+        period: config.period,
     };
+
     join_set_spawn(
         &mut task_set,
         format!("{COMPONENT_NAME} | task_edge_detect"),
         task.spawn(),
     );
 
-    // Задача расчёта скорости
-    let task = super::task_calculate::TaskCalculate {
+    // Задача генерации импульсов
+    let task = super::task_tick::TaskTick {
+        output: ch_tx,
+        period: config.period,
+    };
+    join_set_spawn(
+        &mut task_set,
+        format!("{COMPONENT_NAME} | task_tick"),
+        task.spawn(),
+    );
+
+    // Задача отправки сообщений
+    let task = super::task_send::TaskSend {
         input: ch_rx,
         output: msgbus_linker.output(),
         period: config.period,

@@ -4,8 +4,10 @@ mod component;
 mod config;
 mod error;
 mod fn_process;
-mod task_calculate;
+mod int_msg;
 mod task_edge_detect;
+mod task_send;
+mod task_tick;
 
 pub use {
     component::{COMPONENT_NAME, Cmp},
