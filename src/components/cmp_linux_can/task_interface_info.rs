@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use tokio::time::sleep;
-use tracing::info;
+use tracing::debug;
 
 use super::Error;
 
@@ -19,12 +19,12 @@ impl InterfaceInfo {
             let state = interface
                 .state()
                 .map_err(|e| Error::InterfaceState(e.to_string()))?;
-            info!("State: {:?}", state);
+            debug!("State: {:?}", state);
 
-            let berr_counter = interface
-                .berr_counter()
-                .map_err(|e| Error::InterfaceState(e.to_string()))?;
-            info!("Err counter: {:?}", berr_counter);
+            // let berr_counter = interface
+            //     .berr_counter()
+            //     .map_err(|e| Error::InterfaceState(e.to_string()))?;
+            // debug!("Err counter: {:?}", berr_counter);
 
             sleep(self.period).await;
         }

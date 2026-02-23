@@ -54,7 +54,7 @@ impl TryFrom<socketcan::CanFrame> for CanFrame {
                 Ok(frame)
             }
             socketcan::CanFrame::Remote(_frame) => todo!(),
-            socketcan::CanFrame::Error(_frame) => todo!(),
+            socketcan::CanFrame::Error(frame) => todo!(),
         }
     }
 }
