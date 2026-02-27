@@ -6,14 +6,19 @@ use tracing::{debug, trace};
 
 use crate::{
     components::cmp_websocket_server::ServerToClientCache,
-    components_config::websocket_server::WebsocketMessage, serde_utils::SerdeAlg,
+    components_config::websocket_server::{WebsocketMessage, WsData},
+    serde_utils::SerdeAlg,
 };
 
-pub struct SendToClient<TServerToClient> {
-    pub input: broadcast::Receiver<TServerToClient>,
+pub struct SendToClient<TServerToClient>
+where
+    TServerToClient: WebsocketMessage,
+{
+    pub input: broadcast::Receiver<WsData<TServerToClient>>,
     pub websocket_write: SplitSink<WebSocketStream<TcpStream>, TungsteniteMessage>,
     pub cache: ServerToClientCache<TServerToClient>,
     pub serde_alg: SerdeAlg,
+    pub client_id: String,
 }
 
 impl<TServerToClient> SendToClient<TServerToClient>
@@ -25,13 +30,19 @@ where
         {
             let cache = self.cache.lock().await;
             for s2c in cache.values() {
-                let text = create_text_from_msg(s2c, &self.serde_alg)?;
+                let text = create_text_from_msg(&s2c.data, &self.serde_alg)?;
                 self.websocket_write.send(text).await?;
             }
         }
 
         while let Ok(s2c) = self.input.recv().await {
-            let text = create_text_from_msg(&s2c, &self.serde_alg)?;
+            // Проверяем client_id
+            let data = match s2c.client_id {
+                Some(client_id) => create_text_from_msg(&s2c.data, &self.serde_alg)?,
+                None => create_text_from_msg(&s2c.data, &self.serde_alg)?,
+            };
+
+            let text = create_text_from_msg(&s2c.data, &self.serde_alg)?;
             self.websocket_write.send(text).await?;
         }
         self.websocket_write.close().await?;

@@ -119,7 +119,7 @@ tower-http = { version = "0.6.8", features = [
     "trace",
 ], optional = true }
 url = { version = "2.5.8", optional = true }
-wasm-bindgen = { version = "0.2.111", optional = true }
+wasm-bindgen = { version = "0.2.112", optional = true }
 web-sys = { version = "0.3.88", features = [
     "History",
     "Location",

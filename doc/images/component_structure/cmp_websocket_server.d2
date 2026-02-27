@@ -16,8 +16,8 @@ MsgBusIn: MsgBus {
 MsgBusIn -> Input
 
 Input
-Input -> Client1.SendToClient: "input_to_clients\nbroadcast::<TServerToClient>"
-Input -> Client2.SendToClient: "input_to_clients\nbroadcast::<TServerToClient>"
+Input -> Client1.SendToClient: "input_to_clients\nbroadcast::<WsData<TServerToClient>>"
+Input -> Client2.SendToClient: "input_to_clients\nbroadcast::<WsData<TServerToClient>>"
 
 Client1 {
     SendToClient
@@ -30,7 +30,7 @@ Client1 {
 
     RecvFromClient
 }
-Client1.RecvFromClient -> Output: "clients_to_output\nmpsc::<TClientToServer>"
+Client1.RecvFromClient -> Output: "clients_to_output\nmpsc::<WsData<TClientToServer>>"
 
 Client2 {
     SendToClient
@@ -43,7 +43,7 @@ Client2 {
 
     RecvFromClient
 }
-Client2.RecvFromClient -> Output: "clients_to_output\nmpsc::<TClientToServer>"
+Client2.RecvFromClient -> Output: "clients_to_output\nmpsc::<WsData<TClientToServer>>"
 
 Output
 Output -> MsgBusOut

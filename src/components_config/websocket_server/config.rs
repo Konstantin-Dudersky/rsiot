@@ -1,6 +1,6 @@
-use crate::{message::Message, serde_utils::SerdeAlgKind};
+use crate::serde_utils::SerdeAlgKind;
 
-use super::WebsocketMessage;
+use super::{WebsocketMessage, WsData};
 
 // ANCHOR: Config
 /// Конфигурация Websocket-сервера
@@ -25,6 +25,7 @@ where
 // ANCHOR: Config
 
 /// Функция преобразования входящих сообщений в перечисление, пересылаемое по вебсокету
-pub type FnInput<TMsg, TServerToClient> = fn(&Message<TMsg>) -> Option<TServerToClient>;
+pub type FnInput<TMsg, TServerToClient> = fn(&TMsg) -> Option<WsData<TServerToClient>>;
+
 /// Функция перечисления, пересылаемых по вебсокету, в исходящий поток сообщений
-pub type FnOutput<TMsg, TClientToServer> = fn(TClientToServer) -> Vec<TMsg>;
+pub type FnOutput<TMsg, TClientToServer> = fn(WsData<TClientToServer>) -> Vec<TMsg>;
