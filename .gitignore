@@ -2,3 +2,4 @@
 .env
 /.embuild
 examples/cmp_filesystem/directory
+surrealdb_rocksdb.db

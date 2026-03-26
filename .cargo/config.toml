@@ -41,6 +41,13 @@ rustflags = [
     # "force-frame-pointers",
 ]
 
+[target.x86_64-pc-windows-msvc]
+rustflags = [
+    # для tokio-console
+    "--cfg",
+    "tokio_unstable",
+]
+
 [target.x86_64-unknown-linux-gnu]
 rustflags = [
     # для tokio-console

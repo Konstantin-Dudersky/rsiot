@@ -229,12 +229,17 @@ pub mod cmp_raspberrypi_i2c_master;
     aarch64_linux_android,
     aarch64_unknown_linux_gnu,
     armv7_unknown_linux_gnueabihf,
+    x8664_pc_windows_msvc,
     x8664_unknown_linux_gnu
 ))]
 pub mod cmp_slint;
 
 #[cfg(feature = "cmp_surrealdb")]
-#[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    x8664_pc_windows_msvc,
+    x8664_unknown_linux_gnu
+))]
 pub mod cmp_surrealdb;
 
 #[cfg(feature = "cmp_svg")]

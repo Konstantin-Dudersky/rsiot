@@ -37,5 +37,11 @@ fn main() {
             target_os = "linux",
             target_env = "gnu"
         ) },
+        x8664_pc_windows_msvc: { all(
+            target_arch = "x86_64",
+            target_vendor = "pc",
+            target_os = "windows",
+            target_env = "msvc"
+        ) },
     }
 }

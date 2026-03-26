@@ -1,15 +1,10 @@
-use surrealdb::Response;
-
-use crate::message::Message;
+use surrealdb::IndexedResults;
 
 /// Конфигурация cmp_surrealdb
 #[derive(Clone, Debug)]
 pub struct Config<TMsg> {
-    /// localhost
-    pub host: String,
-
-    /// 8000
-    pub port: u16,
+    /// Конфигурация подключения к базе данных
+    pub connection: ConfigConnection,
 
     /// root
     pub user: String,
@@ -23,7 +18,7 @@ pub struct Config<TMsg> {
     /// rsiot
     pub database: String,
 
-    /// Скрипт для инициализации
+    /// Скрипт для инициализации БД. Выполняется, если при запуске не существует namespace
     pub init_script: String,
 
     /// Конфигурация запросов на основе входных сообщений
@@ -33,14 +28,14 @@ pub struct Config<TMsg> {
     pub request_start: Vec<RequestStartConfig<TMsg>>,
 }
 
-pub type FnOnSuccess<TMessage> = fn(Response) -> Result<Vec<Message<TMessage>>, anyhow::Error>;
-pub type FnOnFailure<TMessage> = fn() -> Vec<Message<TMessage>>;
+pub type FnOnSuccess<TMsg> = fn(&mut IndexedResults) -> Result<Vec<TMsg>, anyhow::Error>;
+pub type FnOnFailure<TMsg> = fn() -> Vec<TMsg>;
 
 /// Конфигурация запросов, которые выполняются на основе входного потока сообщений
 #[derive(Clone, Debug)]
 pub struct RequestInputConfig<TMsg> {
     /// Функция формирования запроса на основе потока сообщений
-    pub fn_input: fn(&Message<TMsg>) -> Option<String>,
+    pub fn_input: fn(&TMsg) -> Option<String>,
     /// Функция вызывается при успешно выполненном запросе
     pub fn_on_success: FnOnSuccess<TMsg>,
     /// Функция вызывается при ошибке выполнения запроса
@@ -56,4 +51,44 @@ pub struct RequestStartConfig<TMsg> {
     pub fn_on_success: FnOnSuccess<TMsg>,
     /// Функция вызывается при ошибке выполнения запроса
     pub fn_on_failure: FnOnFailure<TMsg>,
+}
+
+/// Конфигурация подключения к базе данных
+#[derive(Clone, Debug)]
+pub enum ConfigConnection {
+    /// Сохранение данных в памяти
+    Memory,
+
+    /// Сохранение данных в файле на диске RocksDB
+    RocksDB {
+        /// Название файла базы данных
+        ///
+        /// Примеры:
+        ///
+        /// ```
+        /// file_name: "database".into()
+        /// ```
+        file_name: String,
+    },
+
+    /// Сохранение данных в файле на диске SurrealKV
+    SurrealKv {
+        /// Название файла базы данных
+        ///
+        /// Примеры:
+        ///
+        /// ```
+        /// file_name: "database".into()
+        /// ```
+        file_name: String,
+    },
+
+    /// Подключение к базе данных через WebSocket
+    Websocket {
+        /// localhost
+        host: String,
+
+        /// 8000
+        port: u16,
+    },
 }

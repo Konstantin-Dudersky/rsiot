@@ -79,9 +79,8 @@ rumqttc = { version = "0.25.1", optional = true }
 palette = { version = "0.7.6", features = ["named"], optional = true }
 serde_json = { version = "1.0.149", optional = true }
 sha2 = { version = "0.10.9", optional = true }
-slint = { version = "1.15.1", optional = true, features = [
-    "backend-android-activity-06",
-] }
+slint = { version = "1.15.1", optional = true, default-features = false }
+# features = [ "backend-android-activity-06"] }
 socketcan = { version = "3.5.0", features = ["tokio"], optional = true }
 sqlx = { version = "0.8.6", features = [
     "macros",
@@ -91,7 +90,8 @@ sqlx = { version = "0.8.6", features = [
 ], optional = true }
 ssd1306 = { version = "0.10.0", optional = true }
 sudo = { version = "0.6.0", optional = true }
-surrealdb = { version = "2.6.2", optional = true }
+surrealdb = { version = "3.0.4", default-features = false, optional = true }
+surrealdb-types = { version = "3.0.4", optional = true }
 sysinfo = { version = "0.37.2", optional = true }
 teloxide = { version = "0.17.0", optional = true, features = ["macros"] }
 tokio = { version = "^1.37.0", features = [
@@ -101,13 +101,13 @@ tokio = { version = "^1.37.0", features = [
     "time",
     "tracing",
 ], optional = true }
-tokio-metrics = { version = "0.4.8", optional = true }
+tokio-metrics = { version = "0.4.9", optional = true }
 tokio-modbus = { version = "0.17.0", default-features = false, features = [
     "tcp",
 ], optional = true }
 tokio-tungstenite = { version = "0.28.0", optional = true }
 tokio-util = { version = "0.7.18", features = ["rt"], optional = true }
-toml = { version = "1.0.3+spec-1.1.0", optional = true }
+toml = { version = "1.0.6+spec-1.1.0", optional = true }
 tracing-appender = { version = "0.2.4", optional = true }
 tracing-subscriber = { version = "0.3.22", features = [
     "env-filter",
@@ -172,6 +172,7 @@ rsiot-devices = { path = "../rsiot-devices" }
 rand = { version = "0.10.0", features = [] }
 getrandom = { version = "0.4.1", features = ["wasm_js"] }
 pretty_assertions = { version = "1.4.1" }
+surrealdb = { version = "3.0.4", features = ["kv-surrealkv"] }
 
 [build-dependencies]
 embuild = { version = "0.33.1", features = ["espidf"] }
@@ -324,7 +325,7 @@ cmp_raspberrypi = ["executor", "dep:bincode", "serde_postcard", "dep:rppal"]
 cmp_slint = ["executor", "dep:slint"]
 
 ## Компонент доступа к БД SurrealDB
-cmp_surrealdb = ["executor", "dep:surrealdb"]
+cmp_surrealdb = ["executor", "dep:surrealdb", "dep:surrealdb-types"]
 
 ## Изменения SVG-файла
 cmp_svg = ["executor", "dep:quick-xml"]
