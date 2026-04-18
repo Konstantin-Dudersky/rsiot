@@ -7,7 +7,6 @@ use std::{
 };
 
 use serde::Deserialize;
-use surrealdb::opt::auth::Root;
 use surrealdb_types::SurrealValue;
 use tokio::task::JoinSet;
 use tracing::{error, info};
@@ -70,6 +69,9 @@ where
         };
         task_set.spawn(task.spawn());
     }
+
+    drop(input);
+    drop(output);
 
     connect(config).await?;
     connection_established.store(true, Ordering::Release);

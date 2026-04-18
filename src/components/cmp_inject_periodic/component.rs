@@ -30,4 +30,6 @@ where
 }
 
 /// Компонент cmp_inject_periodic
+///
+/// Пример возвращаемого значения: `Cmp<MsgRoot, impl FnMut() -> Vec<MsgRoot>>`
 pub type Cmp<TMsg, TFnPeriodic> = Component<Config<TMsg, TFnPeriodic>, TMsg>;

@@ -79,7 +79,7 @@ rumqttc = { version = "0.25.1", optional = true }
 palette = { version = "0.7.6", features = ["named"], optional = true }
 serde_json = { version = "1.0.149", optional = true }
 sha2 = { version = "0.10.9", optional = true }
-slint = { version = "1.15.1", optional = true, default-features = false }
+slint = { version = "1.16.0", optional = true, default-features = false }
 # features = [ "backend-android-activity-06"] }
 socketcan = { version = "3.5.0", features = ["tokio"], optional = true }
 sqlx = { version = "0.8.6", features = [
@@ -90,8 +90,8 @@ sqlx = { version = "0.8.6", features = [
 ], optional = true }
 ssd1306 = { version = "0.10.0", optional = true }
 sudo = { version = "0.6.0", optional = true }
-surrealdb = { version = "3.0.4", default-features = false, optional = true }
-surrealdb-types = { version = "3.0.4", optional = true }
+surrealdb = { version = "3.0.5", optional = true, default-features = false }
+surrealdb-types = { version = "3.0.5", optional = true }
 sysinfo = { version = "0.37.2", optional = true }
 teloxide = { version = "0.17.0", optional = true, features = ["macros"] }
 tokio = { version = "^1.37.0", features = [
@@ -166,13 +166,13 @@ tokio = { version = "^1.36.0", features = [
 
 
 [dev-dependencies]
-tracing-subscriber = { version = "0.3.22", features = ["env-filter"] }
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 itertools = "0.14.0"
 rsiot-devices = { path = "../rsiot-devices" }
 rand = { version = "0.10.0", features = [] }
-getrandom = { version = "0.4.1", features = ["wasm_js"] }
+getrandom = { version = "0.4.2", features = ["wasm_js"] }
 pretty_assertions = { version = "1.4.1" }
-surrealdb = { version = "3.0.4", features = ["kv-surrealkv"] }
+surrealdb = { version = "3.0.5", features = ["kv-surrealkv"] }
 
 [build-dependencies]
 embuild = { version = "0.33.1", features = ["espidf"] }
