@@ -1,4 +1,27 @@
-//! Компонент для периодического генерирования сообщений
+//! Компонент для периодического создания сообщений.
+//!
+//! # Структура
+//!
+#![doc = include_str!("../../../doc/images/component_structure/cmp_inject_periodic.svg")]
+//!
+//! Компонент состоит из одной задачи InjectPeriodic. С периодом [Config::period] на основе функции
+//! [Config::fn_periodic] формируются исходящие сообщения и передаются в шину MsgBus.
+//!
+//! # Конфигурация
+//!
+//! Конфигурация задаётся структурой [Config].
+//!
+//! # Примеры
+//!
+//! ## Пример 1
+//!
+//! Счётчик увеличивается каждые 100 миллисекунд и отправляется в шину MsgBus.
+//!
+//! Содержимое файла `config_inject_periodic/mod.rs`:
+//!
+//! ```rust
+#![doc = include_str!("../../../examples/cmp_inject_periodic/config_inject_periodic.rs")]
+//! ```
 
 mod component;
 mod config;

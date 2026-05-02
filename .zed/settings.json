@@ -20,12 +20,17 @@
           // "cmp_mqtt_client"
           //   "cmp_plc",
           // "cmp_raspberrypi",
-          //   "cmp_slint",
+          // "cmp_slint",
           //   "cmp_telegram"
           // "cmp_websocket_client",
           // "cmp_websocket_server"
           // "deprecated_stend"
-          // ]
+          //   "serde_json",
+          //   "serde_postcard",
+          //   "serde_toml",
+          //   "serde_messagepack",
+          //   "serde_cbor",
+          // ],
           // ---- armv7-unknown-linux-gnueabihf ----------------------------------------------------
           // "target": "armv7-unknown-linux-gnueabihf",
           // "features": [
@@ -68,7 +73,7 @@
             // "cmp_influxdb",
             // "cmp_linux_can",
             // "cmp_linux_gpio",
-            "cmp_linux_i2c_master",
+            // "cmp_linux_i2c_master",
             // "cmp_linux_spi_master",
             // "cmp_linux_uart",
             // "cmp_math",
@@ -77,7 +82,7 @@
             // "cmp_plc",
             // "cmp_os_process",
             // "cmp_slint",
-            "cmp_surrealdb",
+            // "cmp_surrealdb",
             // "cmp_svg",
             // "cmp_system_info",
             // "cmp_telegram",

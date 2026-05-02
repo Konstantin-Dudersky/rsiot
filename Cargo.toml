@@ -79,8 +79,10 @@ rumqttc = { version = "0.25.1", optional = true }
 palette = { version = "0.7.6", features = ["named"], optional = true }
 serde_json = { version = "1.0.149", optional = true }
 sha2 = { version = "0.10.9", optional = true }
-slint = { version = "1.16.0", optional = true, default-features = false }
-# features = [ "backend-android-activity-06"] }
+slint = { version = "1.16.1", optional = true, default-features = false, features = [
+    "compat-1-2",
+    "std",
+] }
 socketcan = { version = "3.5.0", features = ["tokio"], optional = true }
 sqlx = { version = "0.8.6", features = [
     "macros",
@@ -155,6 +157,14 @@ tracing-loki = { version = "0.2.6", optional = true }
 esp-idf-svc = { version = "0.51.0", features = ["std"] }
 
 
+[target.'cfg(all(target_arch = "aarch64", target_vendor = "unknown", target_os = "android"))'.dependencies]
+slint = { version = "1.16.1", optional = true, default-features = false, features = [
+    "backend-android-activity-06", # добавляем эту фичу, остальные как для остальных платформ
+    "compat-1-2",
+    "std",
+] }
+
+
 [target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64", target_arch = "arm"))'.dev-dependencies]
 tokio = { version = "^1.36.0", features = [
     "macros",
@@ -169,10 +179,11 @@ tokio = { version = "^1.36.0", features = [
 tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 itertools = "0.14.0"
 rsiot-devices = { path = "../rsiot-devices" }
-rand = { version = "0.10.0", features = [] }
+rand = { version = "0.10.1" }
 getrandom = { version = "0.4.2", features = ["wasm_js"] }
 pretty_assertions = { version = "1.4.1" }
-surrealdb = { version = "3.0.5", features = ["kv-surrealkv"] }
+# surrealdb = { version = "3.0.5", features = ["kv-surrealkv"] }
+
 
 [build-dependencies]
 embuild = { version = "0.33.1", features = ["espidf"] }
@@ -364,10 +375,11 @@ deprecated_stend = []
 
 
 [package.metadata.docs.rs]
-all-features = true
+# all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 targets = ["x86_64-unknown-linux-gnu", "wasm32-unknown-unknown"]
 cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples"]
+features = ["rustdoc"]
 
 
 [[example]]

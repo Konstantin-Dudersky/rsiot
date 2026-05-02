@@ -13,4 +13,4 @@ pub mod rust;
 pub mod sentryshot;
 pub mod surrealdb;
 pub mod systemd;
-pub mod timescaledb;
+pub mod tsdb;

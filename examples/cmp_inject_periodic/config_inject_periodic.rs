@@ -1,10 +1,10 @@
 use std::time::Duration;
 
-use rsiot::{components::cmp_inject_periodic::*, executor::Component};
+use rsiot::components::cmp_inject_periodic::*;
 
 use crate::messages::*;
 
-pub fn cmp() -> Component<Config<Msg, impl FnMut() -> Vec<Msg>>, Msg> {
+pub fn cmp() -> Cmp<Msg, impl FnMut() -> Vec<Msg>> {
     let mut counter = 0;
     let config = Config {
         period: Duration::from_millis(100),
