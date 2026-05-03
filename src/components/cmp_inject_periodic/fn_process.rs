@@ -1,7 +1,7 @@
 use tokio::{task::JoinSet, time::Duration};
 
 use crate::{
-    executor::{MsgBusLinker, Instant, MsgBusOutput, join_set_spawn, sleep},
+    executor::{Instant, MsgBusLinker, MsgBusOutput, join_set_spawn, sleep},
     message::{Message, MsgDataBound},
 };
 
@@ -22,7 +22,6 @@ where
         msgbus_output: msg_bus.output(),
     };
     join_set_spawn(&mut task_set, "cmp_inject_periodic", task.spawn());
-
     drop(msg_bus);
 
     while let Some(res) = task_set.join_next().await {

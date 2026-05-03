@@ -1,7 +1,7 @@
 use tokio::sync::mpsc;
 
 use crate::{
-    components_config::websocket_server::{FnOutput, WebsocketMessage},
+    components_config::websocket_server::{FnOutput, WebsocketMessage, WsData},
     message::{Message, MsgDataBound},
 };
 
@@ -10,7 +10,7 @@ where
     TMsg: MsgDataBound,
     TClientToServer: WebsocketMessage,
 {
-    pub input: mpsc::Receiver<TClientToServer>,
+    pub input: mpsc::Receiver<WsData<TClientToServer>>,
     pub output: mpsc::Sender<Message<TMsg>>,
     pub fn_output: FnOutput<TMsg, TClientToServer>,
 }

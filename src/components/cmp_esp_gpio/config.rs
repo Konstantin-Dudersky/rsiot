@@ -44,7 +44,7 @@ where
     TMsg: MsgDataBound,
 {
     /// Пин
-    pub peripherals: AnyIOPin,
+    pub peripherals: AnyIOPin<'static>,
 
     /// Функция преобразования значения пина в сообщение
     pub fn_output: fn(bool) -> TMsg,
@@ -59,7 +59,7 @@ where
     TMsg: MsgDataBound,
 {
     /// Пин
-    pub peripherals: AnyOutputPin,
+    pub peripherals: AnyOutputPin<'static>,
 
     /// Функция преобразования входящих сообщений в сигналы управления
     ///

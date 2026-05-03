@@ -1,6 +1,8 @@
 use std::io;
 
-use crate::{components_config::can_general::CanFrame, executor::ComponentError};
+use crate::{
+    components::shared_tasks, components_config::can_general::CanFrame, executor::ComponentError,
+};
 
 use super::COMPONENT_NAME;
 
@@ -34,6 +36,9 @@ pub enum Error {
     #[error("{COMPONENT_NAME} | ReadFrame: {0}")]
     ReadFrame(socketcan::Error),
 
+    #[error("{COMPONENT_NAME} | ReadFrame: {0}")]
+    ReadFrame2(io::Error),
+
     #[error("{COMPONENT_NAME} | SetFilters: {0}")]
     SetFilters(io::Error),
 
@@ -58,6 +63,9 @@ pub enum Error {
     #[error("{COMPONENT_NAME} | TaskEndSendToCan")]
     TaskEndSendToCan,
 
+    #[error("{COMPONENT_NAME} | TaskMpscToBroadcast")]
+    TaskMpscToBroadcast(#[from] shared_tasks::mpsc_to_broadcast::Error),
+
     #[error("{COMPONENT_NAME} | TokioSyncMpscSend")]
     TokioSyncMpscSend,
 
@@ -66,6 +74,9 @@ pub enum Error {
 
     #[error("{COMPONENT_NAME} | WriteFrame: {0}")]
     WriteFrame(io::Error),
+
+    #[error("{COMPONENT_NAME} | WriteFrame: {0}")]
+    WriteFrame2(socketcan::Error),
 }
 
 impl From<Error> for ComponentError {

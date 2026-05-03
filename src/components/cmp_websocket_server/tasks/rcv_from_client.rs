@@ -1,14 +1,21 @@
-use futures::{stream::SplitStream, StreamExt};
+use futures::{StreamExt, stream::SplitStream};
 use tokio::{net::TcpStream, sync::mpsc};
 use tokio_tungstenite::WebSocketStream;
 use tracing::{debug, trace};
 
-use crate::{components_config::websocket_server::WebsocketMessage, serde_utils::SerdeAlg};
+use crate::{
+    components_config::websocket_server::{WebsocketMessage, WsData},
+    serde_utils::SerdeAlg,
+};
 
-pub struct RcvFromClient<TClientToServer> {
-    pub output: mpsc::Sender<TClientToServer>,
+pub struct RcvFromClient<TClientToServer>
+where
+    TClientToServer: WebsocketMessage,
+{
+    pub output: mpsc::Sender<WsData<TClientToServer>>,
     pub websocket_read: SplitStream<WebSocketStream<TcpStream>>,
     pub serde_alg: SerdeAlg,
+    pub client_id: String,
 }
 
 impl<TClientToServer> RcvFromClient<TClientToServer>
@@ -23,7 +30,15 @@ where
             }
 
             let c2s: TClientToServer = self.serde_alg.deserialize(&data)?;
-            trace!("New message from websocket client: {:?}", c2s);
+            trace!(
+                "New message from websocket client: {:?}; client_id: {}",
+                c2s, self.client_id
+            );
+            let c2s = WsData {
+                client_id: Some(self.client_id.clone()),
+                data: c2s,
+            };
+
             self.output
                 .send(c2s)
                 .await

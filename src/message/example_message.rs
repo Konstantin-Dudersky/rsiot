@@ -27,7 +27,6 @@ pub enum Custom {
     /// ESP - выход на реле
     EspRelay(bool),
     SaveToFilesystem(u64),
-    // EmptyEnum(EmptyEnum),
 }
 
 /// Пример структуры
@@ -50,12 +49,6 @@ pub enum DataGroup {
     DataGroupVectorBool(Vec<bool>),
     DataGroupVectorTuple(Vec<(bool, String)>),
 }
-
-// Пустое перечисление
-//
-// TODO - появляется почему-то ошибка, хотя cargo-expand показывает корректный код
-// #[derive(Clone, Debug, Deserialize, MsgKey, PartialEq, Serialize)]
-// pub enum EmptyEnum {}
 
 impl MsgDataBound for Custom {}
 

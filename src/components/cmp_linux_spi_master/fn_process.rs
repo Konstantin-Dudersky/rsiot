@@ -7,7 +7,7 @@ use linux_embedded_hal::{
 use tracing::trace;
 
 use crate::{
-    components::shared_tasks::fn_process_master::FnProcessMaster,
+    components::shared_tasks::fieldbus_execution::FieldbusExecution,
     components_config::{
         master_device::{FieldbusRequestWithIndex, FieldbusResponseWithIndex},
         spi_master,
@@ -30,7 +30,7 @@ where
 {
     let mut task_set = JoinSet::new();
 
-    let config_fn_process_master = FnProcessMaster {
+    let config_fn_process_master = FieldbusExecution {
         msgbus_linker,
         task_set: &mut task_set,
         error_filter: Error::TaskFilter,

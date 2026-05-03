@@ -50,6 +50,9 @@ pub enum Error {
 
     #[error("BufferFull")]
     BufferFull,
+
+    #[error("PortClear: {0}")]
+    PortClear(String),
 }
 
 impl From<Error> for ComponentError {

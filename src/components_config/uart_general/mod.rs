@@ -6,7 +6,7 @@ mod data_bits;
 mod fieldbus_request;
 mod fieldbus_response;
 mod parity;
-pub mod protocol;
+// pub mod protocol;
 mod stop_bits;
 
 pub use baudrate::Baudrate;

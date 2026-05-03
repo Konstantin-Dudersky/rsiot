@@ -3,6 +3,12 @@
 //! ```bash
 //! cargo run  --example cmp_surrealdb --features "cmp_surrealdb" --target="x86_64-unknown-linux-gnu"
 //! ```
+//!
+//! Чтобы посмотреть базу данных, необходимо остановить выполнение примера, и запустить контейнер:
+//!
+//! ```bash
+//! docker compose up surrealdb_rocksdb
+//! ```
 
 #[cfg(feature = "cmp_surrealdb")]
 #[tokio::main]
@@ -14,7 +20,7 @@ async fn main() -> anyhow::Result<()> {
     use rsiot::{
         components::{
             cmp_inject_periodic,
-            cmp_surrealdb::{self, RequestInputConfig},
+            cmp_surrealdb::{self, ConfigConnection, RequestInputConfig},
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
         message::{Deserialize, MsgDataBound, MsgKey, Serialize},
@@ -30,20 +36,21 @@ async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt().init();
 
     let surrealdb_config = cmp_surrealdb::Config {
-        host: "127.0.0.1".into(),
-        port: 8003,
+        connection: ConfigConnection::RocksDB {
+            file_name: "surrealdb_surrealkv".into(),
+        },
         user: "root".into(),
         password: "root".into(),
         namespace: "rsiot".into(),
         database: "rsiot".into(),
         init_script: include_str!("./init.surql").into(),
         request_input: vec![RequestInputConfig {
-            fn_input: |msg| match msg.get_custom_data()? {
+            fn_input: |msg| match msg {
                 Custom::Request(content) => {
                     let value = content;
                     let query = include_str!("./new_value_int.surql");
                     let query = query
-                        .replace("$ts", &msg.ts.to_rfc3339().unwrap())
+                        // .replace("$ts", &msg.ts.to_rfc3339().unwrap())
                         .replace("$value_float", &format!("{:.2}", value));
                     Some(query)
                 }

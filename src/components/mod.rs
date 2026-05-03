@@ -24,6 +24,10 @@ pub mod cmp_derive_new;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
+pub mod cmp_esp_can;
+
+#[cfg(feature = "cmp_esp")]
+#[cfg(riscv32imc_esp_espidf)]
 pub mod cmp_esp_gpio;
 
 #[cfg(feature = "cmp_esp")]
@@ -52,15 +56,19 @@ pub mod cmp_esp_nvs;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
+pub mod cmp_esp_speed;
+
+#[cfg(feature = "cmp_esp")]
+#[cfg(riscv32imc_esp_espidf)]
 pub mod cmp_esp_spi_master;
 
 // #[cfg(feature = "cmp_esp")]
 // #[cfg(riscv32imc_esp_espidf)]
 // pub mod cmp_esp_uart_master;
 
-#[cfg(feature = "cmp_esp")]
-#[cfg(riscv32imc_esp_espidf)]
-pub mod cmp_esp_uart_slave;
+// #[cfg(feature = "cmp_esp")]
+// #[cfg(riscv32imc_esp_espidf)]
+// pub mod cmp_esp_uart_slave;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
@@ -156,13 +164,21 @@ pub mod cmp_linux_i2c_master;
 ))]
 pub mod cmp_linux_spi_master;
 
-#[cfg(feature = "cmp_linux_uart_master")]
+#[cfg(feature = "cmp_linux_uart")]
 #[cfg(any(
     aarch64_unknown_linux_gnu,
     armv7_unknown_linux_gnueabihf,
     x8664_unknown_linux_gnu
 ))]
 pub mod cmp_linux_uart_master;
+
+#[cfg(feature = "cmp_linux_uart")]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
+pub mod cmp_linux_uart_slave;
 
 pub mod cmp_logger;
 
@@ -213,12 +229,17 @@ pub mod cmp_raspberrypi_i2c_master;
     aarch64_linux_android,
     aarch64_unknown_linux_gnu,
     armv7_unknown_linux_gnueabihf,
+    x8664_pc_windows_msvc,
     x8664_unknown_linux_gnu
 ))]
 pub mod cmp_slint;
 
 #[cfg(feature = "cmp_surrealdb")]
-#[cfg(any(aarch64_unknown_linux_gnu, x8664_unknown_linux_gnu))]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    x8664_pc_windows_msvc,
+    x8664_unknown_linux_gnu
+))]
 pub mod cmp_surrealdb;
 
 #[cfg(feature = "cmp_svg")]
@@ -252,7 +273,7 @@ pub mod cmp_telegram;
     armv7_unknown_linux_gnueabihf,
     x8664_unknown_linux_gnu
 ))]
-pub mod cmp_tsdb_writer;
+pub mod cmp_tsdb_reader;
 
 #[cfg(feature = "cmp_tsdb")]
 #[cfg(any(
@@ -260,7 +281,15 @@ pub mod cmp_tsdb_writer;
     armv7_unknown_linux_gnueabihf,
     x8664_unknown_linux_gnu
 ))]
-pub mod cmp_tsdb_reader;
+pub mod cmp_tsdb_reader2;
+
+#[cfg(feature = "cmp_tsdb")]
+#[cfg(any(
+    aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
+    x8664_unknown_linux_gnu
+))]
+pub mod cmp_tsdb_writer;
 
 #[cfg(feature = "cmp_websocket_client")]
 #[cfg(any(

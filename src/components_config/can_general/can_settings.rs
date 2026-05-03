@@ -1,6 +1,6 @@
 // ANCHOR: CanSettings
 /// Конфигурация CAN-протокола
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct CanSettings {
     /// Настройка скорости CAN
     pub bitrate: CanSettingsBitrate,
@@ -79,6 +79,14 @@ pub enum CanSettingsBitrate {
     },
 }
 // ANCHOR: CanSettingsBitrate
+impl Default for CanSettingsBitrate {
+    fn default() -> Self {
+        CanSettingsBitrate::Standard {
+            bitrate: 500_000,
+            sample_point: None,
+        }
+    }
+}
 
 /// Настройка скорости передачи CAN-FD
 #[derive(Clone, Debug)]
@@ -132,4 +140,15 @@ pub enum CanSettingsDbitrate {
         /// Transmitter Delay Compensation Filter windows value (used in CAN FD)
         tdcf: Option<u8>,
     },
+}
+impl Default for CanSettingsDbitrate {
+    fn default() -> Self {
+        CanSettingsDbitrate::Standard {
+            dbitrate: 500_000,
+            dsample_point: None,
+            tdcv: None,
+            tdco: None,
+            tdcf: None,
+        }
+    }
 }

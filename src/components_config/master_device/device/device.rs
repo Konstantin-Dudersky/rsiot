@@ -13,7 +13,7 @@ use crate::{executor::join_set_spawn, message::MsgDataBound};
 
 use super::{BufferBound, RequestResponseBound, config::*, tasks};
 
-/// Базовое устройство для опроса по шине
+/// Базовое устройство для опроса по шине.
 pub struct DeviceBase<TMsg, TFieldbusRequest, TFieldbusResponse, TBuffer>
 where
     TFieldbusRequest: RequestResponseBound,

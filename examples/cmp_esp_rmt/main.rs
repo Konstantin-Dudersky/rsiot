@@ -12,7 +12,7 @@ async fn main() -> anyhow::Result<()> {
     use esp_idf_svc::hal::gpio::PinDriver;
     use esp_idf_svc::hal::spi::{self, SpiDeviceDriver, SpiDriver, SpiDriverConfig};
     use esp_idf_svc::hal::units::*;
-    use esp_idf_svc::{hal::prelude::Peripherals, sys::link_patches};
+    use esp_idf_svc::{hal::peripherals::Peripherals, sys::link_patches};
 
     use tokio::sync::mpsc;
 

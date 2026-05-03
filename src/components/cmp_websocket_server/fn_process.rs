@@ -18,6 +18,7 @@ use tracing::{error, info, warn};
 
 use crate::{
     components::shared_tasks,
+    components_config::websocket_server::WsData,
     executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
     serde_utils::SerdeAlg,
@@ -137,8 +138,8 @@ where
 }
 
 pub async fn handle_ws_connection<TServerToClient, TClientToServer>(
-    input: broadcast::Receiver<TServerToClient>,
-    output: mpsc::Sender<TClientToServer>,
+    input: broadcast::Receiver<WsData<TServerToClient>>,
+    output: mpsc::Sender<WsData<TClientToServer>>,
     cache: ServerToClientCache<TServerToClient>,
     stream_and_addr: (TcpStream, SocketAddr),
     serde_alg: SerdeAlg,
@@ -162,8 +163,8 @@ where
 }
 
 async fn _handle_ws_connection<TServerToClient, TClientToServer>(
-    input: broadcast::Receiver<TServerToClient>,
-    output: mpsc::Sender<TClientToServer>,
+    input: broadcast::Receiver<WsData<TServerToClient>>,
+    output: mpsc::Sender<WsData<TClientToServer>>,
     cache: ServerToClientCache<TServerToClient>,
     stream_and_addr: (TcpStream, SocketAddr),
     serde_alg: SerdeAlg,
@@ -177,6 +178,8 @@ where
     let (websocket_write, websocket_read) = ws_stream.split();
     info!("WebSocket connection established: {:?}", stream_and_addr.1);
 
+    let client_id = stream_and_addr.1.to_string();
+
     let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
 
     // Отправление данных клиенту
@@ -185,6 +188,7 @@ where
         websocket_write,
         cache: cache.clone(),
         serde_alg,
+        client_id: client_id.clone(),
     };
     join_set_spawn(
         &mut task_set,
@@ -197,6 +201,7 @@ where
         output: output.clone(),
         websocket_read,
         serde_alg,
+        client_id: client_id.clone(),
     };
     join_set_spawn(
         &mut task_set,

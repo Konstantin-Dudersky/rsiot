@@ -1,9 +1,6 @@
 use std::{fmt::Debug, sync::Arc};
 
-use esp_idf_svc::hal::{
-    i2c::{I2c, I2cSlaveConfig, I2cSlaveDriver},
-    peripheral::Peripheral,
-};
+use esp_idf_svc::hal::i2c::{I2c, I2cSlaveConfig, I2cSlaveDriver};
 use futures::TryFutureExt;
 use serde::{Serialize, de::DeserializeOwned};
 use tokio::{
@@ -23,14 +20,13 @@ use super::{BufferData, Config, Error};
 /// Размер буферов приема и отправки
 const BUFFER_LEN: usize = 128;
 
-pub async fn fn_process<TMsg, TI2c, TPeripheral, TI2cRequest, TI2cResponse, TBufferData>(
-    config: Config<TMsg, TI2c, TPeripheral, TI2cRequest, TI2cResponse, TBufferData>,
+pub async fn fn_process<TMsg, TI2c, TI2cRequest, TI2cResponse, TBufferData>(
+    config: Config<TMsg, TI2c, TI2cRequest, TI2cResponse, TBufferData>,
     msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
-    TI2c: Peripheral<P = TPeripheral> + 'static,
-    TPeripheral: I2c,
+    TI2c: I2c + 'static,
     TI2cRequest: Debug + DeserializeOwned + 'static,
     TI2cResponse: Debug + Serialize + 'static,
     TBufferData: BufferData + 'static,

@@ -10,7 +10,7 @@ mod task_gpio_output;
 #[cfg(test)]
 mod test;
 
-pub use component::{COMPONENT_NAME, Cmp};
+pub use component::{Cmp, COMPONENT_NAME};
 pub use config::{Config, ConfigGpioInput, ConfigGpioOutput};
 pub use error::Error;
 pub use esp_idf_svc::hal::gpio::Pull;

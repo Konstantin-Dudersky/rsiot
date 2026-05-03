@@ -14,7 +14,6 @@ async fn main() -> anyhow::Result<()> {
     use rsiot::{
         components::{cmp_inject_periodic, cmp_logger, cmp_websocket_server},
         executor::{ComponentExecutor, ComponentExecutorConfig},
-        message::*,
         serde_utils::SerdeAlgKind,
     };
 
@@ -41,26 +40,34 @@ async fn main() -> anyhow::Result<()> {
         },
     };
 
-    let ws_server_config = cmp_websocket_server::Config {
-        serde_alg: SerdeAlgKind::Json,
-        port: 8011,
-        fn_server_to_client: |msg: &Message<ServerMessages>| {
-            let msg = msg.get_custom_data()?;
-            let s2c = match msg {
-                ServerMessages::ServerCounter(counter) => ServerToClient::ServerCounter(counter),
-                _ => return None,
-            };
-            Some(s2c)
-        },
-        fn_client_to_server: |c2s: ClientToServer| {
-            let msg = match c2s {
-                ClientToServer::ClientCounter(counter) => {
-                    ServerMessages::CounterFromClient(counter)
-                }
-            };
-            vec![msg]
-        },
-    };
+    let ws_server_config =
+        cmp_websocket_server::Config::<ServerMessages, ServerToClient, ClientToServer> {
+            serde_alg: SerdeAlgKind::Json,
+            port: 8011,
+            fn_server_to_client: |msg: &ServerMessages| {
+                use rsiot::components_config::websocket_server::WsData;
+
+                let data = match msg {
+                    ServerMessages::ServerCounter(counter) => {
+                        ServerToClient::ServerCounter(*counter)
+                    }
+                    _ => return None,
+                };
+                let s2c = WsData {
+                    client_id: None,
+                    data,
+                };
+                Some(s2c)
+            },
+            fn_client_to_server: |c2s| {
+                let msg = match c2s.data {
+                    ClientToServer::ClientCounter(counter) => {
+                        ServerMessages::CounterFromClient(counter)
+                    }
+                };
+                vec![msg]
+            },
+        };
 
     let mut counter = 0;
     let inject_config = cmp_inject_periodic::Config {

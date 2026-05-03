@@ -1,18 +1,18 @@
-use std::{process::Command, time::Duration};
-
-use tokio::task::JoinSet;
-use tracing::{error, info};
+use futures::TryFutureExt;
+use tokio::{sync::broadcast, task::JoinSet};
 
 use crate::{
-    components::shared_tasks::cmp_can_general::CanGeneralTasks,
+    components::{
+        cmp_linux_can::CanFrame,
+        shared_tasks::{self, cmp_can_general::CanGeneralTasks},
+    },
     components_config::can_general::BufferBound,
     executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
 };
 
 use super::{
-    CanSettings, Config, Error, task_interface_info::InterfaceInfo,
-    task_recv_from_can::RecvFromCan, task_send_to_can::SendToCan,
+    Config, Error, task_interface_info::InterfaceInfo, task_setup_send_recv::TaskSetupSendRecv,
 };
 
 pub async fn fn_process<TMsg, TBuffer>(
@@ -23,11 +23,9 @@ where
     TMsg: 'static + MsgDataBound,
     TBuffer: 'static + BufferBound,
 {
-    // Настройка интерфейса через ip-link
-    interface_setup(&config.ifname, &config.can_settings)?;
-
     let mut task_set: JoinSet<Result<(), Error>> = JoinSet::new();
 
+    // Общие задачи обмена по шине CAN
     let (ch_rx_send_to_can, ch_tx_recv_from_can) = CanGeneralTasks {
         msgbus_linker,
         buffer_default: config.buffer_default,
@@ -42,81 +40,45 @@ where
     }
     .spawn();
 
-    // Задача отправки кадров в CAN
-    let task = SendToCan {
-        input: ch_rx_send_to_can,
-        ifname: config.ifname.clone(),
-        can_settings: config.can_settings.clone(),
-    };
-    join_set_spawn(&mut task_set, "cmp_linux_can | send_to_can", task.spawn());
+    let (ch_tx, ch_rx) = broadcast::channel::<CanFrame>(100000);
 
-    // Задача получения кадров из CAN
-    let task = RecvFromCan {
+    let task = shared_tasks::mpsc_to_broadcast::Task {
+        input: ch_rx_send_to_can,
+        output: ch_tx,
+    };
+    join_set_spawn(
+        &mut task_set,
+        "cmp_linux_can | mpsc_to_broadcast",
+        task.spawn().map_err(Error::TaskMpscToBroadcast),
+    );
+
+    let task = TaskSetupSendRecv {
+        input: ch_rx,
         output: ch_tx_recv_from_can,
         ifname: config.ifname.clone(),
         can_settings: config.can_settings,
         filters: config.filters,
-    };
-    join_set_spawn(&mut task_set, "cmp_linux_can | recv_from_can", task.spawn());
-
-    let task = InterfaceInfo {
-        ifname: config.ifname,
-        period: Duration::from_millis(1000),
+        async_version: config.async_version,
     };
     join_set_spawn(
         &mut task_set,
-        "cmp_linux_can | interface_info",
+        "cmp_linux_can | setup_send_recv",
         task.spawn(),
     );
+
+    // let task = InterfaceInfo {
+    //     ifname: config.ifname,
+    //     period: Duration::from_millis(1000),
+    // };
+    // join_set_spawn(
+    //     &mut task_set,
+    //     "cmp_linux_can | interface_info",
+    //     task.spawn(),
+    // );
 
     while let Some(res) = task_set.join_next().await {
         res??;
     }
 
     Err(Error::TaskEnd)
-}
-
-fn interface_setup(ifname: &str, can_settings: &CanSettings) -> Result<(), Error> {
-    // Настройка интерфейса должна выполняться с правами суперпользователя
-    sudo::escalate_if_needed().map_err(|e| Error::Sudo(e.to_string()))?;
-
-    // Подключаемся к интерфейсу
-    let interface =
-        socketcan::CanInterface::open(ifname).map_err(|e| Error::InterfaceOpen(e.to_string()))?;
-
-    // Останавливаем интерфейс
-    interface
-        .bring_down()
-        .map_err(|e| Error::InterfaceDown(e.to_string()))?;
-
-    // Формируем команду для настройки интерфейса через ip-link
-    let command = can_settings.into_ip_link_command(ifname);
-    let cmd = Command::new(&command[0])
-        .args(&command[1..])
-        .output()
-        .map_err(Error::ProcessExecution)?;
-    let err = cmd.stderr;
-    if !err.is_empty() {
-        error!("Command output: {:?}", String::from_utf8_lossy(&err));
-        return Err(Error::TaskEnd);
-    }
-
-    // Запускаем интерфейс
-    interface
-        .bring_up()
-        .map_err(|e| Error::InterfaceUp(e.to_string()))?;
-
-    // Выводим информацию об интерфейсе
-    let details = interface
-        .details()
-        .map_err(|e| Error::InterfaceDetails(e.to_string()))?;
-    info!("CAN interface details: {:?}", details);
-
-    // Выводим состояние интерфейса
-    let state = interface
-        .state()
-        .map_err(|e| Error::InterfaceState(e.to_string()))?;
-    info!("State: {:?}", state);
-
-    Ok(())
 }

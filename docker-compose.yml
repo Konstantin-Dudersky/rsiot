@@ -81,21 +81,21 @@ services:
       - ./rsiot-config-files/redis/redis.conf:/redis-stack.conf
 
   # surrealdb
-  surrealdb:
-    command: start --user root --pass root file:/data/database.db
-    container_name: rsiot-surrealdb
-    healthcheck:
-      test: surreal isready --conn http://localhost:8000
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    hostname: surrealdb
-    image: surrealdb/surrealdb:latest
+  surrealdb_rocksdb:
+    command: start --user root --pass root rocksdb:/database
+    container_name: rsiot-surrealdb-rocksdb
+    # healthcheck:
+    #   test: surreal isready --conn http://localhost:8000
+    #   interval: 5s
+    #   timeout: 5s
+    #   retries: 5
+    hostname: rsiot-surrealdb-rocksdb
+    image: surrealdb/surrealdb:v3.0.1
     ports:
-      - "8003:8000"
+      - "8000:8000"
     user: root
     volumes:
-      - surrealdb_data:/data/
+      - ./surrealdb_rocksdb.db:/database
 
   influxdb:
     container_name: rsiot-influxdb

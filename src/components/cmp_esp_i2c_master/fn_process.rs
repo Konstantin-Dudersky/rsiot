@@ -1,18 +1,15 @@
 use std::time::Duration;
 
 use esp_idf_svc::hal::delay::TickType;
+use esp_idf_svc::hal::i2c::{I2c, I2cDriver, Operation as EspOperation};
 use esp_idf_svc::hal::{i2c, units::FromValueType};
-use esp_idf_svc::hal::{
-    i2c::{I2c, I2cDriver, Operation as EspOperation},
-    peripheral::Peripheral,
-};
 use esp_idf_svc::sys::EspError;
 use tokio::sync::mpsc;
 use tokio::task::JoinSet;
 use tokio::time::sleep;
 use tracing::{trace, warn};
 
-use crate::components::shared_tasks::fn_process_master::FnProcessMaster;
+use crate::components::shared_tasks::fieldbus_execution::FieldbusExecution;
 use crate::components_config::i2c_master::{self, Operation};
 use crate::components_config::master_device::{
     FieldbusRequestWithIndex, FieldbusResponseWithIndex,
@@ -22,14 +19,13 @@ use crate::{executor::join_set_spawn, message::MsgDataBound};
 
 use super::{Config, ConfigBaudrate, Error};
 
-pub async fn fn_process<TMsg, TI2c, TPeripheral>(
-    config: Config<TMsg, TI2c, TPeripheral>,
+pub async fn fn_process<TMsg, TI2c>(
+    config: Config<TMsg, TI2c>,
     msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
-    TI2c: Peripheral<P = TPeripheral> + 'static,
-    TPeripheral: I2c,
+    TI2c: I2c + 'static,
 {
     // Настраиваем I2C
     let baudrate = match config.baudrate {
@@ -45,7 +41,7 @@ where
 
     let mut task_set: JoinSet<Result<(), Error>> = JoinSet::new();
 
-    let config_fn_process_master = FnProcessMaster {
+    let config_fn_process_master = FieldbusExecution {
         msgbus_linker,
         task_set: &mut task_set,
         error_filter: Error::TaskFilter,

@@ -3,7 +3,7 @@
 // ANCHOR: StopBits
 /// Кол-во стоповых бит
 #[allow(missing_docs)]
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Copy, Debug, Default)]
 pub enum StopBits {
     #[default]
     _1,

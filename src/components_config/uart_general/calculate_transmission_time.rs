@@ -8,11 +8,11 @@ pub fn data_rate(
     stop_bits: &super::StopBits,
 ) -> f64 {
     let start_bits: f64 = 1.0;
-    let data_bits: f64 = data_bits.clone().into();
-    let parity: f64 = parity.clone().into();
-    let stop_bits: f64 = stop_bits.clone().into();
+    let data_bits: f64 = (*data_bits).into();
+    let parity: f64 = (*parity).into();
+    let stop_bits: f64 = (*stop_bits).into();
 
-    let baudrate: f64 = baudrate.clone().into();
+    let baudrate: f64 = (*baudrate).into();
 
     baudrate * data_bits / (start_bits + data_bits + parity + stop_bits)
 }

@@ -1,8 +1,8 @@
-use rsiot::{components::cmp_logger::*, executor::Component};
+use rsiot::components::cmp_logger::*;
 
 use crate::messages::*;
 
-pub fn cmp() -> Component<Config<Msg>, Msg> {
+pub fn cmp() -> Cmp<Msg> {
     let config = Config {
         level: Level::INFO,
         fn_input: |msg| {

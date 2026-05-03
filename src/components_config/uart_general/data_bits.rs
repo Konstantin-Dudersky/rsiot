@@ -3,7 +3,7 @@
 // ANCHOR: DataBits
 /// Кол-во бит данных
 #[allow(missing_docs)]
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Copy, Debug, Default)]
 pub enum DataBits {
     _5,
     _6,

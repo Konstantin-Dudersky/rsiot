@@ -18,10 +18,10 @@
 //! ./cmp_linux_serial_master
 //! ```
 
-#[cfg(feature = "cmp_linux_uart_master")]
+#[cfg(feature = "cmp_linux_uart")]
 mod test_device;
 
-#[cfg(feature = "cmp_linux_uart_master")]
+#[cfg(feature = "cmp_linux_uart")]
 #[tokio::main]
 async fn main() {
     use std::time::Duration;
@@ -92,5 +92,5 @@ async fn main() {
         .unwrap();
 }
 
-#[cfg(not(feature = "cmp_linux_uart_master"))]
+#[cfg(not(feature = "cmp_linux_uart"))]
 fn main() {}

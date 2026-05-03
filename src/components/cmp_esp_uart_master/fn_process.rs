@@ -6,9 +6,9 @@ use esp_idf_svc::hal::{
 use tokio::task::JoinSet;
 
 use crate::{
-    components::shared_tasks::fn_process_master::FnProcessMaster,
+    components::shared_tasks::fieldbus_execution::FieldbusExecution,
     components_config::uart_general::Parity,
-    executor::{MsgBusLinker, join_set_spawnMsgBusLinker},
+    executor::{MsgBusLinker, join_set_spawn},
     message::{MsgDataBound, ServiceBound},
 };
 
@@ -49,7 +49,7 @@ where
 
     const BUFFER_SIZE: usize = 1000;
 
-    let config_fn_process_master = FnProcessMaster {
+    let config_fn_process_master = FieldbusExecution {
         msg_bus,
         buffer_size: BUFFER_SIZE,
         task_set: &mut task_set,

@@ -1,20 +1,19 @@
 use std::time::Duration;
 
-use esp_idf_svc::hal::{gpio::AnyIOPin, i2c::I2c, peripheral::Peripheral};
+use esp_idf_svc::hal::{gpio::AnyIOPin, i2c::I2c};
 use rsiot::components::cmp_esp_i2c_master::*;
 use rsiot_devices::i2c;
 use tracing::info;
 
 use crate::messages::*;
 
-pub fn cmp<TI2c, TPeripheral>(
+pub fn cmp<TI2c>(
     i2c: TI2c,
-    pin_sda: AnyIOPin,
-    pin_scl: AnyIOPin,
-) -> rsiot::executor::Component<Config<Msg, TI2c, TPeripheral>, Msg>
+    pin_sda: AnyIOPin<'static>,
+    pin_scl: AnyIOPin<'static>,
+) -> Cmp<Msg, TI2c>
 where
-    TI2c: Peripheral<P = TPeripheral> + 'static,
-    TPeripheral: I2c,
+    TI2c: I2c + 'static,
 {
     // MPU6050
     let device = i2c::mpu6050::Device {

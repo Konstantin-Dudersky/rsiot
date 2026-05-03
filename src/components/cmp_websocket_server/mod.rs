@@ -24,18 +24,20 @@
 
 mod component;
 mod config;
-mod errors;
-mod fn_process;
-// mod handle_ws_connection;
 #[cfg(feature = "rustdoc")]
 mod doc;
+mod errors;
+mod fn_process;
 mod tasks;
 
-pub use component::{COMPONENT_NAME, Cmp};
-pub use config::Config;
-pub use errors::Error;
+pub use {
+    component::{COMPONENT_NAME, Cmp},
+    config::{Config, WsData},
+    errors::Error,
+};
 
 type Result<T> = std::result::Result<T, errors::Error>;
 
-type ServerToClientCache<TServerToClient> =
-    std::sync::Arc<tokio::sync::Mutex<std::collections::HashMap<String, TServerToClient>>>;
+type ServerToClientCache<TServerToClient> = std::sync::Arc<
+    tokio::sync::Mutex<std::collections::HashMap<String, config::WsData<TServerToClient>>>,
+>;

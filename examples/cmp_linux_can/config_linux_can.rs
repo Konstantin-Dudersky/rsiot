@@ -55,6 +55,7 @@ pub fn cmp() -> Component<Config<Msg, ()>, Msg> {
             // mask: 0x1FFF_FFFF,
             mask: 0b10,
         }],
+        async_version: false,
     };
 
     Cmp::new(config)

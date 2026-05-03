@@ -49,9 +49,9 @@ where
             };
 
             // Если данное сообщение было сгенерировано данным сервисом, пропускаем
-            if msg.check_source(&self.id) {
-                continue;
-            }
+            // if msg.check_source(&self.id) {
+            //     continue;
+            // }
 
             return Ok(msg);
         }

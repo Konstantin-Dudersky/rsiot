@@ -14,7 +14,7 @@ async fn main() {
 
     use std::time::Duration;
 
-    use esp_idf_svc::{hal::prelude::Peripherals, sys::link_patches};
+    use esp_idf_svc::{hal::peripherals::Peripherals, sys::link_patches};
     use rsiot::{executor::ComponentExecutorConfig, logging::LogConfig};
     use tokio::task::LocalSet;
 

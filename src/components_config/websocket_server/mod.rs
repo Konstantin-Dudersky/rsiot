@@ -7,6 +7,10 @@
 //! ```
 
 mod config;
+mod ws_data;
 
-pub use super::websocket_general::WebsocketMessage;
-pub use config::{Config, FnInput, FnOutput};
+pub use {
+    super::websocket_general::WebsocketMessage,
+    config::{Config, FnInput, FnOutput},
+    ws_data::WsData,
+};

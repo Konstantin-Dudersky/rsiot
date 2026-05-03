@@ -1,14 +1,11 @@
-use std::{
-    sync::{
-        Arc,
-        atomic::{AtomicBool, Ordering},
-    },
-    time::Duration,
-};
+use std::{sync::Arc, time::Duration};
 
 use sqlx::{Connection, Pool, Postgres, query};
-use tokio::{sync::mpsc, task::JoinHandle};
-use tracing::warn;
+use tokio::{
+    sync::{Mutex, mpsc},
+    task::JoinHandle,
+};
+use tracing::{trace, warn};
 
 use crate::executor::Instant;
 
@@ -17,9 +14,8 @@ use super::{Error, InnerMessage, QueryStat};
 pub struct PrepareSQL {
     pub input: mpsc::Receiver<InnerMessage>,
     pub output: mpsc::Sender<JoinHandle<Result<QueryStat, Error>>>,
-    pub table_name: &'static str,
-    pub database_setup: Arc<AtomicBool>,
-    pub db_pool: Pool<Postgres>,
+    pub table_name: String,
+    pub db_pool_mutex: Arc<Mutex<Option<Pool<Postgres>>>>,
     pub save_by_row_count: usize,
     pub save_by_period: Duration,
 }
@@ -30,11 +26,12 @@ impl PrepareSQL {
         let mut cache = Vec::with_capacity(cache_size);
 
         let mut last_send = Instant::now();
+        let mut db_pool = DbPool::Uninitialized;
 
         while let Some(msg) = self.input.recv().await {
             match msg {
-                InnerMessage::Rows(rows) => {
-                    cache.extend(rows);
+                InnerMessage::Row(row) => {
+                    cache.push(row);
 
                     if cache.len() < self.save_by_row_count {
                         continue;
@@ -59,8 +56,10 @@ impl PrepareSQL {
 
             let mut query_stat = QueryStat::new();
 
-            let sql = prepare_sql_statement(self.table_name, &cache)?;
+            let sql = prepare_sql_statement(&self.table_name, &cache)?;
+            trace!("SQL statement: {}", sql);
 
+            query_stat.set_table_name(&self.table_name);
             query_stat.set_rows_count(cache.len());
             query_stat.set_last_execution(last_send.elapsed());
             query_stat.set_sql_string_len(sql.len());
@@ -68,14 +67,28 @@ impl PrepareSQL {
             last_send = Instant::now();
             cache.clear();
 
-            if !self.database_setup.load(Ordering::Relaxed) {
-                warn!("Database not setup");
-                continue;
-            }
+            // Пробуем получить пул подключений к базе данных
+            let db_pool_clone = match &db_pool {
+                DbPool::Uninitialized => {
+                    let lock = self.db_pool_mutex.lock().await;
+                    match lock.clone() {
+                        Some(v) => {
+                            db_pool = DbPool::Initialized(v.clone());
+                            v
+                        }
+                        None => {
+                            warn!("Database not setup");
+                            continue;
+                        }
+                    }
+                }
+                DbPool::Initialized(v) => v.clone(),
+            };
 
-            let task = execute_sql(self.db_pool.clone(), sql, query_stat);
+            let task = execute_sql(db_pool_clone, sql, query_stat);
+            let task_name = format!("cmp_timescaledb | execute_sql | {}", self.table_name);
             let task = tokio::task::Builder::new()
-                .name("cmp_timescaledb | execute_sql")
+                .name(&task_name)
                 .spawn(task)
                 .map_err(Error::Spawn)?;
 
@@ -88,14 +101,17 @@ impl PrepareSQL {
     }
 }
 
+enum DbPool {
+    Uninitialized,
+    Initialized(Pool<Postgres>),
+}
+
 fn prepare_sql_statement(table_name: &str, rows: &[String]) -> Result<String, Error> {
     let values = rows.join(", ");
 
     let sql = format!(
-        r#"INSERT INTO {table_name}
-    VALUES {values}
-    ON CONFLICT (time, prj, hst, svc, cmp, key) DO UPDATE
-        SET value = excluded.value;"#
+        r#"INSERT INTO "{table_name}"
+    VALUES {values};"#
     );
     Ok(sql)
 }
@@ -128,17 +144,14 @@ async fn execute_sql(
 mod tests {
     use time::macros::datetime;
 
-    use super::{super::super::RowBuilder, *};
+    use super::{super::super::row_with_ts, *};
+
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test1() -> anyhow::Result<()> {
-        let row_builder = RowBuilder::prj("prj_test")
-            .hst("hst_test")
-            .svc("svc_test")
-            .cmp("cmp_test");
-
-        let row1 = row_builder.row_with_ts("key1", 1.23, &datetime!(2025-07-23 10:00:00 +3))?;
-        let row2 = row_builder.row_with_ts("key1", 4.56, &datetime!(2025-07-23 10:00:01 +3))?;
+        let row1 = row_with_ts(&datetime!(2025-07-23 10:00:00 +3), &[1.23.to_string()])?;
+        let row2 = row_with_ts(&datetime!(2025-07-23 10:00:01 +3), &[4.56.to_string()])?;
 
         let rows = vec![row1, row2];
 
@@ -149,7 +162,7 @@ mod tests {
             .collect::<Vec<&str>>()
             .join(" ");
 
-        let correct_sql = "INSERT INTO raw VALUES ('2025-07-23T10:00:00.000000000+03:00', 'prj_test', 'hst_test', 'svc_test', 'cmp_test', 'key1', 1.23), ('2025-07-23T10:00:01.000000000+03:00', 'prj_test', 'hst_test', 'svc_test', 'cmp_test', 'key1', 4.56) ON CONFLICT (time, prj, hst, svc, cmp, key) DO UPDATE SET value = excluded.value;";
+        let correct_sql = "INSERT INTO \"raw\" VALUES ('2025-07-23T10:00:00.000000000+03:00', 1.23), ('2025-07-23T10:00:01.000000000+03:00', 4.56);";
 
         assert_eq!(test_sql, correct_sql);
         Ok(())

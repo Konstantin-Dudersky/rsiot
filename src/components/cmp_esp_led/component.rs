@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use esp_idf_svc::hal::{peripheral::Peripheral, rmt::RmtChannel};
+use esp_idf_svc::hal::rmt::RmtChannel;
 
 use crate::{
     executor::{CmpResult, Component, IComponentProcess, MsgBusLinker},
@@ -12,16 +12,14 @@ pub const COMPONENT_NAME: &str = "cmp_esp_led";
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
-impl<TMsg, TPeripheral, TRmt> IComponentProcess<Config<TMsg, TPeripheral, TRmt>, TMsg>
-    for Component<Config<TMsg, TPeripheral, TRmt>, TMsg>
+impl<TMsg, TRmt> IComponentProcess<Config<TMsg, TRmt>, TMsg> for Component<Config<TMsg, TRmt>, TMsg>
 where
     TMsg: MsgDataBound + 'static,
-    TRmt: Peripheral<P = TPeripheral> + 'static,
-    TPeripheral: RmtChannel,
+    TRmt: RmtChannel + 'static,
 {
     async fn process(
         &self,
-        config: Config<TMsg, TPeripheral, TRmt>,
+        config: Config<TMsg, TRmt>,
         msgbus_linker: MsgBusLinker<TMsg>,
     ) -> CmpResult {
         let input = msgbus_linker.init(COMPONENT_NAME).input();
@@ -31,4 +29,4 @@ where
 }
 
 /// Компонент cmp_esp_led
-pub type Cmp<TMsg, TPeripheral, TRmt> = Component<Config<TMsg, TPeripheral, TRmt>, TMsg>;
+pub type Cmp<TMsg, TRmt> = Component<Config<TMsg, TRmt>, TMsg>;

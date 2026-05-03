@@ -5,4 +5,4 @@ mod shared;
 pub use request_input::RequestInput;
 pub use request_start::RequestStart;
 
-use super::{Error, Result};
+use super::{DB, Error, Result};

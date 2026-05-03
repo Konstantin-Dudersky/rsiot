@@ -34,6 +34,16 @@ where
             .map_err(|e| ComponentError::CmpOutput(e.to_string()))
     }
 
+    /// Попытка мгновенной отправки исходящих сообщений
+    pub fn try_send(&self, mut msg: Message<TMsg>) -> Result<(), ComponentError> {
+        trace!("Start send to output: {msg:?}");
+
+        msg.set_cmp_source(&self.id);
+        self.output
+            .try_send(msg)
+            .map_err(|e| ComponentError::CmpOutput(e.to_string()))
+    }
+
     /// Отправка исходящих сообщений, в синхронном окружении
     pub fn send_blocking(&self, mut msg: Message<TMsg>) -> Result<(), ComponentError> {
         trace!("Start send to output: {msg:?}");

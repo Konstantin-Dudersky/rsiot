@@ -6,7 +6,7 @@ use tracing::info;
 
 use crate::messages::*;
 
-pub fn cmp() -> rsiot::executor::Component<Config<Msg>, Msg> {
+pub fn cmp() -> Cmp<Msg> {
     let config = Config {
         fn_process: Box::new(fn_process_wrapper),
     };

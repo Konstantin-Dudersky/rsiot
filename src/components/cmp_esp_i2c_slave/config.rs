@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 use std::time::Duration;
 
-use esp_idf_svc::hal::{gpio::AnyIOPin, i2c::I2c, peripheral::Peripheral};
+use esp_idf_svc::hal::{gpio::AnyIOPin, i2c::I2c};
 use serde::{Serialize, de::DeserializeOwned};
 
 use crate::message::{Message, MsgDataBound};
@@ -20,11 +20,10 @@ pub type FnI2cComm<TI2cRequest, TI2cResponse, TBufferData> =
 
 // ANCHOR: Config
 /// Конфигурация cmp_esp_i2c_slave
-pub struct Config<TMsg, TI2c, TPeripheral, TI2cRequest, TI2cResponse, TBufferData>
+pub struct Config<TMsg, TI2c, TI2cRequest, TI2cResponse, TBufferData>
 where
     TMsg: MsgDataBound,
-    TI2c: Peripheral<P = TPeripheral> + 'static,
-    TPeripheral: I2c,
+    TI2c: I2c + 'static,
     TI2cRequest: Debug + DeserializeOwned + 'static,
     TI2cResponse: Debug + Serialize + 'static,
     TBufferData: BufferData,
@@ -33,10 +32,10 @@ where
     pub i2c: TI2c,
 
     /// Пин сигнала SDA
-    pub sda: AnyIOPin,
+    pub sda: AnyIOPin<'static>,
 
     /// Пин сигнала SCL
-    pub scl: AnyIOPin,
+    pub scl: AnyIOPin<'static>,
 
     /// Адрес на шине I2C
     pub slave_address: u8,

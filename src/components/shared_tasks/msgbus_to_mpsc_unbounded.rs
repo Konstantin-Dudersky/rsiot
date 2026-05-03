@@ -1,9 +1,9 @@
 //! Задача перенаправления сообщений из `MsgBusLinker` в  канал `mpsc`
 
-use tokio::{sync::mpsc::UnboundedSender, time::error};
+use tokio::sync::mpsc::UnboundedSender;
 
 use crate::{
-    executor::{MsgBusLinker, MsgBusInput},
+    executor::MsgBusInput,
     message::{Message, MsgDataBound},
 };
 

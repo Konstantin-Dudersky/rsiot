@@ -6,12 +6,11 @@ use crate::{
     message::MsgDataBound,
 };
 
-use super::{super::DbClient, Error};
+use super::{DB, Error};
 
 pub async fn execute_db_query<TMsg>(
     msgbus_output: &MsgBusOutput<TMsg>,
     query: &str,
-    db_client: DbClient,
     fn_on_success: FnOnSuccess<TMsg>,
     fn_on_failure: FnOnFailure<TMsg>,
 ) -> super::Result<()>
@@ -20,13 +19,12 @@ where
 {
     trace!("Execute db query: {}", query);
 
-    let db_client = db_client.lock().await;
-    let mut response = db_client.query(query).await?;
+    let mut response = DB.query(query).await?;
 
     let errors = response.take_errors();
     let msgs = match errors.is_empty() {
         true => {
-            let on_success = fn_on_success(response);
+            let on_success = fn_on_success(&mut response);
             match on_success {
                 Ok(msgs) => msgs,
                 Err(err) => {
@@ -43,7 +41,7 @@ where
     };
     for msg in msgs {
         msgbus_output
-            .send(msg)
+            .send(msg.to_message())
             .await
             .map_err(|_| Error::TokioSyncMpscSend)?;
     }

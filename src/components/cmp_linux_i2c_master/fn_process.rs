@@ -6,7 +6,7 @@ use tokio::{sync::mpsc, task::JoinSet, time::sleep};
 use tracing::{trace, warn};
 
 use crate::{
-    components::shared_tasks::fn_process_master::FnProcessMaster,
+    components::shared_tasks::fieldbus_execution::FieldbusExecution,
     components_config::{
         i2c_master,
         master_device::{FieldbusRequestWithIndex, FieldbusResponseWithIndex},
@@ -26,7 +26,7 @@ where
 {
     let mut task_set = JoinSet::new();
 
-    let config_fn_process_master = FnProcessMaster {
+    let config_fn_process_master = FieldbusExecution {
         msgbus_linker,
         task_set: &mut task_set,
         error_filter: Error::TaskFilter,
@@ -62,7 +62,7 @@ pub struct I2cComm {
 }
 impl I2cComm {
     pub async fn spawn(mut self) -> super::Result<()> {
-        let mut bus = LinuxI2CBus::new(self.dev_i2c)?;
+        let mut bus = LinuxI2CBus::new(self.dev_i2c.clone())?;
 
         while let Some(fieldbus_request) = self.input.recv().await {
             trace!("New i2c request: {:?}", fieldbus_request);
@@ -81,7 +81,7 @@ impl I2cComm {
                     let response = match response {
                         Ok(response) => response,
                         Err(err) => {
-                            warn!("Error during i2c operation: {:?}", err);
+                            warn!("Error on I2c bus ({}): {:?}", self.dev_i2c, err);
                             error = err.to_string();
                             break;
                         }

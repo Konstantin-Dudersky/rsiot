@@ -6,3 +6,4 @@ rustup target add x86_64-unknown-linux-gnu
 
 # Требуется для сборки cmp_mqtt_client для ARMv7
 cargo install --force --locked bindgen-cli
+cargo install oxvg

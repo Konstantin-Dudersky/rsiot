@@ -3,24 +3,23 @@
 //! Для сохранения используется библиотека [sqlx](https://crates.io/crates/sqlx)
 //!
 //! Пример создания компонента:
-#![doc = include_str!("../../../examples/cmp_tsdb/config_tsdb.rs")]
+#![doc = include_str!("../../../examples/cmp_tsdb_writer/config_tsdb.rs")]
 
 mod component;
 mod config;
 mod error;
 mod fn_process;
-mod helpers;
+pub mod helpers;
 mod query_stat;
-mod row;
+mod row_builder;
 mod tasks;
 
 pub use {
     component::{COMPONENT_NAME, Cmp},
-    config::Config,
+    config::{Config, ConfigTable, ConfigTableField, ConfigTableFieldType},
     error::Error,
-    helpers::*,
     query_stat::QueryStat,
-    row::{RowBuilder, RowPrj, RowPrjHst, RowPrjHstSvc},
+    row_builder::{row_with_ts, row_without_ts},
 };
 
 type Result<T> = std::result::Result<T, Error>;

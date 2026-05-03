@@ -1,6 +1,6 @@
 // ANCHOR: CanId
 /// Идентификатор CAN-кадра
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum CanId {
     /// Стандартный идентификатор 11-битный
     Standard(u16),
