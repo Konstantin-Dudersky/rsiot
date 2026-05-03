@@ -20,10 +20,8 @@ where
     TMsg: MsgDataBound,
 {
     pub async fn spawn(self) -> Result<(), Error> {
-        let mut pin =
-            PinDriver::input(self.config_input.peripherals).map_err(Error::CreatePinDriver)?;
-        pin.set_pull(self.config_input.pull)
-            .map_err(Error::SetPinPull)?;
+        let mut pin = PinDriver::input(self.config_input.peripherals, self.config_input.pull)
+            .map_err(Error::CreatePinDriver)?;
 
         loop {
             let level = pin.get_level();

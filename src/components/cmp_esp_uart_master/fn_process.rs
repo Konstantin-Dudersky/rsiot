@@ -8,7 +8,7 @@ use tokio::task::JoinSet;
 use crate::{
     components::shared_tasks::fieldbus_execution::FieldbusExecution,
     components_config::uart_general::Parity,
-    executor::{MsgBusLinker, join_set_spawnMsgBusLinker},
+    executor::{MsgBusLinker, join_set_spawn},
     message::{MsgDataBound, ServiceBound},
 };
 

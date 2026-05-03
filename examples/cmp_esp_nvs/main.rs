@@ -1,4 +1,4 @@
-//! cargo run  --example cmp_storage_esp --target="riscv32imc-esp-espidf" --features="cmp_storage_esp, single-thread" --release
+//! cargo run --example cmp_esp_nvs --target="riscv32imc-esp-espidf" --features="cmp_esp" --release
 
 #[cfg(feature = "cmp_esp")]
 #[tokio::main(flavor = "current_thread")]

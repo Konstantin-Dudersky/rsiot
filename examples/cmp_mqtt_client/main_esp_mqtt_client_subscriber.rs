@@ -14,7 +14,7 @@ async fn main() -> anyhow::Result<()> {
     use std::time::Duration;
 
     use esp_idf_svc::{
-        eventloop::EspSystemEventLoop, hal::prelude::Peripherals, sys::link_patches,
+        eventloop::EspSystemEventLoop, hal::peripherals::Peripherals, sys::link_patches,
         timer::EspTaskTimerService,
     };
     use rsiot::{

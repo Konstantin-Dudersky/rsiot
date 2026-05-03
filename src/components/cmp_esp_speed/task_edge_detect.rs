@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use esp_idf_svc::hal::gpio::{AnyIOPin, Level, PinDriver};
+use esp_idf_svc::hal::gpio::{AnyIOPin, Level, PinDriver, Pull};
 use tokio::sync::mpsc::{self, error::TrySendError};
 use tracing::warn;
 
@@ -10,14 +10,15 @@ use super::{Error, int_msg::IntMsg};
 
 pub struct TaskEdgeDetect {
     pub output: mpsc::Sender<IntMsg>,
-    pub pin_speed: AnyIOPin,
-    pub pin_led: Option<AnyIOPin>,
+    pub pin_speed: AnyIOPin<'static>,
+    pub pin_led: Option<AnyIOPin<'static>>,
     pub period: Duration,
 }
 
 impl TaskEdgeDetect {
     pub async fn spawn(self) -> Result<(), Error> {
-        let mut pin_speed = PinDriver::input(self.pin_speed).map_err(Error::CreatePinDriver)?;
+        let mut pin_speed =
+            PinDriver::input(self.pin_speed, Pull::Floating).map_err(Error::CreatePinDriver)?;
 
         let mut pin_led = match self.pin_led {
             Some(pin_led) => {

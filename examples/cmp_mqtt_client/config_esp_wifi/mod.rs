@@ -8,7 +8,7 @@ use rsiot::{components::cmp_esp_wifi::*, executor::Component};
 use crate::message::*;
 
 pub fn cmp(
-    modem: Modem,
+    modem: Modem<'static>,
     event_loop: EspEventLoop<System>,
     timer_service: EspTimerService<Task>,
 ) -> Component<Config<Msg>, Msg> {

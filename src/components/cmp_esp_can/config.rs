@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use esp_idf_svc::hal::{can::CAN, gpio::AnyIOPin, peripheral::Peripheral};
+use esp_idf_svc::hal::{can::CAN, gpio::AnyIOPin};
 
 use crate::{
     components_config::can_general::{BufferBound, CanFilter, CanFrame, CanSettings},
@@ -8,20 +8,19 @@ use crate::{
 };
 
 /// Конфигурация компонента cmp_esp_can
-pub struct Config<TMsg, TBuffer, TCan>
+pub struct Config<TMsg, TBuffer>
 where
     TMsg: MsgDataBound,
-    TCan: Peripheral<P = CAN> + 'static,
     TBuffer: BufferBound,
 {
     /// Ссылка на аппаратный интерфейс CAN
-    pub can: TCan,
+    pub can: CAN<'static>,
 
     /// Пин сигнала TX
-    pub pin_tx: AnyIOPin,
+    pub pin_tx: AnyIOPin<'static>,
 
     /// Пин сигнала RX
-    pub pin_rx: AnyIOPin,
+    pub pin_rx: AnyIOPin<'static>,
 
     /// Задание режимов CAN-протокола
     pub can_settings: CanSettings,

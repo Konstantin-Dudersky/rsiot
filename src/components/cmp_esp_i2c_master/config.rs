@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use esp_idf_svc::hal::{gpio::AnyIOPin, i2c::I2c, peripheral::Peripheral};
+use esp_idf_svc::hal::{gpio::AnyIOPin, i2c::I2c};
 
 use crate::{
     components_config::{
@@ -12,20 +12,19 @@ use crate::{
 
 // ANCHOR: Config
 /// Конфигурация cmp_esp_i2c_master
-pub struct Config<TMsg, TI2c, TPeripheral>
+pub struct Config<TMsg, TI2c>
 where
     TMsg: MsgDataBound,
-    TI2c: Peripheral<P = TPeripheral> + 'static,
-    TPeripheral: I2c,
+    TI2c: I2c + 'static,
 {
     /// Ссылка на аппаратный интерфейс I2C
     pub i2c: TI2c,
 
     /// Пин сигнала SDA
-    pub sda: AnyIOPin,
+    pub sda: AnyIOPin<'static>,
 
     /// Пин сигнала SCL
-    pub scl: AnyIOPin,
+    pub scl: AnyIOPin<'static>,
 
     /// Скорость
     pub baudrate: ConfigBaudrate,

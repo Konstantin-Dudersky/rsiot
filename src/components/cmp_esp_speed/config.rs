@@ -10,10 +10,10 @@ where
     TMsg: MsgDataBound,
 {
     /// Пин, к которому подключен датчик скорости
-    pub pin_speed: AnyIOPin,
+    pub pin_speed: AnyIOPin<'static>,
 
     /// Опциональный пин, к которому подключен индикатор состояния
-    pub pin_led: Option<AnyIOPin>,
+    pub pin_led: Option<AnyIOPin<'static>>,
 
     /// Время между измерениями скорости
     pub period: Duration,

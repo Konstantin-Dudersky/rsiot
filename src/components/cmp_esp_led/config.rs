@@ -1,4 +1,4 @@
-use esp_idf_svc::hal::{gpio::AnyIOPin, peripheral::Peripheral, rmt::RmtChannel};
+use esp_idf_svc::hal::{gpio::AnyIOPin, rmt::RmtChannel};
 use serde::{Deserialize, Serialize};
 use ws2812_esp32_rmt_driver::RGB8;
 
@@ -7,14 +7,13 @@ use crate::message::{Message, MsgDataBound};
 pub type FnInput<TMsg> = fn(&Message<TMsg>) -> Option<Vec<(u8, ConfigRgb)>>;
 
 /// Конфигурация cmp_esp_led
-pub struct Config<TMsg, TPeripheral, TRmt>
+pub struct Config<TMsg, TRmt>
 where
     TMsg: MsgDataBound,
-    TPeripheral: RmtChannel,
-    TRmt: Peripheral<P = TPeripheral> + 'static,
+    TRmt: RmtChannel + 'static,
 {
     /// Пин для управляющего сигнала
-    pub pin: AnyIOPin,
+    pub pin: AnyIOPin<'static>,
 
     /// Канал для управления сигналом RMT
     pub rmt_channel: TRmt,

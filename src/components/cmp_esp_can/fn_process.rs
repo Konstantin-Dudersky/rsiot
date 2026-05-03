@@ -2,10 +2,7 @@ use std::time::Duration;
 
 use enumset::EnumSet;
 use esp_idf_svc::{
-    hal::{
-        can::{self, Alert, AsyncCanDriver, CAN, CanDriver},
-        peripheral::Peripheral,
-    },
+    hal::can::{self, Alert, AsyncCanDriver, CanDriver},
     sys::{esp, twai_initiate_recovery},
 };
 use tokio::{
@@ -24,13 +21,12 @@ use crate::{
 
 use super::{Config, Error, can_filter::can_filter_convert};
 
-pub async fn fn_process<TMsg, TBuffer, TCan>(
-    config: Config<TMsg, TBuffer, TCan>,
+pub async fn fn_process<TMsg, TBuffer>(
+    config: Config<TMsg, TBuffer>,
     msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: 'static + MsgDataBound,
-    TCan: Peripheral<P = CAN> + 'static,
     TBuffer: 'static + BufferBound,
 {
     let mut task_set: JoinSet<Result<(), Error>> = JoinSet::new();

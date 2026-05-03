@@ -1,6 +1,6 @@
 use esp_idf_svc::hal::gpio::AnyIOPin;
+use esp_idf_svc::hal::spi::Spi;
 use esp_idf_svc::hal::spi::config::{MODE_0, MODE_1, MODE_2, MODE_3};
-use esp_idf_svc::hal::{peripheral::Peripheral, spi::Spi};
 
 use crate::components_config::master_device::DeviceTrait;
 use crate::components_config::spi_master::{self, ConfigDeviceSpiMode};
@@ -8,23 +8,22 @@ use crate::message::MsgDataBound;
 
 // ANCHOR: Config
 /// Конфигурация компонента cmp_esp_spi_master
-pub struct Config<TMsg, TSpi, TPeripheral>
+pub struct Config<TMsg, TSpi>
 where
     TMsg: MsgDataBound,
-    TSpi: Peripheral<P = TPeripheral> + 'static,
-    TPeripheral: Spi,
+    TSpi: Spi + 'static,
 {
     /// Ссылка на аппартный интерфейс SPI
     pub spi: TSpi,
 
     /// Пин MISO
-    pub pin_miso: AnyIOPin,
+    pub pin_miso: AnyIOPin<'static>,
 
     /// Пин MOSI
-    pub pin_mosi: AnyIOPin,
+    pub pin_mosi: AnyIOPin<'static>,
 
     /// Пин SCK
-    pub pin_sck: AnyIOPin,
+    pub pin_sck: AnyIOPin<'static>,
 
     /// Массив настроек коммуникации с устройствами
     ///
@@ -41,7 +40,7 @@ where
 /// Настройки коммуникации с устройствами
 pub struct ConfigDevicesCommSettings {
     /// Пин Chip Select
-    pub pin_cs: AnyIOPin,
+    pub pin_cs: AnyIOPin<'static>,
 
     /// Частота тактов
     pub baudrate: u32,

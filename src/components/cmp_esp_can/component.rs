@@ -1,5 +1,4 @@
 use async_trait::async_trait;
-use esp_idf_svc::hal::{can::CAN, peripheral::Peripheral};
 
 use crate::{
     components_config::can_general::BufferBound,
@@ -14,16 +13,15 @@ pub const COMPONENT_NAME: &str = "cmp_esp_can";
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
-impl<TMsg, TBuffer, TCan> IComponentProcess<Config<TMsg, TBuffer, TCan>, TMsg>
-    for Component<Config<TMsg, TBuffer, TCan>, TMsg>
+impl<TMsg, TBuffer> IComponentProcess<Config<TMsg, TBuffer>, TMsg>
+    for Component<Config<TMsg, TBuffer>, TMsg>
 where
     TMsg: MsgDataBound + 'static,
-    TCan: Peripheral<P = CAN> + 'static,
     TBuffer: 'static + BufferBound,
 {
     async fn process(
         &self,
-        config: Config<TMsg, TBuffer, TCan>,
+        config: Config<TMsg, TBuffer>,
         msgbus_linker: MsgBusLinker<TMsg>,
     ) -> CmpResult {
         fn_process(config, msgbus_linker.init(COMPONENT_NAME)).await?;
@@ -32,4 +30,4 @@ where
 }
 
 /// Компонент cmp_esp_can
-pub type Cmp<TMsg, TBuffer, TCan> = Component<Config<TMsg, TBuffer, TCan>, TMsg>;
+pub type Cmp<TMsg, TBuffer> = Component<Config<TMsg, TBuffer>, TMsg>;

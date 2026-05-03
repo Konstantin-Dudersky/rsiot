@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use esp_idf_svc::hal::{i2c::I2c, peripheral::Peripheral};
+use esp_idf_svc::hal::i2c::I2c;
 
 use crate::{
     executor::{CmpResult, Component, IComponentProcess, MsgBusLinker},
@@ -13,16 +13,14 @@ pub const COMPONENT_NAME: &str = "cmp_esp_i2c_master";
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
-impl<TMsg, TI2c, TPeripheral> IComponentProcess<Config<TMsg, TI2c, TPeripheral>, TMsg>
-    for Component<Config<TMsg, TI2c, TPeripheral>, TMsg>
+impl<TMsg, TI2c> IComponentProcess<Config<TMsg, TI2c>, TMsg> for Component<Config<TMsg, TI2c>, TMsg>
 where
     TMsg: MsgDataBound + 'static,
-    TI2c: Peripheral<P = TPeripheral> + 'static,
-    TPeripheral: I2c,
+    TI2c: I2c + 'static,
 {
     async fn process(
         &self,
-        config: Config<TMsg, TI2c, TPeripheral>,
+        config: Config<TMsg, TI2c>,
         msgbus_linker: MsgBusLinker<TMsg>,
     ) -> CmpResult {
         fn_process(config, msgbus_linker.init(COMPONENT_NAME)).await?;
@@ -31,4 +29,4 @@ where
 }
 
 /// Компонент cmp_esp_i2c_master
-pub type Cmp<TMsg, TI2c, TPeripheral> = Component<Config<TMsg, TI2c, TPeripheral>, TMsg>;
+pub type Cmp<TMsg, TI2c> = Component<Config<TMsg, TI2c>, TMsg>;

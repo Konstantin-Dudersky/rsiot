@@ -1,9 +1,9 @@
 use esp_idf_svc::hal::gpio::{AnyIOPin, AnyOutputPin};
-use rsiot::{components::cmp_esp_gpio::*, executor::Component};
+use rsiot::components::cmp_esp_gpio::*;
 
 use crate::messages::*;
 
-pub fn cmp(pin_input: AnyIOPin, pin_output: AnyOutputPin) -> Component<Config<Msg>, Msg> {
+pub fn cmp(pin_input: AnyIOPin<'static>, pin_output: AnyOutputPin<'static>) -> Cmp<Msg> {
     let config = Config {
         inputs: vec![ConfigGpioInput {
             peripherals: pin_input,

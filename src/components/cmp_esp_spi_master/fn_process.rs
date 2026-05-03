@@ -1,6 +1,5 @@
 use esp_idf_svc::hal::{
     gpio::AnyIOPin,
-    peripheral::Peripheral,
     spi::{Operation, Spi, SpiAnyPins, SpiDeviceDriver, SpiDriver, SpiDriverConfig, config},
     units::FromValueType,
 };
@@ -19,14 +18,13 @@ use crate::{
 
 use super::{Config, config::ConfigDevicesCommSettings};
 
-pub async fn fn_process<TMsg, TSpi, TPeripheral>(
-    config: Config<TMsg, TSpi, TPeripheral>,
+pub async fn fn_process<TMsg, TSpi>(
+    config: Config<TMsg, TSpi>,
     msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: MsgDataBound + 'static,
-    TSpi: Peripheral<P = TPeripheral> + 'static,
-    TPeripheral: Spi + SpiAnyPins + 'static,
+    TSpi: Spi + SpiAnyPins + 'static,
 {
     let mut task_set = JoinSet::new();
 
@@ -60,24 +58,22 @@ where
     Ok(())
 }
 
-struct SpiComm<TSpi, TPeripheral>
+struct SpiComm<TSpi>
 where
-    TSpi: Peripheral<P = TPeripheral> + 'static,
-    TPeripheral: Spi + SpiAnyPins,
+    TSpi: Spi + SpiAnyPins + 'static,
 {
     pub input: mpsc::Receiver<FieldbusRequestWithIndex<spi_master::FieldbusRequest>>,
     pub output: mpsc::Sender<FieldbusResponseWithIndex<spi_master::FieldbusResponse>>,
     pub spi: TSpi,
-    pub pin_miso: AnyIOPin,
-    pub pin_mosi: AnyIOPin,
-    pub pin_sck: AnyIOPin,
+    pub pin_miso: AnyIOPin<'static>,
+    pub pin_mosi: AnyIOPin<'static>,
+    pub pin_sck: AnyIOPin<'static>,
     pub devices_comm_settings: Vec<ConfigDevicesCommSettings>,
 }
 
-impl<TSpi, TPeripheral> SpiComm<TSpi, TPeripheral>
+impl<TSpi> SpiComm<TSpi>
 where
-    TSpi: Peripheral<P = TPeripheral> + 'static,
-    TPeripheral: Spi + SpiAnyPins,
+    TSpi: Spi + SpiAnyPins + 'static,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
         let spi_master_driver = SpiDriver::new(

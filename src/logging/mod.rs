@@ -147,7 +147,7 @@ impl LogConfig {
         // log_esp ---------------------------------------------------------------------------------
         #[cfg(feature = "log_esp")]
         {
-            use esp_idf_svc::log::{EspLogger, set_target_level};
+            use esp_idf_svc::log::{EspIdfLogFilter, EspLogger};
             use log::LevelFilter as LogLevelFilter;
             use tracing::level_filters::LevelFilter as TracingLevelFilter;
 
@@ -161,7 +161,8 @@ impl LogConfig {
                 TracingLevelFilter::ERROR => LogLevelFilter::Error,
                 TracingLevelFilter::OFF => LogLevelFilter::Off,
             };
-            set_target_level("*", level)?;
+            EspIdfLogFilter::new().set_target_level("*", level)?;
+            // set_target_level("*", level)?;
 
             info!("Logging in ESP started with level: {}", level);
             return Ok(());

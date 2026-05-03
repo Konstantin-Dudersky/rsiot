@@ -5,7 +5,7 @@ use esp_idf_svc::{eventloop::EspSystemEventLoop, hal::modem::Modem, timer::EspTa
 /// Конфигурация cmp_esp_wifi
 pub struct Config<TMsg> {
     /// Модем для подключения
-    pub peripherals: Modem,
+    pub peripherals: Modem<'static>,
 
     /// Ссылка на цикл событий
     pub event_loop: EspSystemEventLoop,
