@@ -2,7 +2,7 @@
 //!
 //! # Структура
 //!
-#![doc = include_str!("../../../doc/images/component_structure/cmp_inject_periodic.svg")]
+#![doc = include_str!("doc/diagram.svg")]
 //!
 //! Компонент состоит из одной задачи InjectPeriodic. С периодом [Config::period] на основе функции
 //! [Config::fn_periodic] формируются исходящие сообщения и передаются в шину MsgBus.

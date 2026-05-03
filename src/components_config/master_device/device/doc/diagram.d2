@@ -1,17 +1,9 @@
-vars: {
-  d2-config: {
-    # layout-engine: elk
-    theme-id: 1
-  }
-}
+# d2 fmt diagram.d2; d2 diagram.d2 - | oxvg optimise | save -f -r diagram.svg
 
-style {
-    stroke-width: 1
-    stroke: gray
-}
+...@../../../../../doc/images/component_structure/style
 
 MsgBusIn: MsgBus {
-    shape: oval
+  shape: oval
 }
 MsgBusIn -> Input: "1"
 
@@ -33,8 +25,8 @@ PeriodicRequest -> Request
 Request
 Request -> FieldbusProcess: "2"
 
-FieldbusProcess {
-    style.stroke-dash: 5
+FieldbusProcess: {
+  style.stroke-dash: 5
 }
 FieldbusProcess -> Response: "3"
 
@@ -43,5 +35,5 @@ Response -> MsgBusOut: "4"
 Response -> BufferToRequests
 
 MsgBusOut: MsgBus {
-    shape: oval
+  shape: oval
 }

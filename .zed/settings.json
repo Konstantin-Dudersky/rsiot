@@ -92,7 +92,7 @@
             // "log_console",
             // "log_file",
             // "log_loki",
-            // "log_tokio"
+            "log_tokio",
             "serde_json",
             "serde_postcard",
             "serde_toml",

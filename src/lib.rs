@@ -75,8 +75,8 @@
 //! - cmp_add_output_stream
 //! - cmp_derive
 //! - cmp_external_fn_process
-//! - cmp_inject_periodic
-//! - cmp_logger
+//! - [cmp_inject_periodic](components::cmp_inject_periodic)
+//! - [cmp_logger](components::cmp_logger)
 //!
 #![doc = include_str!("../doc/Новая концепция-2024-01-03-10-46.svg")]
 //! ![](./rsiot/doc/Новая%20концепция-2024-01-03-10-46.svg)

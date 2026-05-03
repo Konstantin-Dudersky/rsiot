@@ -236,7 +236,7 @@ impl From<tokio_metrics::RuntimeMetrics> for TokioRuntimeMetrics {
             mean_poll_duration: value.mean_poll_duration,
             mean_poll_duration_worker_min: value.mean_poll_duration_worker_min,
             mean_poll_duration_worker_max: value.mean_poll_duration_worker_max,
-            poll_time_histogram: value.poll_time_histogram.clone(),
+            poll_time_histogram: value.poll_time_histogram.as_counts().clone(),
             total_noop_count: value.total_noop_count,
             max_noop_count: value.max_noop_count,
             min_noop_count: value.min_noop_count,
