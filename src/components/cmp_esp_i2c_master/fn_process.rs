@@ -12,7 +12,7 @@ use tokio::task::JoinSet;
 use tokio::time::sleep;
 use tracing::{trace, warn};
 
-use crate::components::shared_tasks::fn_process_master::FnProcessMaster;
+use crate::components::shared_tasks::fieldbus_execution::FieldbusExecution;
 use crate::components_config::i2c_master::{self, Operation};
 use crate::components_config::master_device::{
     FieldbusRequestWithIndex, FieldbusResponseWithIndex,
@@ -45,7 +45,7 @@ where
 
     let mut task_set: JoinSet<Result<(), Error>> = JoinSet::new();
 
-    let config_fn_process_master = FnProcessMaster {
+    let config_fn_process_master = FieldbusExecution {
         msgbus_linker,
         task_set: &mut task_set,
         error_filter: Error::TaskFilter,

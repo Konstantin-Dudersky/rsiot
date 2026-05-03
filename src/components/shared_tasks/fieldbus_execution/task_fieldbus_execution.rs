@@ -1,27 +1,21 @@
-//! Запуск задач, общих для всех компонентов, выполняющих опрос устройств по шине
-
-use std::ops::Index;
-
 use futures::TryFutureExt;
-use tokio::{
-    sync::{broadcast, mpsc},
-    task::JoinSet,
-};
+use tokio::{sync::mpsc, task::JoinSet};
 
 use crate::{
-    components::{cmp_derive::Error, shared_tasks::mpsc_to_msgbus},
+    components::shared_tasks::mpsc_to_msgbus,
     components_config::master_device::{
         self, DeviceTrait, FieldbusRequestWithIndex, FieldbusResponseWithIndex,
         RequestResponseBound,
     },
-    executor::{MsgBusLinker, MsgBusInput, MsgBusOutput, join_set_spawn},
+    executor::{MsgBusLinker, join_set_spawn},
     message::{Message, MsgDataBound},
 };
 
-use super::{filter_identical_data, msgbus_to_broadcast};
+use super::filter_identical_data;
+use super::{task_add_index::AddIndex, task_split_responses::SplitResponses};
 
 /// Запуск задач, общих для всех компонентов, выполняющих опрос устройств по шине
-pub struct FnProcessMaster<'a, TMsg, TError, TFieldbusRequest, TFieldbusResponse>
+pub struct FieldbusExecution<'a, TMsg, TError, TFieldbusRequest, TFieldbusResponse>
 where
     TMsg: MsgDataBound + 'static,
     TError: Send + Sync + 'static,
@@ -49,7 +43,7 @@ where
 }
 
 impl<TMsg, TError, TFieldbusRequest, TFieldbusResponse>
-    FnProcessMaster<'_, TMsg, TError, TFieldbusRequest, TFieldbusResponse>
+    FieldbusExecution<'_, TMsg, TError, TFieldbusRequest, TFieldbusResponse>
 where
     TMsg: MsgDataBound + 'static,
     TError: Send + Sync + 'static,
@@ -179,58 +173,5 @@ where
         drop(self.msgbus_linker);
 
         (ch_rx_addindex_to_fieldbus, ch_tx_fieldbus_to_split)
-    }
-}
-
-struct AddIndex<TFieldbusRequest, TError>
-where
-    TFieldbusRequest: RequestResponseBound,
-{
-    pub input: mpsc::Receiver<TFieldbusRequest>,
-    pub output: mpsc::Sender<FieldbusRequestWithIndex<TFieldbusRequest>>,
-    pub device_index: usize,
-    pub error_tokiompscsend: fn() -> TError,
-}
-impl<TFieldbusRequest, TError> AddIndex<TFieldbusRequest, TError>
-where
-    TFieldbusRequest: RequestResponseBound,
-{
-    pub async fn spawn(mut self) -> Result<(), TError> {
-        while let Some(request) = self.input.recv().await {
-            let request_with_index = FieldbusRequestWithIndex {
-                device_index: self.device_index,
-                request,
-            };
-            self.output
-                .send(request_with_index)
-                .await
-                .map_err(|_| (self.error_tokiompscsend)())?;
-        }
-        Ok(())
-    }
-}
-
-struct SplitResponses<TFieldbusResponse, TError>
-where
-    TFieldbusResponse: RequestResponseBound,
-{
-    pub input: mpsc::Receiver<FieldbusResponseWithIndex<TFieldbusResponse>>,
-    pub output: Vec<mpsc::Sender<TFieldbusResponse>>,
-    pub error_tokiompscsend: fn() -> TError,
-}
-impl<TFieldbusResponse, TError> SplitResponses<TFieldbusResponse, TError>
-where
-    TFieldbusResponse: RequestResponseBound,
-{
-    pub async fn spawn(mut self) -> Result<(), TError> {
-        while let Some(response_with_index) = self.input.recv().await {
-            let device_index = response_with_index.device_index;
-            let response = response_with_index.response;
-            self.output[device_index]
-                .send(response)
-                .await
-                .map_err(|_| (self.error_tokiompscsend)())?;
-        }
-        Ok(())
     }
 }

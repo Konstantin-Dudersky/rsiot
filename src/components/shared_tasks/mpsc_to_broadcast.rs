@@ -2,10 +2,7 @@
 
 use tokio::sync::{broadcast, mpsc};
 
-use crate::{
-    executor::{MsgBusLinker, ComponentError},
-    message::{Message, MsgDataBound},
-};
+use crate::executor::ComponentError;
 
 /// Задача перенаправления сообщений из канала `mpsc` в `broadcast`
 pub struct Task<T> {

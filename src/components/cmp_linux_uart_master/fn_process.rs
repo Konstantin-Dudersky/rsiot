@@ -1,7 +1,7 @@
 use tokio::task::JoinSet;
 
 use crate::{
-    components::shared_tasks::fn_process_master::FnProcessMaster, executor::MsgBusLinker,
+    components::shared_tasks::fieldbus_execution::FieldbusExecution, executor::MsgBusLinker,
     message::MsgDataBound,
 };
 
@@ -16,7 +16,7 @@ where
 {
     let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
 
-    let config_fn_process_master = FnProcessMaster {
+    let config_fn_process_master = FieldbusExecution {
         msgbus_linker,
         task_set: &mut task_set,
         error_filter: super::Error::TaskFilterIdenticalData,

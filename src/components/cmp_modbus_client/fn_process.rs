@@ -10,7 +10,7 @@ use tokio_util::task::TaskTracker;
 use tracing::{debug, warn};
 
 use crate::{
-    components::shared_tasks::fn_process_master::FnProcessMaster,
+    components::shared_tasks::fieldbus_execution::FieldbusExecution,
     components_config::master_device::{FieldbusRequestWithIndex, FieldbusResponseWithIndex},
     executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
@@ -40,7 +40,7 @@ where
         }
     }
 
-    let config_fn_process_master = FnProcessMaster {
+    let config_fn_process_master = FieldbusExecution {
         msgbus_linker,
         task_set: &mut task_set,
         error_filter: Error::TaskFilter,

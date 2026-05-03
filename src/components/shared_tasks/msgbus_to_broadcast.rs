@@ -1,9 +1,9 @@
 //! Задача перенаправления сообщений из `MsgBusLinker` в  канал `broadcast`
 
-use tokio::{sync::broadcast::Sender, time::error};
+use tokio::sync::broadcast::Sender;
 
 use crate::{
-    executor::{MsgBusLinker, MsgBusInput},
+    executor::MsgBusInput,
     message::{Message, MsgDataBound},
 };
 

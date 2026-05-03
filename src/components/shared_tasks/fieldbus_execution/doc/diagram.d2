@@ -1,17 +1,9 @@
-vars: {
-  d2-config: {
-    # layout-engine: elk
-    theme-id: 1
-  }
-}
+# d2 fmt diagram.d2; d2 diagram.d2 - | oxvg optimise | save -f -r diagram.svg
 
-style {
-    stroke-width: 1
-    stroke: gray
-}
+...@../../../../../doc/images/component_structure/style
 
 MsgBusIn: MsgBus {
-    shape: oval
+  shape: oval
 }
 MsgBusIn -> MsgbusToBroadcast
 
@@ -21,7 +13,7 @@ MsgbusToBroadcast -> DeviceDriverSend_2: "1 \n ch_msgbus_to_device \n broadcast:
 MsgbusToBroadcast -> DeviceDriverSend_N: "1 \n ch_msgbus_to_device \n broadcast::<TMsg>"
 
 DeviceDriverSend_1: "DeviceDriver_1" {
-    style.stroke-dash: 5
+  style.stroke-dash: 5
 }
 DeviceDriverSend_1 -> AddIndex_1: "2 \n ch_device_to_addindex \n mpsc::<TFieldbusRequest>"
 
@@ -29,7 +21,7 @@ AddIndex_1
 AddIndex_1 -> FieldbusProcess: "ch_addindex_to_fieldbus \n mpsc::<TFieldbusRequestWithIndex>"
 
 DeviceDriverSend_2: "DeviceDriver_2" {
-    style.stroke-dash: 5
+  style.stroke-dash: 5
 }
 DeviceDriverSend_2 -> AddIndex_2: "2 \n ch_device_to_addindex \n mpsc::<TFieldbusRequest>"
 
@@ -37,15 +29,15 @@ AddIndex_2
 AddIndex_2 -> FieldbusProcess: "ch_addindex_to_fieldbus \n mpsc::<TFieldbusRequestWithIndex>"
 
 DeviceDriverSend_N: "DeviceDriver_N" {
-    style.stroke-dash: 5
+  style.stroke-dash: 5
 }
 DeviceDriverSend_N -> AddIndex_N: "2 \n ch_device_to_addindex \n mpsc::<TFieldbusRequest>"
 
 AddIndex_N
 AddIndex_N -> FieldbusProcess: "ch_addindex_to_fieldbus \n mpsc::<TFieldbusRequestWithIndex>"
 
-FieldbusProcess {
-    style.stroke-dash: 5
+FieldbusProcess: {
+  style.stroke-dash: 5
 }
 FieldbusProcess -> Split: "ch_fieldbus_to_split \n mpsc::<TFieldbusResponseWithIndex>"
 
@@ -55,17 +47,17 @@ Split -> DeviceDriverRecv_2: "3 \n ch_split_to_devices \n broadcast::<TFieldbusR
 Split -> DeviceDriverRecv_N: "3 \n ch_split_to_devices \n broadcast::<TFieldbusResponse>"
 
 DeviceDriverRecv_1: "DeviceDriver_1" {
-    style.stroke-dash: 5
+  style.stroke-dash: 5
 }
 DeviceDriverRecv_1 -> FilterIdentical: "4 \n ch_device_to_filter \n mpsc::<TMsg>"
 
 DeviceDriverRecv_2: "DeviceDriver_2" {
-    style.stroke-dash: 5
+  style.stroke-dash: 5
 }
 DeviceDriverRecv_2 -> FilterIdentical: "4 \n ch_device_to_filter \n mpsc::<TMsg>"
 
 DeviceDriverRecv_N: "DeviceDriver_N" {
-    style.stroke-dash: 5
+  style.stroke-dash: 5
 }
 DeviceDriverRecv_N -> FilterIdentical: "4 \n ch_device_to_filter \n mpsc::<TMsg>"
 
@@ -73,5 +65,5 @@ FilterIdentical
 FilterIdentical -> MsgBusOut: "ch_filter_to_msgbus \n mpsc::<TMsg>"
 
 MsgBusOut: MsgBus {
-    shape: oval
+  shape: oval
 }
