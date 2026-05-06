@@ -237,6 +237,7 @@ pub mod cmp_slint;
 #[cfg(feature = "cmp_surrealdb")]
 #[cfg(any(
     aarch64_unknown_linux_gnu,
+    armv7_unknown_linux_gnueabihf,
     x8664_pc_windows_msvc,
     x8664_unknown_linux_gnu
 ))]

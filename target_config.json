@@ -127,6 +127,7 @@
         "cmp_os_process",
         "cmp_plc",
         // "cmp_slint",
+        "cmp_surrealdb",
         "cmp_svg",
         "cmp_system_info",
         "cmp_telegram",

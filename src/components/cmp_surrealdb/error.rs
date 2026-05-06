@@ -12,4 +12,7 @@ pub enum Error {
 
     #[error(transparent)]
     TokioTaskJoin(#[from] tokio::task::JoinError),
+
+    #[error("{COMPONENT_NAME} | QueryInfo")]
+    QueryInfo,
 }

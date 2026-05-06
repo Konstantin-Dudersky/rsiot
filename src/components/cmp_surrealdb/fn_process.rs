@@ -4,19 +4,20 @@ use std::{
         Arc,
         atomic::{AtomicBool, Ordering},
     },
+    time::Duration,
 };
 
 use serde::Deserialize;
 use surrealdb_types::SurrealValue;
-use tokio::task::JoinSet;
-use tracing::{error, info};
+use tokio::{task::JoinSet, time::sleep};
+use tracing::{error, info, warn};
 
 use crate::{
     executor::{ComponentError, MsgBusInput, MsgBusLinker, MsgBusOutput},
     message::MsgDataBound,
 };
 
-use super::{Config, ConfigConnection, DB, tasks};
+use super::{Config, DB, Error, tasks};
 
 pub async fn fn_process<TMsg>(
     msgbus_linker: MsgBusLinker<TMsg>,
@@ -73,8 +74,19 @@ where
     drop(input);
     drop(output);
 
-    connect(config).await?;
-    connection_established.store(true, Ordering::Release);
+    loop {
+        let res = connect(config).await;
+        match res {
+            Ok(_) => {
+                connection_established.store(true, Ordering::Release);
+                break;
+            }
+            Err(e) => {
+                warn!("SurrealDB connection error: {}", e);
+                sleep(Duration::from_millis(1000)).await;
+            }
+        }
+    }
 
     while let Some(res) = task_set.join_next().await {
         res??
@@ -104,22 +116,8 @@ struct InfoRoot {
 
 /// Подключение к БД
 async fn connect<TMsg>(config: &Config<TMsg>) -> super::Result<()> {
-    match &config.connection {
-        ConfigConnection::Memory => {
-            DB.connect("mem://").await?;
-        }
-        ConfigConnection::RocksDB { file_name } => {
-            let address = format!("rocksdb://{}", file_name);
-            DB.connect(address).await?;
-        }
-        ConfigConnection::SurrealKv { file_name } => {
-            let address = format!("surrealkv://{}", file_name);
-            DB.connect(address).await?;
-        }
-        ConfigConnection::Websocket { host: _, port: _ } => {
-            todo!()
-        }
-    }
+    let address = config.connection.address();
+    DB.connect(address).await?;
 
     // let credentials = Root {
     //     username: config.user.clone(),
@@ -127,9 +125,9 @@ async fn connect<TMsg>(config: &Config<TMsg>) -> super::Result<()> {
     // };
     // DB.signin(credentials).await?;
 
-    let mut query = DB.query("INFO FOR ROOT;").await.unwrap();
-    let info: Option<InfoRoot> = query.take(0).unwrap();
-    let info = info.unwrap();
+    let mut query = DB.query("INFO FOR ROOT;").await?;
+    let info: Option<InfoRoot> = query.take(0)?;
+    let info = info.ok_or(Error::QueryInfo)?;
     info!("SurrealDB; info for root: {:?}", info);
 
     if !info.namespaces.contains_key(&config.namespace) {
