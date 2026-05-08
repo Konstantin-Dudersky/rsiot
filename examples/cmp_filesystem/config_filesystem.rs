@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use super::messages::*;
 
-pub fn new() -> rsiot::executor::Component<Config<Msg, Buffer>, Msg> {
+pub fn new() -> Cmp<Msg, Buffer> {
     let config_filesystem = Config::<Msg, Buffer> {
         filename: "examples/cmp_filesystem/test_file.json".into(),
         serde_alg: SerdeAlgKind::Json,
