@@ -1,26 +1,28 @@
-//! Компонент для получения данных через HTTP server.
+//! Компонент для предоставления данных сторонним системам по протоколу HTTP.
 //!
-//! Ссылки:
+//! Обрабатывает GET и PUT запросы.
 //!
-//! - [Документация docs.rs](https://docs.rs/rsiot-http-server/latest/)
+//! Компонент основан на веб-фреймворке [Axum](https://crates.io/crates/axum).
 //!
-//! - [Репозиторий GitHub](https://github.com/Konstantin-Dudersky/rsiot/tree/main/rsiot-http-server)
+//! # Структура
 //!
-//! - [Примеры](https://github.com/Konstantin-Dudersky/rsiot/tree/main/rsiot-http-server/examples)
+#![doc = include_str!("doc/diagram.svg")]
 //!
+//! | Название | Описание |
+//! |----------|----------|
+//! | UpdateGetEndpoints | Задача получает сообщения из шины MsgBus и обновляет данные в структуре общего состояния SharedState на основе функции GetEndpointConfig::fn_input. |
+//! | AxumServe | Задача обеспечивает запуск и работу веб-фреймворка Axum. При обработке GET-запросов возвращает данные из общего состояния Shared State. При обработке PUT-запросов формирует исходящие сообщения на основе функции PutEndpointConfig::fn_output. |
 //!
 //! Данные возвращаются в виде структур Json. Для более удобного просмотра можно использовать
 //! расширения к браузеру, например [JSON Beautifier & Editor](https://chromewebstore.google.com/detail/json-beautifier-editor/lpopeocbeepakdnipejhlpcmifheolpl)
 //!
-//!
-//!
-//! ## Пример
+//! # Примеры
 //!
 //! ```rust
 #![doc = include_str!("../../../examples/cmp_http_server_and_client/cmp_http_server.rs")]
 //! ```
 //!
-//! ## Тестирование
+//! # Тестирование
 //!
 //! См. папку .bruno
 //!

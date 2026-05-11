@@ -1,0 +1,23 @@
+# d2 fmt diagram.d2; d2 diagram.d2 - | oxvg optimise | save -f -r diagram.svg
+
+...@../../../../doc/images/component_structure/style
+
+MsgBusIn: MsgBus {
+  class: msgbus
+}
+MsgBusIn -> UpdateGetEndpoints
+
+UpdateGetEndpoints
+UpdateGetEndpoints -> SharedState
+
+SharedState: "Shared State:\nGET endpoint data\nPUT endpoins data" {
+  class: buffer
+}
+SharedState -> AxumServe
+
+AxumServe
+AxumServe -> MsgBusOut
+
+MsgBusOut: MsgBus {
+  class: msgbus
+}

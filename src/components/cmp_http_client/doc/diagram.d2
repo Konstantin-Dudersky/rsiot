@@ -1,0 +1,27 @@
+# d2 fmt diagram.d2; d2 diagram.d2 - | oxvg optimise | save -f -r diagram.svg
+
+...@../../../../doc/images/component_structure/style
+
+MsgBusIn: MsgBus {
+  shape: oval
+}
+MsgBusIn -> Input
+
+Input
+Input -> HttpClient
+
+Periodic₁
+Periodic₁ -> HttpClient
+
+Periodicₙ
+Periodicₙ -> HttpClient
+
+HttpClient
+HttpClient -> Response
+
+Response
+Response -> MsgBusOut
+
+MsgBusOut: MsgBus {
+  shape: oval
+}

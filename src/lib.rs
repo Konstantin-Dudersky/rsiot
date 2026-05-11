@@ -1,14 +1,17 @@
-//! Компоненты для построения системы сбора, обработки и визуализации данных
+//! Компоненты для построения системы сбора, обработки и визуализации данных.
+//!
+//! # Целевые платформы
 //!
 //! Документация по платформам:
 //!
 //! - [x86_64-unknown-linux-gnu](../../x86_64-unknown-linux-gnu/rsiot/index.html)
 //! - [aarch64-linux-android](../../aarch64-linux-android/rsiot/index.html)
 //! - [aarch64-unknown-linux-gnu](../../aarch64-unknown-linux-gnu/rsiot/index.html)
+//! - [armv7-unknown-linux-gnueabihf](../../armv7-unknown-linux-gnueabihf/rsiot/index.html)
 //! - [riscv32imc-esp-espidf](../../riscv32imc-esp-espidf/rsiot/index.html)
 //! - [wasm32-unknown-unknown](../../wasm32-unknown-unknown/rsiot/index.html)
 //!
-//! ## Обзор
+//! # Обзор
 //!
 //! Набор компонентов для создания системы управления и диспетчиризации.
 //!
@@ -78,7 +81,7 @@
 //! - [cmp_inject_periodic](components::cmp_inject_periodic)
 //! - [cmp_logger](components::cmp_logger)
 //!
-#![doc = include_str!("../doc/Новая концепция-2024-01-03-10-46.svg")]
+#![doc = include_str!("./doc/images/diagram.svg")]
 //! ![](./rsiot/doc/Новая%20концепция-2024-01-03-10-46.svg)
 //!
 //!
@@ -134,13 +137,8 @@
 //! Трейт `IMessage` реализует основные методы - см. документацию по крейту
 //! [rsiot-messages-core](https://docs.rs/rsiot-messages-core/latest)
 //!
-//! Для упрощения компоненты можно создавать и объединять в **цепочку компонентов**.
 //!
-//!
-//! - может генерировать сообщения как на основе входных сообщений
-//! - может генерировать сообщения периодически
-//!
-//!  ## Флаги `feature`:
+//!  # Флаги `feature`:
 #![doc = document_features::document_features!()]
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 #![warn(rustdoc::bare_urls)]

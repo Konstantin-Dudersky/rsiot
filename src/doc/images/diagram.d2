@@ -1,0 +1,36 @@
+# d2 fmt diagram.d2; d2 diagram.d2 - | oxvg optimise | save -f -r diagram.svg
+
+# direction: right
+
+...@../../../doc/images/component_structure/style
+
+MsgBusIn: MsgBus {
+  class: msgbus
+}
+MsgBusIn -> Executor.Component₁
+MsgBusIn -> Executor.Component₂
+MsgBusIn -> Executor.Componentₙ
+
+Executor: {
+  Component₁: {
+    Task₁
+    Task₁ -> Taskₙ
+
+    Taskₙ
+  }
+
+  Component₂
+
+  Componentₙ
+}
+Executor.Component₁ -> MsgBusOut
+Executor.Component₂ -> MsgBusOut
+Executor.Componentₙ -> MsgBusOut
+
+MsgBusOut: MsgBus {
+  class: msgbus
+}
+MsgBusOut -> InternalTask
+
+InternalTask
+InternalTask -> MsgBusIn
