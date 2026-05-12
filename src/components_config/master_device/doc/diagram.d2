@@ -3,24 +3,24 @@
 ...@../../../../doc/images/component_structure/style
 
 MsgBusIn: MsgBus {
-  shape: oval
+  class: msgbus
 }
-MsgBusIn -> Input: "1"
+MsgBusIn -> InputRequest: "1"
 
-Input
-Input -> BufferToRequests
+InputRequest
+InputRequest -> BufferToRequests: "ch_need_request"
 
 BufferPeriodic
-BufferPeriodic -> BufferToRequests
+BufferPeriodic -> BufferToRequests: "ch_need_request"
 
 BufferToRequests
-BufferToRequests -> Request
+BufferToRequests -> Request: "ch_request"
 
 InitRequest
-InitRequest -> Request
+InitRequest -> Request: "ch_request"
 
 PeriodicRequest
-PeriodicRequest -> Request
+PeriodicRequest -> Request: "ch_request"
 
 Request
 Request -> FieldbusProcess: "2"
@@ -31,9 +31,12 @@ FieldbusProcess: {
 FieldbusProcess -> Response: "3"
 
 Response
-Response -> MsgBusOut: "4"
-Response -> BufferToRequests
+Response -> FilterIdenticalData: "ch_output_to_filter"
+Response -> BufferToRequests: "ch_need_request"
+
+FilterIdenticalData
+FilterIdenticalData -> MsgBusOut: "4"
 
 MsgBusOut: MsgBus {
-  shape: oval
+  class: msgbus
 }

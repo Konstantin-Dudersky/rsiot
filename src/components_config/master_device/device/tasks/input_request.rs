@@ -13,7 +13,7 @@ where
 {
     pub buffer: Buffer<TBuffer>,
     pub ch_rx_msgbus_to_device: MsgBusInput<TMsg>,
-    pub ch_tx_buffer: mpsc::Sender<()>,
+    pub ch_tx_need_request: mpsc::Sender<()>,
     pub fn_msgs_to_buffer: fn(&TMsg, &mut TBuffer),
 }
 
@@ -37,7 +37,7 @@ where
             };
 
             if changed {
-                self.ch_tx_buffer
+                self.ch_tx_need_request
                     .check_capacity(0.2, "master_device | InputRequest")
                     .send(())
                     .await

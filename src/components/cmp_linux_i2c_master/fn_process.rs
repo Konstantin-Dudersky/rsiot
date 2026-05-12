@@ -3,7 +3,7 @@ use linux_embedded_hal::i2cdev::{
     linux::{LinuxI2CBus, LinuxI2CError, LinuxI2CMessage},
 };
 use tokio::{sync::mpsc, task::JoinSet, time::sleep};
-use tracing::{trace, warn};
+use tracing::trace;
 
 use crate::{
     components::shared_tasks::fieldbus_execution::FieldbusExecution,
@@ -81,7 +81,6 @@ impl I2cComm {
                     let response = match response {
                         Ok(response) => response,
                         Err(err) => {
-                            warn!("Error on I2c bus ({}): {:?}", self.dev_i2c, err);
                             error = err.to_string();
                             break;
                         }

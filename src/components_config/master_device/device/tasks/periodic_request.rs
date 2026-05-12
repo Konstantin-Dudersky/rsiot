@@ -5,10 +5,11 @@ use tracing::{trace, warn};
 
 use crate::executor::CheckCapacity;
 
-use super::{Buffer, Error, RequestResponseBound};
+use super::{Buffer, DeviceStateType, Error, RequestResponseBound};
 
 pub struct PeriodicRequest<TRequest, TBuffer> {
     pub buffer: Buffer<TBuffer>,
+    pub device_state: DeviceStateType,
     pub period: Duration,
     pub fn_request: fn(&TBuffer) -> anyhow::Result<Vec<TRequest>>,
     pub ch_tx_request: mpsc::Sender<TRequest>,
@@ -19,6 +20,15 @@ where
     TRequest: RequestResponseBound,
 {
     pub async fn spawn(self) -> super::Result<()> {
+        // Ждём окончания инициализации
+        loop {
+            if self.device_state.lock().await.init_completed {
+                break;
+            } else {
+                sleep(Duration::from_millis(2_000)).await;
+            }
+        }
+
         loop {
             let requests = {
                 let mut buffer = self.buffer.lock().await;

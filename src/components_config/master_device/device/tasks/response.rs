@@ -6,14 +6,15 @@ use crate::{
     message::{Message, MsgDataBound},
 };
 
-use super::{Buffer, Error, RequestResponseBound};
+use super::{Buffer, DeviceStateType, Error, RequestResponseBound, ResponseResult};
 
 pub struct Response<TMsg, TResponse, TBuffer> {
     pub buffer: Buffer<TBuffer>,
+    pub device_state: DeviceStateType,
     pub ch_rx_fieldbus_to_device: mpsc::Receiver<TResponse>,
     pub ch_tx_output_to_filter: mpsc::Sender<Message<TMsg>>,
-    pub ch_tx_buffer: mpsc::Sender<()>,
-    pub fn_response_to_buffer: fn(TResponse, &mut TBuffer) -> anyhow::Result<bool>,
+    pub ch_tx_need_request: mpsc::Sender<()>,
+    pub fn_response_to_buffer: fn(TResponse, &mut TBuffer) -> anyhow::Result<ResponseResult>,
     pub fn_buffer_to_msgs: fn(&mut TBuffer) -> Vec<TMsg>,
 }
 
@@ -28,7 +29,7 @@ where
 
             let mut buffer = self.buffer.lock().await;
 
-            let buffer_changed = (self.fn_response_to_buffer)(response, &mut buffer);
+            let req_res = (self.fn_response_to_buffer)(response, &mut buffer);
             let msgs = (self.fn_buffer_to_msgs)(&mut buffer);
 
             drop(buffer);
@@ -42,16 +43,25 @@ where
                     .map_err(|_| Error::TokioSyncMpscSend)?;
             }
 
-            match buffer_changed {
-                Ok(buffer_changed) => {
-                    if buffer_changed {
-                        self.ch_tx_buffer
+            let mut device_state = self.device_state.lock().await;
+
+            match req_res {
+                Ok(req_res) => match req_res {
+                    ResponseResult::OkInitCompleted => {
+                        device_state.init_completed = true;
+                        device_state.response_ok_count += 1
+                    }
+                    ResponseResult::OkNeedRequest => {
+                        device_state.response_ok_count += 1;
+                        self.ch_tx_need_request
                             .check_capacity(0.2, "master_device | Response | ch_tx_buffer")
                             .send(())
                             .await
                             .map_err(|_| Error::TokioSyncMpscSend)?;
                     }
-                }
+                    ResponseResult::Ok => device_state.response_ok_count += 1,
+                    ResponseResult::Error(_) => device_state.response_err_count += 1,
+                },
                 Err(e) => {
                     warn!("Error in fn_response_to_buffer: {:?}", e);
                 }

@@ -7,7 +7,7 @@ use super::{Buffer, BufferBound, Error, RequestResponseBound};
 
 pub struct BufferToRequests<TRequest, TBuffer> {
     pub buffer: Buffer<TBuffer>,
-    pub ch_rx_buffer: mpsc::Receiver<()>,
+    pub ch_rx_buffer_changed: mpsc::Receiver<()>,
     pub ch_tx_request: mpsc::Sender<TRequest>,
     pub fn_buffer_to_request: fn(&TBuffer) -> anyhow::Result<Vec<TRequest>>,
 }
@@ -18,7 +18,7 @@ where
     TBuffer: BufferBound,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
-        while self.ch_rx_buffer.recv().await.is_some() {
+        while self.ch_rx_buffer_changed.recv().await.is_some() {
             let requests = {
                 let buffer = self.buffer.lock().await;
                 (self.fn_buffer_to_request)(&buffer)

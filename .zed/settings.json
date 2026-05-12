@@ -73,7 +73,7 @@
             // "cmp_influxdb",
             // "cmp_linux_can",
             // "cmp_linux_gpio",
-            // "cmp_linux_i2c_master",
+            "cmp_linux_i2c_master",
             // "cmp_linux_spi_master",
             // "cmp_linux_uart",
             // "cmp_math",
