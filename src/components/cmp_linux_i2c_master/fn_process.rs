@@ -85,9 +85,7 @@ impl I2cComm {
                             break;
                         }
                     };
-                    if let Some(response) = response {
-                        responses.push(response);
-                    }
+                    responses.push(response);
                 }
 
                 if error.is_empty() {
@@ -123,11 +121,11 @@ async fn make_i2c_operation(
     bus: &mut LinuxI2CBus,
     address: u8,
     operation: &i2c_master::Operation,
-) -> Result<Option<Vec<u8>>, LinuxI2CError> {
+) -> Result<Vec<u8>, LinuxI2CError> {
     match operation {
         i2c_master::Operation::Delay { delay } => {
             sleep(*delay).await;
-            Ok(None)
+            Ok(vec![])
         }
         i2c_master::Operation::WriteRead {
             write_data,
@@ -140,12 +138,12 @@ async fn make_i2c_operation(
             ];
             bus.transfer(&mut transaction)?;
             trace!("Read data: {:x?}", read_data);
-            Ok(Some(read_data))
+            Ok(read_data)
         }
         i2c_master::Operation::Write { write_data } => {
             let mut transaction = [LinuxI2CMessage::write(write_data).with_address(address as u16)];
             bus.transfer(&mut transaction)?;
-            Ok(None)
+            Ok(vec![])
         }
         i2c_master::Operation::Read { read_size } => {
             let mut read_data = vec![0; *read_size as usize];
@@ -153,7 +151,7 @@ async fn make_i2c_operation(
                 [LinuxI2CMessage::read(&mut read_data).with_address(address as u16)];
             bus.transfer(&mut transaction)?;
             trace!("Read data: {:x?}", read_data);
-            Ok(Some(read_data))
+            Ok(read_data)
         }
     }
 }
