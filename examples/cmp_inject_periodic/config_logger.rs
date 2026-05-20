@@ -1,6 +1,6 @@
 use rsiot::components::cmp_logger::*;
 
-use crate::messages::*;
+use crate::msg::*;
 
 pub fn cmp() -> Cmp<Msg> {
     let config = Config {

@@ -1,4 +1,4 @@
-use std::fmt::Debug;
+use std::{fmt::Debug, time::Duration};
 
 /// Ограничения для структур запросов и ответов
 ///
@@ -11,4 +11,5 @@ pub trait RequestResponseBound
 where
     Self: Clone + Debug + Send + Sync,
 {
+    fn request_duration(&self) -> Duration;
 }

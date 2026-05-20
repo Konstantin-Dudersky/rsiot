@@ -14,9 +14,9 @@ pub mod cmp_auth;
 
 pub mod cmp_livecounter;
 
-pub mod cmp_derive;
+pub mod cmp_derive_old;
 
-pub mod cmp_derive_new;
+pub mod cmp_derive;
 
 // #[cfg(feature = "cmp_esp")]
 // #[cfg(riscv32imc_esp_espidf)]

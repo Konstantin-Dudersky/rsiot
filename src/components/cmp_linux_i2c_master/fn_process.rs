@@ -15,7 +15,7 @@ use crate::{
     message::MsgDataBound,
 };
 
-use super::{Config, Error};
+use super::{Config, Error, I2cAddress};
 
 pub async fn fn_process<TMsg>(
     config: Config<TMsg>,
@@ -97,6 +97,7 @@ impl I2cComm {
 
             let response = i2c_master::FieldbusResponse {
                 request_creation_time: request.request_creation_time,
+                request_duration: request.request_creation_time.elapsed(),
                 request_kind: request.request_kind,
                 payload: response_payload,
             };
@@ -104,6 +105,8 @@ impl I2cComm {
                 device_index,
                 response,
             };
+
+            trace!("I2C response: {:?}", response_with_index);
             self.output
                 .send(response_with_index)
                 .await
@@ -116,42 +119,77 @@ impl I2cComm {
 
 /// Выполняем обмен данными
 ///
-/// Если присутствует операция чтения, то возвращаем данные
+/// Возвращаем ответ в виде вектора байтов
 async fn make_i2c_operation(
     bus: &mut LinuxI2CBus,
-    address: u8,
+    i2c_address: I2cAddress,
     operation: &i2c_master::Operation,
 ) -> Result<Vec<u8>, LinuxI2CError> {
-    match operation {
+    // Определяем адрес
+    let address = match i2c_address {
+        I2cAddress::Direct { address } => address as u16,
+        I2cAddress::Mux {
+            mux_address,
+            channel,
+            address,
+        } => {
+            // Открываем канал на мультиплексоре
+            let mux_data = [channel];
+            let mut transaction =
+                [LinuxI2CMessage::write(&mux_data).with_address(mux_address as u16)];
+            bus.transfer(&mut transaction)?;
+
+            address as u16
+        }
+    };
+
+    let read_result = match operation {
         i2c_master::Operation::Delay { delay } => {
             sleep(*delay).await;
             Ok(vec![])
         }
+
         i2c_master::Operation::WriteRead {
             write_data,
             read_size,
         } => {
             let mut read_data = vec![0; *read_size as usize];
+
             let mut transaction = [
-                LinuxI2CMessage::write(write_data).with_address(address as u16),
-                LinuxI2CMessage::read(&mut read_data).with_address(address as u16),
+                LinuxI2CMessage::write(write_data).with_address(address),
+                LinuxI2CMessage::read(&mut read_data).with_address(address),
             ];
+
             bus.transfer(&mut transaction)?;
             trace!("Read data: {:x?}", read_data);
             Ok(read_data)
         }
+
         i2c_master::Operation::Write { write_data } => {
-            let mut transaction = [LinuxI2CMessage::write(write_data).with_address(address as u16)];
+            let mut transaction = [LinuxI2CMessage::write(write_data).with_address(address)];
             bus.transfer(&mut transaction)?;
             Ok(vec![])
         }
+
         i2c_master::Operation::Read { read_size } => {
             let mut read_data = vec![0; *read_size as usize];
-            let mut transaction =
-                [LinuxI2CMessage::read(&mut read_data).with_address(address as u16)];
+
+            let mut transaction = [LinuxI2CMessage::read(&mut read_data).with_address(address)];
             bus.transfer(&mut transaction)?;
             trace!("Read data: {:x?}", read_data);
             Ok(read_data)
         }
-    }
+    };
+
+    match i2c_address {
+        I2cAddress::Direct { .. } => (),
+        I2cAddress::Mux { mux_address, .. } => {
+            // Закрываем все каналы на мультиплексоре
+            let mut transaction =
+                [LinuxI2CMessage::write(&[0x00]).with_address(mux_address as u16)];
+            bus.transfer(&mut transaction)?;
+        }
+    };
+
+    read_result
 }

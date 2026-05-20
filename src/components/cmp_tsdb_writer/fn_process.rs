@@ -31,7 +31,7 @@ where
 
     let tables_setup: Vec<ConfigTableForSetup> = config.tables.iter().map(|t| t.into()).collect();
     let task = tasks::SetupDatabase {
-        connection_string: config.connection_string.clone(),
+        connection_string: config.connection_string.connection_string(),
         reconnect_interval: Duration::from_millis(1_000),
         tables: tables_setup,
         db_pool_mutex: db_pool_mutex.clone(),

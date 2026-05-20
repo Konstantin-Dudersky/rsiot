@@ -10,7 +10,7 @@ mod config_inject_periodic;
 #[cfg(feature = "executor")]
 mod config_logger;
 #[cfg(feature = "executor")]
-mod messages;
+mod msg;
 
 #[cfg(feature = "executor")]
 #[tokio::main(flavor = "current_thread")]
@@ -20,7 +20,7 @@ async fn main() -> anyhow::Result<()> {
 
     use rsiot::executor::{ComponentExecutor, ComponentExecutorConfig};
 
-    use messages::Msg;
+    use msg::Msg;
 
     tracing_subscriber::fmt()
         .with_max_level(LevelFilter::DEBUG)

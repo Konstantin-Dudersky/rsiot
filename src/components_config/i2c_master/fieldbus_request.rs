@@ -1,8 +1,8 @@
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use crate::components_config::master_device::RequestResponseBound;
 
-use super::Operation;
+use super::{I2cAddress, Operation};
 
 // ANCHOR: FieldbusRequest
 /// Структура отдельного запроса на коммуникацию по шине I2C
@@ -14,7 +14,7 @@ pub struct FieldbusRequest {
     pub request_creation_time: Instant,
 
     /// Адрес устройства
-    pub address: u8,
+    pub address: I2cAddress,
 
     /// Вид запроса.
     ///
@@ -28,7 +28,11 @@ pub struct FieldbusRequest {
 
 impl FieldbusRequest {
     /// Создание запроса. Адрес задается позже
-    pub fn new(address: u8, request_kind: impl Into<u8>, operations: Vec<Operation>) -> Self {
+    pub fn new(
+        address: I2cAddress,
+        request_kind: impl Into<u8>,
+        operations: Vec<Operation>,
+    ) -> Self {
         Self {
             request_creation_time: Instant::now(),
             address,
@@ -38,4 +42,8 @@ impl FieldbusRequest {
     }
 }
 
-impl RequestResponseBound for FieldbusRequest {}
+impl RequestResponseBound for FieldbusRequest {
+    fn request_duration(&self) -> Duration {
+        Duration::default()
+    }
+}

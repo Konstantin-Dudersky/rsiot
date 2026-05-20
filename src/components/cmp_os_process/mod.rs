@@ -1,4 +1,12 @@
 //! Компонент cmp_os_process
+//!
+//! # Примеры
+//!
+//! ## Синхронизация времени с сервером NTP
+//!
+//! ```rust
+#![doc = include_str!("../../../examples/cmp_os_process/config_os_process/cmp_chronyc.rs")]
+//! ```
 
 mod component;
 mod config;

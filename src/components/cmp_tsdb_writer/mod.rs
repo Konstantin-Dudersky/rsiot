@@ -3,7 +3,10 @@
 //! Для сохранения используется библиотека [sqlx](https://crates.io/crates/sqlx)
 //!
 //! Пример создания компонента:
+//!
+//! ```rust
 #![doc = include_str!("../../../examples/cmp_tsdb_writer/config_tsdb.rs")]
+//! ```
 
 mod component;
 mod config;
@@ -16,7 +19,7 @@ mod tasks;
 
 pub use {
     component::{COMPONENT_NAME, Cmp},
-    config::{Config, ConfigTable, ConfigTableField, ConfigTableFieldType},
+    config::{Config, ConfigConnectionString, ConfigTable, ConfigTableField, ConfigTableFieldType},
     error::Error,
     query_stat::QueryStat,
     row_builder::{row_with_ts, row_without_ts},

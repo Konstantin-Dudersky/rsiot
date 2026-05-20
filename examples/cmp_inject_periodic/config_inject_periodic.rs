@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use rsiot::components::cmp_inject_periodic::*;
 
-use crate::messages::*;
+use crate::msg::*;
 
 pub fn cmp() -> Cmp<Msg, impl FnMut() -> Vec<Msg>> {
     let mut counter = 0;

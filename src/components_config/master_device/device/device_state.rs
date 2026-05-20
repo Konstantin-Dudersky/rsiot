@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::message::MsgDataBound;
 
 /// Состояние устройства
-#[derive(Deserialize, Clone, Debug, PartialEq, Serialize)]
+#[derive(Default, Deserialize, Clone, Copy, Debug, PartialEq, Serialize)]
 pub struct DeviceState {
     /// Инициализация завершена
     pub init_completed: bool,
@@ -15,6 +15,9 @@ pub struct DeviceState {
 
     /// Количество ошибочных ответов
     pub response_err_count: usize,
+
+    /// Средняя продолжительность выполнения запроса
+    pub avg_request_duration: Duration,
 }
 
 /// Конфигурация вывода состояния устройства

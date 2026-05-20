@@ -6,6 +6,7 @@ pub mod grafana;
 pub mod influxdb_v2;
 pub mod loki;
 pub mod nanomq;
+pub mod ntp;
 pub mod pgadmin;
 pub mod portainer;
 pub mod redis;

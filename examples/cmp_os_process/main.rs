@@ -3,7 +3,7 @@
 #[cfg(feature = "cmp_os_process")]
 mod config_os_process;
 #[cfg(feature = "cmp_os_process")]
-mod message;
+mod msg;
 
 #[cfg(feature = "cmp_os_process")]
 #[tokio::main]
@@ -23,6 +23,7 @@ async fn main() {
 
     ComponentExecutor::new(config_executor)
         .add_cmp(config_os_process::cmp())
+        .add_cmp(config_os_process::cmp_chronyc())
         // .add_cmp(config_logger::cmp())
         .wait_result()
         .await

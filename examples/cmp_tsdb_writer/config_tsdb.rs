@@ -18,9 +18,6 @@ pub fn cmp(_rows_in_cycle: u32, instance_number: String) -> Cmp<Msg> {
         .collect::<Vec<_>>();
 
     let table = ConfigTable {
-        prj: "prj_test".into(),
-        hst,
-        svc: "svc_test".into(),
         cmp: "cmp_inject_periodic".into(),
         tag: "tag_test".into(),
         delete_before_write: true,
@@ -47,7 +44,15 @@ pub fn cmp(_rows_in_cycle: u32, instance_number: String) -> Cmp<Msg> {
     };
 
     let config = Config {
-        connection_string: "postgres://postgres:postgres@localhost:5432/db_data".into(),
+        connection_string: ConfigConnectionString {
+            user: "postgres".into(),
+            password: "postgres".into(),
+            database_host: "localhost".into(),
+            port: 5432,
+            prj: "prj_test".into(),
+            hst: hst.clone(),
+            svc: "svc_test".into(),
+        },
         max_connections: 10,
         tables: vec![table],
         save_by_row_count: 20_000,

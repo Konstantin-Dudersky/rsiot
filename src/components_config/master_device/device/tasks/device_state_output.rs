@@ -22,9 +22,11 @@ where
 {
     pub async fn spawn(self) -> super::Result<()> {
         loop {
-            let state = self.device_state.lock().await.clone();
+            let msg = {
+                let state = self.device_state.lock().await;
+                (self.config.fn_device_state)(*state)
+            };
 
-            let msg = (self.config.fn_device_state)(state);
             let msg = msg.to_message();
             self.ch_tx_output_to_filter
                 .check_capacity(

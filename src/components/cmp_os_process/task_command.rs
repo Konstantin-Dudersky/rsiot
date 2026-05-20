@@ -1,5 +1,5 @@
 use tokio::process::Command as TokioCommand;
-use tracing::info;
+use tracing::debug;
 
 use crate::{
     executor::{MsgBusInput, MsgBusOutput},
@@ -33,7 +33,7 @@ where
             let mut exec_results = vec![];
 
             for cmd in cmds {
-                info!("Executing OS command: {}", cmd);
+                debug!("Executing OS command: {}", cmd);
                 let exec_result = execute_command(&cmd).await?;
                 exec_results.push(exec_result);
             }

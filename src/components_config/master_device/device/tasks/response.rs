@@ -1,3 +1,5 @@
+use std::{collections::VecDeque, time::Duration};
+
 use tokio::sync::mpsc;
 use tracing::{trace, warn};
 
@@ -24,8 +26,15 @@ where
     TMsg: MsgDataBound,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
+        let mut request_durations: VecDeque<Duration> = VecDeque::new();
+
         while let Some(response) = self.ch_rx_fieldbus_to_device.recv().await {
             trace!("Response: {:?}", response);
+
+            request_durations.push_back(response.request_duration());
+            if request_durations.len() >= 10 {
+                request_durations.pop_front();
+            }
 
             let mut buffer = self.buffer.lock().await;
 
@@ -44,6 +53,9 @@ where
             }
 
             let mut device_state = self.device_state.lock().await;
+            let avg_request_duration = request_durations.iter().sum::<Duration>().as_secs_f64()
+                / (request_durations.len() as f64);
+            device_state.avg_request_duration = Duration::from_secs_f64(avg_request_duration);
 
             match req_res {
                 Ok(req_res) => match req_res {
@@ -66,6 +78,7 @@ where
                     warn!("Error in fn_response_to_buffer: {:?}", e);
                 }
             };
+            drop(device_state);
         }
 
         Ok(())

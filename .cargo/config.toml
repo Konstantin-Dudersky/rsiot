@@ -62,6 +62,9 @@ rustflags = [
     "tokio_unstable",
 ]
 
+[build]
+rustc-wrapper = "/home/konstantin/.cargo/bin/sccache"
+
 [unstable]
 build-std = ["std", "panic_abort"]
 

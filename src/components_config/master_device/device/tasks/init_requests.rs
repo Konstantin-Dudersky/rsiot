@@ -1,13 +1,14 @@
 use std::time::Duration;
 
 use tokio::{sync::mpsc, time::sleep};
-use tracing::{info, trace, warn};
+use tracing::{debug, trace, warn};
 
 use crate::executor::CheckCapacity;
 
 use super::{Buffer, BufferBound, DeviceStateType, Error, RequestResponseBound};
 
 pub struct InitRequest<TRequest, TBuffer> {
+    pub id: String,
     pub buffer: Buffer<TBuffer>,
     pub device_state: DeviceStateType,
     pub fn_init_requests: fn(&TBuffer) -> Vec<TRequest>,
@@ -21,7 +22,7 @@ where
 {
     pub async fn spawn(self) -> super::Result<()> {
         loop {
-            info!("Executing init requests");
+            debug!("Executing init requests on device {}", self.id);
 
             let requests = {
                 let buffer = self.buffer.lock().await;
@@ -42,7 +43,7 @@ where
             if self.device_state.lock().await.init_completed {
                 break;
             }
-            warn!("Device not inited");
+            warn!("Device {} not inited", self.id);
         }
 
         Ok(())

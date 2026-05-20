@@ -17,8 +17,8 @@ pub fn cmp() -> Component<Config<Msg>, Msg> {
         publish: ConfigPublish::NoPublish,
         subscribe: ConfigSubscribe::Subscribe {
             topic: "example/counter".into(),
-            fn_subscribe: |_topic, data, mqtt_msg_gen| {
-                let data = mqtt_msg_gen.de(data)?;
+            fn_subscribe: |_topic, data, msg_gen| {
+                let data = msg_gen.de(data)?;
                 let msg = Msg::Subscribe(data);
                 Ok(Some(vec![msg]))
             },

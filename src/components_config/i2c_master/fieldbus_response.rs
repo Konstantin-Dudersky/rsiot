@@ -1,4 +1,4 @@
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use crate::components_config::master_device::RequestResponseBound;
 
@@ -11,6 +11,9 @@ pub struct FieldbusResponse {
     /// Можно контролировать время выполнения запросов
     pub request_creation_time: Instant,
 
+    /// Время выполнения запроса
+    pub request_duration: Duration,
+
     /// Вид запроса.
     ///
     /// Необходим для правильной расшифровки ответа
@@ -21,4 +24,8 @@ pub struct FieldbusResponse {
 }
 // ANCHOR: FieldbusResponse
 
-impl RequestResponseBound for FieldbusResponse {}
+impl RequestResponseBound for FieldbusResponse {
+    fn request_duration(&self) -> Duration {
+        self.request_duration
+    }
+}

@@ -1,0 +1,11 @@
+services:
+  hst_pc.svc_ntp:
+    image: cturra/ntp:latest # https://hub.docker.com/r/cturra/ntp/tags
+    container_name: hst_pc.svc_ntp
+    hostname: hst_pc.svc_ntp
+    ports:
+      - 123:123/udp
+    environment:
+      - NTP_SERVERS="127.0.0.1,time.cloudflare.com"
+      - LOG_LEVEL=0
+      - TZ=Europe/Minsk

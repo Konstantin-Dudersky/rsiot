@@ -103,6 +103,7 @@ where
             init_completed: false,
             response_ok_count: 0,
             response_err_count: 0,
+            avg_request_duration: Duration::default(),
         };
         let device_state = Arc::new(Mutex::new(device_state));
 
@@ -116,6 +117,7 @@ where
         //
         // Приостанавливаем выполнение, пока не будет выполнена задача
         let task = tasks::InitRequest {
+            id: id.as_ref().to_string(),
             buffer: buffer.clone(),
             device_state: device_state.clone(),
             fn_init_requests: self.fn_init_requests,
@@ -130,6 +132,7 @@ where
         // Задача создания запросов на основе входящих сообщений
         let task = tasks::InputRequest {
             buffer: buffer.clone(),
+            device_state: device_state.clone(),
             ch_rx_msgbus_to_device,
             ch_tx_need_request: ch_tx_need_request.clone(),
             fn_msgs_to_buffer: self.fn_msgs_to_buffer,

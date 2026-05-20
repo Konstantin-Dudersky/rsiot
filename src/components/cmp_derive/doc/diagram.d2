@@ -1,0 +1,20 @@
+# d2 fmt diagram.d2; d2 diagram.d2 - | oxvg optimise | save -f -r diagram.svg
+
+...@../../../../doc/images/component_structure/style
+
+MsgBusIn: MsgBus {
+  class: msgbus
+}
+MsgBusIn -> Input
+
+Input
+Input -> Output: "ch_buffer::<IntMsg>"
+
+Period
+Period -> Output: "ch_buffer::<IntMsg>"
+
+Output -> MsgBusOut
+
+MsgBusOut: MsgBus {
+  class: msgbus
+}

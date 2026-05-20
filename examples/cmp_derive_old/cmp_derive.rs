@@ -20,7 +20,7 @@ fn main() -> anyhow::Result<()> {
 
     use rsiot::{
         components::{
-            cmp_derive::{self, DeriveItem},
+            cmp_derive_old::{self, DeriveItem},
             cmp_inject_periodic, cmp_logger,
         },
         executor::{ComponentExecutor, ComponentExecutorConfig},
@@ -35,7 +35,7 @@ fn main() -> anyhow::Result<()> {
         pub bool: Option<bool>,
     }
 
-    let derive_config = cmp_derive::Config::<Custom> {
+    let derive_config = cmp_derive_old::Config::<Custom> {
         derive_items: vec![Box::new(DeriveItem {
             store: ValueInstantString::default(),
             fn_input: |msg: &Custom, store| match msg {
@@ -92,7 +92,7 @@ fn main() -> anyhow::Result<()> {
         .build()?
         .block_on(async move {
             ComponentExecutor::new(executor_config)
-                .add_cmp(cmp_derive::Cmp::new(derive_config))
+                .add_cmp(cmp_derive_old::Cmp::new(derive_config))
                 .add_cmp(cmp_logger::Cmp::new(logger_config))
                 .add_cmp(cmp_inject_periodic::Cmp::new(inject_periodic_config))
                 .wait_result()
@@ -109,7 +109,7 @@ fn main() -> anyhow::Result<()> {
 
             local_set.spawn_local(async move {
                 ComponentExecutor::new(executor_config)
-                    .add_cmp(cmp_derive::Cmp::new(derive_config))
+                    .add_cmp(cmp_derive_old::Cmp::new(derive_config))
                     .add_cmp(cmp_logger::Cmp::new(logger_config))
                     .add_cmp(cmp_inject_periodic::Cmp::new(inject_periodic_config))
                     .wait_result()

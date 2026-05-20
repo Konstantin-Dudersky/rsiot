@@ -16,9 +16,9 @@ pub fn cmp() -> Component<Config<Msg>, Msg> {
         client_capacity: 100,
         publish: ConfigPublish::Publish {
             base_topic: "example".into(),
-            fn_publish: |msg, mqtt_msg_gen| {
+            fn_publish: |msg, msg_gen| {
                 let mqtt_msg = match msg {
-                    Msg::Counter(v) => mqtt_msg_gen.ser("counter", true, v)?,
+                    Msg::Counter(v) => msg_gen.ser("counter", true, v)?,
                     _ => return Ok(None),
                 };
                 Ok(Some(mqtt_msg))

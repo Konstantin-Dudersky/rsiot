@@ -2,7 +2,7 @@ services:
   service_nanomq:
     container_name: service_nanomq
     hostname: service_nanomq
-    image: emqx/nanomq:latest
+    image: emqx/nanomq:0.24 # https://hub.docker.com/r/emqx/nanomq/tags
     networks:
       - network_internal
     ports:

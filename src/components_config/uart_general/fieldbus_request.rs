@@ -1,4 +1,7 @@
-use std::{fmt::Debug, time::Instant};
+use std::{
+    fmt::Debug,
+    time::{Duration, Instant},
+};
 
 use crate::components_config::master_device::RequestResponseBound;
 
@@ -45,4 +48,8 @@ impl FieldbusRequest {
     // }
 }
 
-impl RequestResponseBound for FieldbusRequest {}
+impl RequestResponseBound for FieldbusRequest {
+    fn request_duration(&self) -> Duration {
+        Duration::default()
+    }
+}

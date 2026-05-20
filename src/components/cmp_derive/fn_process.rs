@@ -1,56 +1,66 @@
+use tokio::sync::mpsc;
 use tokio::task::JoinSet;
 
-use crate::executor::{MsgBusLinker, MsgBusInput, MsgBusOutput, join_set_spawn};
+use crate::executor::{MsgBusLinker, join_set_spawn};
 use crate::message::*;
 
-use super::{Config, DeriveItemProcess, Error};
+use super::{
+    BufferBound, COMPONENT_NAME, Config, ConfigOutputSend, Error, task_input::Input,
+    task_output::Output, task_period::Period,
+};
 
-pub async fn fn_process<TMsg>(
+pub async fn fn_process<TMsg, TBuffer>(
     msgbus_linker: MsgBusLinker<TMsg>,
-    config: Config<TMsg>,
-) -> super::Result<()>
+    config: Config<TMsg, TBuffer>,
+) -> Result<(), Error>
 where
     TMsg: MsgDataBound + 'static,
+    TBuffer: 'static + BufferBound,
 {
+    let (ch_tx_buffer, ch_rx_buffer) = mpsc::channel(5);
+
     let mut task_set = JoinSet::new();
 
-    for item in config.derive_items {
+    let task = Input {
+        input: msgbus_linker.input(),
+        output: ch_tx_buffer.clone(),
+        fn_input: config.fn_input,
+    };
+    join_set_spawn(
+        &mut task_set,
+        format!("{COMPONENT_NAME} | input"),
+        task.spawn(),
+    );
+
+    if let ConfigOutputSend::Periodic(period) = config.output_send {
+        let task = Period {
+            output: ch_tx_buffer,
+            period,
+        };
         join_set_spawn(
             &mut task_set,
-            "cmp_derive",
-            task_process_derive_item(msgbus_linker.input(), msgbus_linker.output(), item),
+            format!("{COMPONENT_NAME} | Period"),
+            task.spawn(),
         );
     }
 
-    drop(msgbus_linker);
+    let task = Output {
+        input: ch_rx_buffer,
+        output: msgbus_linker.output(),
+        fn_output: config.fn_output,
+        output_send: config.output_send,
+    };
+    join_set_spawn(
+        &mut task_set,
+        format!("{COMPONENT_NAME} | output"),
+        task.spawn(),
+    );
+
+    msgbus_linker.close();
 
     while let Some(res) = task_set.join_next().await {
         res??
     }
-    Ok(())
-}
 
-async fn task_process_derive_item<TMsg>(
-    mut input: MsgBusInput<TMsg>,
-    output: MsgBusOutput<TMsg>,
-    mut derive_item: Box<dyn DeriveItemProcess<TMsg>>,
-) -> super::Result<()>
-where
-    TMsg: MsgDataBound,
-{
-    while let Ok(msg) = input.recv().await {
-        let Some(msg) = msg.get_custom_data() else {
-            continue;
-        };
-        let msgs = derive_item.process(&msg);
-        let Some(msgs) = msgs else { continue };
-        for msg in msgs {
-            let msg = Message::new_custom(msg);
-            output
-                .send(msg)
-                .await
-                .map_err(|e| Error::TokioSynBroadcast(e.to_string()))?
-        }
-    }
     Ok(())
 }

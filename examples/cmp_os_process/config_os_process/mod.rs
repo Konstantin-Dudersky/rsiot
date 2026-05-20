@@ -1,7 +1,11 @@
+mod cmp_chronyc;
+
+pub use cmp_chronyc::cmp_chronyc;
+
 use rsiot::{components::cmp_os_process::*, executor::Component};
 use tracing::info;
 
-use crate::message::*;
+use crate::msg::*;
 
 pub fn cmp() -> Component<Config<Msg>, Msg> {
     let config = Config {

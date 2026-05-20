@@ -16,7 +16,7 @@ where
     /// Примеры:
     ///
     /// - ```String::from("postgres://user:password@localhost:5432/db_name")```
-    pub connection_string: String,
+    pub connection_string: ConfigConnectionString,
 
     /// Максимальное количество подключений к БД
     ///
@@ -39,12 +39,29 @@ where
 }
 // ANCHOR: Config
 
-/// Конфигурация таблицы для сохранения данных в БД
+/// Строка подключения к БД
 #[derive(Clone, Debug)]
-pub struct ConfigTable<TMsg>
-where
-    TMsg: MsgDataBound,
-{
+pub struct ConfigConnectionString {
+    /// Пользователь
+    ///
+    /// `postgres`
+    pub user: String,
+
+    /// Пароль
+    ///
+    /// `postgres`
+    pub password: String,
+
+    /// Хост
+    ///
+    /// `localhost`
+    pub database_host: String,
+
+    /// Порт
+    ///
+    /// `5432`
+    pub port: u16,
+
     /// Проект
     pub prj: String,
 
@@ -53,7 +70,23 @@ where
 
     /// Сервис
     pub svc: String,
+}
+impl ConfigConnectionString {
+    /// Возвращает строку подключения к БД
+    pub fn connection_string(&self) -> String {
+        format!(
+            "postgres://{}:{}@{}:{}/{}__{}__{}",
+            self.user, self.password, self.database_host, self.port, self.prj, self.hst, self.svc
+        )
+    }
+}
 
+/// Конфигурация таблицы для сохранения данных в БД
+#[derive(Clone, Debug)]
+pub struct ConfigTable<TMsg>
+where
+    TMsg: MsgDataBound,
+{
     /// Компонент
     pub cmp: String,
 
@@ -84,10 +117,7 @@ where
 {
     /// Название таблицы в БД
     pub fn table_name(&self) -> String {
-        format!(
-            "{}${}${}${}${}",
-            self.prj, self.hst, self.svc, self.cmp, self.tag
-        )
+        format!("{}__{}", self.cmp, self.tag)
     }
 }
 

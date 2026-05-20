@@ -1,4 +1,10 @@
-//! Шаблон компонента
+//! Компонент для создания сообщений один раз.
+//!
+//! # Примеры
+//!
+//! ```rust
+#![doc = include_str!("../../../examples/cmp_inject_single/config_inject_single.rs")]
+//! ```
 
 mod component;
 mod config;
