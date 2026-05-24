@@ -181,10 +181,10 @@ async fn make_i2c_operation(
         }
     };
 
+    // Закрываем все каналы на мультиплексоре
     match i2c_address {
         I2cAddress::Direct { .. } => (),
         I2cAddress::Mux { mux_address, .. } => {
-            // Закрываем все каналы на мультиплексоре
             let mut transaction =
                 [LinuxI2CMessage::write(&[0x00]).with_address(mux_address as u16)];
             bus.transfer(&mut transaction)?;

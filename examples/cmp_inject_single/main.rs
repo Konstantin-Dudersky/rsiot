@@ -4,14 +4,14 @@
 //! ```
 
 #[cfg(feature = "executor")]
-mod config_inject_single;
+mod cfg_inject_single;
 #[cfg(feature = "executor")]
-mod config_logger;
+mod cfg_logger;
 #[cfg(feature = "executor")]
 mod msg;
 
 #[cfg(feature = "executor")]
-#[tokio::main]
+#[tokio::main(flavor = "current_thread")]
 async fn main() -> anyhow::Result<()> {
     use tokio::time::Duration;
     use tracing::level_filters::LevelFilter;
@@ -32,8 +32,8 @@ async fn main() -> anyhow::Result<()> {
     };
 
     ComponentExecutor::<Msg>::new(executor_config)
-        .add_cmp(config_logger::cmp())
-        .add_cmp(config_inject_single::cmp())
+        .add_cmp(cfg_logger::cmp())
+        .add_cmp(cfg_inject_single::cmp())
         .wait_result()
         .await?;
 

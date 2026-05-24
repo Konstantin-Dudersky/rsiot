@@ -1,0 +1,9 @@
+{
+  "lsp": {
+    "slint": {
+      "binary": {
+        "arguments": ["-Lmaterial=./src/config_slint/app/components/material/material.slint"],
+      },
+    },
+  },
+}

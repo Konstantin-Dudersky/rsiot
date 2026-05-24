@@ -1,0 +1,18 @@
+import { Palette } from "std-widgets.slint";
+
+import { MaterialWindow } from "@material";
+
+export component MainWindow inherits MaterialWindow {
+    width: 800px;
+    height: 480px;
+    title: "My Application";
+    default-font-size: 14px;
+
+    init => {
+        Palette.color-scheme = ColorScheme.dark;
+    }
+
+    Text {
+        text: "Главное окно";
+    }
+}

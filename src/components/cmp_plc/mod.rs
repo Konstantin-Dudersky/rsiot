@@ -1,25 +1,57 @@
 //! Исполнение логики работы в стиле ПЛК.
 //!
-//! ## Структурные единицы
+//! # Примеры
 //!
-//! - Функциональные блоки (FB)
+//! ## Создание базового проекта
 //!
-//! ### Организационные блоки (OB)
+//! ### `cfg_plc/mod.rs`
 //!
-//! Верхнеуровневые элементы. Выполнены в виде задач tokio. Параллельно можно запускать несколько
-//! OB. Поскольку задачи выполняются в разных потоках, нет необходимости вытеснять OB по приоритетам
-//! - они выполняются параллельно.
+//! ```rust
+#![doc = include_str!("../../../examples/cmp_plc_minimal/cfg_plc/mod.rs")]
+//! ```
 //!
-//! plc-rs не заботится, откуда данные приходят и куда отправляются. Входные данные поступают из
-//! брокера сообщений и передаются по каналу в OB. Выходные данные также отправляются в брокер
-//! сообщений. Коммуникации с устройствами также программируются во внешних крейтах.
+//! ### `cfg_plc/fn_cycle_init.rs`
 //!
-//! ### Функциональные блоки (FB)
+//! ```rust
+#![doc = include_str!("../../../examples/cmp_plc_minimal/cfg_plc/fn_cycle_init.rs")]
+//! ```
 //!
-//! Базовые компоненты для построения программы. Сохраняют состояние между вызовами.
+//! ### `cfg_plc/fn_input.rs`
 //!
+//! ```rust
+#![doc = include_str!("../../../examples/cmp_plc_minimal/cfg_plc/fn_input.rs")]
+//! ```
 //!
-//! См. [документацию](https://docs.rs/rsiot-plc/latest/)
+//! ### `cfg_plc/fn_output.rs`
+//!
+//! ```rust
+#![doc = include_str!("../../../examples/cmp_plc_minimal/cfg_plc/fn_output.rs")]
+//! ```
+//!
+//! ### `cfg_plc/retention.rs`
+//!
+//! ```rust
+#![doc = include_str!("../../../examples/cmp_plc_minimal/cfg_plc/retention.rs")]
+//! ```
+//!
+//! ### `cfg_plc/logic/mod.rs`
+//!
+//! ```rust
+#![doc = include_str!("../../../examples/cmp_plc_minimal/cfg_plc/logic/mod.rs")]
+//! ```
+//!
+//! ### `cfg_plc/logic/fb_main.rs`
+//!
+//! ```rust
+#![doc = include_str!("../../../examples/cmp_plc_minimal/cfg_plc/logic/fb_main.rs")]
+//! ```
+//!
+//! ### `cfg_plc/logic/fb_simple.rs`
+//!
+//! ```rust
+#![doc = include_str!("../../../examples/cmp_plc_minimal/cfg_plc/logic/fb_simple.rs")]
+//! ```
+//!
 
 mod component;
 mod config;

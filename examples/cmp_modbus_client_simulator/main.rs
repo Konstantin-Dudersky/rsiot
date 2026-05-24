@@ -8,13 +8,13 @@
 //!
 
 #[cfg(feature = "cmp_modbus_client")]
-mod config_inject_periodic;
+mod cfg_inject_periodic;
 #[cfg(feature = "cmp_modbus_client")]
-mod config_logger;
+mod cfg_logger;
 #[cfg(feature = "cmp_modbus_client")]
-mod config_modbus_client;
+mod cfg_modbus_client;
 #[cfg(feature = "cmp_modbus_client")]
-mod message;
+mod msg;
 
 #[cfg(feature = "cmp_modbus_client")]
 #[tokio::main]
@@ -35,9 +35,9 @@ async fn main() -> anyhow::Result<()> {
     };
 
     ComponentExecutor::new(executor_config)
-        .add_cmp(config_inject_periodic::cmp())
-        .add_cmp(config_modbus_client::cmp())
-        .add_cmp(config_logger::cmp())
+        .add_cmp(cfg_inject_periodic::cmp())
+        .add_cmp(cfg_modbus_client::cmp())
+        .add_cmp(cfg_logger::cmp())
         .wait_result()
         .await?;
     Ok(())

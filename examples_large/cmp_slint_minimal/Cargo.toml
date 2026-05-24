@@ -1,0 +1,28 @@
+[package]
+name = "cmp_slint_minimal"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "*"
+slint = { version = "*", default-features = false, features = [
+    "compat-1-2",
+    # "backend-linuxkms-noseat",
+    "backend-winit",
+    # "renderer-skia",
+    "renderer-femtovg",
+
+] }
+rsiot = { path = "../../", features = ["cmp_slint"] }
+serde = { version = "*", features = ["derive"] }
+tokio = { version = "*", features = ["macros", "rt-multi-thread"] }
+
+[build-dependencies]
+slint-build = "*"
+
+[package.metadata.cross.target.armv7-unknown-linux-gnueabihf]
+dockerfile = "./Dockerfile.armv7-unknown-linux-gnueabihf"
+
+[profile.release]
+lto = "fat"
+opt-level = "z"

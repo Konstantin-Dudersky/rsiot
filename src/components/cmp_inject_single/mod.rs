@@ -3,7 +3,7 @@
 //! # Примеры
 //!
 //! ```rust
-#![doc = include_str!("../../../examples/cmp_inject_single/config_inject_single.rs")]
+#![doc = include_str!("../../../examples/cmp_inject_single/cfg_inject_single.rs")]
 //! ```
 
 mod component;

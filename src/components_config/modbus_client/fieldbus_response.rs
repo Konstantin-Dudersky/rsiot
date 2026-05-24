@@ -1,4 +1,4 @@
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use crate::components_config::master_device::RequestResponseBound;
 
@@ -19,7 +19,11 @@ pub struct FieldbusResponse {
     pub response_content: ResponseContent,
 }
 
-impl RequestResponseBound for FieldbusResponse {}
+impl RequestResponseBound for FieldbusResponse {
+    fn request_duration(&self) -> Duration {
+        Duration::default()
+    }
+}
 
 impl FieldbusResponse {
     /// Создать ответ из запроса

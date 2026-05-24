@@ -10,7 +10,7 @@ use tokio::time::sleep;
 use tracing::{trace, warn};
 
 use crate::components::shared_tasks::fieldbus_execution::FieldbusExecution;
-use crate::components_config::i2c_master::{self, Operation};
+use crate::components_config::i2c_master::{self, I2cAddress, Operation};
 use crate::components_config::master_device::{
     FieldbusRequestWithIndex, FieldbusResponseWithIndex,
 };
@@ -116,6 +116,7 @@ impl I2cComm {
 
             let response = i2c_master::FieldbusResponse {
                 request_creation_time: request.request_creation_time,
+                request_duration: request.request_creation_time.elapsed(),
                 request_kind: request.request_kind,
                 payload: response_payload,
             };
@@ -138,14 +139,31 @@ impl I2cComm {
 /// Если присутствует операция чтения, то возвращаем данные
 async fn make_i2c_operation<'a>(
     i2c_driver: &mut I2cDriver<'a>,
-    address: u8,
+    i2c_address: I2cAddress,
     operation: &Operation,
     timeout: Duration,
 ) -> Result<Option<Vec<u8>>, EspError> {
-    match operation {
+    // Определяем адрес
+    let address = match i2c_address {
+        I2cAddress::Direct { address } => address,
+        I2cAddress::Mux {
+            mux_address,
+            channel,
+            address,
+        } => {
+            // Открываем канал на мультиплексоре
+            let mux_data = [channel];
+            let mut transaction = [EspOperation::Write(&mux_data)];
+            i2c_driver.transaction(mux_address, &mut transaction, millis_to_ticks(timeout))?;
+
+            address
+        }
+    };
+
+    let read_result = match operation {
         Operation::Delay { delay } => {
             sleep(*delay).await;
-            Ok(None)
+            Ok(Some(vec![]))
         }
         Operation::WriteRead {
             write_data,
@@ -165,7 +183,7 @@ async fn make_i2c_operation<'a>(
         Operation::Write { write_data } => {
             let mut transaction = [EspOperation::Write(write_data)];
             i2c_driver.transaction(address, &mut transaction, millis_to_ticks(timeout))?;
-            Ok(None)
+            Ok(Some(vec![]))
         }
         Operation::Read { read_size } => {
             let mut read_data = vec![0; *read_size as usize];
@@ -174,7 +192,18 @@ async fn make_i2c_operation<'a>(
             trace!("Read data: {:x?}", read_data);
             Ok(Some(read_data))
         }
-    }
+    };
+
+    // Закрываем все каналы на мультиплексоре
+    match i2c_address {
+        I2cAddress::Direct { .. } => (),
+        I2cAddress::Mux { mux_address, .. } => {
+            let mut transaction = [EspOperation::Write(&[0x00])];
+            i2c_driver.transaction(mux_address, &mut transaction, millis_to_ticks(timeout))?;
+        }
+    };
+
+    read_result
 }
 
 fn millis_to_ticks(millis: Duration) -> u32 {

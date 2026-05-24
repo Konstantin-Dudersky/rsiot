@@ -3,11 +3,11 @@
 //! cargo run --example cmp_esp_wifi --target="riscv32imc-esp-espidf" --features="cmp_esp, logging" --release
 
 #[cfg(feature = "cmp_esp")]
-mod config_esp_i2c_master;
+mod cfg_esp_i2c_master;
 #[cfg(feature = "cmp_esp")]
-mod config_logger;
+mod cfg_logger;
 #[cfg(feature = "cmp_esp")]
-mod messages;
+mod msg;
 
 #[cfg(feature = "cmp_esp")]
 #[tokio::main(flavor = "current_thread")]
@@ -23,7 +23,7 @@ async fn main() {
         logging::LogConfig,
     };
 
-    use messages::*;
+    use msg::*;
 
     link_patches();
 
@@ -53,8 +53,8 @@ async fn main() {
 
     local_set.spawn_local(async {
         ComponentExecutor::<Msg>::new(executor_config)
-            .add_cmp(config_logger::cmp())
-            .add_cmp(config_esp_i2c_master::cmp(i2c0, pin_sda, pin_scl))
+            .add_cmp(cfg_logger::cmp())
+            .add_cmp(cfg_esp_i2c_master::cmp(i2c0, pin_sda, pin_scl))
             .wait_result()
             .await
             .unwrap()
