@@ -25,17 +25,21 @@ mod buffer_bound;
 mod device;
 mod device_trait;
 mod error;
+mod fieldbus_diag;
 mod fieldbus_request_with_index;
 mod fieldbus_response_with_index;
 mod request_response_bound;
 
-pub use buffer_bound::BufferBound;
-pub use device::*;
-pub use device_trait::DeviceTrait;
-pub use error::Error;
-pub(crate) use fieldbus_request_with_index::FieldbusRequestWithIndex;
-pub(crate) use fieldbus_response_with_index::FieldbusResponseWithIndex;
-pub(crate) use request_response_bound::RequestResponseBound;
+pub(crate) use {
+    fieldbus_request_with_index::FieldbusRequestWithIndex,
+    fieldbus_response_with_index::FieldbusResponseWithIndex,
+    request_response_bound::RequestResponseBound,
+};
+
+pub use {
+    buffer_bound::BufferBound, device::*, device_trait::DeviceTrait, error::Error,
+    fieldbus_diag::FieldbusDiagMsg,
+};
 
 /// Тип Result
 pub type Result<T> = std::result::Result<T, Error>;

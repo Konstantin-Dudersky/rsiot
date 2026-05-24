@@ -1,6 +1,7 @@
 use std::time::Duration;
 
 use crate::{
+    components::shared_tasks::fieldbus_execution::FieldbusDiag,
     components_config::{
         master_device::DeviceTrait,
         uart_general::{Baudrate, DataBits, FieldbusRequest, FieldbusResponse, Parity, StopBits},
@@ -64,24 +65,32 @@ where
 
     /// Массив устройств
     pub devices: Vec<Box<dyn DeviceTrait<TMsg, FieldbusRequest, FieldbusResponse>>>,
+
+    /// Функция для формирования сообщения диагностики
+    pub fn_diag: fn(&FieldbusDiag) -> TMsg,
+
+    /// Период отправки сообщений диагностики
+    pub fn_diag_period: Duration,
 }
 // ANCHOR: Config
 
-impl<TMsg> Default for Config<TMsg>
-where
-    TMsg: MsgDataBound,
-{
-    fn default() -> Self {
-        Self {
-            port: "/dev/ttyAMA0",
-            baudrate: Baudrate::default(),
-            data_bits: DataBits::default(),
-            parity: Parity::default(),
-            stop_bits: StopBits::default(),
-            timeout: Duration::from_millis(100),
-            gpio_chip: "/dev/gpiochip0",
-            pin_rts: Some(17),
-            devices: vec![],
-        }
-    }
-}
+// impl<TMsg> Default for Config<TMsg>
+// where
+//     TMsg: MsgDataBound,
+// {
+//     fn default() -> Self {
+//         Self {
+//             port: "/dev/ttyAMA0",
+//             baudrate: Baudrate::default(),
+//             data_bits: DataBits::default(),
+//             parity: Parity::default(),
+//             stop_bits: StopBits::default(),
+//             timeout: Duration::from_millis(100),
+//             gpio_chip: "/dev/gpiochip0",
+//             pin_rts: Some(17),
+//             devices: vec![],
+//             fn_diag: ,
+//             fn_diag_period: Duration::from_secs(60),
+//         }
+//     }
+// }

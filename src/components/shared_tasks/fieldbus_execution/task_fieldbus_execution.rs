@@ -1,18 +1,20 @@
+use std::time::Duration;
+
 use futures::TryFutureExt;
 use tokio::{sync::mpsc, task::JoinSet};
 
 use crate::{
     components::shared_tasks::mpsc_to_msgbus,
     components_config::master_device::{
-        self, DeviceTrait, FieldbusRequestWithIndex, FieldbusResponseWithIndex,
+        self, DeviceTrait, FieldbusDiagMsg, FieldbusRequestWithIndex, FieldbusResponseWithIndex,
         RequestResponseBound,
     },
     executor::{MsgBusLinker, join_set_spawn},
     message::{Message, MsgDataBound},
 };
 
-use super::filter_identical_data;
-use super::{task_add_index::AddIndex, task_split_responses::SplitResponses};
+use super::{FieldbusDiag, filter_identical_data};
+use super::{task_add_index::AddIndex, task_diag::Diag, task_split_responses::SplitResponses};
 
 /// Запуск задач, общих для всех компонентов, выполняющих опрос устройств по шине
 pub struct FieldbusExecution<'a, TMsg, TError, TFieldbusRequest, TFieldbusResponse>
@@ -40,6 +42,12 @@ where
 
     /// Массив устройств
     pub devices: Vec<Box<dyn DeviceTrait<TMsg, TFieldbusRequest, TFieldbusResponse>>>,
+
+    /// Функция для формирования диагностического сообщения
+    pub fn_diag: fn(&FieldbusDiag) -> TMsg,
+
+    /// Период формирования диагностического сообщения
+    pub fn_diag_period: Duration,
 }
 
 impl<TMsg, TError, TFieldbusRequest, TFieldbusResponse>
@@ -58,6 +66,7 @@ where
     ) -> (
         mpsc::Receiver<FieldbusRequestWithIndex<TFieldbusRequest>>,
         mpsc::Sender<FieldbusResponseWithIndex<TFieldbusResponse>>,
+        mpsc::Sender<FieldbusDiagMsg>,
     ) {
         let devices_count = self.devices.len();
         let buffer_size = self.msgbus_linker.max_capacity();
@@ -99,6 +108,9 @@ where
         let (ch_tx_filter_to_msgbus, ch_rx_filter_to_msgbus) =
             mpsc::channel::<Message<TMsg>>(buffer_size);
 
+        let (ch_tx_device_to_diag, ch_rx_device_to_diag) =
+            mpsc::channel::<FieldbusDiagMsg>(buffer_size);
+
         // Задачи выполнения устройств -------------------------------------------------------------
         let mut input_vec = vec![];
         for _ in 0..self.devices.len() {
@@ -112,11 +124,13 @@ where
                 panic!("Error configuration in fn_process_master");
             };
             let ch_tx_devices_to_filter = ch_tx_devices_to_filter.clone();
+            let ch_tx_device_to_diag = ch_tx_device_to_diag.clone();
             let task = device.spawn(
                 ch_rx_msgbus_to_devices,
                 ch_tx_device_to_addindex,
                 ch_rx_fieldbus_to_device,
                 ch_tx_devices_to_filter,
+                ch_tx_device_to_diag,
             );
             join_set_spawn(
                 self.task_set,
@@ -170,8 +184,22 @@ where
             task.spawn().map_err(self.error_mpsc_to_msgbus),
         );
 
+        // Диагностика
+        let task = Diag {
+            input: ch_rx_device_to_diag,
+            output: self.msgbus_linker.output(),
+            fn_diag: self.fn_diag,
+            period: self.fn_diag_period,
+            error_tokiompscsend: self.error_tokiompscsend,
+        };
+        join_set_spawn(self.task_set, "fn_process_master | diag", task.spawn());
+
         drop(self.msgbus_linker);
 
-        (ch_rx_addindex_to_fieldbus, ch_tx_fieldbus_to_split)
+        (
+            ch_rx_addindex_to_fieldbus,
+            ch_tx_fieldbus_to_split,
+            ch_tx_device_to_diag,
+        )
     }
 }

@@ -1,3 +1,8 @@
+use std::sync::{
+    Arc,
+    atomic::{AtomicBool, Ordering},
+};
+
 use tokio::sync::mpsc;
 
 use crate::{
@@ -5,14 +10,14 @@ use crate::{
     message::MsgDataBound,
 };
 
-use super::{Buffer, BufferBound, DeviceStateType, Error};
+use super::{Buffer, BufferBound, Error};
 
 pub struct InputRequest<TMsg, TBuffer>
 where
     TMsg: MsgDataBound,
 {
     pub buffer: Buffer<TBuffer>,
-    pub device_state: DeviceStateType,
+    pub init_completed: Arc<AtomicBool>,
     pub ch_rx_msgbus_to_device: MsgBusInput<TMsg>,
     pub ch_tx_need_request: mpsc::Sender<()>,
     pub fn_msgs_to_buffer: fn(&TMsg, &mut TBuffer),
@@ -24,8 +29,6 @@ where
     TBuffer: BufferBound,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
-        let mut init_complete = false;
-
         while let Ok(msg) = self.ch_rx_msgbus_to_device.recv().await {
             let Some(msg) = msg.get_custom_data() else {
                 continue;
@@ -40,12 +43,8 @@ where
             };
 
             // Если инициализация еще не завершена, пропускаем сообщение
-            if !init_complete {
-                if self.device_state.lock().await.init_completed {
-                    init_complete = true;
-                } else {
-                    continue;
-                }
+            if !self.init_completed.load(Ordering::Relaxed) {
+                continue;
             }
 
             if need_request {

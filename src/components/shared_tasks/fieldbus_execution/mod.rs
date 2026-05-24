@@ -36,10 +36,12 @@
 //! Документация по драйверам устройств - [master_device](crate::components_config::master_device)
 //!
 
+mod diag;
 mod task_add_index;
+mod task_diag;
 mod task_fieldbus_execution;
 mod task_split_responses;
 
 use super::filter_identical_data;
 
-pub use task_fieldbus_execution::FieldbusExecution;
+pub use {diag::FieldbusDiag, task_fieldbus_execution::FieldbusExecution};

@@ -8,7 +8,7 @@ use crate::{
     message::{Message, MsgDataBound},
 };
 
-use super::RequestResponseBound;
+use super::{FieldbusDiagMsg, RequestResponseBound};
 
 /// Трейт для реализации на структурах обмена данными с подчиненными устройствами
 #[async_trait]
@@ -26,5 +26,6 @@ where
         ch_tx_device_to_addindex: mpsc::Sender<TRequest>,
         ch_rx_fieldbus_to_split: mpsc::Receiver<TResponse>,
         ch_tx_device_to_msgbus: mpsc::Sender<Message<TMsg>>,
+        ch_tx_device_to_diag: mpsc::Sender<FieldbusDiagMsg>,
     ) -> super::Result<()>;
 }

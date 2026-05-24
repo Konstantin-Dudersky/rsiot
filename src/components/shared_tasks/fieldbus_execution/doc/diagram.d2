@@ -3,7 +3,7 @@
 ...@../../../../../doc/images/component_structure/style
 
 MsgBusIn: MsgBus {
-  shape: oval
+  class: msgbus
 }
 MsgBusIn -> MsgbusToBroadcast
 
@@ -50,20 +50,26 @@ DeviceDriverRecv_1: "DeviceDriver_1" {
   style.stroke-dash: 5
 }
 DeviceDriverRecv_1 -> FilterIdentical: "4 \n ch_device_to_filter \n mpsc::<TMsg>"
+DeviceDriverRecv_1 -> Diag
 
 DeviceDriverRecv_2: "DeviceDriver_2" {
   style.stroke-dash: 5
 }
 DeviceDriverRecv_2 -> FilterIdentical: "4 \n ch_device_to_filter \n mpsc::<TMsg>"
+DeviceDriverRecv_2 -> Diag
 
 DeviceDriverRecv_N: "DeviceDriver_N" {
   style.stroke-dash: 5
 }
 DeviceDriverRecv_N -> FilterIdentical: "4 \n ch_device_to_filter \n mpsc::<TMsg>"
+DeviceDriverRecv_N -> Diag
 
 FilterIdentical
 FilterIdentical -> MsgBusOut: "ch_filter_to_msgbus \n mpsc::<TMsg>"
 
+Diag
+Diag -> MsgBusOut
+
 MsgBusOut: MsgBus {
-  shape: oval
+  class: msgbus
 }

@@ -1,4 +1,7 @@
-use std::{collections::VecDeque, time::Duration};
+use std::sync::{
+    Arc,
+    atomic::{AtomicBool, Ordering},
+};
 
 use tokio::sync::mpsc;
 use tracing::{trace, warn};
@@ -8,14 +11,16 @@ use crate::{
     message::{Message, MsgDataBound},
 };
 
-use super::{Buffer, DeviceStateType, Error, RequestResponseBound, ResponseResult};
+use super::{Buffer, Error, FieldbusDiagMsg, RequestResponseBound, ResponseResult};
 
 pub struct Response<TMsg, TResponse, TBuffer> {
+    pub device_id: String,
     pub buffer: Buffer<TBuffer>,
-    pub device_state: DeviceStateType,
+    pub init_completed: Arc<AtomicBool>,
     pub ch_rx_fieldbus_to_device: mpsc::Receiver<TResponse>,
     pub ch_tx_output_to_filter: mpsc::Sender<Message<TMsg>>,
     pub ch_tx_need_request: mpsc::Sender<()>,
+    pub ch_tx_device_to_diag: mpsc::Sender<FieldbusDiagMsg>,
     pub fn_response_to_buffer: fn(TResponse, &mut TBuffer) -> anyhow::Result<ResponseResult>,
     pub fn_buffer_to_msgs: fn(&mut TBuffer) -> Vec<TMsg>,
 }
@@ -26,17 +31,12 @@ where
     TMsg: MsgDataBound,
 {
     pub async fn spawn(mut self) -> super::Result<()> {
-        let mut request_durations: VecDeque<Duration> = VecDeque::new();
-
         while let Some(response) = self.ch_rx_fieldbus_to_device.recv().await {
             trace!("Response: {:?}", response);
 
-            request_durations.push_back(response.request_duration());
-            if request_durations.len() >= 10 {
-                request_durations.pop_front();
-            }
-
             let mut buffer = self.buffer.lock().await;
+
+            let request_duration = response.request_duration();
 
             let req_res = (self.fn_response_to_buffer)(response, &mut buffer);
             let msgs = (self.fn_buffer_to_msgs)(&mut buffer);
@@ -52,33 +52,52 @@ where
                     .map_err(|_| Error::TokioSyncMpscSend)?;
             }
 
-            let mut device_state = self.device_state.lock().await;
-            let avg_request_duration = request_durations.iter().sum::<Duration>().as_secs_f64()
-                / (request_durations.len() as f64);
-            device_state.avg_request_duration = Duration::from_secs_f64(avg_request_duration);
-
-            match req_res {
+            let diag_msg = match req_res {
                 Ok(req_res) => match req_res {
                     ResponseResult::OkInitCompleted => {
-                        device_state.init_completed = true;
-                        device_state.response_ok_count += 1
+                        self.init_completed.store(true, Ordering::Relaxed);
+                        FieldbusDiagMsg::DeviceInitCompleted {
+                            id: self.device_id.clone(),
+                            duration: request_duration,
+                        }
                     }
                     ResponseResult::OkNeedRequest => {
-                        device_state.response_ok_count += 1;
                         self.ch_tx_need_request
                             .check_capacity(0.2, "master_device | Response | ch_tx_buffer")
                             .send(())
                             .await
                             .map_err(|_| Error::TokioSyncMpscSend)?;
+                        FieldbusDiagMsg::DeviceRequestOk {
+                            id: self.device_id.clone(),
+                            duration: request_duration,
+                        }
                     }
-                    ResponseResult::Ok => device_state.response_ok_count += 1,
-                    ResponseResult::Error(_) => device_state.response_err_count += 1,
+                    ResponseResult::Ok => FieldbusDiagMsg::DeviceRequestOk {
+                        id: self.device_id.clone(),
+                        duration: request_duration,
+                    },
+                    ResponseResult::Error(err) => FieldbusDiagMsg::DeviceRequestErr {
+                        id: self.device_id.clone(),
+                        duration: request_duration,
+                        error: err,
+                    },
                 },
-                Err(e) => {
-                    warn!("Error in fn_response_to_buffer: {:?}", e);
+                Err(err) => {
+                    warn!("Error in fn_response_to_buffer: {:?}", err);
+
+                    FieldbusDiagMsg::DeviceRequestErr {
+                        id: self.device_id.clone(),
+                        duration: request_duration,
+                        error: err.to_string(),
+                    }
                 }
             };
-            drop(device_state);
+
+            self.ch_tx_device_to_diag
+                .check_capacity(0.2, "master_device | Response | ch_tx_device_to_diag")
+                .send(diag_msg)
+                .await
+                .map_err(|_| Error::TokioSyncMpscSend)?;
         }
 
         Ok(())

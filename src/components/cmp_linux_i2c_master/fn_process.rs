@@ -9,9 +9,9 @@ use crate::{
     components::shared_tasks::fieldbus_execution::FieldbusExecution,
     components_config::{
         i2c_master,
-        master_device::{FieldbusRequestWithIndex, FieldbusResponseWithIndex},
+        master_device::{FieldbusDiagMsg, FieldbusRequestWithIndex, FieldbusResponseWithIndex},
     },
-    executor::{MsgBusLinker, join_set_spawn},
+    executor::{Instant, MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
 };
 
@@ -34,12 +34,16 @@ where
         error_master_device: Error::DeviceError,
         error_tokiompscsend: || Error::TokioSyncMpsc,
         devices: config.devices,
+        fn_diag: config.fn_diag,
+        fn_diag_period: config.fn_diag_period,
     };
-    let (ch_rx_devices_to_fieldbus, ch_tx_fieldbus_to_devices) = config_fn_process_master.spawn();
+    let (ch_rx_devices_to_fieldbus, ch_tx_fieldbus_to_devices, ch_tx_device_to_diag) =
+        config_fn_process_master.spawn();
 
     let task = I2cComm {
         input: ch_rx_devices_to_fieldbus,
         output: ch_tx_fieldbus_to_devices,
+        diag: ch_tx_device_to_diag,
         dev_i2c: config.dev_i2c,
     };
     join_set_spawn(
@@ -58,6 +62,7 @@ where
 pub struct I2cComm {
     pub input: mpsc::Receiver<FieldbusRequestWithIndex<i2c_master::FieldbusRequest>>,
     pub output: mpsc::Sender<FieldbusResponseWithIndex<i2c_master::FieldbusResponse>>,
+    pub diag: mpsc::Sender<FieldbusDiagMsg>,
     pub dev_i2c: String,
 }
 impl I2cComm {
@@ -69,6 +74,7 @@ impl I2cComm {
 
             let device_index = fieldbus_request.device_index;
             let request = fieldbus_request.request;
+            let start = Instant::now();
 
             // Выполняем все операции в цикле
             let response_payload = {
@@ -95,6 +101,15 @@ impl I2cComm {
                 }
             };
 
+            let diag_msg = match response_payload {
+                Ok(_) => FieldbusDiagMsg::FieldbusRequestOk {
+                    duration: start.elapsed(),
+                },
+                Err(_) => FieldbusDiagMsg::FieldbusRequestErr {
+                    duration: start.elapsed(),
+                },
+            };
+
             let response = i2c_master::FieldbusResponse {
                 request_creation_time: request.request_creation_time,
                 request_duration: request.request_creation_time.elapsed(),
@@ -109,6 +124,11 @@ impl I2cComm {
             trace!("I2C response: {:?}", response_with_index);
             self.output
                 .send(response_with_index)
+                .await
+                .map_err(|_| Error::TokioSyncMpsc)?;
+
+            self.diag
+                .send(diag_msg)
                 .await
                 .map_err(|_| Error::TokioSyncMpsc)?;
         }

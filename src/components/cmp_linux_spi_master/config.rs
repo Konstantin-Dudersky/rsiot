@@ -1,6 +1,9 @@
+use std::time::Duration;
+
 use linux_embedded_hal::spidev::SpiModeFlags;
 
 use crate::{
+    components::shared_tasks::fieldbus_execution::FieldbusDiag,
     components_config::{
         master_device::DeviceTrait,
         spi_master::{self, ConfigDeviceSpiMode},
@@ -22,6 +25,12 @@ where
     /// Драйвера устройств
     pub devices:
         Vec<Box<dyn DeviceTrait<TMsg, spi_master::FieldbusRequest, spi_master::FieldbusResponse>>>,
+
+    /// Функция для формирования сообщения диагностики
+    pub fn_diag: fn(&FieldbusDiag) -> TMsg,
+
+    /// Период отправки сообщений диагностики
+    pub fn_diag_period: Duration,
 }
 // ANCHOR: Config
 

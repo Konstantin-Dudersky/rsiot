@@ -24,9 +24,12 @@ where
         error_master_device: super::Error::Device,
         error_tokiompscsend: || super::Error::TokioSyncMpscSend,
         devices: config.devices,
+        fn_diag: config.fn_diag,
+        fn_diag_period: config.fn_diag_period,
     };
 
-    let (ch_rx_addindex_to_fieldbus, ch_tx_fieldbus_to_split) = config_fn_process_master.spawn();
+    let (ch_rx_addindex_to_fieldbus, ch_tx_fieldbus_to_split, ch_tx_device_to_diag) =
+        config_fn_process_master.spawn();
 
     // Коммуникация UART
     //

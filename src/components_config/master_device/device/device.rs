@@ -1,6 +1,9 @@
 #![allow(clippy::module_inception)]
 
-use std::{sync::Arc, time::Duration};
+use std::{
+    sync::{Arc, atomic::AtomicBool},
+    time::Duration,
+};
 
 use futures::TryFutureExt;
 use tokio::{
@@ -14,10 +17,7 @@ use crate::{
     message::{Message, MsgDataBound},
 };
 
-use super::{
-    BufferBound, ConfigDeviceStateOutput, DeviceState, RequestResponseBound, ResponseResult,
-    config::*, tasks,
-};
+use super::{BufferBound, FieldbusDiagMsg, RequestResponseBound, ResponseResult, config::*, tasks};
 
 /// Базовое устройство для опроса по шине.
 pub struct DeviceBase<TMsg, TFieldbusRequest, TFieldbusResponse, TBuffer>
@@ -73,9 +73,6 @@ where
     /// ```
     pub fn_buffer_to_msgs: fn(&mut TBuffer) -> Vec<TMsg>,
 
-    /// Вывод информации о состоянии устройства
-    pub device_state_output: Option<ConfigDeviceStateOutput<TMsg>>,
-
     /// Значения в буфере при инициализации
     pub buffer_default: TBuffer,
 }
@@ -95,17 +92,12 @@ where
         ch_tx_device_to_fieldbus: mpsc::Sender<TRequest>,
         ch_rx_fieldbus_to_device: mpsc::Receiver<TResponse>,
         ch_tx_device_to_msgbus: mpsc::Sender<Message<TMsg>>,
+        ch_tx_device_to_diag: mpsc::Sender<FieldbusDiagMsg>,
     ) -> super::Result<()> {
         let buffer = self.buffer_default;
         let buffer = Arc::new(Mutex::new(buffer));
 
-        let device_state = DeviceState {
-            init_completed: false,
-            response_ok_count: 0,
-            response_err_count: 0,
-            avg_request_duration: Duration::default(),
-        };
-        let device_state = Arc::new(Mutex::new(device_state));
+        let init_completed = Arc::new(AtomicBool::new(false));
 
         let (ch_tx_need_request, ch_rx_need_request) = mpsc::channel::<()>(100);
         let (ch_tx_request, ch_rx_request) = mpsc::channel::<TRequest>(100);
@@ -119,7 +111,7 @@ where
         let task = tasks::InitRequest {
             id: id.as_ref().to_string(),
             buffer: buffer.clone(),
-            device_state: device_state.clone(),
+            init_completed: init_completed.clone(),
             fn_init_requests: self.fn_init_requests,
             ch_tx_request: ch_tx_request.clone(),
         };
@@ -132,7 +124,7 @@ where
         // Задача создания запросов на основе входящих сообщений
         let task = tasks::InputRequest {
             buffer: buffer.clone(),
-            device_state: device_state.clone(),
+            init_completed: init_completed.clone(),
             ch_rx_msgbus_to_device,
             ch_tx_need_request: ch_tx_need_request.clone(),
             fn_msgs_to_buffer: self.fn_msgs_to_buffer,
@@ -145,7 +137,7 @@ where
 
         // Задача периодического формирования запросов на основе буфера
         let task = tasks::BufferPeriodic {
-            device_state: device_state.clone(),
+            init_completed: init_completed.clone(),
             ch_tx_need_request: ch_tx_need_request.clone(),
             period: self.buffer_to_request_period,
         };
@@ -158,7 +150,7 @@ where
         // Задача создания периодических запросов
         for periodic_request in self.periodic_requests {
             let task = tasks::PeriodicRequest {
-                device_state: device_state.clone(),
+                init_completed: init_completed.clone(),
                 buffer: buffer.clone(),
                 period: periodic_request.period,
                 fn_request: periodic_request.fn_requests,
@@ -197,11 +189,13 @@ where
 
         // Задача обработки ответа
         let task = tasks::Response {
+            device_id: id.as_ref().to_string(),
             buffer: buffer.clone(),
-            device_state: device_state.clone(),
+            init_completed: init_completed.clone(),
             ch_rx_fieldbus_to_device,
             ch_tx_output_to_filter: ch_tx_output_to_filter.clone(),
             ch_tx_need_request: ch_tx_need_request.clone(),
+            ch_tx_device_to_diag,
             fn_response_to_buffer: self.fn_response_to_buffer,
             fn_buffer_to_msgs: self.fn_buffer_to_msgs,
         };
@@ -210,20 +204,6 @@ where
             format!("master_device | response | {}", id.as_ref()),
             task.spawn(),
         );
-
-        // Вывод состояния устройства
-        if let Some(cdso) = self.device_state_output {
-            let task = tasks::DeviceStateOutput {
-                device_state: device_state.clone(),
-                ch_tx_output_to_filter: ch_tx_output_to_filter.clone(),
-                config: cdso,
-            };
-            join_set_spawn(
-                &mut task_set,
-                format!("master_device | device_state_output | {}", id.as_ref()),
-                task.spawn(),
-            );
-        }
 
         // Задачи фильтрации одинаковых сообщений
         let task = shared_tasks::filter_identical_data::FilterIdenticalData {
@@ -259,7 +239,6 @@ where
             fn_buffer_to_request: |_| Ok(vec![]),
             fn_response_to_buffer: |_, _| ResponseResult::ok(),
             fn_buffer_to_msgs: |_| vec![],
-            device_state_output: None,
             buffer_default: Default::default(),
         }
     }

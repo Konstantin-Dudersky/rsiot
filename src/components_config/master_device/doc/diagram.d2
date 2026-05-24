@@ -2,12 +2,20 @@
 
 ...@../../../../doc/images/component_structure/style
 
-MsgBusIn: MsgBus {
+ch_rx_msgbus_to_device: {
   class: msgbus
 }
-MsgBusIn -> InputRequest: "1"
+ch_rx_msgbus_to_device -> InputRequest: "1"
 
-InputRequest
+InputRequest: |md
+  **InputRequest**
+
+  Mutex:
+  - Buffer
+  - DeviceState
+| {
+  shape: rectangle
+}
 InputRequest -> BufferToRequests: "ch_need_request"
 
 BufferPeriodic
@@ -23,20 +31,30 @@ PeriodicRequest
 PeriodicRequest -> Request: "ch_request"
 
 Request
-Request -> FieldbusProcess: "2"
+Request -> ch_tx_device_to_fieldbus: "2"
 
-FieldbusProcess: {
-  style.stroke-dash: 5
+ch_tx_device_to_fieldbus: {
+  class: msgbus
 }
-FieldbusProcess -> Response: "3"
+
+ch_rx_fieldbus_to_device: {
+  class: msgbus
+}
+
+ch_rx_fieldbus_to_device -> Response: "3"
 
 Response
 Response -> FilterIdenticalData: "ch_output_to_filter"
 Response -> BufferToRequests: "ch_need_request"
+Response -> ch_tx_device_to_diag
 
 FilterIdenticalData
-FilterIdenticalData -> MsgBusOut: "4"
+FilterIdenticalData -> ch_tx_device_to_msgbus: "4"
 
-MsgBusOut: MsgBus {
+ch_tx_device_to_diag: {
+  class: msgbus
+}
+
+ch_tx_device_to_msgbus: {
   class: msgbus
 }
