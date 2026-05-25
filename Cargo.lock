@@ -7112,6 +7112,7 @@ dependencies = [
  "anyhow",
  "async-trait",
  "bitvec",
+ "pretty_assertions",
  "rsiot",
  "serde",
  "strum 0.28.0",

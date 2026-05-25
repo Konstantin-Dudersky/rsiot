@@ -5,7 +5,7 @@
 //! ## Файл `Cargo.toml`
 //!
 //! ```toml
-#![doc = include_str!("../../../../rsiot-examples/cmp_slint_minimal/Cargo.toml")]
+#![doc = include_str!("../../../examples_large/cmp_slint_minimal/Cargo.toml")]
 //! ```
 //!
 //! В настройках крейта slint указываем требуемый бекенд и рендер. Для встраиваемых систем без
@@ -23,7 +23,7 @@
 //! В файле build.rs прописываем функцию предкомпиляции
 //!
 //! ```rust
-#![doc = include_str!("../../../../rsiot-examples/cmp_slint_minimal/build.rs")]
+#![doc = include_str!("../../../examples_large/cmp_slint_minimal/build.rs")]
 //! ```
 //!
 //! ## src/config_slint/app/main_window.slint
@@ -31,7 +31,7 @@
 //! Создаём файл main_window.slint с описанием основного окна.
 //!
 //! ```rust
-#![doc = include_str!("../../../../rsiot-examples/cmp_slint_minimal/src/config_slint/app/main_window.slint")]
+#![doc = include_str!("../../../examples_large/cmp_slint_minimal/src/config_slint/app/main_window.slint")]
 //! ```
 //!
 //! ## src/config_slint/app/global/input.slint
@@ -40,7 +40,7 @@
 //! обновляться на основе входящих сообщений из шины MsgBus.
 //!
 //! ```rust
-#![doc = include_str!("../../../../rsiot-examples/cmp_slint_minimal/src/config_slint/app/global/input.slint")]
+#![doc = include_str!("../../../examples_large/cmp_slint_minimal/src/config_slint/app/global/input.slint")]
 //! ```
 //!
 //! ## src/config_slint/app/global/output.slint
@@ -50,7 +50,7 @@
 //! данных и т.д. На основе этих событий формируются исходящие сообщения в шину MsgBus.
 //!
 //! ```rust
-#![doc = include_str!("../../../../rsiot-examples/cmp_slint_minimal/src/config_slint/app/global/output.slint")]
+#![doc = include_str!("../../../examples_large/cmp_slint_minimal/src/config_slint/app/global/output.slint")]
 //! ```
 //!
 //! ## src/config_slint/app/global/main.slint
@@ -60,7 +60,7 @@
 //! одного файла.
 //!
 //! ```rust
-#![doc = include_str!("../../../../rsiot-examples/cmp_slint_minimal/src/config_slint/app/global/main.slint")]
+#![doc = include_str!("../../../examples_large/cmp_slint_minimal/src/config_slint/app/global/main.slint")]
 //! ```
 //!
 //! ## Компоненты Material
@@ -79,7 +79,7 @@
 //! Добавить путь к библиотеке material для работы LSP редактора Zed.
 //!
 //! ```json
-#![doc = include_str!("../../../../rsiot-examples/cmp_slint_minimal/.zed/settings.json")]
+#![doc = include_str!("../../../examples_large/cmp_slint_minimal/.zed/settings.json")]
 //! ```
 //!
 //! ## src/config_slint/mod.rs
@@ -89,7 +89,7 @@
 //! slint::include_modules!
 //!
 //! ```rust
-#![doc = include_str!("../../../../rsiot-examples/cmp_slint_minimal/src/config_slint/mod.rs")]
+#![doc = include_str!("../../../examples_large/cmp_slint_minimal/src/config_slint/mod.rs")]
 //! ```
 //!
 //!
@@ -99,7 +99,7 @@
 //! компоненты uScada запускаются в другом потоке с асинхронной средой выполнения.
 //!
 //! ```rust
-#![doc = include_str!("../../../../rsiot-examples/cmp_slint_minimal/src/main.rs")]
+#![doc = include_str!("../../../examples_large/cmp_slint_minimal/src/main.rs")]
 //! ```
 //!
 //! # Остальное
