@@ -15,7 +15,7 @@ pub enum Operation {
         /// Данные для записи
         write_data: Vec<u8>,
         /// Количество байт для чтения
-        read_size: u8,
+        read_size: usize,
     },
 
     /// Запрос записи
@@ -27,7 +27,7 @@ pub enum Operation {
     /// Запрос чтения
     Read {
         /// Количество байт для чтения
-        read_size: u8,
+        read_size: usize,
     },
 }
 // ANCHOR: Operation

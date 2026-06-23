@@ -34,27 +34,27 @@ where
 
     /// Получение входящих сообщений
     pub async fn recv(&mut self) -> Result<Message<TMsg>, ComponentError> {
-        loop {
-            let msg = self.input.recv().await;
+        // loop {
+        let msg = self.input.recv().await;
 
-            let msg = match msg {
-                Ok(v) => v,
-                Err(err) => {
-                    warn!(
-                        "MsgBusInput.recv_input() of component {} input error: {}",
-                        self.name, err
-                    );
-                    continue;
-                }
-            };
+        let msg = match msg {
+            Ok(v) => v,
+            Err(err) => {
+                warn!(
+                    "MsgBusInput.recv_input() of component {} input error: {}",
+                    self.name, err
+                );
+                return Err(ComponentError::Stopping);
+            }
+        };
 
-            // Если данное сообщение было сгенерировано данным сервисом, пропускаем
-            // if msg.check_source(&self.id) {
-            //     continue;
-            // }
+        // Если данное сообщение было сгенерировано данным сервисом, пропускаем
+        // if msg.check_source(&self.id) {
+        //     continue;
+        // }
 
-            return Ok(msg);
-        }
+        Ok(msg)
+        // }
     }
 }
 

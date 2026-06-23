@@ -14,17 +14,17 @@ pub fn load_config<TEnvVars>() -> Result<TEnvVars, Errors>
 where
     TEnvVars: IEnvVars,
 {
-    println!("Пробуем загрузить переменные из окружения");
-    let vars = load_from_env();
-    match vars {
-        Ok(vars) => {
-            println!("Переменные из окружения загружены");
-            return Ok(vars);
-        }
-        Err(err) => {
-            println!("Ошибка загрузки переменных из окружения: {err}");
-        }
-    }
+    // println!("Пробуем загрузить переменные из окружения");
+    // let vars = load_from_env();
+    // match vars {
+    //     Ok(vars) => {
+    //         println!("Переменные из окружения загружены");
+    //         return Ok(vars);
+    //     }
+    //     Err(err) => {
+    //         println!("Ошибка загрузки переменных из окружения: {err}");
+    //     }
+    // }
 
     println!("Пробуем загрузить переменные из файла .env");
     let vars = load_from_file();
@@ -62,7 +62,7 @@ fn load_from_file<TEnvVars>() -> Result<TEnvVars, Errors>
 where
     TEnvVars: IEnvVars,
 {
-    dotenv()?;
+    dotenvy::from_filename_override(".env")?;
     let vars = from_env::<TEnvVars>()?;
     Ok(vars)
 }

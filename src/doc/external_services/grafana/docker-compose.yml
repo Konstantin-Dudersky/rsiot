@@ -1,7 +1,7 @@
 services:
-  service_grafana:
-    container_name: service_grafana
-    hostname: service_grafana
+  svc_grafana:
+    container_name: svc_grafana
+    hostname: svc_grafana
     image: grafana/grafana:12.0.2 # https://hub.docker.com/r/grafana/grafana/tags
     environment:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
@@ -28,8 +28,8 @@ services:
       - dev
       - target
     volumes:
-      - ./config_services/grafana/datasources:/etc/grafana/provisioning/datasources
-      - ./config_services/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./svc_grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./svc_grafana/dashboards:/etc/grafana/provisioning/dashboards
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     user: "root:root"

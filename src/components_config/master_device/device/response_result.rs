@@ -31,7 +31,7 @@ impl ResponseResult {
     }
 
     /// Запрос неуспешен
-    pub fn error<TError>(msg: String) -> Result<Self, TError> {
-        Ok(Self::Error(msg))
+    pub fn error<TError>(msg: impl AsRef<str>) -> Result<Self, TError> {
+        Ok(Self::Error(msg.as_ref().to_owned()))
     }
 }

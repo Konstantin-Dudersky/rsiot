@@ -1,7 +1,9 @@
 use std::fmt::Display;
 
+use serde::{Deserialize, Serialize};
+
 /// Адрес подчиненного устройства
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
 pub enum I2cAddress {
     /// Прямое подключение
     Direct {
