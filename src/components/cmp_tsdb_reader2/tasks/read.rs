@@ -6,7 +6,7 @@ use std::{
     time::Duration,
 };
 
-use sqlx::{Pool, Postgres, query_as};
+use sqlx::{AssertSqlSafe, Pool, Postgres, query_as};
 use tokio::time::sleep;
 use tracing::info;
 
@@ -36,7 +36,7 @@ where
         sql: &str,
         fn_output: fn(ValueTime) -> TMsg,
     ) -> Result<(), Error> {
-        let rows = query_as::<_, ValueTime>(sql)
+        let rows = query_as::<_, ValueTime>(AssertSqlSafe(sql))
             .fetch_all(&self.database_pool)
             .await
             .map_err(|e| Error::SqlxFetchAll(e.to_string()))?;

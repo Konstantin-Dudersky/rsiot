@@ -21,7 +21,7 @@ where
 
         execute_db_query(
             &self.msgbus_output,
-            &query,
+            query,
             self.start_config.fn_on_success,
             self.start_config.fn_on_failure,
         )

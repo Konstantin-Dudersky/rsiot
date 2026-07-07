@@ -132,21 +132,24 @@ async fn connect<TMsg>(config: &Config<TMsg>) -> super::Result<()> {
 
     if !info.namespaces.contains_key(&config.namespace) {
         info!("Start executing init script");
-        let result = DB.query(&config.init_script).await;
-        let mut result = match result {
-            Ok(r) => {
-                info!("Init script executed");
-                r
+        for script in &config.init_scripts {
+            let result = DB.query(script).await;
+            let mut result = match result {
+                Ok(r) => {
+                    info!("Init script executed");
+                    r
+                }
+                Err(err) => {
+                    error!("Init script failed: {:?}", err);
+                    return Err(err.into());
+                }
+            };
+            let result_errors = result.take_errors();
+            if !result_errors.is_empty() {
+                error!("Init script result: {:?}", result_errors);
             }
-            Err(err) => {
-                error!("Init script failed: {:?}", err);
-                return Err(err.into());
-            }
-        };
-        let result_errors = result.take_errors();
-        if !result_errors.is_empty() {
-            error!("Init script result: {:?}", result_errors);
         }
+        info!("All init scripts executed");
     }
 
     DB.use_ns(config.namespace.clone())

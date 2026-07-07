@@ -44,13 +44,12 @@ where
                 continue;
             };
             let query = (self.input_config.fn_input)(&msg);
-            let query = match query {
-                Some(val) => val,
-                None => continue,
-            };
+            if query.is_empty() {
+                continue;
+            }
             execute_db_query(
                 &self.msgbus_output,
-                &query,
+                query,
                 self.input_config.fn_on_success,
                 self.input_config.fn_on_failure,
             )

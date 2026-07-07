@@ -1,7 +1,7 @@
 use std::{str::FromStr, sync::Arc, time::Duration};
 
 use sqlx::{
-    ConnectOptions, Connection, Pool, Postgres,
+    AssertSqlSafe, ConnectOptions, Connection, Pool, Postgres,
     postgres::{PgConnectOptions, PgPoolOptions},
     query,
 };
@@ -79,7 +79,7 @@ async fn try_connect(
         if table.delete_before_write {
             warn!("Deleting table {}", table.table_name);
             let sql = format!("DROP TABLE IF EXISTS {}", table.table_name);
-            query(&sql)
+            query(AssertSqlSafe(sql))
                 .execute(&mut *conn)
                 .await
                 .map_err(Error::DatabaseExecute)?;
@@ -87,28 +87,28 @@ async fn try_connect(
 
         info!("Creating table {}", table.table_name);
         let sql = sql_create_table(table);
-        query(&sql)
+        query(AssertSqlSafe(sql))
             .execute(&mut *conn)
             .await
             .map_err(Error::DatabaseExecute)?;
 
         info!("Remove columnstore property");
         let sql = sql_remove_columnstore_policy(table);
-        query(&sql)
+        query(AssertSqlSafe(sql))
             .execute(&mut *conn)
             .await
             .map_err(Error::DatabaseExecute)?;
 
         info!("Add columnstore property");
         let sql = sql_add_columnstore_policy(table);
-        query(&sql)
+        query(AssertSqlSafe(sql))
             .execute(&mut *conn)
             .await
             .map_err(Error::DatabaseExecute)?;
 
         info!("Remove retention policy");
         let sql = sql_remove_retention_policy(table);
-        query(&sql)
+        query(AssertSqlSafe(sql))
             .execute(&mut *conn)
             .await
             .map_err(Error::DatabaseExecute)?;
@@ -116,7 +116,7 @@ async fn try_connect(
         info!("Add retention policy");
         let sql = sql_add_retention_policy(table);
         if let Some(sql) = sql {
-            query(&sql)
+            query(AssertSqlSafe(sql))
                 .execute(&mut *conn)
                 .await
                 .map_err(Error::DatabaseExecute)?;

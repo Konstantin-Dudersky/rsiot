@@ -43,7 +43,7 @@ async fn main() -> anyhow::Result<()> {
         password: "root".into(),
         namespace: "rsiot".into(),
         database: "rsiot".into(),
-        init_script: include_str!("./init.surql").into(),
+        init_scripts: vec![include_str!("./init.surql").into()],
         request_input: vec![RequestInputConfig {
             fn_input: |msg| match msg {
                 Custom::Request(content) => {
@@ -52,10 +52,10 @@ async fn main() -> anyhow::Result<()> {
                     let query = query
                         // .replace("$ts", &msg.ts.to_rfc3339().unwrap())
                         .replace("$value_float", &format!("{:.2}", value));
-                    Some(query)
+                    vec![query]
                 }
             },
-            fn_on_success: |response| {
+            fn_on_success: |_index, response| {
                 info!("Response: {response:?}");
                 Ok(vec![])
             },

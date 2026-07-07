@@ -19,7 +19,7 @@ pub struct Config<TMsg> {
     pub database: String,
 
     /// Скрипт для инициализации БД. Выполняется, если при запуске не существует namespace
-    pub init_script: String,
+    pub init_scripts: Vec<String>,
 
     /// Конфигурация запросов на основе входных сообщений
     pub request_input: Vec<RequestInputConfig<TMsg>>,
@@ -28,14 +28,14 @@ pub struct Config<TMsg> {
     pub request_start: Vec<RequestStartConfig<TMsg>>,
 }
 
-pub type FnOnSuccess<TMsg> = fn(&mut IndexedResults) -> Result<Vec<TMsg>, anyhow::Error>;
+pub type FnOnSuccess<TMsg> = fn(usize, &mut IndexedResults) -> Result<Vec<TMsg>, anyhow::Error>;
 pub type FnOnFailure<TMsg> = fn() -> Vec<TMsg>;
 
 /// Конфигурация запросов, которые выполняются на основе входного потока сообщений
 #[derive(Clone, Debug)]
 pub struct RequestInputConfig<TMsg> {
     /// Функция формирования запроса на основе потока сообщений
-    pub fn_input: fn(&TMsg) -> Option<String>,
+    pub fn_input: fn(&TMsg) -> Vec<String>,
     /// Функция вызывается при успешно выполненном запросе
     pub fn_on_success: FnOnSuccess<TMsg>,
     /// Функция вызывается при ошибке выполнения запроса
@@ -46,7 +46,7 @@ pub struct RequestInputConfig<TMsg> {
 #[derive(Clone, Debug)]
 pub struct RequestStartConfig<TMsg> {
     /// Функция формирования запроса на основе потока сообщений
-    pub query: String,
+    pub query: Vec<String>,
     /// Функция вызывается при успешно выполненном запросе
     pub fn_on_success: FnOnSuccess<TMsg>,
     /// Функция вызывается при ошибке выполнения запроса

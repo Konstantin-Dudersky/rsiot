@@ -1,6 +1,6 @@
 use std::{sync::Arc, time::Duration};
 
-use sqlx::{Connection, Pool, Postgres, query};
+use sqlx::{AssertSqlSafe, Connection, Pool, Postgres, query};
 use tokio::{
     sync::{Mutex, mpsc},
     task::JoinHandle,
@@ -126,7 +126,7 @@ async fn execute_sql(
     let mut conn = pool.acquire().await?;
 
     // Выполняем SQL-запрос
-    query(&sql)
+    query(AssertSqlSafe(sql))
         .execute(&mut *conn)
         .await
         .map_err(Error::DatabaseExecute)?;
