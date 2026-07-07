@@ -19,5 +19,5 @@ pub struct DeviceDiag {
     /// Средняя продолжительность выполнения запроса
     pub avg_request_duration: Duration,
 
-    pub last_errors: BTreeMap<time::OffsetDateTime, String>,
+    pub last_errors: BTreeMap<String, String>,
 }

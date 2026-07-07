@@ -52,7 +52,7 @@ where
         publish: config.publish,
         subscribe: config.subscribe,
         mqtt_msg_gen,
-        error_fn_publish: Error::FnPublish,
+        error_fn_publish: |msg: String, error: anyhow::Error| Error::FnPublish { msg, error },
         error_fn_subscribe: Error::FnSubscribe,
         error_task_end_input: || Error::TaskEndInput,
         error_task_end_output: || Error::TaskEndOutput,

@@ -15,7 +15,7 @@ pub struct StoreDeviceDiag {
     response_ok_count: usize,
     response_err_count: usize,
     request_durations: VecDeque<Duration>,
-    last_errors: BTreeMap<time::OffsetDateTime, String>,
+    last_errors: BTreeMap<String, String>,
 }
 
 impl StoreDeviceDiag {
@@ -48,8 +48,9 @@ impl StoreDeviceDiag {
         while self.last_errors.len() >= LAST_ERRORS_LEN {
             self.last_errors.pop_first();
         }
-        self.last_errors
-            .insert(time::OffsetDateTime::now_utc(), error);
+        let now = time::OffsetDateTime::now_utc();
+        let now = now.to_string();
+        self.last_errors.insert(now, error);
     }
 
     fn add_request_durations(&mut self, duration: Duration) {

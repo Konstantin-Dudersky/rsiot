@@ -5,8 +5,8 @@ use super::COMPONENT_NAME;
 #[allow(missing_docs)]
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error("{COMPONENT_NAME} | FnPublish: {0}")]
-    FnPublish(anyhow::Error),
+    #[error("{COMPONENT_NAME} | FnPublish: {msg} - {error}")]
+    FnPublish { msg: String, error: anyhow::Error },
 
     #[error("{COMPONENT_NAME} | FnSubscribe: {0}")]
     FnSubscribe(anyhow::Error),

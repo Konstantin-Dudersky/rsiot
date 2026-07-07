@@ -15,7 +15,7 @@ where
     pub output: mpsc::Sender<MqttMsgSend>,
     pub config_publish: ConfigPublish<TMsg>,
     pub mqtt_msg_gen: MqttMsgGen,
-    pub error_fn_publish: fn(anyhow::Error) -> TError,
+    pub error_fn_publish: fn(String, anyhow::Error) -> TError,
     pub error_task_end: fn() -> TError,
     pub error_tokio_mpsc_send: fn() -> TError,
 }
@@ -37,7 +37,8 @@ where
                 continue;
             };
 
-            let mqtt_msg = fn_publish(&msg, &self.mqtt_msg_gen).map_err(self.error_fn_publish)?;
+            let mqtt_msg = fn_publish(&msg, &self.mqtt_msg_gen)
+                .map_err(|e| (self.error_fn_publish)(format!("{:?}", msg), e))?;
 
             let Some(mqtt_msg) = mqtt_msg else { continue };
 

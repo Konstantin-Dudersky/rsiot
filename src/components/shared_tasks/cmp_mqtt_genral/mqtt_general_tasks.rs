@@ -36,7 +36,7 @@ where
     /// Генератор сообщений MQTT
     pub mqtt_msg_gen: MqttMsgGen,
 
-    pub error_fn_publish: fn(anyhow::Error) -> TError,
+    pub error_fn_publish: fn(String, anyhow::Error) -> TError,
     pub error_fn_subscribe: fn(anyhow::Error) -> TError,
 
     pub error_task_end_input: fn() -> TError,
