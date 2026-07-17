@@ -28,6 +28,10 @@ pub mod cmp_esp_can;
 
 #[cfg(feature = "cmp_esp")]
 #[cfg(riscv32imc_esp_espidf)]
+pub mod cmp_esp_cli;
+
+#[cfg(feature = "cmp_esp")]
+#[cfg(riscv32imc_esp_espidf)]
 pub mod cmp_esp_gpio;
 
 #[cfg(feature = "cmp_esp")]

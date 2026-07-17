@@ -1,7 +1,10 @@
+use std::time::Duration;
+
 use esp_idf_svc::hal::gpio::AnyIOPin;
 use esp_idf_svc::hal::spi::Spi;
 use esp_idf_svc::hal::spi::config::{MODE_0, MODE_1, MODE_2, MODE_3};
 
+use crate::components::shared_tasks::fieldbus_execution::FieldbusDiag;
 use crate::components_config::master_device::DeviceTrait;
 use crate::components_config::spi_master::{self, ConfigDeviceSpiMode};
 use crate::message::MsgDataBound;
@@ -33,6 +36,12 @@ where
     /// Драйвера устройств
     pub devices:
         Vec<Box<dyn DeviceTrait<TMsg, spi_master::FieldbusRequest, spi_master::FieldbusResponse>>>,
+
+    /// Функция для формирования сообщения диагностики
+    pub fn_diag: fn(&FieldbusDiag) -> TMsg,
+
+    /// Период отправки сообщений диагностики
+    pub fn_diag_period: Duration,
 }
 // ANCHOR: Config
 

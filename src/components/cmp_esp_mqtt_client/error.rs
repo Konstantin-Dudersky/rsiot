@@ -8,8 +8,8 @@ pub enum Error {
     #[error("{COMPONENT_NAME} | CreateEspAsyncMqttClient: {0}")]
     CreateEspAsyncMqttClient(esp_idf_svc::sys::EspError),
 
-    #[error("{COMPONENT_NAME} | FnPublish: {0}")]
-    FnPublish(anyhow::Error),
+    #[error("{COMPONENT_NAME} | FnPublish: {msg} - {error}")]
+    FnPublish { msg: String, error: anyhow::Error },
 
     #[error("{COMPONENT_NAME} | FnSubscribe: {0}")]
     FnSubscribe(anyhow::Error),

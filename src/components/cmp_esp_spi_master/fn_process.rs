@@ -36,8 +36,11 @@ where
         error_master_device: super::Error::DeviceError,
         error_tokiompscsend: || super::Error::TokioMpscSend,
         devices: config.devices,
+        fn_diag: config.fn_diag,
+        fn_diag_period: config.fn_diag_period,
     };
-    let (ch_rx_devices_to_fieldbus, ch_tx_fieldbus_to_devices) = config_fn_process_master.spawn();
+    let (ch_rx_devices_to_fieldbus, ch_tx_fieldbus_to_devices, ch_tx_device_to_diag) =
+        config_fn_process_master.spawn();
 
     // Коммуникация SPI ----------------------------------------------------------------------------
     let task = SpiComm {

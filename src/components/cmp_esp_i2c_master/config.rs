@@ -3,6 +3,7 @@ use std::time::Duration;
 use esp_idf_svc::hal::{gpio::AnyIOPin, i2c::I2c};
 
 use crate::{
+    components::shared_tasks::fieldbus_execution::FieldbusDiag,
     components_config::{
         i2c_master::{FieldbusRequest, FieldbusResponse},
         master_device::DeviceTrait,
@@ -37,6 +38,12 @@ where
 
     /// Драйвера устройств
     pub devices: Vec<Box<dyn DeviceTrait<TMsg, FieldbusRequest, FieldbusResponse>>>,
+
+    /// Функция для формирования сообщения диагностики
+    pub fn_diag: fn(&FieldbusDiag) -> TMsg,
+
+    /// Период отправки сообщений диагностики
+    pub fn_diag_period: Duration,
 }
 // ANCHOR: Config
 
