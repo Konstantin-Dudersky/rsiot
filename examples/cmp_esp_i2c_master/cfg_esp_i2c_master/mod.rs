@@ -16,7 +16,7 @@ where
     TI2c: I2c + 'static,
 {
     // MPU6050
-    let device = i2c::mpu6050::Device {
+    let device = i2c::MPU6050::Device {
         address: I2cAddress::Direct { address: 0x68 },
         request_period: Duration::from_millis(100),
         fn_output: |buffer| {
@@ -26,15 +26,16 @@ where
             );
             vec![]
         },
-        gyro_full_range: i2c::mpu6050::FsSel::_250DPS,
-        accel_full_range: i2c::mpu6050::AfsSel::_2G,
-        default_calibration_offset_accel_x: -5776,
-        default_calibration_offset_accel_y: -2688,
-        default_calibration_offset_accel_z: 2052,
-        default_calibration_offset_gyro_x: 58,
-        default_calibration_offset_gyro_y: -51,
-        default_calibration_offset_gyro_z: 24,
-        default_calibration_start: false,
+        gyro_full_range: i2c::MPU6050::GyroFullScale::Deg250,
+        accel_full_range: i2c::MPU6050::AccelFullScale::G2,
+        calibration_accel_x: -5776,
+        calibration_accel_y: -2688,
+        calibration_accel_z: 2052,
+        calibration_gyro_x: 58,
+        calibration_gyro_y: -51,
+        calibration_gyro_z: 24,
+        start_calibration: false,
+        dmp_enabled: false,
     };
 
     let config = Config {
@@ -45,6 +46,8 @@ where
         pullup_enable: true,
         timeout: Duration::from_millis(50),
         devices: vec![Box::new(device)],
+        fn_diag: |diag| Msg::I2cDiag(diag.clone()),
+        fn_diag_period: Duration::from_millis(1000),
     };
 
     Cmp::new(config)

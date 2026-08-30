@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize, de::Visitor};
 ///
 /// Обертка над `std::time::Instant`. Может работать на платформе WebAssembly. Реализованы трейты
 /// Default, Serialize и Deserialize
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Instant {
     inst: web_time::Instant,
 }

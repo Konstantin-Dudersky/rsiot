@@ -123,7 +123,8 @@ where
             let Some(ch_rx_fieldbus_to_device) = ch_rx_split_to_devices[index].take() else {
                 panic!("Error configuration in fn_process_master");
             };
-            let ch_tx_devices_to_filter = ch_tx_devices_to_filter.clone();
+            // let ch_tx_devices_to_filter = ch_tx_devices_to_filter.clone();
+            let ch_tx_devices_to_filter = ch_tx_filter_to_msgbus.clone();
             let ch_tx_device_to_diag = ch_tx_device_to_diag.clone();
             let task = device.spawn(
                 ch_rx_msgbus_to_devices,
@@ -163,15 +164,15 @@ where
         );
 
         // Фильтрация одинаковых сообщений ---------------------------------------------------------
-        let task = filter_identical_data::FilterIdenticalData {
-            input: ch_rx_devices_to_filter,
-            output: ch_tx_filter_to_msgbus,
-        };
-        join_set_spawn(
-            self.task_set,
-            "fn_process_master | filter_identical_data",
-            task.spawn().map_err(self.error_filter),
-        );
+        // let task = filter_identical_data::FilterIdenticalData {
+        //     input: ch_rx_devices_to_filter,
+        //     output: ch_tx_filter_to_msgbus,
+        // };
+        // join_set_spawn(
+        //     self.task_set,
+        //     "fn_process_master | filter_identical_data",
+        //     task.spawn().map_err(self.error_filter),
+        // );
 
         // Создаем исходящие сообщения -------------------------------------------------------------
         let task = mpsc_to_msgbus::MpscToMsgBus {

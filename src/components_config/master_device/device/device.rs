@@ -193,7 +193,7 @@ where
             buffer: buffer.clone(),
             init_completed: init_completed.clone(),
             ch_rx_fieldbus_to_device,
-            ch_tx_output_to_filter: ch_tx_output_to_filter.clone(),
+            ch_tx_output_to_filter: ch_tx_device_to_msgbus.clone(),
             ch_tx_need_request: ch_tx_need_request.clone(),
             ch_tx_device_to_diag,
             fn_response_to_buffer: self.fn_response_to_buffer,

@@ -12,6 +12,7 @@ pub fn cmp() -> Component<Config<Msg>, Msg> {
 
             let text = match msg {
                 Msg::WiFiConnected(_) => "WiFi Connected".into(),
+                Msg::I2cDiag(_) => "I2cDiag".into(),
             };
 
             Ok(Some(text))

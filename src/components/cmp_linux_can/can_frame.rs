@@ -1,4 +1,5 @@
 use socketcan::EmbeddedFrame;
+use tracing::warn;
 
 use super::{CanFrame, CanId, Error};
 
@@ -14,6 +15,15 @@ impl TryFrom<CanFrame> for socketcan::CanAnyFrame {
                     .ok_or_else(|| Error::FrameConversion(value.clone()))?;
 
                 Ok(socketcan::CanAnyFrame::Normal(frame))
+            }
+
+            CanFrame::Error1 { id, data } => {
+                let id: socketcan::CanId = id.clone().try_into()?;
+
+                let frame = socketcan::CanErrorFrame::new(id, data)
+                    .ok_or_else(|| Error::FrameConversion(value.clone()))?;
+
+                Ok(socketcan::CanAnyFrame::Error(frame))
             }
         }
     }
@@ -31,6 +41,15 @@ impl TryFrom<CanFrame> for socketcan::CanFrame {
                     .ok_or_else(|| Error::FrameConversion(value.clone()))?;
 
                 Ok(socketcan::CanFrame::Data(frame))
+            }
+
+            CanFrame::Error1 { id, data } => {
+                let id: socketcan::CanId = id.clone().try_into()?;
+
+                let frame = socketcan::CanErrorFrame::new(id, data)
+                    .ok_or_else(|| Error::FrameConversion(value.clone()))?;
+
+                Ok(socketcan::CanFrame::Error(frame))
             }
         }
     }
@@ -54,7 +73,18 @@ impl TryFrom<socketcan::CanFrame> for CanFrame {
                 Ok(frame)
             }
             socketcan::CanFrame::Remote(_frame) => todo!(),
-            socketcan::CanFrame::Error(frame) => todo!(),
+            socketcan::CanFrame::Error(frame) => {
+                warn!("CAN error frame: {frame:?}");
+                let id: socketcan::CanId = frame.id().into();
+                let id: CanId = id.try_into()?;
+
+                let mut data = [0_u8; 8];
+                for (i, b) in frame.data().iter().enumerate() {
+                    data[i] = *b;
+                }
+                let frame = CanFrame::Error1 { id, data };
+                Ok(frame)
+            }
         }
     }
 }

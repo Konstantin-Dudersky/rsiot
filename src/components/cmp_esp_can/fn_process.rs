@@ -110,7 +110,8 @@ where
         .await?;
 
         // Проверка ошибок
-        step_read_alerts(&mut can_driver, Duration::from_millis(20)).await?;
+        // TODO - ESP секунд через 10 отваливается
+        // step_read_alerts(&mut can_driver, Duration::from_millis(20)).await?;
     }
 }
 
