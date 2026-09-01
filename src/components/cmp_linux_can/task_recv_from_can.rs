@@ -43,12 +43,12 @@ impl RecvFromCanSync {
         socket.set_filters(&self.filters)?;
 
         loop {
-            let frame = socket.receive();
-            info!("Frame: {:?}", frame);
+            let frame = socket.receive().unwrap();
+            // info!("Frame: {:?}", frame);
 
-            // self.output
-            //     .try_send(frame)
-            //     .map_err(|_| Error::TokioSyncMpscSend)?;
+            self.output
+                .try_send(frame)
+                .map_err(|_| Error::TokioSyncMpscSend)?;
         }
 
         Err(Error::TaskEndRecvFromCan)

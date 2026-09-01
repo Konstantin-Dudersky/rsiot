@@ -16,7 +16,7 @@ mod task_setup_send_recv;
 
 pub use {
     crate::components_config::can_general::*,
-    component::{COMPONENT_NAME, Cmp},
+    component::{Cmp, COMPONENT_NAME},
     config::Config,
     error::Error,
 };

@@ -1,6 +1,7 @@
+use tracing::warn;
+
 use super::CanId;
 
-// ANCHOR: CanFrame
 /// CAN-кадр
 #[derive(Clone, Copy, Debug)]
 pub enum CanFrame {
@@ -12,7 +13,8 @@ pub enum CanFrame {
         data: [u8; 8],
     },
     // Remote(CanRemoteFrame),
-    Error1 {
+    /// CAN-кадр ошибки
+    Error {
         /// Идентификатор
         id: CanId,
         /// Данные
@@ -20,50 +22,47 @@ pub enum CanFrame {
     },
     // Fd(CanFdFrame),
 }
-// ANCHOR: CanFrame
 
 impl CanFrame {
-    /// Размер CAN-кадра в битах
-    pub fn frame_size(&self) -> f32 {
+    pub fn id(&self) -> CanId {
         match self {
-            CanFrame::Normal { id, data: _ } => match id {
-                CanId::Standard(_) => 111.0,
-                CanId::Extended(_) => 131.0,
-            },
-            CanFrame::Error1 { id, data: _ } => match id {
-                CanId::Standard(_) => 111.0,
-                CanId::Extended(_) => 131.0,
-            },
+            CanFrame::Normal { id, .. } => *id,
+            CanFrame::Error { id, .. } => *id,
+        }
+    }
+
+    pub fn data(&self) -> &[u8] {
+        match self {
+            CanFrame::Normal { data, .. } => data,
+            CanFrame::Error { data, .. } => data,
         }
     }
 }
 
-impl embedded_can::Frame for CanFrame {
-    fn new(id: impl Into<socketcan::Id>, data: &[u8]) -> Option<Self> {
-        todo!()
-    }
+impl<TEmbedFrame> From<TEmbedFrame> for CanFrame
+where
+    TEmbedFrame: embedded_can::Frame,
+{
+    fn from(value: TEmbedFrame) -> Self {
+        let id: CanId = value.id().into();
+        if value.is_data_frame() {
+            let mut data = [0_u8; 8];
+            let len = value.data().len().min(8);
+            if len > 8 {
+                warn!("Data length exceeds 8 bytes: {}", len);
+            }
+            data[..len].copy_from_slice(&value.data()[..len]);
 
-    fn new_remote(id: impl Into<socketcan::Id>, dlc: usize) -> Option<Self> {
-        todo!()
-    }
-
-    fn is_extended(&self) -> bool {
-        todo!()
-    }
-
-    fn is_remote_frame(&self) -> bool {
-        todo!()
-    }
-
-    fn id(&self) -> socketcan::Id {
-        todo!()
-    }
-
-    fn dlc(&self) -> usize {
-        todo!()
-    }
-
-    fn data(&self) -> &[u8] {
-        todo!()
+            Self::Normal { id, data }
+        } else {
+            todo!()
+        }
     }
 }
+
+// impl<TEmbedFrame> From<CanFrame> for TEmbedFrame
+// where
+//     TEmbedFrame: embedded_can::Frame,
+// {
+//     fn from(value: CanFrame) -> Self {}
+// }

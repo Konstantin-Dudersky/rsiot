@@ -64,8 +64,8 @@ impl CanSocketAsync {
                     Err(e) => return Some(Err(Error::ReadFrame(e))),
                 };
 
-                let frame: Result<CanFrame, Error> = frame.try_into();
-                Some(frame)
+                let frame: CanFrame = frame.into();
+                Some(Ok(frame))
             }
             Self::Fd(_socket) => unimplemented!(),
         }
@@ -129,13 +129,13 @@ impl CanSocketSync {
             Self::Classic(socket) => {
                 let frame = socket.read_frame();
 
-                let frame = match frame {
+                let frame: socketcan::CanFrame = match frame {
                     Ok(v) => v,
                     Err(e) => return Err(Error::ReadFrame2(e)),
                 };
 
-                let frame: Result<CanFrame, Error> = frame.try_into();
-                frame
+                let frame = frame.into();
+                Ok(frame)
             }
             Self::Fd(_socket) => unimplemented!(),
         }

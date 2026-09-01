@@ -219,6 +219,9 @@ log_loki = [
     "dep:tracing-subscriber",
     "dep:url",
 ]
+
+## Для использования tokio-console. Необходимо добавить в
+## `.cargo/config.toml` в rustflags:  "--cfg", "tokio_unstable"
 log_tokio = [
     "dep:console-subscriber",
     "dep:tokio-metrics",

@@ -2,7 +2,6 @@
 
 mod can_filter;
 mod can_frame;
-mod can_id;
 mod can_timing;
 mod component;
 mod config;

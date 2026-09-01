@@ -2,7 +2,7 @@
 //!
 //! cargo run --example cmp_esp_led --target="riscv32imc-esp-espidf" --features="cmp_esp, logging" --release
 
-#[cfg(all(feature = "cmp_esp", feature = "log_esp"))]
+#[cfg(all(feature = "cmp_esp1", feature = "log_esp"))]
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
     use std::time::Duration;
@@ -109,7 +109,7 @@ async fn main() {
     local_set.await;
 }
 
-#[cfg(not(all(feature = "cmp_esp", feature = "log_esp")))]
+#[cfg(not(all(feature = "cmp_esp1", feature = "log_esp")))]
 fn main() {
     unimplemented!()
 }
