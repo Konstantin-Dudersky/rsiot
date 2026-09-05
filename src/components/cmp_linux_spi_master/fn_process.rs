@@ -4,7 +4,7 @@ use linux_embedded_hal::{
     gpio_cdev::{Chip, LineHandle, LineRequestFlags},
     spidev::{Spidev, SpidevOptions, SpidevTransfer},
 };
-use tracing::trace;
+use tracing::{trace, warn};
 
 use crate::{
     components::shared_tasks::fieldbus_execution::FieldbusExecution,
@@ -93,28 +93,43 @@ impl SpiComm {
             let request = fieldbus_request.request;
 
             // Ответы от слейва
-            let mut response_payload = vec![];
+            let mut response_payload = {
+                // Ответы от слейва
+                let mut responses = vec![];
+                let mut error = "".to_string();
 
-            // Выполняем все операции в цикле
-            //
-            // Сигналом CS управляем после каждой операции. В противном случае в Luckfox например
-            // коммуникация работает плохо
-            for operation in request.operations {
-                // Устанавливаем CS
-                if let Some(pin_cs) = &selected_device.cs {
-                    pin_cs.set_value(0).map_err(Error::GpioPinSet)?;
+                // Выполняем все операции в цикле
+                //
+                // Сигналом CS управляем после каждой операции. В противном случае в Luckfox
+                // например коммуникация работает плохо
+                for operation in request.operations {
+                    // Устанавливаем CS
+                    if let Some(pin_cs) = &selected_device.cs {
+                        pin_cs.set_value(0).map_err(Error::GpioPinSet)?;
+                    }
+
+                    let response =
+                        make_spi_operation(&mut selected_device.spidev, &operation).await;
+                    match response {
+                        Ok(response) => responses.push(response),
+                        Err(err) => {
+                            warn!("Error during SPI operation: {:?}", err);
+                            error = err.to_string();
+                        }
+                    };
+
+                    // Сбрасываем CS
+                    if let Some(pin_cs) = &selected_device.cs {
+                        pin_cs.set_value(1).map_err(Error::GpioPinSet)?;
+                    }
                 }
 
-                let response = make_spi_operation(&mut selected_device.spidev, &operation).await?;
-                if let Some(response) = response {
-                    response_payload.push(response);
+                if error.is_empty() {
+                    Ok(responses)
+                } else {
+                    Err(error)
                 }
-
-                // Сбрасываем CS
-                if let Some(pin_cs) = &selected_device.cs {
-                    pin_cs.set_value(1).map_err(Error::GpioPinSet)?;
-                }
-            }
+            };
 
             let response = spi_master::FieldbusResponse {
                 request_creation_time: request.request_creation_time,
@@ -182,11 +197,11 @@ fn configure_spi_devices(dcs: &[ConfigDevicesCommSettings]) -> Result<Vec<Spidev
 async fn make_spi_operation(
     device: &mut Spidev,
     operation: &spi_master::Operation,
-) -> Result<Option<Vec<u8>>, Error> {
+) -> Result<Vec<u8>, Error> {
     match operation {
         spi_master::Operation::Delay(duration) => {
             sleep(*duration).await;
-            Ok(None)
+            Ok(vec![])
         }
         spi_master::Operation::Read { read_size } => {
             let mut read_data = vec![0; *read_size as usize];
@@ -195,7 +210,7 @@ async fn make_spi_operation(
                 .transfer_multiple(&mut transaction)
                 .map_err(Error::SpidevTransfer)?;
             trace!("Read data: {:x?}", read_data);
-            Ok(Some(read_data))
+            Ok(read_data)
         }
         spi_master::Operation::WriteRead(write_data, read_len) => {
             let mut read_data = vec![0; *read_len as usize];
@@ -207,14 +222,14 @@ async fn make_spi_operation(
                 .transfer_multiple(&mut transaction)
                 .map_err(Error::SpidevTransfer)?;
             trace!("Read data: {:x?}", read_data);
-            Ok(Some(read_data))
+            Ok(read_data)
         }
         spi_master::Operation::Write(write_data) => {
             let mut transaction = [SpidevTransfer::write(write_data)];
             device
                 .transfer_multiple(&mut transaction)
                 .map_err(Error::SpidevTransfer)?;
-            Ok(None)
+            Ok(vec![])
         }
     }
 }

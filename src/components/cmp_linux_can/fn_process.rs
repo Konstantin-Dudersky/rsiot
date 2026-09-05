@@ -6,7 +6,6 @@ use crate::{
         cmp_linux_can::CanFrame,
         shared_tasks::{self, cmp_can_general::CanGeneralTasks},
     },
-    components_config::can_general::BufferBound,
     executor::{MsgBusLinker, join_set_spawn},
     message::MsgDataBound,
 };
@@ -15,24 +14,21 @@ use super::{
     Config, Error, task_interface_info::InterfaceInfo, task_setup_send_recv::TaskSetupSendRecv,
 };
 
-pub async fn fn_process<TMsg, TBuffer>(
-    config: Config<TMsg, TBuffer>,
+pub async fn fn_process<TMsg, TFnInput>(
+    config: Config<TMsg, TFnInput>,
     msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: 'static + MsgDataBound,
-    TBuffer: 'static + BufferBound,
+    TFnInput: 'static + Fn(&TMsg) -> anyhow::Result<Option<Vec<CanFrame>>> + Send,
 {
     let mut task_set: JoinSet<Result<(), Error>> = JoinSet::new();
 
     // Общие задачи обмена по шине CAN
     let (ch_rx_send_to_can, ch_tx_recv_from_can) = CanGeneralTasks {
         msgbus_linker,
-        buffer_default: config.buffer_default,
         task_set: &mut task_set,
         fn_input: config.fn_input,
-        period: config.period,
-        fn_periodic: config.fn_periodic,
         fn_output: config.fn_output,
         error_task_end_input: || Error::TaskEndInput,
         error_task_end_output: || Error::TaskEndOutput,

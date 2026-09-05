@@ -1,10 +1,13 @@
-use esp_idf_svc::hal::{
-    gpio::AnyIOPin,
-    spi::{Operation, Spi, SpiAnyPins, SpiDeviceDriver, SpiDriver, SpiDriverConfig, config},
-    units::FromValueType,
+use esp_idf_svc::{
+    hal::{
+        gpio::AnyIOPin,
+        spi::{Operation, Spi, SpiAnyPins, SpiDeviceDriver, SpiDriver, SpiDriverConfig, config},
+        units::FromValueType,
+    },
+    sys::EspError,
 };
 use tokio::{sync::mpsc, task::JoinSet, time::sleep};
-use tracing::trace;
+use tracing::{trace, warn};
 
 use crate::{
     components::shared_tasks::fieldbus_execution::FieldbusExecution,
@@ -16,7 +19,7 @@ use crate::{
     message::MsgDataBound,
 };
 
-use super::{Config, config::ConfigDevicesCommSettings};
+use super::{Config, Error, config::ConfigDevicesCommSettings};
 
 pub async fn fn_process<TMsg, TSpi>(
     config: Config<TMsg, TSpi>,
@@ -31,10 +34,10 @@ where
     let config_fn_process_master = FieldbusExecution {
         msgbus_linker,
         task_set: &mut task_set,
-        error_filter: super::Error::TaskFilter,
-        error_mpsc_to_msgbus: super::Error::TaskMpscToMsgBus,
-        error_master_device: super::Error::DeviceError,
-        error_tokiompscsend: || super::Error::TokioMpscSend,
+        error_filter: Error::TaskFilter,
+        error_mpsc_to_msgbus: Error::TaskMpscToMsgBus,
+        error_master_device: Error::DeviceError,
+        error_tokiompscsend: || Error::TokioMpscSend,
         devices: config.devices,
         fn_diag: config.fn_diag,
         fn_diag_period: config.fn_diag_period,
@@ -107,7 +110,7 @@ where
 
             // Номер CS недоступен
             if device_index >= spi_devices.len() {
-                let err = super::Error::CsNotAvailable {
+                let err = Error::CsNotAvailable {
                     cs: device_index as u8,
                     max_cs: spi_devices.len() as u8,
                 };
@@ -116,16 +119,29 @@ where
 
             let selected_device = &mut spi_devices[device_index];
 
-            // Ответы от слейва
-            let mut response_payload = vec![];
+            let response_payload = {
+                // Ответы от слейва
+                let mut responses = vec![];
+                let mut error = "".to_string();
 
-            // Выполняем все операции в цикле
-            for operation in request.operations {
-                let response = make_spi_operation(selected_device, &operation).await;
-                if let Some(response) = response {
-                    response_payload.push(response);
+                // Выполняем все операции в цикле
+                for operation in request.operations {
+                    let response = make_spi_operation(selected_device, &operation).await;
+                    match response {
+                        Ok(response) => responses.push(response),
+                        Err(err) => {
+                            warn!("Error during SPI operation: {:?}", err);
+                            error = err.to_string();
+                            break;
+                        }
+                    };
                 }
-            }
+                if error.is_empty() {
+                    Ok(responses)
+                } else {
+                    Err(error)
+                }
+            };
 
             let response = spi_master::FieldbusResponse {
                 request_creation_time: request.request_creation_time,
@@ -139,7 +155,10 @@ where
 
             trace!("Response: {:?}", response_with_index);
 
-            self.output.send(response_with_index).await.unwrap();
+            self.output
+                .send(response_with_index)
+                .await
+                .map_err(|_| Error::TokioMpscSend)?;
         }
         Ok(())
     }
@@ -151,11 +170,11 @@ where
 async fn make_spi_operation<'a>(
     device: &mut SpiDeviceDriver<'a, &SpiDriver<'a>>,
     operation: &spi_master::Operation,
-) -> Option<Vec<u8>> {
+) -> Result<Vec<u8>, EspError> {
     match operation {
         spi_master::Operation::Delay(duration) => {
             sleep(*duration).await;
-            None
+            Ok(vec![])
         }
         spi_master::Operation::WriteRead(write_data, read_len) => {
             let mut read_data = vec![0; *read_len as usize];
@@ -164,22 +183,22 @@ async fn make_spi_operation<'a>(
                 Operation::Write(write_data),
                 Operation::Read(&mut read_data),
             ];
-            device.transaction(&mut transaction).unwrap();
+            device.transaction(&mut transaction)?;
             trace!("Read SPI data: {:x?}", read_data);
-            Some(read_data)
+            Ok(read_data)
         }
         spi_master::Operation::Write(write_data) => {
             trace!("Write SPI data: {:x?}", write_data);
             let mut transaction = [Operation::Write(write_data)];
-            device.transaction(&mut transaction).unwrap();
-            None
+            device.transaction(&mut transaction)?;
+            Ok(vec![])
         }
         spi_master::Operation::Read { read_size } => {
             let mut read_data = vec![0; *read_size as usize];
             let mut transaction = [Operation::Read(&mut read_data)];
-            device.transaction(&mut transaction).unwrap();
+            device.transaction(&mut transaction)?;
             trace!("Read SPI data: {:x?}", read_data);
-            Some(read_data)
+            Ok(read_data)
         }
     }
 }

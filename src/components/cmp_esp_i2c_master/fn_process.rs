@@ -30,7 +30,7 @@ where
     // Настраиваем I2C
     let baudrate = match config.baudrate {
         ConfigBaudrate::Standard => 100_u32.kHz(),
-        ConfigBaudrate::Fast => todo!(),
+        ConfigBaudrate::Fast => 400_u32.kHz(),
     };
     let i2c_config = i2c::config::Config::new()
         .baudrate(baudrate.into())
@@ -52,13 +52,14 @@ where
         fn_diag: config.fn_diag,
         fn_diag_period: config.fn_diag_period,
     };
-    let (ch_rx_devices_to_fieldbus, ch_tx_fieldbus_to_devices, ch_tx_device_to_diag) =
+    let (ch_rx_devices_to_fieldbus, ch_tx_fieldbus_to_devices, _ch_tx_device_to_diag) =
         config_fn_process_master.spawn();
 
     let task = I2cComm {
         input: ch_rx_devices_to_fieldbus,
         output: ch_tx_fieldbus_to_devices,
         i2c_driver: i2c,
+        timeout: config.timeout,
     };
     join_set_spawn(&mut task_set, "cmp_esp_i2c_master | i2c_comm", task.spawn());
 
@@ -73,6 +74,7 @@ pub struct I2cComm {
     pub input: mpsc::Receiver<FieldbusRequestWithIndex<i2c_master::FieldbusRequest>>,
     pub output: mpsc::Sender<FieldbusResponseWithIndex<i2c_master::FieldbusResponse>>,
     pub i2c_driver: I2cDriver<'static>,
+    pub timeout: Duration,
 }
 
 impl I2cComm {
@@ -94,13 +96,13 @@ impl I2cComm {
                         &mut self.i2c_driver,
                         request.address,
                         &operation,
-                        Duration::from_millis(10),
+                        self.timeout,
                     )
                     .await;
                     let response = match response {
                         Ok(response) => response,
                         Err(err) => {
-                            warn!("Error during i2c operation: {:?}", err);
+                            warn!("Error during I2C operation: {:?}", err);
                             error = err.to_string();
                             break;
                         }
@@ -172,7 +174,7 @@ async fn make_i2c_operation<'a>(
             write_data,
             read_size,
         } => {
-            let mut read_data = vec![0; *read_size as usize];
+            let mut read_data = vec![0; *read_size];
             let mut transaction = [
                 EspOperation::Write(write_data),
                 EspOperation::Read(&mut read_data),
@@ -189,7 +191,7 @@ async fn make_i2c_operation<'a>(
             Ok(Some(vec![]))
         }
         Operation::Read { read_size } => {
-            let mut read_data = vec![0; *read_size as usize];
+            let mut read_data = vec![0; *read_size];
             let mut transaction = [EspOperation::Read(&mut read_data)];
             i2c_driver.transaction(address, &mut transaction, millis_to_ticks(timeout))?;
             trace!("Read data: {:x?}", read_data);

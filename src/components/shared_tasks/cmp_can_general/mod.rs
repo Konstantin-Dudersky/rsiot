@@ -3,6 +3,5 @@
 mod can_general_tasks;
 mod task_input;
 mod task_output;
-mod task_periodic;
 
 pub(crate) use can_general_tasks::CanGeneralTasks;

@@ -2,7 +2,11 @@ use linux_embedded_hal::i2cdev::{
     core::{I2CMessage, I2CTransfer},
     linux::{LinuxI2CBus, LinuxI2CError, LinuxI2CMessage},
 };
-use tokio::{sync::mpsc, task::JoinSet, time::sleep};
+use tokio::{
+    sync::mpsc,
+    task::JoinSet,
+    time::{sleep, timeout},
+};
 use tracing::trace;
 
 use crate::{
@@ -83,7 +87,19 @@ impl I2cComm {
                 let mut error = "".to_string();
 
                 for operation in request.operations {
-                    let response = make_i2c_operation(&mut bus, request.address, &operation).await;
+                    let response = timeout(
+                        Duration::from_millis(50),
+                        make_i2c_operation(&mut bus, request.address, &operation),
+                    )
+                    .await;
+                    let response = match response {
+                        Ok(v) => response,
+                        Err(e) => {
+                            error = e.to_string();
+                            warn!("tokio timeout: {}", e);
+                            break;
+                        }
+                    };
                     let response = match response {
                         Ok(response) => response,
                         Err(err) => {

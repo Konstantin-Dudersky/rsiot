@@ -6,7 +6,8 @@ use rsiot::{components::cmp_linux_can::*, executor::Component};
 
 use super::messages::*;
 
-pub fn cmp() -> Component<Config<Msg, ()>, Msg> {
+pub fn cmp() -> Component<Config<Msg, impl Fn(&Msg) -> anyhow::Result<Option<Vec<CanFrame>>>>, Msg>
+{
     let config = Config {
         ifname: "can1".into(),
         can_settings: CanSettings {
@@ -27,8 +28,7 @@ pub fn cmp() -> Component<Config<Msg, ()>, Msg> {
             mode_tdcv_mode: false,
             restart_ms: Some(1000),
         },
-        buffer_default: (),
-        fn_input: |msg, _| {
+        fn_input: |msg: &Msg| {
             let mut data = [0u8; 8];
 
             let frame = match msg {
@@ -37,18 +37,16 @@ pub fn cmp() -> Component<Config<Msg, ()>, Msg> {
                     bits[32..48].store_be(*v);
                     CanFrame::Normal {
                         id: CanId::Extended(0x01),
-                        data,
+                        data: data.to_vec(),
                     }
                 }
             };
 
             Ok(Some(vec![frame]))
         },
-        period: Duration::from_millis(1000),
-        fn_periodic: |_| Ok(None),
         fn_output: |frame| {
             info!("Frame: {frame:?}");
-            None
+            Ok(None)
         },
         filters: vec![CanFilter::Standard {
             id: 0b101,

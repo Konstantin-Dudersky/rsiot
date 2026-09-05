@@ -164,6 +164,12 @@ impl LogConfig {
             EspIdfLogFilter::new().set_target_level("*", level)?;
 
             info!("Logging in ESP started with level: {}", level);
+
+            tracing::trace!("Test message level TRACE");
+            tracing::debug!("Test message level DEBUG");
+            tracing::info!("Test message level INFO");
+            tracing::warn!("Test message level WARN");
+            tracing::error!("Test message level ERROR");
             return Ok(());
         }
 

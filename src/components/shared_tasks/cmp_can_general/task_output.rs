@@ -1,4 +1,5 @@
 use tokio::sync::mpsc;
+use tracing::warn;
 
 use crate::{
     components_config::can_general::CanFrame,
@@ -12,7 +13,7 @@ where
 {
     pub input: mpsc::Receiver<CanFrame>,
     pub output: MsgBusOutput<TMsg>,
-    pub fn_output: fn(CanFrame) -> Option<Vec<TMsg>>,
+    pub fn_output: fn(CanFrame) -> anyhow::Result<Option<Vec<TMsg>>>,
     pub error_task_end: fn() -> TError,
     pub error_tokio_mpsc_send: fn() -> TError,
 }
@@ -24,6 +25,13 @@ where
     pub async fn spawn(mut self) -> Result<(), TError> {
         while let Some(frame) = self.input.recv().await {
             let msgs = (self.fn_output)(frame);
+            let msgs = match msgs {
+                Ok(v) => v,
+                Err(e) => {
+                    warn!("Error in fn_output of CAN Output task: {}", e);
+                    continue;
+                }
+            };
             let Some(msgs) = msgs else { continue };
 
             for msg in msgs {

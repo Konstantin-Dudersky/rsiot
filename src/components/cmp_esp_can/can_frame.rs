@@ -29,7 +29,7 @@ impl TryFrom<CanFrame> for esp_idf_svc::hal::can::Frame {
     type Error = Error;
 
     fn try_from(value: CanFrame) -> Result<Self, Self::Error> {
-        let frame = match value {
+        let frame = match &value {
             CanFrame::Normal { id, data } => {
                 let mut flags = EnumSet::new();
                 if matches!(id, CanId::Extended(_)) {
@@ -38,10 +38,11 @@ impl TryFrom<CanFrame> for esp_idf_svc::hal::can::Frame {
 
                 let id = id.as_raw();
 
-                let frame = esp_idf_svc::hal::can::Frame::new(id, flags, &data);
+                let frame = esp_idf_svc::hal::can::Frame::new(id, flags, data);
                 let Some(frame) = frame else {
                     return Err(Error::FrameConversionIntoField(value));
                 };
+
                 frame
             }
             CanFrame::Error { id, data } => todo!(),

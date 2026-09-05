@@ -19,7 +19,7 @@ impl RecvFromCanAsync {
 
         while let Some(frame) = socket.next().await {
             let frame = frame?;
-            trace!("Frame: {:?}", frame);
+            info!("Frame: {:?}", frame);
 
             self.output
                 .send(frame)

@@ -1,16 +1,14 @@
-use tracing::warn;
-
 use super::CanId;
 
 /// CAN-кадр
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 pub enum CanFrame {
     /// Стандартный CAN-кадр в классическом CAN 2.0
     Normal {
         /// Идентификатор
         id: CanId,
         /// Данные
-        data: [u8; 8],
+        data: Vec<u8>,
     },
     // Remote(CanRemoteFrame),
     /// CAN-кадр ошибки
@@ -18,12 +16,13 @@ pub enum CanFrame {
         /// Идентификатор
         id: CanId,
         /// Данные
-        data: [u8; 8],
+        data: Vec<u8>,
     },
     // Fd(CanFdFrame),
 }
 
 impl CanFrame {
+    /// Возвращает идентификатор кадра
     pub fn id(&self) -> CanId {
         match self {
             CanFrame::Normal { id, .. } => *id,
@@ -31,6 +30,7 @@ impl CanFrame {
         }
     }
 
+    /// Возвращает данные кадра
     pub fn data(&self) -> &[u8] {
         match self {
             CanFrame::Normal { data, .. } => data,
@@ -46,14 +46,10 @@ where
     fn from(value: TEmbedFrame) -> Self {
         let id: CanId = value.id().into();
         if value.is_data_frame() {
-            let mut data = [0_u8; 8];
-            let len = value.data().len().min(8);
-            if len > 8 {
-                warn!("Data length exceeds 8 bytes: {}", len);
+            Self::Normal {
+                id,
+                data: value.data().to_vec(),
             }
-            data[..len].copy_from_slice(&value.data()[..len]);
-
-            Self::Normal { id, data }
         } else {
             todo!()
         }

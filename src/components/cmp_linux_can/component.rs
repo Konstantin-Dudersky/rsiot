@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
 use crate::{
-    components_config::can_general::BufferBound,
+    components::cmp_linux_can::CanFrame,
     executor::{CmpResult, Component, IComponentProcess, MsgBusLinker},
     message::MsgDataBound,
 };
@@ -13,15 +13,15 @@ pub const COMPONENT_NAME: &str = "cmp_linux_can";
 
 #[cfg_attr(not(feature = "single-thread"), async_trait)]
 #[cfg_attr(feature = "single-thread", async_trait(?Send))]
-impl<TMsg, TBuffer> IComponentProcess<Config<TMsg, TBuffer>, TMsg>
-    for Component<Config<TMsg, TBuffer>, TMsg>
+impl<TMsg, TFnInput> IComponentProcess<Config<TMsg, TFnInput>, TMsg>
+    for Component<Config<TMsg, TFnInput>, TMsg>
 where
     TMsg: MsgDataBound + 'static,
-    TBuffer: BufferBound + 'static,
+    TFnInput: 'static + Fn(&TMsg) -> anyhow::Result<Option<Vec<CanFrame>>> + Send + Sync,
 {
     async fn process(
         &self,
-        config: Config<TMsg, TBuffer>,
+        config: Config<TMsg, TFnInput>,
         msgbus_linker: MsgBusLinker<TMsg>,
     ) -> CmpResult {
         fn_process(config, msgbus_linker.init(COMPONENT_NAME)).await?;
@@ -30,4 +30,4 @@ where
 }
 
 /// Компонент cmp_linux_can
-pub type Cmp<TMsg, TBuffer> = Component<Config<TMsg, TBuffer>, TMsg>;
+pub type Cmp<TMsg, TFnInput> = Component<Config<TMsg, TFnInput>, TMsg>;

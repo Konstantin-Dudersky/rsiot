@@ -1,7 +1,6 @@
 use socketcan::EmbeddedFrame;
-use tracing::warn;
 
-use super::{CanFrame, CanId, Error};
+use super::{CanFrame, Error};
 
 impl TryFrom<CanFrame> for socketcan::CanAnyFrame {
     type Error = Error;

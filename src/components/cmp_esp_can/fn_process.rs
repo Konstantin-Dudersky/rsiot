@@ -3,7 +3,7 @@ use std::{thread, time::Duration};
 use enumset::EnumSet;
 use esp_idf_svc::{
     hal::{
-        can::{self, Alert, AsyncCanDriver, CanDriver},
+        can::{self, Alert, CanDriver},
         delay::TickType,
     },
     sys::{ESP_ERR_TIMEOUT, esp, twai_initiate_recovery},
@@ -11,37 +11,31 @@ use esp_idf_svc::{
 use tokio::{
     sync::mpsc::{Receiver, Sender, error::TryRecvError},
     task::{JoinHandle, JoinSet},
-    time::{sleep, timeout},
 };
 use tracing::{info, warn};
 
 use crate::{
     components::shared_tasks::cmp_can_general::CanGeneralTasks,
-    components_config::can_general::{BufferBound, CanFrame},
-    executor::{Instant, MsgBusLinker},
-    message::MsgDataBound,
+    components_config::can_general::CanFrame, executor::MsgBusLinker, message::MsgDataBound,
 };
 
 use super::{Config, Error, can_filter::can_filter_convert};
 
-pub async fn fn_process<TMsg, TBuffer>(
-    config: Config<TMsg, TBuffer>,
+pub async fn fn_process<TMsg, TFnInput>(
+    config: Config<TMsg, TFnInput>,
     msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: 'static + MsgDataBound,
-    TBuffer: 'static + BufferBound,
+    TFnInput: 'static + Fn(&TMsg) -> anyhow::Result<Option<Vec<CanFrame>>> + Send + Sync,
 {
     let mut task_set: JoinSet<Result<(), Error>> = JoinSet::new();
 
     // Общие задачи обмена по шине CAN
     let (mut ch_rx_send_to_can, ch_tx_recv_from_can) = CanGeneralTasks {
         msgbus_linker,
-        buffer_default: config.buffer_default,
         task_set: &mut task_set,
         fn_input: config.fn_input,
-        period: config.period,
-        fn_periodic: config.fn_periodic,
         fn_output: config.fn_output,
         error_task_end_input: || Error::TaskEndInput,
         error_task_end_output: || Error::TaskEndOutput,
@@ -113,7 +107,7 @@ where
             )?;
 
             // Проверка ошибок
-            // step_read_alerts(&mut can_driver, Duration::from_millis(1))?;
+            step_read_alerts(&mut can_driver, Duration::from_millis(1))?;
 
             thread::sleep(Duration::from_millis(50));
         }
@@ -173,9 +167,12 @@ fn step_transmit<'a>(
 
     // Конвертируем данные
     let frame_conv: Result<esp_idf_svc::hal::can::Frame, _> = frame.try_into();
-    let Ok(frame) = frame_conv else {
-        warn!("Error converting CAN frame: {:?}", frame);
-        return Ok(());
+    let frame = match frame_conv {
+        Ok(v) => v,
+        Err(e) => {
+            warn!("Error converting CAN frame: {:?}", e);
+            return Ok(());
+        }
     };
 
     // Отправка кадра
@@ -191,7 +188,7 @@ fn step_read_alerts<'a>(can_driver: &mut CanDriver<'a>, timeout: Duration) -> Re
     let result = can_driver.read_alerts(dur_to_ticks(timeout));
     match result {
         Ok(alerts) => {
-            warn!("Alerts: {:?}", alerts);
+            warn!("CAN alerts: {:?}", alerts);
             // if alerts.contains(Alert::ErrorPass) {
             //     can_driver_recovery()?;
             // }

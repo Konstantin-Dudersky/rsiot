@@ -17,7 +17,7 @@ pub struct FieldbusResponse {
     pub request_kind: u8,
 
     /// Данные, содержащие ответы
-    pub payload: Vec<Vec<u8>>,
+    pub payload: Result<Vec<Vec<u8>>, String>,
 }
 // ANCHOR: FieldbusResponse
 
