@@ -1,5 +1,6 @@
-use std::{thread, time::Duration};
+use std::time::Duration;
 
+use embedded_can::nb::Can;
 use enumset::EnumSet;
 use esp_idf_svc::{
     hal::{
@@ -57,6 +58,7 @@ where
     // - Alert::PeripheralReset - создаётся очень много сообщений
     // - Alert::Success - возникает при успешной отправке - нет необходимости
     // - Alert::TransmitIdle - возникает после отправки - нет необходимости
+    // - Alert::Received - возникает при успешном приёме
     //
     // Описание ошибок в документации:
     // https://docs.espressif.com/projects/esp-idf/en/v4.2/esp32/api-reference/peripherals/twai.html
@@ -70,7 +72,6 @@ where
     alerts.insert(Alert::ErrorPass); // Состояние ERROR PASSIVE
     alerts.insert(Alert::ReceiveFifoOverflow);
     alerts.insert(Alert::ReceiveQueueFull);
-    alerts.insert(Alert::Received);
     alerts.insert(Alert::RecoveryInProgress);
     alerts.insert(Alert::TransmitFailed);
     alerts.insert(Alert::TransmitRetried);
@@ -93,23 +94,13 @@ where
 
         loop {
             // Отправка кадров
-            step_transmit(
-                &mut can_driver,
-                &mut ch_rx_send_to_can,
-                Duration::from_millis(10),
-            )?;
+            step_transmit(&mut can_driver, &mut ch_rx_send_to_can)?;
 
             // Получение кадров
-            step_receive(
-                &mut can_driver,
-                &ch_tx_recv_from_can,
-                Duration::from_millis(10),
-            )?;
+            step_receive(&mut can_driver, &ch_tx_recv_from_can)?;
 
             // Проверка ошибок
             step_read_alerts(&mut can_driver, Duration::from_millis(1))?;
-
-            thread::sleep(Duration::from_millis(50));
         }
     });
 
@@ -122,18 +113,21 @@ where
 fn step_receive<'a>(
     can_driver: &mut CanDriver<'a>,
     ch_tx_recv_from_can: &Sender<CanFrame>,
-    timeout: Duration,
 ) -> Result<(), Error> {
-    // Ожидаем получение кадра с таймаутом
-    let result = can_driver.receive(dur_to_ticks(timeout));
+    // Проверяем наличие кадра в буфере
+    let frame = can_driver.receive();
 
-    let frame = match result {
+    let frame = match frame {
         Ok(frame) => frame,
-        Err(e) => {
-            if e.code() != ESP_ERR_TIMEOUT {
-                warn!("Error receiving CAN frame: {:?}", e);
-            }
+
+        Err(nb::Error::WouldBlock) => {
+            // В буфере нет фреймов
             return Ok(());
+        }
+
+        Err(e) => {
+            warn!("Error receiving CAN frame: {:?}", e);
+            return Err(Error::ReceiveFrameFromBuffer(e));
         }
     };
 
@@ -153,7 +147,6 @@ fn step_receive<'a>(
 fn step_transmit<'a>(
     can_driver: &mut CanDriver<'a>,
     ch_rx_send_to_can: &mut Receiver<CanFrame>,
-    timeout: Duration,
 ) -> Result<(), Error> {
     // Проверяем наличие кадров для отправки
     let frame = ch_rx_send_to_can.try_recv();
@@ -176,7 +169,8 @@ fn step_transmit<'a>(
     };
 
     // Отправка кадра
-    let res = can_driver.transmit(&frame, dur_to_ticks(timeout));
+    // let res = can_driver.transmit(&frame, dur_to_ticks(timeout));
+    let res = can_driver.transmit(&frame);
     if let Err(err) = res {
         warn!("Error transmitting CAN frame: {:?}", err);
     }
@@ -189,12 +183,12 @@ fn step_read_alerts<'a>(can_driver: &mut CanDriver<'a>, timeout: Duration) -> Re
     match result {
         Ok(alerts) => {
             warn!("CAN alerts: {:?}", alerts);
-            // if alerts.contains(Alert::ErrorPass) {
-            //     can_driver_recovery()?;
-            // }
-            // if alerts.contains(Alert::RecoveryInProgress) {
-            //     can_driver_start(can_driver)?;
-            // }
+            if alerts.contains(Alert::ErrorPass) {
+                can_driver_recovery()?;
+            }
+            if alerts.contains(Alert::RecoveryInProgress) {
+                can_driver_start(can_driver)?;
+            }
         }
         Err(e) => {
             if e.code() != ESP_ERR_TIMEOUT {

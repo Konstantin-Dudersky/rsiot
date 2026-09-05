@@ -14,31 +14,28 @@ use tracing::{info, warn};
 
 use crate::{
     components::shared_tasks::cmp_can_general::CanGeneralTasks,
-    components_config::can_general::{BufferBound, CanFrame},
+    components_config::can_general::CanFrame,
     executor::{Instant, MsgBusLinker},
     message::MsgDataBound,
 };
 
 use super::{Config, Error, can_filter::can_filter_convert};
 
-pub async fn fn_process<TMsg, TBuffer>(
-    config: Config<TMsg, TBuffer>,
+pub async fn fn_process<TMsg, TFnInput>(
+    config: Config<TMsg, TFnInput>,
     msgbus_linker: MsgBusLinker<TMsg>,
 ) -> super::Result<()>
 where
     TMsg: 'static + MsgDataBound,
-    TBuffer: 'static + BufferBound,
+    TFnInput: 'static + Fn(&TMsg) -> anyhow::Result<Option<Vec<CanFrame>>> + Send + Sync,
 {
     let mut task_set: JoinSet<Result<(), Error>> = JoinSet::new();
 
     // Общие задачи обмена по шине CAN
     let (mut ch_rx_send_to_can, ch_tx_recv_from_can) = CanGeneralTasks {
         msgbus_linker,
-        buffer_default: config.buffer_default,
         task_set: &mut task_set,
         fn_input: config.fn_input,
-        period: config.period,
-        fn_periodic: config.fn_periodic,
         fn_output: config.fn_output,
         error_task_end_input: || Error::TaskEndInput,
         error_task_end_output: || Error::TaskEndOutput,
@@ -60,12 +57,13 @@ where
     // - Alert::PeripheralReset - создаётся очень много сообщений
     // - Alert::Success - возникает при успешной отправке - нет необходимости
     // - Alert::TransmitIdle - возникает после отправки - нет необходимости
+    // - Alert::AlertAndLog - также выводит в лог. Отключил, поскольку читаю через read_alerts
+    // - Alert::Received - возникает при успешном приёме
     //
     // Описание ошибок в документации:
     // https://docs.espressif.com/projects/esp-idf/en/v4.2/esp32/api-reference/peripherals/twai.html
     let mut alerts = EnumSet::new();
     alerts.insert(Alert::ActiveError); // Состояние ERROR ACTIVE
-    alerts.insert(Alert::AlertAndLog);
     alerts.insert(Alert::ArbLost);
     alerts.insert(Alert::BusError);
     alerts.insert(Alert::BusOffline); // Состояние BUS OFF
@@ -73,7 +71,6 @@ where
     alerts.insert(Alert::ErrorPass); // Состояние ERROR PASSIVE
     alerts.insert(Alert::ReceiveFifoOverflow);
     alerts.insert(Alert::ReceiveQueueFull);
-    alerts.insert(Alert::Received);
     alerts.insert(Alert::RecoveryInProgress);
     alerts.insert(Alert::TransmitFailed);
     alerts.insert(Alert::TransmitRetried);
@@ -97,21 +94,15 @@ where
         step_receive(
             &mut can_driver,
             &ch_tx_recv_from_can,
-            Duration::from_millis(10),
+            Duration::from_millis(1),
         )
         .await?;
 
         // Отправка кадров
-        step_transmit(
-            &mut can_driver,
-            &mut ch_rx_send_to_can,
-            Duration::from_millis(10),
-        )
-        .await?;
+        step_transmit(&mut can_driver, &mut ch_rx_send_to_can).await?;
 
         // Проверка ошибок
-        // TODO - ESP секунд через 10 отваливается
-        // step_read_alerts(&mut can_driver, Duration::from_millis(20)).await?;
+        step_read_alerts(&mut can_driver, Duration::from_millis(1)).await?;
     }
 }
 
@@ -121,36 +112,28 @@ async fn step_receive<'a>(
     ch_tx_recv_from_can: &Sender<CanFrame>,
     max_time: Duration,
 ) -> Result<(), Error> {
-    let start_time = Instant::now();
-    loop {
-        // Если суммарное время превышено, переходим к следующему шагу
-        if start_time.elapsed() >= max_time {
-            break;
+    // Ожидаем получение кадра с таймаутом
+    let result = timeout(max_time, can_driver.receive()).await;
+    let frame = match result {
+        Ok(Ok(frame)) => frame,
+        Ok(Err(e)) => {
+            warn!("Error receiving CAN frame: {:?}", e);
+            return Ok(());
         }
+        Err(_) => return Ok(()),
+    };
 
-        // Ожидаем получение кадра с таймаутом
-        let result = timeout(max_time, can_driver.receive()).await;
-        let frame = match result {
-            Ok(Ok(frame)) => frame,
-            Ok(Err(e)) => {
-                warn!("Error receiveing CAN frame: {:?}", e);
-                break;
-            }
-            Err(_) => break,
-        };
+    // Конвертируем данные
+    let frame: Result<CanFrame, _> = frame.try_into();
+    let Ok(frame) = frame else {
+        warn!("Error converting CAN frame: {:?}", frame);
+        return Ok(());
+    };
 
-        // Конвертируем данные
-        let frame: Result<CanFrame, _> = frame.try_into();
-        let Ok(frame) = frame else {
-            warn!("Error converting CAN frame: {:?}", frame);
-            continue;
-        };
-
-        // Отправка полученного кадра для дальнейшей обработки
-        let res = ch_tx_recv_from_can.try_send(frame);
-        if let Err(err) = res {
-            warn!("Output channel full: {err}");
-        }
+    // Отправка полученного кадра для дальнейшей обработки
+    let res = ch_tx_recv_from_can.try_send(frame);
+    if let Err(err) = res {
+        warn!("Output channel full: {err}");
     }
 
     Ok(())
@@ -160,39 +143,33 @@ async fn step_receive<'a>(
 async fn step_transmit<'a>(
     can_driver: &mut AsyncCanDriver<'a, CanDriver<'a>>,
     ch_rx_send_to_can: &mut Receiver<CanFrame>,
-    max_time: Duration,
 ) -> Result<(), Error> {
-    let start_tx = Instant::now();
+    // Проверяем наличие кадров для отправки
+    let frame = ch_rx_send_to_can.try_recv();
+    let frame = match frame {
+        Ok(val) => val,
+        Err(err) => match err {
+            TryRecvError::Empty => return Ok(()),
+            TryRecvError::Disconnected => todo!(),
+        },
+    };
 
-    loop {
-        // Если суммарное время превышено, переходим к следующему шагу
-        if start_tx.elapsed() >= max_time {
-            break;
+    // Конвертируем данные
+    let frame_conv: Result<esp_idf_svc::hal::can::Frame, _> = frame.try_into();
+    let frame = match frame_conv {
+        Ok(v) => v,
+        Err(e) => {
+            warn!("Error converting CAN frame: {:?}", e);
+            return Ok(());
         }
+    };
 
-        // Проверяем наличие кадров для отправки
-        let frame = ch_rx_send_to_can.try_recv();
-        let frame = match frame {
-            Ok(val) => val,
-            Err(err) => match err {
-                TryRecvError::Empty => break,
-                TryRecvError::Disconnected => todo!(),
-            },
-        };
-
-        // Конвертируем данные
-        let frame_conv: Result<esp_idf_svc::hal::can::Frame, _> = frame.try_into();
-        let Ok(frame) = frame_conv else {
-            warn!("Error converting CAN frame: {:?}", frame);
-            continue;
-        };
-
-        // Отправка кадра
-        let res = can_driver.transmit(&frame).await;
-        if let Err(err) = res {
-            warn!("Error transmitting CAN frame: {:?}", err);
-        }
+    // Отправка кадра
+    let res = can_driver.transmit(&frame).await;
+    if let Err(err) = res {
+        warn!("Error transmitting CAN frame: {:?}", err);
     }
+
     Ok(())
 }
 

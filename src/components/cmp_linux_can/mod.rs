@@ -9,14 +9,14 @@ mod component;
 mod config;
 mod error;
 mod fn_process;
-mod task_interface_info;
+// mod task_interface_info;
 mod task_recv_from_can;
 mod task_send_to_can;
 mod task_setup_send_recv;
 
 pub use {
     crate::components_config::can_general::*,
-    component::{Cmp, COMPONENT_NAME},
+    component::{COMPONENT_NAME, Cmp},
     config::Config,
     error::Error,
 };

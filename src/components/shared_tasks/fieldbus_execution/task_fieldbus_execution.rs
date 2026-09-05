@@ -100,12 +100,8 @@ where
             ch_rx_split_to_devices.push(Some(ch_rx));
         }
 
-        // Канал передачи сообщений из устройств на фильтр
-        let (ch_tx_devices_to_filter, ch_rx_devices_to_filter) =
-            mpsc::channel::<Message<TMsg>>(buffer_size);
-
-        // Канал передачи сообщений из фильтра на выход компонента
-        let (ch_tx_filter_to_msgbus, ch_rx_filter_to_msgbus) =
+        // Канал передачи сообщений из устройств на выход компонента
+        let (ch_tx_devices_to_msgbus, ch_rx_devices_to_msgbus) =
             mpsc::channel::<Message<TMsg>>(buffer_size);
 
         let (ch_tx_device_to_diag, ch_rx_device_to_diag) =
@@ -124,7 +120,7 @@ where
                 panic!("Error configuration in fn_process_master");
             };
             // let ch_tx_devices_to_filter = ch_tx_devices_to_filter.clone();
-            let ch_tx_devices_to_filter = ch_tx_filter_to_msgbus.clone();
+            let ch_tx_devices_to_filter = ch_tx_devices_to_msgbus.clone();
             let ch_tx_device_to_diag = ch_tx_device_to_diag.clone();
             let task = device.spawn(
                 ch_rx_msgbus_to_devices,
@@ -163,20 +159,9 @@ where
             task.spawn(),
         );
 
-        // Фильтрация одинаковых сообщений ---------------------------------------------------------
-        // let task = filter_identical_data::FilterIdenticalData {
-        //     input: ch_rx_devices_to_filter,
-        //     output: ch_tx_filter_to_msgbus,
-        // };
-        // join_set_spawn(
-        //     self.task_set,
-        //     "fn_process_master | filter_identical_data",
-        //     task.spawn().map_err(self.error_filter),
-        // );
-
         // Создаем исходящие сообщения -------------------------------------------------------------
         let task = mpsc_to_msgbus::MpscToMsgBus {
-            input: ch_rx_filter_to_msgbus,
+            input: ch_rx_devices_to_msgbus,
             output: self.msgbus_linker.output(),
         };
         join_set_spawn(

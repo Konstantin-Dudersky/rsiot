@@ -10,9 +10,7 @@ use crate::{
     message::MsgDataBound,
 };
 
-use super::{
-    Config, Error, task_interface_info::InterfaceInfo, task_setup_send_recv::TaskSetupSendRecv,
-};
+use super::{Config, Error, task_setup_send_recv::TaskSetupSendRecv};
 
 pub async fn fn_process<TMsg, TFnInput>(
     config: Config<TMsg, TFnInput>,

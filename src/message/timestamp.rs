@@ -11,7 +11,7 @@ pub struct Timestamp(OffsetDateTime);
 impl Timestamp {
     /// Преобразовать в строку с заданным форматом
     pub fn format(&self, fmt: &str) -> Result<String, String> {
-        let format = format_description::parse(fmt).map_err(|e| e.to_string())?;
+        let format = format_description::parse_borrowed::<2>(fmt).map_err(|e| e.to_string())?;
         self.0.format(&format).map_err(|e| e.to_string())
     }
 

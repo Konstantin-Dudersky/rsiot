@@ -18,7 +18,7 @@ pub struct Response<TMsg, TResponse, TBuffer> {
     pub buffer: Buffer<TBuffer>,
     pub init_completed: Arc<AtomicBool>,
     pub ch_rx_fieldbus_to_device: mpsc::Receiver<TResponse>,
-    pub ch_tx_output_to_filter: mpsc::Sender<Message<TMsg>>,
+    pub ch_tx_device_to_msgbus: mpsc::Sender<Message<TMsg>>,
     pub ch_tx_need_request: mpsc::Sender<()>,
     pub ch_tx_device_to_diag: mpsc::Sender<FieldbusDiagMsg>,
     pub fn_response_to_buffer: fn(TResponse, &mut TBuffer) -> anyhow::Result<ResponseResult>,
@@ -45,7 +45,7 @@ where
 
             for msg in msgs {
                 let msg = Message::new_custom(msg);
-                self.ch_tx_output_to_filter
+                self.ch_tx_device_to_msgbus
                     .check_capacity(0.2, "master_device | Response | ch_tx_output_to_filter")
                     .send(msg)
                     .await

@@ -33,6 +33,8 @@ pub fn cmp() -> rsiot::executor::Component<Config<Msg>, Msg> {
                 vec![msg]
             },
         })],
+        fn_diag: |d| Msg::Diag(d.clone()),
+        fn_diag_period: Duration::from_secs(1),
     };
 
     Cmp::new(config)

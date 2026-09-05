@@ -1,5 +1,5 @@
 use tokio::sync::mpsc;
-use tracing::{info, trace};
+use tracing::{info, warn};
 
 use super::{
     CanFilter, CanFrame, CanSettings, Error,
@@ -43,14 +43,18 @@ impl RecvFromCanSync {
         socket.set_filters(&self.filters)?;
 
         loop {
-            let frame = socket.receive().unwrap();
-            // info!("Frame: {:?}", frame);
+            let frame = socket.receive();
+            let frame = match frame {
+                Ok(v) => v,
+                Err(e) => {
+                    warn!("Error receiving frame from CAN: {}", e);
+                    continue;
+                }
+            };
 
             self.output
                 .try_send(frame)
                 .map_err(|_| Error::TokioSyncMpscSend)?;
         }
-
-        Err(Error::TaskEndRecvFromCan)
     }
 }

@@ -5,14 +5,12 @@ use std::{
     time::Duration,
 };
 
-use futures::TryFutureExt;
 use tokio::{
     sync::{Mutex, mpsc},
     task::JoinSet,
 };
 
 use crate::{
-    components::shared_tasks,
     executor::{MsgBusInput, join_set_spawn},
     message::{Message, MsgDataBound},
 };
@@ -101,7 +99,6 @@ where
 
         let (ch_tx_need_request, ch_rx_need_request) = mpsc::channel::<()>(100);
         let (ch_tx_request, ch_rx_request) = mpsc::channel::<TRequest>(100);
-        let (ch_tx_output_to_filter, ch_rx_output_to_filter) = mpsc::channel::<Message<TMsg>>(500);
 
         let mut task_set: JoinSet<super::Result<()>> = JoinSet::new();
 
@@ -193,7 +190,7 @@ where
             buffer: buffer.clone(),
             init_completed: init_completed.clone(),
             ch_rx_fieldbus_to_device,
-            ch_tx_output_to_filter: ch_tx_device_to_msgbus.clone(),
+            ch_tx_device_to_msgbus,
             ch_tx_need_request: ch_tx_need_request.clone(),
             ch_tx_device_to_diag,
             fn_response_to_buffer: self.fn_response_to_buffer,
@@ -203,17 +200,6 @@ where
             &mut task_set,
             format!("master_device | response | {}", id.as_ref()),
             task.spawn(),
-        );
-
-        // Задачи фильтрации одинаковых сообщений
-        let task = shared_tasks::filter_identical_data::FilterIdenticalData {
-            input: ch_rx_output_to_filter,
-            output: ch_tx_device_to_msgbus,
-        };
-        join_set_spawn(
-            &mut task_set,
-            format!("master_device | filter_identical_data | {}", id.as_ref()),
-            task.spawn().map_err(super::Error::TaskFilterIdenticalData),
         );
 
         while let Some(res) = task_set.join_next().await {

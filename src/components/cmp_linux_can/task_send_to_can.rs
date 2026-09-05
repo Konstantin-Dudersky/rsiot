@@ -1,9 +1,7 @@
-use std::{thread::sleep as std_thread_sleep, time::Duration};
-
-use tokio::{sync::broadcast, time::sleep as tokio_time_sleep};
+use tokio::sync::broadcast;
 use tracing::warn;
 
-use crate::components_config::can_general::{CanFrame, CanSettings, CanSettingsBitrate};
+use crate::components_config::can_general::{CanFrame, CanSettings};
 
 use super::{
     Error,
@@ -39,45 +37,16 @@ pub struct SendToCanSync {
 }
 impl SendToCanSync {
     pub fn spawn(mut self) -> Result<(), Error> {
-        let mut socket = CanSocketSync::open(&self.ifname, self.can_settings.clone())?;
-        // let delay_after_send = DelayAfterSend::new(&self.can_settings);
+        let ifname = self.ifname;
+        let can_settings = self.can_settings;
+        let mut socket = CanSocketSync::open(&ifname, can_settings)?;
         while let Ok(frame) = self.input.blocking_recv() {
-            // let delay = delay_after_send.calc(&frame);
             let res = socket.transmit(frame);
-            // std_thread_sleep(delay);
             if let Err(err) = res {
                 warn!("Error sending frame: {}", err);
-                break;
+                continue;
             }
         }
         Err(Error::TaskEndSendToCan)
     }
 }
-
-// Расчёт задержки после отправки кадра
-// pub struct DelayAfterSend {
-//     bitrate: f32,
-// }
-// impl DelayAfterSend {
-//     pub fn new(can_settings: &CanSettings) -> Self {
-//         let bitrate = match can_settings.bitrate {
-//             CanSettingsBitrate::Standard {
-//                 bitrate,
-//                 sample_point: _,
-//             } => bitrate as f32,
-//             CanSettingsBitrate::Custom {
-//                 tq: _,
-//                 prop_seg: _,
-//                 phase_seg1: _,
-//                 phase_seg2: _,
-//                 sjw: _,
-//             } => todo!(),
-//         };
-//         Self { bitrate }
-//     }
-
-//     pub fn calc(&self, frame: &CanFrame) -> Duration {
-//         let delay = frame.frame_size() / self.bitrate * 1.0;
-//         Duration::from_secs_f32(delay)
-//     }
-// }

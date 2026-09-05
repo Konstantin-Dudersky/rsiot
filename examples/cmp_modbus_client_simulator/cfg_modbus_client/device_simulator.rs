@@ -6,7 +6,8 @@ use rsiot::{
         FieldbusRequest, FieldbusResponse, RequestContent, ResponseContent,
     },
     components_config::master_device::{
-        self, BufferBound, ConfigPeriodicRequest, DeviceBase, DeviceTrait, ResponseResult,
+        self, BufferBound, ConfigPeriodicRequest, DeviceBase, DeviceTrait, FieldbusDiagMsg,
+        ResponseResult,
     },
     executor::MsgBusInput,
     message::{Message, MsgDataBound},
@@ -36,6 +37,7 @@ where
         ch_tx_device_to_fieldbus: mpsc::Sender<FieldbusRequest>,
         ch_rx_fieldbus_to_device: mpsc::Receiver<FieldbusResponse>,
         ch_tx_device_to_msgbus: mpsc::Sender<Message<TMsg>>,
+        ch_tx_device_to_diag: mpsc::Sender<FieldbusDiagMsg>,
     ) -> master_device::Result<()> {
         let device: DeviceBase<TMsg, FieldbusRequest, FieldbusResponse, Buffer> = DeviceBase {
             fn_init_requests: |_| vec![],
@@ -78,7 +80,6 @@ where
             },
             buffer_to_request_period: Duration::from_millis(1000),
             fn_buffer_to_msgs: self.fn_output,
-            device_state_output: None,
             buffer_default: Buffer::default(),
         };
         device
@@ -88,6 +89,7 @@ where
                 ch_tx_device_to_fieldbus,
                 ch_rx_fieldbus_to_device,
                 ch_tx_device_to_msgbus,
+                ch_tx_device_to_diag,
             )
             .await
             .unwrap();

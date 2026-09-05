@@ -112,7 +112,7 @@ async fn interface_setup(ifname: &str, can_settings: &CanSettings) -> Result<(),
     }
 
     // Длина очереди
-    let cmd: Vec<_> = "ip link set can0 txqueuelen 2".split(" ").collect();
+    let cmd: Vec<_> = "ip link set can0 txqueuelen 256".split(" ").collect();
     let cmd = Command::new(cmd[0])
         .args(&cmd[1..])
         .output()

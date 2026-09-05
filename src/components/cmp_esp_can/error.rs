@@ -23,6 +23,9 @@ pub enum Error {
     #[error("{COMPONENT_NAME} | FrameConversionIntoField: {0:?}")]
     FrameConversionIntoField(crate::components_config::can_general::CanFrame),
 
+    #[error("{COMPONENT_NAME} | ReceiveFrame: {0:?}")]
+    ReceiveFrameFromBuffer(nb::Error<esp_idf_svc::hal::can::CanError>),
+
     #[error("{COMPONENT_NAME} | TaskEnd")]
     TaskEnd,
 

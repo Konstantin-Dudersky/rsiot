@@ -83,7 +83,7 @@ mod tests {
     use crate::{
         components::cmp_external_fn_process,
         executor::{CmpResult, sleep},
-        message::{example_message::*, *},
+        message::example_message::*,
     };
 
     use super::*;

@@ -1,6 +1,9 @@
 use std::{net::IpAddr, time::Duration};
 
-use crate::components_config::master_device::DeviceTrait;
+use crate::{
+    components::shared_tasks::fieldbus_execution::FieldbusDiag,
+    components_config::master_device::DeviceTrait,
+};
 
 // ANCHOR: Config
 /// Конфигурация cmp_modbus_client
@@ -16,6 +19,12 @@ pub struct Config<TMsg> {
 
     /// Вектор драйверов опрашиваемых устройств
     pub devices: Vec<Box<dyn DeviceTrait<TMsg, super::FieldbusRequest, super::FieldbusResponse>>>,
+
+    /// Функция для формирования сообщения диагностики
+    pub fn_diag: fn(&FieldbusDiag) -> TMsg,
+
+    /// Период отправки сообщений диагностики
+    pub fn_diag_period: Duration,
 }
 // ANCHOR: Config
 

@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use linux_embedded_hal::i2cdev::{
     core::{I2CMessage, I2CTransfer},
     linux::{LinuxI2CBus, LinuxI2CError, LinuxI2CMessage},
@@ -7,7 +9,7 @@ use tokio::{
     task::JoinSet,
     time::{sleep, timeout},
 };
-use tracing::trace;
+use tracing::{trace, warn};
 
 use crate::{
     components::shared_tasks::fieldbus_execution::FieldbusExecution,
@@ -93,7 +95,7 @@ impl I2cComm {
                     )
                     .await;
                     let response = match response {
-                        Ok(v) => response,
+                        Ok(v) => v,
                         Err(e) => {
                             error = e.to_string();
                             warn!("tokio timeout: {}", e);
@@ -189,7 +191,7 @@ async fn make_i2c_operation(
             write_data,
             read_size,
         } => {
-            let mut read_data = vec![0; *read_size as usize];
+            let mut read_data = vec![0; *read_size];
 
             let mut transaction = [
                 LinuxI2CMessage::write(write_data).with_address(address),
@@ -208,7 +210,7 @@ async fn make_i2c_operation(
         }
 
         i2c_master::Operation::Read { read_size } => {
-            let mut read_data = vec![0; *read_size as usize];
+            let mut read_data = vec![0; *read_size];
 
             let mut transaction = [LinuxI2CMessage::read(&mut read_data).with_address(address)];
             bus.transfer(&mut transaction)?;

@@ -13,6 +13,7 @@ pub fn cmp() -> Component<Config<Msg>, Msg> {
             let text = match msg {
                 Msg::ValueWrite(v) => format!("Value write: {}", v),
                 Msg::ValueRead(v) => format!("Value read: {}", v),
+                Msg::Diag(d) => format!("Diag: {:?}", d),
             };
 
             Ok(Some(text))
